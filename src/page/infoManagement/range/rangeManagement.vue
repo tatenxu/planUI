@@ -89,7 +89,7 @@
           :highlight-current-row="true"
           style="width: 100%; margin-top: 20px">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column prop="index" label="序号" width="50" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="rangeNumber" width="130" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -183,7 +183,6 @@ export default {
       data:{
         tableData:[
           {
-            index: 1,
             rangeNumber: "XL20190101001",
             customerName: "Qi-Collection",
             brandName: "Selkie",
@@ -198,13 +197,12 @@ export default {
             rangeNote: "系列备注1",
           },
           {
-            index: 2,
             rangeNumber: "XL20181001002",
             customerName: "A客户",
             brandName: "AAA品牌",
             clothingType: "时装",
             rangeName: "Spring-2019(01/02/03)",
-            addUser: "精品",
+            addUser: "刘德华",
             dept: "业务1组",
             addTime: "2018-10-01 09:25:01",
             addMethod: "导入",
@@ -318,11 +316,18 @@ export default {
         .then(() => {
           for (var i = 0; i < that.multipleSelection.length; i++){
             var result = that.multipleSelection[i];
-            var delIndex = result["index"];
-            console.log('delIndex',delIndex);
             for(var j = 0; j < that.data.tableData.length; j++){
               var delResult = that.data.tableData[j];
-              if (delResult["index"] === delIndex){
+              if ((delResult["rangeNumber"] === result.rangeNumber) && 
+              (delResult["customerName"] === result.customerName) && 
+              (delResult["brandName"] === result.brandName) && 
+              (delResult["clothingType"] === result.clothingType) && 
+              (delResult["rangeName"] === result.rangeName) && 
+              (delResult["addUser"] === result.addUser) && 
+              (delResult["dept"] === result.dept) &&
+              (delResult["addMethod"] === result.addMethod) && 
+              (delResult["rangeAmount"] === result.rangeAmount) && 
+              (delResult["rangeNote"] === result.rangeNote)){
                 that.data.tableData.splice(j,1);
               }
             }
@@ -361,8 +366,7 @@ export default {
     deleteRangeData(row){
       const that = this;
       console.log("点击了本行的删除");
-      console.log("当前row=", row);
-      var thisIndex = row.index;
+      console.log("当前row=", row.rangeNumber);
       this.$confirm("是否确认删除该系列？", "提示", {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -371,7 +375,16 @@ export default {
       .then(() => {
         for(var j = 0; j < that.data.tableData.length; j++){
           var delResult = that.data.tableData[j];
-          if (delResult["index"] === thisIndex){
+          if ((delResult["rangeNumber"] === row.rangeNumber) && 
+          (delResult["customerName"] === row.customerName) && 
+          (delResult["brandName"] === row.brandName) && 
+          (delResult["clothingType"] === row.clothingType) && 
+          (delResult["rangeName"] === row.rangeName) && 
+          (delResult["addUser"] === row.addUser) && 
+          (delResult["dept"] === row.dept) &&
+          (delResult["addMethod"] === row.addMethod) && 
+          (delResult["rangeAmount"] === row.rangeAmount) && 
+          (delResult["rangeNote"] === row.rangeNote)){
             that.data.tableData.splice(j,1);
           }
         }

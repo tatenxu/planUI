@@ -50,25 +50,25 @@
           </div>
         </el-col>
         <el-col :span="2">
-        <el-upload 
-          style="display: inline; margin-left: 10px;margin-right: 10px;"
-          action="#"
-          ref="fileupload"
-          :show-file-list="false"
-          :http-request="upLoadChange"
-          :before-upload="beforeUpload">
-          <el-button type="primary">上传文件<i class="el-icon-upload el-icon--right"></i></el-button>
-        </el-upload>
+          <el-upload 
+            style="display: inline; margin-left: 10px;margin-right: 10px;"
+            action="#"
+            ref="fileupload"
+            :show-file-list="false"
+            :http-request="upLoadChange"
+            :before-upload="beforeUpload">
+            <el-button type="primary">上传文件<i class="el-icon-upload el-icon--right"></i></el-button>
+          </el-upload>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
         <el-table
           :data="data.tableData"
           max-height="400"
           border
           :stripe="true"
-          :highlight-current-row="true"
-          style="width: 100%; margin-top: 20px">
+          :highlight-current-row="true">
           <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="rangeAmount" label="系列款数" align="center"></el-table-column>
           <el-table-column prop="rangeNote" label="系列备注" align="center"></el-table-column>
@@ -155,7 +155,7 @@ export default {
     console.log("进入导入系列页面");
   },
   methods: {
-    // ////////////// methods for xls /////////////
+    ////////////// methods for xls /////////////
     readExcel (file) { // 解析Excel
       const that = this;
       return new Promise(function (resolve, reject) {
@@ -287,7 +287,7 @@ export default {
       }
       return returnChar;
     },
-    // ////////////// methods for xls /////////////
+    ////////////// methods for xls /////////////
     // 保存按钮点击
     store(){
       const that = this;
