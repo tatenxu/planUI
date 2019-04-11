@@ -134,7 +134,7 @@
         <el-menu-item index="/backEndModule/dictionary/customerMana"><i class="el-icon-document"></i>客户管理</el-menu-item>
         <el-menu-item index="/backEndModule/dictionary/brandMana"><i class="el-icon-document"></i>品牌管理</el-menu-item>
         <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana"><i class="el-icon-document"></i>数据字典管理</el-menu-item>
-        <el-submenu index="dictionary">
+        <!-- <el-submenu index="dictionary">
           <template slot="title">
             <i class="el-icon-message"></i>
             用户数据管理
@@ -142,7 +142,7 @@
           <el-menu-item index="/backEndModule/userManagement"><i class="el-icon-document"></i>用户管理</el-menu-item>
           <el-menu-item index="/backEndModule/groupManagement"><i class="el-icon-document"></i>部门管理</el-menu-item>
           <el-menu-item index="/backEndModule/roleManagement"><i class="el-icon-document"></i>角色管理</el-menu-item>
-        </el-submenu>
+        </el-submenu> -->
 
         <!-- <el-menu-item index="/quick"><i class="el-icon-message"></i>权限管理</el-menu-item>
 
