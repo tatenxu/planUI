@@ -1,19 +1,37 @@
 <template>
-  <el-card class="boxcard">
+  <el-card class="box-card">
     <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
       <el-tab-pane label="品牌信息管理" name="first" class="tabPane">
         <el-container class="paneContainer">
           <el-header clas="containerHeader">
-            <div class="containerHeaderDiv1">
-              <el-button type="primary" @click="handleNewInfoClick()">新增信息</el-button>
-              <el-button type="success" @click="handleEditInfoClick()">编辑信息</el-button>
-              <el-button type="danger">删除信息</el-button>
-              <div class="containerHeaderDiv2">
-                <el-button type="primary">搜索品牌</el-button>
-                <el-input v-model="searchInput" class="input" placeholder="请输入品牌名称"></el-input>
-                <span class="inputTag">品牌名称:</span>
+            <el-row :gutter="20">
+              <el-col :span="2">
+                <div>
+                  <el-button type="primary" @click="handleNewInfoClick()">新增信息</el-button>
+                </div>
+              </el-col>
+
+              <el-col :span="2">
+                <div>
+                  <el-button type="primary" @click="handleEditInfoClick()">编辑信息</el-button>
+                </div>
+              </el-col>
+
+              <el-col :span="2">
+                <div>
+                 <el-button type="primary" @click="handleDeleteInfoClick()">删除信息</el-button>
+                </div>
+              </el-col>
+
+              <el-col :span="6">
+                <div class="containerHeaderDiv2">
+                  <el-button type="primary">搜索品牌</el-button>
+                  <el-input v-model="searchInput" class="nameInput" placeholder="请输入品牌名称"></el-input>
+                  <span class="inputTag">品牌名称:</span>
               </div>
-            </div>
+              </el-col>
+            </el-row>
+          
             <hr />
           </el-header>
 
@@ -30,7 +48,7 @@
             </el-table-column>
             <el-table-column
               label="品牌名称"
-              width="240"
+              width="120"
               prop="name">
               <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
             </el-table-column>
@@ -42,7 +60,7 @@
             <el-table-column
               prop="description"
               label="品牌描述"
-              show-overflow-tooltip>
+              width="120">
             </el-table-column>
             <el-table-column
               prop="owner"
@@ -51,25 +69,25 @@
             </el-table-column>
           </el-table>
           <div style="margin-top: 20px">
-            <el-button type="danger" @click="toggleSelection()">取消选择</el-button>
+            <el-button type="info" @click="toggleSelection()">取消选择</el-button>
           </div>
           </el-main>
         </el-container>
       </el-tab-pane>
 
-      <el-tab-pane label="新增品牌信息" name="second" v-if="newCardShowFlag">
+      <el-tab-pane label="新增品牌信息" name="second" v-if="addCardShowFlag">
         <el-card>
           <div class="inputCombine">
             <span class="inputTag">品牌名称:</span>
-            <el-input v-model="newInfoName" class="input" placeholder="请输入品牌名称"></el-input>
+            <el-input v-model="addInfoName" class="input" placeholder="请输入品牌名称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">品牌简称:</span>
-            <el-input v-model="newInfoAbbr" class="input" placeholder="请输入品牌简称"></el-input>
+            <el-input v-model="addInfoAbbr" class="input" placeholder="请输入品牌简称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-              <el-select v-model="newInfoOwner" placeholder="请选择" class="inputSelector">
+              <el-select v-model="addInfoOwner" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
                   :key="item.value"
@@ -85,12 +103,12 @@
               type="textarea"
               :rows="4"
               placeholder="请输入品牌描述"
-              v-model="newInfoDescription">
+              v-model="addInfoDescription">
             </el-input>
           </div>
           <div class="secondButtonDiv">
-            <el-button type="success" class="save" @click="handleNewSaveClick()">保存</el-button>
-            <el-button type="danger" class="cancel" @click="handleNewCancelClick()">取消</el-button>
+            <el-button type="primary" class="save" @click="handleNewSaveClick()">保存</el-button>
+            <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
           </div>
         </el-card>
       </el-tab-pane>
@@ -127,8 +145,8 @@
             </el-input>
           </div>
           <div class="secondButtonDiv">
-            <el-button type="success" @click="handleEditSaveClick()" class="save">保存</el-button>
-            <el-button type="danger" @click="handleEditCancelClick()" class="cancel">取消</el-button>
+            <el-button type="primary" @click="handleEditSaveClick()" class="save">保存</el-button>
+            <el-button type="primary" @click="handleEditCancelClick()" class="cancel">取消</el-button>
           </div>
         </el-card>
       </el-tab-pane>
@@ -137,28 +155,27 @@
 </template>
 
 <style lang="less" scoped>
-  .containerHeaderDiv1{
+  .box-card{
+      min-width: 1500px;
+      margin: 20px 50px;
+      padding: 0 20px;
+    }
+  
+  // background: black;
+  .containerHeaderDiv2{
+    // margin-right: 100px;
+    // background: white;
     display: flex;
-    flex-direction: row;
-    width: 100%;
-    // background: black;
-    .containerHeaderDiv2{
-      position: relative;
-      left: 300px;
-      // margin-right: 100px;
-      // background: white;
-      display: flex;
-      flex-direction: row-reverse;
-      min-width: 500px;
-      .input{
-        min-width: 200px;
-        max-width: 400px;
-      }
-      .inputTag{
-        font-size: 18px;
-        line-height: 40px;
-        min-width: 90px;
-      }
+    flex-direction: row-reverse;
+    min-width: 500px;
+    .nameInput{
+      min-width: 100px;
+      max-width: 200px;
+    }
+    .inputTag{
+      font-size: 18px;
+      line-height: 40px;
+      min-width: 90px;
     }
   }
 
@@ -184,7 +201,6 @@
       margin-left: 68%;
     }
   }
-  
 </style>
 
 
@@ -217,16 +233,16 @@
             owner:'日本阿赛克斯公司'
           },],
           selectionData: [{
-            value: '选项1',
+            value: '中国耐克公司',
             label: '中国耐克公司'
           }, {
-            value: '选项2',
+            value: '中国阿迪公司',
             label: '中国阿迪公司'
           }, {
-            value: '选项3',
+            value: '日本阿赛克斯公司',
             label: '日本阿赛克斯公司'
           }, {
-            value: '选项4',
+            value: '中国新百伦公司',
             label: '中国新百伦公司'
           },],
         multipleSelection: [],
@@ -235,12 +251,12 @@
         editInfoAbbr:'',
         editInfoOwner:'',
 
-        newInfoOwner:'',
-        newInfoDescription:'',
-        newInfoName:'',
-        newInfoAbbr:'',
+        addInfoOwner:'',
+        addInfoDescription:'',
+        addInfoName:'',
+        addInfoAbbr:'',
 
-        newCardShowFlag:false,
+        addCardShowFlag:false,
         editCardShowFlag: false,
       };
     },
@@ -264,17 +280,24 @@
         this.multipleSelection = val;
       },
       handleNewInfoClick(){
-        this.newCardShowFlag = true;
+        this.addCardShowFlag = true;
         this.viewname = 'second';
         console.log(this.viewname);
+
       },
       handleEditInfoClick(){
         if(this.multipleSelection.length === 0){
-          alert("请选择一个品牌信息!");
+          this.$message({
+            message:'请选择一个品牌信息',
+            type:'warning'
+          });
           return;
         }
         if(this.multipleSelection.length > 1){
-          alert("只能选择一个信息进行编辑!");
+          this.$message({
+            message:'只能选择一个信息进行编辑',
+            type:'warning'
+          });
           return;
         }
         this.editCardShowFlag = true;
@@ -285,24 +308,62 @@
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';
       },
+      handleDeleteInfoClick(){
+        if(this.multipleSelection.length === 0){
+          this.$message({
+            message:'至少选择一个品牌',
+            type:'warning'
+          });
+        }
+        this.multipleSelection.forEach(element => {
+          var i = this.tableData.indexOf(element);
+          this.tableData.splice(i,1);
+        });
+        // this.tableData = this.multipleSelection;
+      },
       handleNewSaveClick(){
-        this.newCardShowFlag = false;
+        this.tableData.push({
+          name:this.addInfoName,
+          abbr:this.addInfoAbbr,
+          owner:this.addInfoOwner,
+          description:this.addInfoDescription
+        });
+        this.addCardShowFlag = false;
         this.viewname = "first";
+
+        this.$message({
+          message:'保存成功!',
+          type:'success'
+        });
+
         return;
       },
       handleNewCancelClick(){
-         this.newCardShowFlag = false;
+        this.addCardShowFlag = false;
         this.viewname = "first";
+        this.$message({
+          message:'取消新增!',
+          type:'info'
+        });
         return;
       },
       handleEditSaveClick(){
         this.editCardShowFlag = false;
         this.viewname = "first";
+
+        this.$message({
+          message:'保存成功!',
+          type:'success'
+        });
         return;
       },
       handleEditCancelClick(){
         this.editCardShowFlag = false;
         this.viewname = "first";
+        this.$message({
+          message:'取消编辑!',
+          type:'info'
+        });
         return;
       },
     }

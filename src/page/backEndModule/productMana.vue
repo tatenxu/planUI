@@ -1,19 +1,36 @@
 <template>
-  <el-card class="boxcard">
+  <el-card class="box-card">
     <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
       <el-tab-pane label="产品信息管理" name="first" class="tabPane">
         <el-container class="paneContainer">
           <el-header clas="containerHeader">
-            <div class="containerHeaderDiv1">
-              <el-button type="primary" @click="handleNewInfoClick()">新增信息</el-button>
-              <el-button type="success" @click="handleEditInfoClick()">编辑信息</el-button>
-              <el-button type="danger">删除信息</el-button>
-              <div class="containerHeaderDiv2">
-                <el-button type="primary">搜索产品</el-button>
-                <el-input v-model="searchInput" class="input" placeholder="请输入产品名称"></el-input>
-                <span class="inputTag">产品名称:</span>
+            <el-row :gutter="20">
+              <el-col :span="2">
+                <div>
+                  <el-button type="primary" @click="handleNewInfoClick()">新增信息</el-button>
+                </div>
+              </el-col>
+
+              <el-col :span="2">
+                <div>
+                  <el-button type="primary" @click="handleEditInfoClick()">编辑信息</el-button>
+                </div>
+              </el-col>
+
+              <el-col :span="2">
+                <div>
+                 <el-button type="primary" @click="handleDeleteInfoClick()">删除信息</el-button>
+                </div>
+              </el-col>
+
+              <el-col :span="6">
+                <div class="containerHeaderDiv2">
+                  <el-button type="primary">搜索产品</el-button>
+                  <el-input v-model="searchInput" class="nameInput" placeholder="请输入产品名称"></el-input>
+                  <span class="inputTag">产品名称:</span>
               </div>
-            </div>
+              </el-col>
+            </el-row>
             <hr />
           </el-header>
 
@@ -42,6 +59,7 @@
             <el-table-column
               prop="description"
               label="产品描述"
+              width="120"
               show-overflow-tooltip>
             </el-table-column>
             <el-table-column
@@ -51,7 +69,7 @@
             </el-table-column>
           </el-table>
           <div style="margin-top: 20px">
-            <el-button type="danger" @click="toggleSelection()">取消选择</el-button>
+            <el-button type="info" @click="toggleSelection()">取消选择</el-button>
           </div>
           </el-main>
         </el-container>
@@ -89,8 +107,8 @@
             </el-input>
           </div>
           <div class="secondButtonDiv">
-            <el-button type="success" class="save" @click="handleNewSaveClick()">保存</el-button>
-            <el-button type="danger" class="cancel" @click="handleNewCancelClick()">取消</el-button>
+            <el-button type="primary" class="save" @click="handleNewSaveClick()">保存</el-button>
+            <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
           </div>
         </el-card>
       </el-tab-pane>
@@ -127,8 +145,8 @@
             </el-input>
           </div>
           <div class="secondButtonDiv">
-            <el-button type="success" @click="handleEditSaveClick()" class="save">保存</el-button>
-            <el-button type="danger" @click="handleEditCancelClick()" class="cancel">取消</el-button>
+            <el-button type="primary" @click="handleEditSaveClick()" class="save">保存</el-button>
+            <el-button type="primary" @click="handleEditCancelClick()" class="cancel">取消</el-button>
           </div>
         </el-card>
       </el-tab-pane>
@@ -137,22 +155,22 @@
 </template>
 
 <style lang="less" scoped>
-  .containerHeaderDiv1{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
+  .box-card{
+    min-width: 1500px;
+    margin: 20px 50px;
+    padding: 0 20px;
+  }
+  
     // background: black;
     .containerHeaderDiv2{
-      position: relative;
-      left: 300px;
       // margin-right: 100px;
       // background: white;
       display: flex;
       flex-direction: row-reverse;
       min-width: 500px;
-      .input{
-        min-width: 200px;
-        max-width: 400px;
+      .nameInput{
+        min-width: 100px;
+        max-width: 200px;
       }
       .inputTag{
         font-size: 18px;
@@ -160,7 +178,7 @@
         min-width: 90px;
       }
     }
-  }
+
 
   .inputCombine{
     margin-top: 10px;
@@ -184,7 +202,6 @@
       margin-left: 68%;
     }
   }
-  
 </style>
 
 
@@ -217,16 +234,16 @@
             ownerDepart:'部门4'
           },],
           selectionData: [{
-            value: '选项1',
+            value: '部门1',
             label: '部门1'
           }, {
-            value: '选项2',
+            value: '部门2',
             label: '部门2'
           }, {
-            value: '选项3',
+            value: '部门3',
             label: '部门3'
           }, {
-            value: '选项4',
+            value: '部门4',
             label: '部门4'
           },],
         multipleSelection: [],
@@ -271,11 +288,17 @@
       },
       handleEditInfoClick(){
         if(this.multipleSelection.length === 0){
-          alert("请选择一个产品信息!");
+          this.$message({
+            message:'请选择一个产品信息',
+            type:'warning'
+          });
           return;
         }
         if(this.multipleSelection.length > 1){
-          alert("只能选择一个信息进行编辑!");
+          this.$message({
+            message:'只能选择一个信息进行编辑',
+            type:'warning'
+          });
           return;
         }
         this.editCardShowFlag = true;
@@ -286,24 +309,64 @@
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';
       },
+      handleDeleteInfoClick(){
+        if(this.multipleSelection.length === 0){
+          this.$message({
+            message:'至少选择一个产品',
+            type:'warning'
+          });
+        }
+        this.multipleSelection.forEach(element => {
+          var i = this.tableData.indexOf(element);
+          this.tableData.splice(i,1);
+        });
+        // this.tableData = this.multipleSelection;
+      },
       handleNewSaveClick(){
         this.newCardShowFlag = false;
         this.viewname = "first";
+
+        this.tableData.push({
+          name:this.addInfoName,
+          code:this.addInfoCode,
+          ownerDepart:this.addInfoDepartOwner,
+          description: this.addInfoDescription
+        });
+
+        this.$message({
+          message:'保存成功!',
+          type:'success'
+        });
         return;
       },
       handleNewCancelClick(){
-         this.newCardShowFlag = false;
+        this.newCardShowFlag = false;
         this.viewname = "first";
+
+        this.$message({
+          message:'取消新增!',
+          type:'info'
+        });
         return;
       },
       handleEditSaveClick(){
         this.editCardShowFlag = false;
         this.viewname = "first";
+
+        this.$message({
+          message:'保存成功!',
+          type:'success'
+        });
         return;
       },
       handleEditCancelClick(){
         this.editCardShowFlag = false;
         this.viewname = "first";
+
+        this.$message({
+          message:'取消编辑!',
+          type:'info'
+        });
         return;
       },
     }
