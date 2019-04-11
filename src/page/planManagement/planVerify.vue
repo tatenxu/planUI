@@ -3,30 +3,24 @@
     <el-card class="box-card">
       <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
 
-        <el-col :span="8">
+        <el-col :span="2">
           <div class="bar">
-            <div class="title">审核备注</div>
-            <el-input v-model="input3" clearable @change="c4"></el-input>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList">审核通过</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">审核通过</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList">审核驳回</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">审核驳回</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList">取消审核</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">取消审核</el-button>
-          </div>
-        </el-col>
-        <el-col :offset="1" :span="2">
-          <div class="bar">
-            <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">查看总计划</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList">查看总计划</el-button>
           </div>
         </el-col>
       </el-row>
@@ -96,7 +90,7 @@
 
         <el-col :offset="0" :span="2">
           <div class="bar">
-            <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">查询</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList">查询</el-button>
           </div>
         </el-col>
       </el-row>
@@ -105,7 +99,7 @@
 
     <el-card class="box-card">
       <div>
-        <el-table :data="tableData" max-height="550" border style="width : 100%">
+        <el-table :data="tableData" @selection-change="check" max-height="550" border style="width : 100%">
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column prop="planId" label="预测编号" align="center"></el-table-column>
         <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
@@ -125,16 +119,16 @@
         </el-table-column>
         </el-table>
       </div>
-      <div class="pagination" align="right">
-          <el-pagination
-            @current-change="handleCurrentChange"
-            @size-change="handleSizeChange"
-            :current-page=pagination.currentPage
-            :page-sizes=pagination.pageSizes
-            :page-size=pagination.pageSize
-            layout="total, sizes, prev, pager, next, jumper"
-            :total=pagination.total>
-          </el-pagination>
+      <div class="block">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="pagination.currentPage"
+          :page-sizes="pagination.pageSizes"
+          :page-size="pagination.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total">
+        </el-pagination>
       </div>
     </el-card>
 
@@ -148,6 +142,7 @@ export default {
   name: "warehouseList",
   data() {
     return {
+      list:[],
       checkAll: false,
       checkedCities: [],
       cities: cityOptions,
@@ -230,6 +225,11 @@ export default {
     handleCheckAllChange(val) {
         this.checkedCities = val ? cityOptions : [];
         this.isIndeterminate = false;
+      },
+      check(val) {
+        val.forEach(element => {
+          this.index.push(element);
+        })
       },
       handleCheckedCitiesChange(value) {
         let checkedCount = value.length;

@@ -16,7 +16,7 @@
             </el-col>
             <el-col  :span="2">
               <div class="bar pur">
-                <el-button type="primary" style="margin-right: 20px" @click="getWareList">标记已读</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="haveRead">标记已读</el-button>
               </div>
             </el-col>
             <el-col :span="2">
@@ -48,8 +48,9 @@
 
         <el-card class="box-card">
           <div>
-            <el-table :data="tableData" max-height="550" border style="width : 100%">
+            <el-table :data="tableData" @selection-change="read" max-height="550" border style="width : 100%">
             <el-table-column type="selection" width="50" align="center"></el-table-column>
+            <el-table-column prop="id" v-if="false"></el-table-column>
             <el-table-column prop="isRead" label="是否已读" align="center"></el-table-column>
             <el-table-column prop="messageContent" label="消息内容" align="center"></el-table-column>
             <el-table-column prop="plan" label="所属计划" align="center"></el-table-column>
@@ -58,17 +59,17 @@
             <el-table-column prop="sendTime" label="删除时间" align="center"></el-table-column>
             </el-table>
           </div>
-          <div class="pagination" align="right">
-              <el-pagination
-                @current-change="handleCurrentChange"
-                @size-change="handleSizeChange"
-                :current-page=pagination.currentPage
-                :page-sizes=pagination.pageSizes
-                :page-size=pagination.pageSize
-                layout="total, sizes, prev, pager, next, jumper"
-                :total=pagination.total>
-              </el-pagination>
-          </div>
+          <div class="block">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.currentPage"
+            :page-sizes="pagination.pageSizes"
+            :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total">
+          </el-pagination>
+        </div>
         </el-card>
       </el-tab-pane>
 
@@ -147,9 +148,14 @@
           </el-row>
 
           <el-row>
-            <el-col :offset="11" :span="2" style="margin-top:20px; ">
+            <el-col :offset="9" :span="2" style="margin-top:20px; ">
               <div class="bar">
                 <el-button type="primary" style="margin-right: 20px" @click="send">发送</el-button>
+              </div>
+            </el-col>
+            <el-col :offset="0" :span="2" style="margin-top:20px; ">
+              <div class="bar">
+                <el-button type="primary" style="margin-right: 20px" @click="send">取消</el-button>
               </div>
             </el-col>
           </el-row>
@@ -168,6 +174,7 @@ export default {
   name: "warehouseList",
   data() {
     return {
+      selectedIndex:[],
       viewname:'first',
       sendShowFlag:false,
       checkAll: false,
@@ -241,7 +248,8 @@ export default {
         },
       tableData: [
         {
-          isRead:"已读",
+          id:1,
+          isRead:"未读",
           messageContent:"CX2001系列计划已制定，请及时关注并完善款式计划",
           seriesName:"CX2001",
           projectType:"销样",
@@ -255,9 +263,22 @@ export default {
     }
   },
   methods: {
+    haveRead() {
+      this.tableData.forEach(element => {
+        if(this.selectedIndex.includes(element.id)) {
+          element.isRead = "已读";
+          alert("标记成功！");
+        }
+      })
+    },
     sendMessage() {
       this.viewname = "second";
       this.sendShowFlag = true;
+    },
+    read(val) {
+      val.forEach(element => {
+        this.selectedIndex.push(element.id);
+      })
     },
     send() {
       this.viewname = "first";

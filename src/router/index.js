@@ -23,7 +23,9 @@ const styleInfo = r => require.ensure([], () => r(require('../page/infoManagemen
 const bindStyleGroup = r => require.ensure([], () => r(require('../page/infoManagement/style/bindStyleGroup.vue')), 'bindStyleGroup');
 const styleImport = r => require.ensure([], () => r(require('../page/infoManagement/style/styleImport.vue')), 'styleImport');
 
-const customerPredictPlan = r => require.ensure([], () => r(require('../page/planManagement/customerPredictPlan.vue')), 'customerPredictPlan');
+const predictPlanToBeMake = r => require.ensure([], () => r(require('../page/planManagement/predictPlanToBeMAke.vue')), 'predictPlanToBeMake');
+const predictPlanMaking = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMaking.vue')), 'predictPlanMaking');
+const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMade.vue')), 'predictPlanMade');
 const planManagement = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'planManagement');
 const planCompletionManage = r => require.ensure([], () => r(require('../page/planManagement/planCompletionManage.vue')), 'planCompletionManage');
 const planMakeIndex = r => require.ensure([], () => r(require('../page/planManagement/planMake.vue')), 'planMakeIndex');
@@ -172,11 +174,27 @@ export default [{
         }
       },
       { 
-        path: '/customerPredictPlan',
-        name: 'customerPredictPlan',
-        component: customerPredictPlan,
+        path: '/predictPlanToBeMake',
+        name: 'predictPlanToBeMake',
+        component: predictPlanToBeMake,
         meta: {
-          bcrumd: ['客户预测计划'],
+          bcrumd: ['未制定计划'],
+        }
+      },
+      { 
+        path: '/predictPlanMaking',
+        name: 'predictPlanMaking',
+        component: predictPlanMaking,
+        meta: {
+          bcrumd: ['计划制定中'],
+        }
+      },
+      { 
+        path: '/predictPlanMade',
+        name: 'predictPlanMade',
+        component: predictPlanMade,
+        meta: {
+          bcrumd: ['计划已制订'],
         }
       },
       { 
