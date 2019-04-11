@@ -83,7 +83,7 @@
 
         <el-col :offset="1" :span="4">
           <div class="bar">
-            <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">搜索</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -107,9 +107,9 @@
         <el-table-column prop="statue" label="状态" align="center"></el-table-column>
         <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
 
-        <el-table-column  fixed="right" width="150">
+        <el-table-column  fixed="right" width="150" align="center">
           <template slot-scope="scope">
-            <el-button type="text">制定预测</el-button>
+              <el-button @click="makePredict(scope.row)" type="text" size="small">制定预测</el-button>
           </template>
         </el-table-column>
 
@@ -220,15 +220,21 @@ export default {
     }
   },
   methods: {
+    makePredict(row){
+      const that = this;
+      that.$router.push({
+        path: `/planMake/planMakeIndex`,
+      })
+    },
     handleCheckAllChange(val) {
-        this.checkedCities = val ? cityOptions : [];
-        this.isIndeterminate = false;
-      },
-      handleCheckedCitiesChange(value) {
-        let checkedCount = value.length;
-        this.checkAll = checkedCount === this.cities.length;
-        this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
-      },
+      this.checkedCities = val ? cityOptions : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.cities.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+    },
     handleDelete(index, row) {
       this.$confirm('这将删除该仓库下所有记录信息，是否继续？','提示',{
         confirmButtonText: '确定',
