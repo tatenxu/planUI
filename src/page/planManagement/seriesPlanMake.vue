@@ -3,9 +3,6 @@
     <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
       <el-tab-pane label="系列计划制定" name="first" class="tabPane">
         <el-row :gutter="20">
-          <span class="Mtitle">系列计划制定</span>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
               <div class="title">客户名称</div>
@@ -51,6 +48,17 @@
             <div class="bar">
               <div class="title">添加时间</div>
               <el-date-picker
+                style="margin-left:20px "
+                v-model="Date1"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions2"
+              ></el-date-picker>
+              <!-- <el-date-picker
                 v-model="Date1"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 type="datetime"
@@ -68,10 +76,10 @@
                 type="datetime"
                 placeholder="选择日期"
                 clearable
-              ></el-date-picker>
+              ></el-date-picker>-->
             </div>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" class="MinW" style="margin-left:30px">
             <el-checkbox v-model="checked1">未制定</el-checkbox>
             <el-checkbox v-model="checked2">已制定</el-checkbox>
             <el-checkbox v-model="checked3">未完成</el-checkbox>
@@ -127,30 +135,29 @@
           <el-table-column prop="Department" label="部门" align="center"></el-table-column>
           <el-table-column prop="PrePlan" label="预测计划" align="center"></el-table-column>
           <el-table-column prop="State" label="状态" align="center"></el-table-column>
-          <el-table-column prop="Operator" label="查看" align="center"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="200">
+          <el-table-column label="操作" align="center" width="250px">
             <template slot-scope="scope">
-              <el-button
-                @click.native.prevent="deleteRow(scope.$index, tableData)"
-                type="text"
-                size="small"
-              >引用预测</el-button>
-              <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
+              <el-button size="mini" type="text">查看详情</el-button>
+              <el-button size="mini" @click="QuotePre(scope.row)" type="text">引用预测</el-button>
+              <el-button size="mini" @click="ToPlanForm(scope.row)" type="text">制定计划</el-button>
             </template>
           </el-table-column>
+          <!-- <el-table-column fixed="right" label="操作" width="200">
+            <template slot-scope="scope">
+              <el-button @click="QuotePre(scope.row)" type="text" size="small">引用预测</el-button>
+              <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
+            </template>
+          </el-table-column>-->
         </el-table>
       </el-tab-pane>
 
       <el-tab-pane label="引用计划模板" name="second" v-if="QuotePlanModel">
         <el-card>
           <el-row :gutter="20">
-            <span class="Mtitle">引用计划模板</span>
-          </el-row>
-          <el-row :gutter="20">
             <el-col :span="8">
               <div class="bar">
                 <div class="title">客户名称</div>
-                <el-select v-model="ClientName" clearable placeholder="请选择">
+                <el-select v-model="ClientName2" clearable placeholder="请选择">
                   <el-option
                     v-for="item in client"
                     :key="item.value"
@@ -163,7 +170,7 @@
             <el-col :span="8">
               <div class="bar">
                 <div class="title">品牌</div>
-                <el-select v-model="BrandName" clearable placeholder="请选择">
+                <el-select v-model="BrandName2" clearable placeholder="请选择">
                   <el-option
                     v-for="item in brand"
                     :key="item.value"
@@ -186,13 +193,17 @@
 
           <el-row :gutter="20">
             <el-col :span="2">
-              <el-button type="primary" size="small" @click="SaveModel()">保存</el-button>
+              <el-button type="primary" size="small" @click="SaveModel()">确认</el-button>
             </el-col>
             <el-col :span="2">
               <el-button type="primary" size="small" @click="CancelModel()">取消</el-button>
             </el-col>
           </el-row>
-          <el-table :data="tableData1" style="width: 100%; margin-top: 20px">
+          <el-table
+            :data="tableData1"
+            style="width: 100%; margin-top: 20px"
+            @selection-change="IsChanged"
+          >
             <el-table-column w idth="50" type="selection" align="center"></el-table-column>
             <el-table-column prop="Id" label="序号" align="center"></el-table-column>
             <el-table-column prop="ModelId" label="模板编号" align="center"></el-table-column>
@@ -202,11 +213,7 @@
 
             <el-table-column fixed="right" label="操作" width="200">
               <template slot-scope="scope">
-                <el-button
-                  @click.native.prevent="deleteRow(scope.$index, tableData)"
-                  type="text"
-                  size="small"
-                >查看</el-button>
+                <el-button type="text" size="small">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -216,14 +223,10 @@
       <el-tab-pane label="保存计划模版" name="third" v-if="SavePlanModel">
         <el-card>
           <el-row :gutter="20">
-            <span class="Mtitle">保存计划模版</span>
-          </el-row>
-
-          <el-row :gutter="20">
             <el-col :span="8">
               <div class="bar">
                 <div class="title">客户名称</div>
-                <el-select v-model="ClientName" clearable placeholder="请选择">
+                <el-select v-model="ClientName3" clearable placeholder="请选择">
                   <el-option
                     v-for="item in client"
                     :key="item.value"
@@ -236,9 +239,9 @@
             <el-col :span="8">
               <div class="bar">
                 <div class="title">品牌</div>
-                <el-select v-model="Brand" clearable placeholder="请选择">
+                <el-select v-model="BrandName3" clearable placeholder="请选择">
                   <el-option
-                    v-for="item in Brand"
+                    v-for="item in brand"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -290,11 +293,16 @@
 export default {
   data() {
     return {
+      FormName: "",
       viewname: "first",
       SavePlanModel: false,
       QuotePlanModel: false,
+      ClientName2: "",
+      ClientName3: "",
       ClientName: "",
       BrandName: "",
+      BrandName2: "",
+      BrandName3: "",
       ClothesType: "",
       Date1: "",
       Date2: "",
@@ -302,6 +310,7 @@ export default {
       SeriesGroupName: "",
       PlanName: "",
       OrderId: "",
+      AnyChanged: [],
       client: [
         {
           label: "客户A",
@@ -397,6 +406,22 @@ export default {
     };
   },
   methods: {
+    IsChanged(val) {
+      this.AnyChanged = val;
+    },
+    QuotePre(row) {
+      this.$router.push({
+        name: "planMakeIndex",
+        params: {
+          flag: 1,
+          client: row.ClientName,
+          brand: row.BrandName,
+          series: row.SeriesName,
+          plantype: 1,
+          planobj: row.SeriesName
+        }
+      });
+    },
     ToPlanForm(row) {
       this.$router.push({
         name: "planMakeIndex",
@@ -414,17 +439,33 @@ export default {
       console.log(tab, event);
     },
     SaveModel() {
+      if (this.AnyChanged.length === 0) {
+        this.$message({
+          message: "请至少选择一项！",
+          type: "warning"
+        });
+        return;
+      }
       this.QuotePlanModel = false;
       this.viewname = "first";
+      this.AnyChanged.splice(0, 1);
       return;
     },
     CancelModel() {
       this.QuotePlanModel = false;
       this.viewname = "first";
+      this.AnyChanged.splice(0, 1);
       return;
     },
 
     SaveModel2() {
+      if (this.FormName === "") {
+        this.$message({
+          message: "模板名称为空",
+          type: "warning"
+        });
+        return;
+      }
       this.SavePlanModel = false;
       this.viewname = "first";
       return;
@@ -449,6 +490,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.title {
+  min-width: 100px;
+}
 .containerHeaderDiv1 {
   display: flex;
   flex-direction: row;
@@ -467,7 +511,7 @@ export default {
       max-width: 400px;
     }
     .inputTag {
-      font-size: 18px;
+      font-size: 14px;
       line-height: 40px;
       min-width: 90px;
     }
@@ -481,7 +525,7 @@ export default {
   min-width: 250px;
   max-width: 500px;
   .inputTag {
-    font-size: 18px;
+    font-size: 14px;
     line-height: 40px;
     min-width: 90px;
   }
@@ -515,7 +559,7 @@ export default {
       max-width: 400px;
     }
     .inputTag {
-      font-size: 18px;
+      font-size: 14px;
       line-height: 40px;
       min-width: 90px;
     }
@@ -534,14 +578,17 @@ export default {
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
+    .MinW {
+      min-width: 400px;
+    }
     .bar {
       display: flex;
       flex-direction: row;
       align-items: center;
       .title {
-        font-size: 18px;
+        font-size: 14px;
         width: 90px;
-        min-width: 50px;
+
         text-align: center;
       }
       .el-input {

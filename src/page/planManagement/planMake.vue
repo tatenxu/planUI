@@ -11,12 +11,11 @@
             <el-input v-model="planID" clearable :rows="1" placeholder="planID" :disabled="true"></el-input>
           </div>
         </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="15">
+
+        <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-input v-model="planName" clearable :rows="1" placeholder="做有效性验证(同系列同类型不得重复)"></el-input>
+            <el-input v-model="planName" clearable :rows="1" placeholder="请输入"></el-input>
           </div>
         </el-col>
       </el-row>
@@ -50,9 +49,9 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户</div>
-            <el-select v-if="showit1" v-model="form.client" clearable placeholder="请选择">
+            <el-select v-if="showit1" v-model="ClientName" clearable placeholder="请选择">
               <el-option
-                v-for="item in client"
+                v-for="item in clientOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -60,7 +59,7 @@
             </el-select>
             <el-input
               v-else
-              v-model="form.client"
+              v-model="ClientName"
               clearable
               :rows="1"
               placeholder="请选择"
@@ -71,9 +70,9 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-if="showit2" v-model="form.brand" clearable placeholder="请选择">
+            <el-select v-if="showit2" v-model="ClientName" clearable placeholder="请选择">
               <el-option
-                v-for="item in brand"
+                v-for="item in brandOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -81,7 +80,7 @@
             </el-select>
             <el-input
               v-else
-              v-model="form.brand"
+              v-model="ClientName"
               clearable
               :rows="1"
               placeholder="请选择"
@@ -92,15 +91,15 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">系列</div>
-            <el-select v-if="showit3" v-model="form.series" clearable placeholder="请选择">
+            <el-select v-if="showit3" v-model="SeriesName" clearable placeholder="请选择">
               <el-option
-                v-for="item in series"
+                v-for="item in seriesOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input v-else v-model="form.series" :rows="1" placeholder="请选择" :disabled="true"></el-input>
+            <el-input v-else v-model="SeriesName" :rows="1" placeholder="请选择" :disabled="true"></el-input>
           </div>
         </el-col>
       </el-row>
@@ -108,29 +107,29 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划类型</div>
-            <el-select v-if="showit4" v-model="form.Plantype" clearable placeholder="请选择">
+            <el-select v-if="showit4" v-model="PlanType" clearable placeholder="请选择">
               <el-option
-                v-for="item in Plantype"
+                v-for="item in PlantypeOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input v-else v-model="form.Plantype" :rows="1" placeholder="请选择" :disabled="true"></el-input>
+            <el-input v-else v-model="PlanType" :rows="1" placeholder="请选择" :disabled="true"></el-input>
           </div>
         </el-col>
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划对象</div>
-            <el-select v-if="showit4" v-model="form.obj" clearable placeholder="请选择">
+            <el-select v-if="showit4" v-model="objName" clearable placeholder="请选择">
               <el-option
-                v-for="item in obj"
+                v-for="item in objOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input v-else v-model="form.obj" :rows="1" placeholder="请选择" :disabled="true"></el-input>
+            <el-input v-else v-model="objName" :rows="1" placeholder="请选择" :disabled="true"></el-input>
           </div>
         </el-col>
         <el-col :span="6">
@@ -149,9 +148,9 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">项目类型</div>
-            <el-select v-model="form.ProjectType" clearable placeholder="请选择">
+            <el-select v-model="ProjectType" clearable placeholder="请选择">
               <el-option
-                v-for="item in ProjectType"
+                v-for="item in ProjectTypeOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -166,11 +165,11 @@
           </div>
         </el-col>
         <el-col :span="5">
-          <div class="bar" style="margin-left: 15px">
+          <div class="bar" style="margin-left: 0px">
             <div class="title">产品日期</div>
-            <el-select v-model="form.datemodel" clearable placeholder="请选择">
+            <el-select v-model="ProductDateType" clearable placeholder="请选择">
               <el-option
-                v-for="item in datemodel"
+                v-for="item in datemodelOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -180,7 +179,7 @@
         </el-col>
         <el-col :span="3">
           <el-date-picker
-            v-model="form.date1"
+            v-model="ProductData"
             value-format="yyyy-MM-dd HH:mm:ss"
             type="datetime"
             placeholder="选择日期"
@@ -204,9 +203,9 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划产品</div>
-            <el-select v-model="form.PlanProduct" clearable placeholder="请选择">
+            <el-select v-model="PlanProduct" clearable placeholder="请选择">
               <el-option
-                v-for="item in PlanProduct"
+                v-for="item in PlanProductOpt"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -264,7 +263,7 @@
         <el-col :span="20">
           <div class="Mbutton">
             <el-col :span="8">
-              <el-button type="primary" @click="TestConfiemClick()">保存</el-button>
+              <el-button type="primary" @click="SavePlanForm">保存</el-button>
             </el-col>
             <el-col :span="8">
               <el-button type="primary" @click="handleClick()">取消</el-button>
@@ -280,12 +279,20 @@
 export default {
   data() {
     return {
+      dsa: "",
       showit1: true,
       showit2: true,
       showit3: true,
       showit4: true,
       showit5: true,
+      ProductDateType:"",
+      ProductData: "",
+      ClientName: "",
+      BrandNaem: "",
+      SeriesName: "",
+      objName: "",
       PlanRemark: "",
+      PlanType: "",
       PlanDiscribe: "",
       PlanPropose: "",
       ProjectType: "",
@@ -300,18 +307,8 @@ export default {
       PlanEndTime: "",
       planName: "",
       planID: "JH000001",
-      form: {
-        client: "",
-        brand: "",
-        type: "",
-        date1: "",
-        date2: "",
-        series: "",
-        planname: "",
-        Plantype: "",
-        obj: ""
-      },
-      ProjectType: [
+
+      ProjectTypeOpt: [
         {
           label: "头样",
           value: 0
@@ -325,7 +322,7 @@ export default {
           value: 2
         }
       ],
-      PlanProduct: [
+      PlanProductOpt: [
         {
           label: "产品A",
           value: 0
@@ -339,7 +336,7 @@ export default {
           value: 2
         }
       ],
-      datemodel: [
+      datemodelOpt: [
         {
           label: "出运日期",
           value: 0
@@ -353,7 +350,7 @@ export default {
           value: 2
         }
       ],
-      obj: [
+      objOpt: [
         {
           label: "对象A",
           value: 0
@@ -367,7 +364,7 @@ export default {
           value: 2
         }
       ],
-      Plantype: [
+      PlantypeOpt: [
         {
           label: "系列计划",
           value: 0
@@ -382,7 +379,7 @@ export default {
         }
       ],
 
-      client: [
+      clientOpt: [
         {
           label: "客户A",
           value: 0
@@ -401,7 +398,7 @@ export default {
         }
       ],
 
-      brand: [
+      brandOpt: [
         {
           label: "X品牌",
           value: 0
@@ -419,7 +416,7 @@ export default {
           value: 3
         }
       ],
-      type: [
+      typeOpt: [
         {
           label: "时装",
           value: 0
@@ -434,7 +431,7 @@ export default {
         }
       ],
 
-      series: [
+      seriesOpt: [
         {
           label: "系列A",
           value: 0
@@ -456,18 +453,49 @@ export default {
   //五个参数控制
   //所有的计划制定的跳转
   methods: {
+    SavePlanForm() {
+      if (
+        this.PlanName === "" ||
+        this.PlanStartTime === "" ||
+        this.PlanEndTime === "" ||
+        this.TopPlan === "" ||
+        this.ProjectType === "" ||
+        this.PlanPrice === "" ||
+        this.PlanDepartment === "" ||
+        this.PlanPerson === "" ||
+        this.PlanProduct === "" ||
+        this.PlanPropose === "" ||
+        this.PlanDiscribe === "" ||
+        this.ProductData === ""
+      ) {
+        this.$message({
+          message: "请填写必要信息，保存失败！",
+          type: "warning"
+        });
+      } else {
+        this.$message({
+          message: "保存成功！",
+          type: "success"
+        });
+      }
+    },
     init() {
       // console.log(this.$route.params);
       let data = this.$route.params;
-      this.form.client = data.client;
-      this.form.brand=data.brand;
-      this.form.series=data.series;
-      
-      this.form.obj=data.planobj;
-      switch(data.plantype){
-        case 1:this.form.Plantype="系列计划";break;
-        case 2:this.form.Plantype="款式组计划";break;
-        case 3:this.form.Plantype="款式计划";break;
+      this.ClientName = data.client;
+      this.BrandNaem = data.brand;
+      this.SeriesName = data.series;
+      this.objName = data.planobj;
+      switch (data.plantype) {
+        case 1:
+          this.PlanType = "系列计划";
+          break;
+        case 2:
+          this.PlanType = "款式组计划";
+          break;
+        case 3:
+          this.PlanType = "款式计划";
+          break;
       }
       switch (data.flag) {
         case 1: {
@@ -487,6 +515,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.title{
+  min-width: 100px;
+}
 .Mbutton {
   margin-left: 45%;
 }
@@ -508,9 +539,9 @@ export default {
       flex-direction: row;
       align-items: center;
       .title {
-        font-size: 18px;
-        width: 90px;
-        min-width: 50px;
+        font-size: 14px;
+     
+        min-width: 100px;
         text-align: center;
       }
       .el-input {

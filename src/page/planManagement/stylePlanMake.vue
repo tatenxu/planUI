@@ -1,11 +1,8 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <!-- 标题 -->
-       <el-row :gutter="20">
-        <span class="Mtitle">款式计划制定</span>
-      </el-row>
-       <!--表格 -->
+
+      <!--表格 -->
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
@@ -52,6 +49,17 @@
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
+              style="margin-left:20px "
+              v-model="Date1"
+              type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions2"
+            ></el-date-picker>
+            <!-- <el-date-picker
               v-model="Date1"
               value-format="yyyy-MM-dd HH:mm:ss"
               type="datetime"
@@ -69,10 +77,10 @@
               type="datetime"
               placeholder="选择日期"
               clearable
-            ></el-date-picker>
+            ></el-date-picker>-->
           </div>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="8" class="MinW" style="margin-left:30px">
           <el-checkbox v-model="checked1">未制定</el-checkbox>
           <el-checkbox v-model="checked2">已制定</el-checkbox>
           <el-checkbox v-model="checked3">未完成</el-checkbox>
@@ -126,12 +134,12 @@
       </el-row>
     </el-card>
 
-     <!-- 搜索结果 -->
+    <!-- 搜索结果 -->
     <el-card class="box-card">
       <el-table :data="tableData" style="width: 100%; margin-top: 20px">
         <el-table-column prop="Id" label="序号" align="center"></el-table-column>
-        <el-table-column prop="SeriesGroupId" label="款式组编号" align="center"></el-table-column>
-        <el-table-column prop="SeriesGroupName" label="款式组名称" align="center"></el-table-column>
+        <el-table-column prop="SeriesGroupId" label="款式组编号" align="center" width="100px"></el-table-column>
+        <el-table-column prop="SeriesGroupName" label="款式组名称" align="center" width="100px"></el-table-column>
         <el-table-column prop="OrderId" label="订单款号" align="center"></el-table-column>
         <el-table-column prop="SeriesId" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="ClientName" label="客户名称" align="center"></el-table-column>
@@ -141,13 +149,9 @@
         <el-table-column prop="Operator" label="添加人" align="center"></el-table-column>
         <el-table-column prop="Department" label="部门" align="center"></el-table-column>
         <el-table-column prop="State" label="状态" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
-            <el-button
-              @click="ToPlanForm(scope.row)"
-              type="text"
-              size="small"
-            >制定计划</el-button>
+            <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -159,20 +163,20 @@
 export default {
   data() {
     return {
-      checked1:false,
-      checked2:false,
-      checked3:false,
-      checked4:false,
-      ClientName:"",
-      BrandName:"",
-      ClothesType:"",
-      Date1:"",
-      Date2:"",
-      SeriesName:"",
-      SeriesGroupName:"",
-      PlanName:"",
-      OrderId:"",
-     
+      checked1: false,
+      checked2: false,
+      checked3: false,
+      checked4: false,
+      ClientName: "",
+      BrandName: "",
+      ClothesType: "",
+      Date1: "",
+      Date2: "",
+      SeriesName: "",
+      SeriesGroupName: "",
+      PlanName: "",
+      OrderId: "",
+
       seriesGroup: [
         {
           label: "款式组A",
@@ -256,33 +260,33 @@ export default {
 
       tableData: [
         {
-          Id:0,
-          SeriesGroupId:"X1-0000",
-          SeriesGroupName:"款式组A",
-          OrderId:"00000001",
-          SeriesId:"001",
-          ClientName:"客户A",
-          BrandName:"品牌A",
-          ClothesType:"服装A",
-          SeriesName:"系列A",
-          Operator:"添加人A",
-          Department:"部门A",
-          State:"无"
+          Id: 0,
+          SeriesGroupId: "X1-0000",
+          SeriesGroupName: "款式组A",
+          OrderId: "00000001",
+          SeriesId: "001",
+          ClientName: "客户A",
+          BrandName: "品牌A",
+          ClothesType: "服装A",
+          SeriesName: "系列A",
+          Operator: "添加人A",
+          Department: "部门A",
+          State: "无"
         },
         {
-          Id:1,
-          SeriesGroupId:"X1-0010",
-          SeriesGroupName:"款式组B",
-          OrderId:"00000002",
-          SeriesId:"002",
-          ClientName:"客户C",
-          BrandName:"品牌D",
-          ClothesType:"服装D",
-          SeriesName:"系列C",
-          Operator:"添加人A",
-          Department:"部门B",
-          State:"无"
-        },
+          Id: 1,
+          SeriesGroupId: "X1-0010",
+          SeriesGroupName: "款式组B",
+          OrderId: "00000002",
+          SeriesId: "002",
+          ClientName: "客户C",
+          BrandName: "品牌D",
+          ClothesType: "服装D",
+          SeriesName: "系列C",
+          Operator: "添加人A",
+          Department: "部门B",
+          State: "无"
+        }
       ],
 
       barCode: "",
@@ -308,15 +312,19 @@ export default {
       }
     };
   },
-  methods:{
-    ToPlanForm(row){
-      this.$router.push({name:'planMakeIndex', 
-      params:{flag: 1, 
-      client:row.ClientName,
-      brand:row.BrandName,
-      series:row.SeriesName,
-      plantype:3,
-      planobj: row.OrderId}});
+  methods: {
+    ToPlanForm(row) {
+      this.$router.push({
+        name: "planMakeIndex",
+        params: {
+          flag: 1,
+          client: row.ClientName,
+          brand: row.BrandName,
+          series: row.SeriesName,
+          plantype: 3,
+          planobj: row.OrderId
+        }
+      });
     }
   }
 };
@@ -336,14 +344,17 @@ export default {
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
+    .MinW {
+      min-width: 400px;
+    }
     .bar {
       display: flex;
       flex-direction: row;
       align-items: center;
       .title {
-        font-size: 18px;
+        font-size: 14px;
         width: 90px;
-        min-width: 50px;
+        min-width: 100px;
         text-align: center;
       }
       .el-input {
