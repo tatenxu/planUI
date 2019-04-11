@@ -6,22 +6,22 @@
           <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
             <el-col  :span="2">
               <div class="bar pur">
-                <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">全选</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="getWareList">全选</el-button>
               </div>
             </el-col>
             <el-col  :span="2">
               <div class="bar pur">
-                <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">发送消息</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="sendMessage">发送消息</el-button>
               </div>
             </el-col>
             <el-col  :span="2">
               <div class="bar pur">
-                <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">标记已读</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="getWareList">标记已读</el-button>
               </div>
             </el-col>
             <el-col :span="2">
               <div class="bar pur">
-                <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">查看已发送</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="getWareList">查看已发送</el-button>
               </div>
             </el-col>
 
@@ -39,7 +39,7 @@
 
             <el-col  :span="2">
               <div class="bar pur">
-                <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">查询</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="getWareList">查询</el-button>
               </div>
             </el-col>
           </el-row>
@@ -149,7 +149,7 @@
           <el-row>
             <el-col :offset="11" :span="2" style="margin-top:20px; ">
               <div class="bar">
-                <el-button type="primary" plain style="margin-right: 20px" @click="getWareList">发送</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="send">发送</el-button>
               </div>
             </el-col>
           </el-row>
@@ -255,6 +255,14 @@ export default {
     }
   },
   methods: {
+    sendMessage() {
+      this.viewname = "second";
+      this.sendShowFlag = true;
+    },
+    send() {
+      this.viewname = "first";
+      this.sendShowFlag = false;
+    },
     handleCheckAllChange(val) {
         this.checkedCities = val ? cityOptions : [];
         this.isIndeterminate = false;
