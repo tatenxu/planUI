@@ -1,7 +1,6 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-
       <!--表格 -->
       <el-row :gutter="20">
         <el-col :span="8">
@@ -81,10 +80,14 @@
           </div>
         </el-col>
         <el-col :span="8" class="MinW" style="margin-left:30px">
-          <el-checkbox v-model="checked1">未制定</el-checkbox>
+          <el-radio v-model="checked" label="1">未制定</el-radio>
+          <el-radio v-model="checked" label="2">已制定</el-radio>
+          <el-radio v-model="checked" label="3">未完成</el-radio>
+          <el-radio v-model="checked" label="4">已完成</el-radio>
+          <!-- <el-checkbox v-model="checked1">未制定</el-checkbox>
           <el-checkbox v-model="checked2">已制定</el-checkbox>
           <el-checkbox v-model="checked3">未完成</el-checkbox>
-          <el-checkbox v-model="checked4">已完成</el-checkbox>
+          <el-checkbox v-model="checked4">已完成</el-checkbox>-->
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -163,10 +166,11 @@
 export default {
   data() {
     return {
-      checked1: false,
-      checked2: false,
-      checked3: false,
-      checked4: false,
+      checked:"0",
+      // checked1: false,
+      // checked2: false,
+      // checked3: false,
+      // checked4: false,
       ClientName: "",
       BrandName: "",
       ClothesType: "",
@@ -317,7 +321,7 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 1,
+          flag: 3,
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,

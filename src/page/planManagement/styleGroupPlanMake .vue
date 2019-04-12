@@ -2,7 +2,6 @@
   <div class="body">
     <!-- 搜索条件设置 -->
     <el-card class="box-card">
-
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
@@ -48,17 +47,17 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">添加时间</div>
-              <el-date-picker
+            <el-date-picker
               style="margin-left:20px "
-                v-model="Date1"
-                type="daterange"
-                align="right"
-                unlink-panels
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions2"
-              ></el-date-picker>
+              v-model="Date1"
+              type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions2"
+            ></el-date-picker>
             <!-- <el-date-picker
               v-model="Date1"
               value-format="yyyy-MM-dd HH:mm:ss"
@@ -77,14 +76,18 @@
               type="datetime"
               placeholder="选择日期"
               clearable
-            ></el-date-picker> -->
+            ></el-date-picker>-->
           </div>
         </el-col>
         <el-col :span="8" class="MinW" style="margin-left:30px">
-          <el-checkbox v-model="checked1">未制定</el-checkbox>
+          <el-radio v-model="checked" label="1">未制定</el-radio>
+          <el-radio v-model="checked" label="2">已制定</el-radio>
+          <el-radio v-model="checked" label="3">未完成</el-radio>
+          <el-radio v-model="checked" label="4">已完成</el-radio>
+          <!-- <el-checkbox v-model="checked1">未制定</el-checkbox>
           <el-checkbox v-model="checked2">已制定</el-checkbox>
           <el-checkbox v-model="checked3">未完成</el-checkbox>
-          <el-checkbox v-model="checked4">已完成</el-checkbox>
+          <el-checkbox v-model="checked4">已完成</el-checkbox>-->
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -144,16 +147,11 @@
         <el-table-column prop="SeriesPlan" label="系列计划" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
-            <el-button
-              @click="QuoteSeriesPlan(scope.row)"
-              type="text"
-              size="small"
-            >引用系列计划</el-button>
+            <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button>
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
           </template>
         </el-table-column>
       </el-table>
-   
     </el-card>
   </div>
 </template>
@@ -162,10 +160,7 @@
 export default {
   data() {
     return {
-      checked1: false,
-      checked2: false,
-      checked3: false,
-      checked4: false,
+      checked:"0",
       ClientName: "",
       BrandName: "",
       ClothesType: "",
@@ -278,14 +273,14 @@ export default {
     };
   },
   methods: {
-    ClearChanged(row){
+    ClearChanged(row) {
       this.$refs.singleTable.setCurrentRow(row);
     },
-    QuoteSeriesPlan(row){
+    QuoteSeriesPlan(row) {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 1,
+          flag: 2,
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,
@@ -298,7 +293,7 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 1,
+          flag: 2,
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,
@@ -312,7 +307,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.title{
+.title {
   min-width: 100px;
 }
 .Mtitle {
