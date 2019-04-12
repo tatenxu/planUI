@@ -76,7 +76,7 @@
 export default {
   data() {
     return {
-      rules:{
+      rules: {
         customerName: [
           { required: true, message: '请选择客户名称', trigger: 'change' }
         ],

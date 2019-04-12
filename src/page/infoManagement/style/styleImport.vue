@@ -1,100 +1,97 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20" style="margin-top:5px;">
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">客户名称</div>
-            <el-select v-model="data.customerName" >
-              <el-option
-                v-for="item in options.customerNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">品牌</div>
-            <el-select v-model="data.brandName" >
-              <el-option
-                v-for="item in options.brandNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">服装类型</div>
-            <el-select v-model="data.clothingType" >
-              <el-option
-                v-for="item in options.clothingTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">系列名称</div>
-            <el-select v-model="data.rangeName" >
-              <el-option
-                v-for="item in options.rangeNameTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-       </el-row> 
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="10">
-          <div class="inputBox">
-            <div class="label">文件路径</div>
-            <el-input v-model="data.filePath"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <el-upload 
-            style="display: inline; margin-left: 10px;margin-right: 10px;"
-            action="#"
-            ref="fileupload"
-            :show-file-list="false"
-            :http-request="upLoadChange"
-            :before-upload="beforeUpload">
-            <el-button type="primary">上传文件<i class="el-icon-upload el-icon--right"></i></el-button>
-          </el-upload>
-        </el-col>
-      </el-row>
-      <el-row style="margin: 20px 0 10px 0">
-        <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
-        <el-table
-          :data="data.tableData"
-          max-height="400"
-          border
-          :stripe="true"
-          :highlight-current-row="true">
-          <el-table-column prop="styleNumber" label="订单款号" align="center"></el-table-column>
-        </el-table>
-      </el-row>
-      <el-row style="margin: 50px 0 10px 0">
-        <el-col :span="3" :offset="10">
-          <el-button type="primary" @click="store">保存</el-button>
-        </el-col>
-        <el-col :span="3">
-          <el-button type="info" @click="cancel">取消</el-button>
-        </el-col>
-      </el-row>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
+              <el-select v-model="ruleForm.customerName" >
+                <el-option
+                  v-for="item in options.customerNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
+              <el-select v-model="ruleForm.brandName" >
+                <el-option
+                  v-for="item in options.brandNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="服装类型" prop="clothingType" placeholder="请选择服装类型">  
+              <el-select v-model="ruleForm.clothingType" >
+                <el-option
+                  v-for="item in options.clothingTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="系列名称" prop="rangeName" placeholder="请选择系列名称">
+              <el-select v-model="ruleForm.rangeName" >
+                <el-option
+                  v-for="item in options.rangeNameTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row> 
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="10">
+            <el-form-item label="文件路径">
+              <el-input v-model="ruleForm.filePath"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-upload 
+              style="display: inline; margin-left: 10px;margin-right: 10px;"
+              action="#"
+              ref="fileupload"
+              :show-file-list="false"
+              :http-request="upLoadChange"
+              :before-upload="beforeUpload">
+              <el-button type="primary">上传文件<i class="el-icon-upload el-icon--right"></i></el-button>
+            </el-upload>
+          </el-col>
+        </el-row>
+        <el-row style="margin: 20px 0 10px 0">
+          <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
+          <el-table
+            :data="ruleForm.tableData"
+            max-height="400"
+            border
+            :stripe="true"
+            :highlight-current-row="true">
+            <el-table-column prop="styleNumber" label="订单款号" align="center"></el-table-column>
+          </el-table>
+        </el-row>
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancel">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
     </el-card>
   </div>
 </template>
@@ -104,7 +101,21 @@ import XLSX from 'xlsx';
 export default {
   data() {
     return {
-      data: {
+      rules:{
+        customerName: [
+          { required: true, message: '请选择客户名称', trigger: 'change' }
+        ],
+        brandName: [
+          { required: true, message: '请选择品牌', trigger: 'change' }
+        ],
+        clothingType: [
+          { required: true, message: '请选择服装类型', trigger: 'change' }
+        ],
+        rangeName: [
+          { required: true, message: '请选择系列名称', trigger: 'change' }
+        ],
+      },
+      ruleForm: {
         customerName: "",
         brandName: "",
         clothingType: "",
@@ -224,7 +235,7 @@ export default {
               }
               resolve(true);
               console.log("sheetData",sheetData);
-              that.data.tableData = sheetData;
+              that.ruleForm.tableData = sheetData;
             }
             console.log("完成了一张表格数据的读取");
           }
@@ -297,12 +308,16 @@ export default {
     },
     ////////////// methods for xls /////////////
     // 保存按钮点击
-    store(){
+    submitForm(formName){
       const that = this;
       console.log("保存按钮点击");
-      this.$message({
-        message: '成功导入款式信息',
-        type: 'success'
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$message({
+            message: '成功导入款式信息',
+            type: 'success'
+          });
+        }
       });
     },
     // 取消按钮点击
