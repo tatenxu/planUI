@@ -280,12 +280,13 @@ export default {
   data() {
     return {
       dsa: "",
+      flag: 0,
       showit1: true,
       showit2: true,
       showit3: true,
       showit4: true,
       showit5: true,
-      ProductDateType:"",
+      ProductDateType: "",
       ProductData: "",
       ClientName: "",
       BrandNaem: "",
@@ -477,6 +478,22 @@ export default {
           message: "保存成功！",
           type: "success"
         });
+        if (this.flag == 1) {
+          this.$router.push({
+            name: "seriesPlanMake",
+            params: {}
+          });
+        } else if (this.flag == 2) {
+          this.$router.push({
+            name: "styleGroupPlanMake",
+            params: {}
+          });
+        } else if (this.flag == 3) {
+          this.$router.push({
+            name: "stylePlanMake",
+            params: {}
+          });
+        }
       }
     },
     init() {
@@ -486,6 +503,7 @@ export default {
       this.BrandNaem = data.brand;
       this.SeriesName = data.series;
       this.objName = data.planobj;
+      this.flag = data.flag;
       switch (data.plantype) {
         case 1:
           this.PlanType = "系列计划";
@@ -506,6 +524,22 @@ export default {
           this.showit5 = false;
           break;
         }
+        case 2: {
+          this.showit1 = false;
+          this.showit2 = false;
+          this.showit3 = false;
+          this.showit4 = false;
+          this.showit5 = false;
+          break;
+        }
+        case 3: {
+          this.showit1 = false;
+          this.showit2 = false;
+          this.showit3 = false;
+          this.showit4 = false;
+          this.showit5 = false;
+          break;
+        }
         default:
           break;
       }
@@ -515,7 +549,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.title{
+.title {
   min-width: 100px;
 }
 .Mbutton {
@@ -540,7 +574,7 @@ export default {
       align-items: center;
       .title {
         font-size: 14px;
-     
+
         min-width: 100px;
         text-align: center;
       }
