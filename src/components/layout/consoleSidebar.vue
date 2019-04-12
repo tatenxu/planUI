@@ -83,7 +83,7 @@
 
       <el-submenu index="infoManagement">
         <template slot="title">
-          <i class="el-icon-message"></i>
+          <i class="el-icon-document"></i>
           信息管理
         </template>
         <el-menu-item index="/range/rangeManagement"><i class="el-icon-document"></i>系列管理</el-menu-item>
@@ -102,35 +102,35 @@
 
       <el-submenu index="planMake">
         <template slot="title">
-          <i class="el-icon-message"></i>
+          <i class="el-icon-document"></i>
           计划管理
         </template>
 
-        <el-menu-item index="/planManagement"><i class="el-icon-message"></i>计划管理</el-menu-item>
+        <el-menu-item index="/planManagement"><i class="el-icon-document"></i>计划管理</el-menu-item>
         <el-submenu index="predictPlanManagement">
           <template slot="title">
-            <i class="el-icon-message"></i>
+            <i class="el-icon-document"></i>
             预测计划管理
           </template>
-          <el-menu-item index="/predictPlanToBeMake"><i class="el-icon-message"></i>未制定计划</el-menu-item>
-          <el-menu-item index="/predictPlanMaking"><i class="el-icon-message"></i>制定中计划</el-menu-item>
-          <el-menu-item index="/predictPlanMade"><i class="el-icon-message"></i>已制定计划</el-menu-item>
+          <el-menu-item index="/predictPlanToBeMake"><i class="el-icon-document"></i>未制定计划</el-menu-item>
+          <el-menu-item index="/predictPlanMaking"><i class="el-icon-document"></i>制定中计划</el-menu-item>
+          <el-menu-item index="/predictPlanMade"><i class="el-icon-document"></i>已制定计划</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="/planCompletionManage"><i class="el-icon-message"></i>计划完成管理</el-menu-item>
+        <el-menu-item index="/planCompletionManage"><i class="el-icon-document"></i>计划完成管理</el-menu-item>
         <el-menu-item index="/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item>
         <el-menu-item index="/planMake/seriesPlanMake"><i class="el-icon-document"></i>系列计划制定</el-menu-item>
         <el-menu-item index="/planMake/styleGroupPlanMake"><i class="el-icon-document"></i>款式组计划制定</el-menu-item>
         <el-menu-item index="/planMake/stylePlanMake"><i class="el-icon-document"></i>款式计划制定</el-menu-item>
-        <el-menu-item index="/planVerify"><i class="el-icon-message"></i>计划审核管理</el-menu-item>
-        <el-menu-item index="/planDistribute"><i class="el-icon-message"></i>计划下发管理</el-menu-item>
-        <el-menu-item index="/planRecover"><i class="el-icon-message"></i>计划回收站</el-menu-item>
-        <el-menu-item index="/exceptionManagement"><i class="el-icon-message"></i>异常管理</el-menu-item>
+        <el-menu-item index="/planVerify"><i class="el-icon-document"></i>计划审核管理</el-menu-item>
+        <el-menu-item index="/planDistribute"><i class="el-icon-document"></i>计划下发管理</el-menu-item>
+        <el-menu-item index="/planRecover"><i class="el-icon-document"></i>计划回收站</el-menu-item>
+        <el-menu-item index="/exceptionManagement"><i class="el-icon-document"></i>异常管理</el-menu-item>
       </el-submenu>
 
-      <el-menu-item index="/messageManagement"><i class="el-icon-message"></i>消息管理</el-menu-item>
-      <el-menu-item index="/queryStatistic"><i class="el-icon-message"></i>查询统计</el-menu-item>
-      <el-menu-item index="/formManagement"><i class="el-icon-message"></i>报表管理</el-menu-item>
+      <el-menu-item index="/messageManagement"><i class="el-icon-document"></i>消息管理</el-menu-item>
+      <el-menu-item index="/queryStatistic"><i class="el-icon-document"></i>查询统计</el-menu-item>
+      <el-menu-item index="/formManagement"><i class="el-icon-document"></i>报表管理</el-menu-item>
 
       <el-submenu index="backEnd">
         <template slot="title">
