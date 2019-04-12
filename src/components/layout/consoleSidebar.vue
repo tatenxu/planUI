@@ -107,7 +107,16 @@
         </template>
 
         <el-menu-item index="/planManagement"><i class="el-icon-message"></i>计划管理</el-menu-item>
-        <el-menu-item index="/customerPredictPlan"><i class="el-icon-message"></i>客户预测计划</el-menu-item>
+        <el-submenu index="predictPlanManagement">
+          <template slot="title">
+            <i class="el-icon-message"></i>
+            预测计划管理
+          </template>
+          <el-menu-item index="/predictPlanToBeMake"><i class="el-icon-message"></i>未制定计划</el-menu-item>
+          <el-menu-item index="/predictPlanMaking"><i class="el-icon-message"></i>制定中计划</el-menu-item>
+          <el-menu-item index="/predictPlanMade"><i class="el-icon-message"></i>已制定计划</el-menu-item>
+        </el-submenu>
+
         <el-menu-item index="/planCompletionManage"><i class="el-icon-message"></i>计划完成管理</el-menu-item>
         <el-menu-item index="/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item>
         <el-menu-item index="/planMake/seriesPlanMake"><i class="el-icon-document"></i>系列计划制定</el-menu-item>
