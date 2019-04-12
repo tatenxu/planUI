@@ -322,6 +322,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 3,
+          goback:"stylePlanMake",
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,

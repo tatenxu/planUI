@@ -18,8 +18,25 @@
             <el-input v-model="planName" clearable :rows="1" placeholder="请输入"></el-input>
           </div>
         </el-col>
+
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">起止时间</div>
+            <el-date-picker
+              style="margin-left:20px "
+              v-model="Date1"
+              type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions2"
+            ></el-date-picker>
+          </div>
+        </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <!-- <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划开始</div>
@@ -44,7 +61,7 @@
             ></el-date-picker>
           </div>
         </el-col>
-      </el-row>
+      </el-row>-->
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
@@ -177,14 +194,15 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="3">
-          <el-date-picker
+        <el-col :span="3" >
+          <el-date-picker v-model="ProductData" type="date" placeholder="选择日期"></el-date-picker>
+          <!-- <el-date-picker
             v-model="ProductData"
             value-format="yyyy-MM-dd HH:mm:ss"
             type="datetime"
             placeholder="选择日期"
             clearable
-          ></el-date-picker>
+          ></el-date-picker>-->
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -279,8 +297,10 @@
 export default {
   data() {
     return {
+      Date1: "",
       dsa: "",
       flag: 0,
+      goback: "",
       showit1: true,
       showit2: true,
       showit3: true,
@@ -457,8 +477,7 @@ export default {
     SavePlanForm() {
       if (
         this.PlanName === "" ||
-        this.PlanStartTime === "" ||
-        this.PlanEndTime === "" ||
+        this.Date1 === "" ||
         this.TopPlan === "" ||
         this.ProjectType === "" ||
         this.PlanPrice === "" ||
@@ -478,22 +497,11 @@ export default {
           message: "保存成功！",
           type: "success"
         });
-        if (this.flag == 1) {
-          this.$router.push({
-            name: "seriesPlanMake",
-            params: {}
-          });
-        } else if (this.flag == 2) {
-          this.$router.push({
-            name: "styleGroupPlanMake",
-            params: {}
-          });
-        } else if (this.flag == 3) {
-          this.$router.push({
-            name: "stylePlanMake",
-            params: {}
-          });
-        }
+
+        this.$router.push({
+          name: this.goback,
+          params: {}
+        });
       }
     },
     init() {
@@ -504,6 +512,7 @@ export default {
       this.SeriesName = data.series;
       this.objName = data.planobj;
       this.flag = data.flag;
+      this.goback = data.goback;
       switch (data.plantype) {
         case 1:
           this.PlanType = "系列计划";

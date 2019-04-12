@@ -281,6 +281,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 2,
+          goback:"styleGroupPlanMake",
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,
@@ -294,6 +295,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 2,
+          goback:"styleGroupPlanMake",
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,
