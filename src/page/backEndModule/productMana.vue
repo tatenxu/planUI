@@ -77,10 +77,10 @@
 
       <el-tab-pane label="新增产品信息" name="second" v-if="newCardShowFlag">
         <el-card>
-          <div class="inputCombine">
+          <!-- <div class="inputCombine">
             <span class="inputTag">产品编号:</span>
             <el-input v-model="addInfoCode" class="input" placeholder="请输入产品名称"></el-input>
-          </div>
+          </div> -->
           <div class="inputCombine">
             <span class="inputTag">产品名称:</span>
             <el-input v-model="addInfoName" class="input" placeholder="请输入产品简称"></el-input>
