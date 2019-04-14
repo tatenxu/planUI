@@ -80,14 +80,14 @@
             </div>
           </el-col>
           <el-col :span="8" class="MinW" style="margin-left:30px">
-            <el-radio v-model="checked" label="1" >未制定</el-radio>
-            <el-radio v-model="checked" label="2" >已制定</el-radio>
+            <el-radio v-model="checked" label="1">未制定</el-radio>
+            <el-radio v-model="checked" label="2">已制定</el-radio>
             <el-radio v-model="checked" label="3">未完成</el-radio>
             <el-radio v-model="checked" label="4">已完成</el-radio>
             <!-- <el-checkbox v-model="checked1">未制定</el-checkbox>
             <el-checkbox v-model="checked2">已制定</el-checkbox>
             <el-checkbox v-model="checked3">未完成</el-checkbox>
-            <el-checkbox v-model="checked4">已完成</el-checkbox> -->
+            <el-checkbox v-model="checked4">已完成</el-checkbox>-->
           </el-col>
         </el-row>
         <el-row :gutter="20">
@@ -141,8 +141,12 @@
           <el-table-column prop="State" label="状态" align="center"></el-table-column>
           <el-table-column label="操作" align="center" width="250px">
             <template slot-scope="scope">
-              <el-button size="mini" type="text">查看详情</el-button>
-              <el-button size="mini" @click="QuotePre(scope.row)" type="text">引用预测</el-button>
+              <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button>
+              <el-dialog title="系列详情" :visible.sync="ViewDetails">
+                <el-tree :data="SeriesDetail" :props="defaultProps"></el-tree>
+                <el-button type="primary" @click="ViewDetails=false" style="margin-left:90%">确认</el-button>
+              </el-dialog>
+              <!-- <el-button size="mini" @click="QuotePre(scope.row)" type="text">引用预测</el-button> -->
               <el-button size="mini" @click="ToPlanForm(scope.row)" type="text">制定计划</el-button>
             </template>
           </el-table-column>
@@ -297,7 +301,8 @@
 export default {
   data() {
     return {
-      checked:0,
+      ViewDetails: false,
+      checked: 0,
       FormName: "",
       viewname: "first",
       SavePlanModel: false,
@@ -316,6 +321,67 @@ export default {
       PlanName: "",
       OrderId: "",
       AnyChanged: [],
+      SeriesDetail: [
+        {
+          label: "一级 1",
+          children: [
+            {
+              label: "二级 1-1",
+              children: [
+                {
+                  label: "三级 1-1-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          label: "一级 2",
+          children: [
+            {
+              label: "二级 2-1",
+              children: [
+                {
+                  label: "三级 2-1-1"
+                }
+              ]
+            },
+            {
+              label: "二级 2-2",
+              children: [
+                {
+                  label: "三级 2-2-1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          label: "一级 3",
+          children: [
+            {
+              label: "二级 3-1",
+              children: [
+                {
+                  label: "三级 3-1-1"
+                }
+              ]
+            },
+            {
+              label: "二级 3-2",
+              children: [
+                {
+                  label: "三级 3-2-1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      defaultProps: {
+        children: "children",
+        label: "label"
+      },
       client: [
         {
           label: "客户A",
@@ -419,7 +485,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 1,
-          goback:"seriesPlanMake",
+          goback: "seriesPlanMake",
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,
@@ -433,7 +499,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 1,
-          goback:"seriesPlanMake",
+          goback: "seriesPlanMake",
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,

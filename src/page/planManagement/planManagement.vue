@@ -86,7 +86,7 @@
           <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
         </el-col>
         <el-col :span="3">
-          <el-button type="danger" size="small" @click="deletePlan">删除计划</el-button>
+          <el-button type="primary" size="small" @click="deletePlan">删除计划</el-button>
         </el-col>
         <el-col :span="4">
           <el-button type="primary" size="small" @click="changeOrder">下级计划顺序调整</el-button>
@@ -98,7 +98,7 @@
       <el-table
         :data="tableData"
         max-height="400"
-        border
+
         @selection-change="changeCheckBoxFun"
         :stripe="true"
         :highlight-current-row="true"
@@ -117,7 +117,7 @@
         <el-table-column prop="date" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentPlan" label="上级计划" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="getPlanDetail(scope.$index, tableData)"
@@ -338,7 +338,7 @@ export default {
       flex-direction: row;
       align-items: center;
       .title {
-        font-size: 18px;
+        font-size: 14px;
         width: 90px;
         min-width: 50px;
         text-align: center;

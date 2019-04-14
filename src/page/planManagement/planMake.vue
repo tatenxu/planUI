@@ -2,7 +2,18 @@
   <div class="body">
     <el-card class="box-card">
       <el-row :gutter="20">
-        <span class="Mtitle">计划制定</span>
+        <span class="Mtitle" v-if="flag===1">系列计划制定</span>
+        <span class="Mtitle" v-else-if="flag===2">款式组计划制定</span>
+        <span class="Mtitle" v-else-if="flag===3">款式计划制定</span>
+        <span class="Mtitle" v-else>计划制定</span>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col  :span="10">
+        </el-col>
+        <el-col :span="12">
+           <el-button v-if="flag===1" type="primary" @click="QuotePredict()" style="margin-left: 98%">引用预测</el-button>
+           <el-button v-else-if="flag===2" type="primary" @click="QuotePredict()" style="margin-left: 98%">引用系列计划</el-button>
+        </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
@@ -194,7 +205,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="3" >
+        <el-col :span="3">
           <el-date-picker v-model="ProductData" type="date" placeholder="选择日期"></el-date-picker>
           <!-- <el-date-picker
             v-model="ProductData"
