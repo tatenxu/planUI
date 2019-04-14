@@ -28,7 +28,7 @@
             </el-form-item> 
           </el-col>
           <el-col :span="8">
-            <el-form-item label="服装类型" prop="clothingType" placeholder="请选择服装类型">  
+            <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">  
               <el-select v-model="ruleForm.clothingType" >
                 <el-option
                   v-for="item in options.clothingTypeOptions"
@@ -109,7 +109,7 @@ export default {
           { required: true, message: '请选择品牌', trigger: 'change' }
         ],
         clothingType: [
-          { required: true, message: '请选择服装类型', trigger: 'change' }
+          { required: true, message: '请选择服装层次', trigger: 'change' }
         ],
         rangeName: [
           { required: true, message: '请选择系列名称', trigger: 'change' }

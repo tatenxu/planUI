@@ -30,7 +30,7 @@
         </el-col>
         <el-col :span="6">
           <div class="bar">
-            <div class="title">服装类型</div>
+            <div class="title">服装层次</div>
             <el-select v-model="searchOptions.searchParams.clothingType" >
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
@@ -93,7 +93,7 @@
           <el-table-column prop="rangeNumber" width="130" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothingType" label="服装类型" align="center"></el-table-column>
+          <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="rangeName" width="170" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="addUser" label="添加人" align="center"></el-table-column>
           <el-table-column prop="dept" label="部门" align="center"></el-table-column>

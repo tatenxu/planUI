@@ -30,7 +30,7 @@
         </el-col>
         <el-col :span="8">
           <div class="inputBox">
-            <div class="label">服装类型</div>
+            <div class="label">服装层次</div>
             <el-select v-model="data.clothingType" >
               <el-option
                 v-for="item in options.clothingTypeOptions"
@@ -80,7 +80,7 @@
           <!-- <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothingType" label="服装类型" align="center"></el-table-column>
+          <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="rangeName"  label="系列名称" align="center"></el-table-column> -->
         </el-table>
       </el-row>

@@ -49,7 +49,7 @@
       <el-row :gutter="20">
         <el-col :span="5">
           <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">服装类型：</span>
+            <span class="inputTag">服装层次：</span>
             <el-select v-model="clothTypeSelectionValue" placeholder="请选择">
               <el-option
                 v-for="item in clothTypeOptions"
@@ -285,12 +285,12 @@
         ],
         clothTypeOptions:[
           {
-            label:'服装类型1',
-            value:'服装类型1'
+            label:'服装层次1',
+            value:'服装层次1'
           },
           {
-            label:'服装类型2',
-            value:'服装类型2'
+            label:'服装层次2',
+            value:'服装层次2'
           }
         ],
         modelTypeOptions:[
