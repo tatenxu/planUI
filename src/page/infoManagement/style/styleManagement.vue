@@ -467,12 +467,14 @@ export default {
     addStyle(){
       const that = this;
       console.log('添加款号按钮点击');
-      that.$router.push({
+      /* that.$router.push({
         path: `/style/styleInfo`,
         query: {
           ifStyleAdd: true,
         }
-      });
+      }); */
+      this.controlData.ifStyleAdd = true;
+      this.dialogFormVisible = true;
     },
     // 导入款号
     importStyle(){

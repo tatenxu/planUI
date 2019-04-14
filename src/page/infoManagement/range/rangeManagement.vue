@@ -429,12 +429,14 @@ export default {
     addRange(){
       const that = this;
       console.log("添加系列按钮点击");
-      that.$router.push({
+      /* that.$router.push({
         path: `/range/rangeInfo`,
         query: {
           ifRangeAdd: true,
         }
-      });
+      }); */
+      this.controlData.ifRangeAdd = true;
+      this.dialogFormVisible = true;
     },
     // 批量导入
     importRange(){
