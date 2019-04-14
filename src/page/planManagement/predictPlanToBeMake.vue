@@ -45,7 +45,7 @@
         </el-col>
       </el-row>
 
-      <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
+      <el-row :gutter="20" style="margin-top: 25px; margin-bottom: 5px;">
 
         <el-col :span="8">
           <div class="bar">

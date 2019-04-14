@@ -117,7 +117,7 @@
         <el-table-column prop="date" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentPlan" label="上级计划" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="getPlanDetail(scope.$index, tableData)"
@@ -338,7 +338,7 @@ export default {
       flex-direction: row;
       align-items: center;
       .title {
-        font-size: 18px;
+        font-size: 14px;
         width: 90px;
         min-width: 50px;
         text-align: center;
