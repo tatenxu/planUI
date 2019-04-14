@@ -143,7 +143,7 @@
           </el-table-column>
         </el-table>
         <div style="margin-top: 20px">
-          <el-button type="info" @click="toggleSelection()">取消选择</el-button>
+          <el-button type="primary" @click="toggleSelection()">取消选择</el-button>
         </div>
       </div>
     </el-card>

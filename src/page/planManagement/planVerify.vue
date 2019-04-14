@@ -101,6 +101,7 @@
       <br>
       <div>
         <el-table
+          ref="multipleTable"
           :data="tableData"
           @selection-change="isChanged"
           max-height="550"
@@ -308,6 +309,7 @@ export default {
     },
     GoBackCancel() {
       this.GoBack = false;
+      this.$refs.multipleTable.clearSelection();
     },
     GoBackCofirm() {
       for (var i = 0; i < this.AnyChanged.length; i++) {
@@ -315,6 +317,7 @@ export default {
         this.$set(this.AnyChanged[i], "statue", "审核驳回");
       }
       this.GoBack = false;
+      this.$refs.multipleTable.clearSelection();
     },
     VerifyPass() {
       if (this.AnyChanged.length === 0) {
@@ -322,6 +325,7 @@ export default {
           message: "请至少选择一项！",
           type: "warning"
         });
+
         return;
       }
       var ok = 0;
@@ -340,6 +344,7 @@ export default {
           this.$set(this.AnyChanged[i], "statue", "已审核");
         }
         //}
+        this.$refs.multipleTable.clearSelection();
         return;
       }
     },
@@ -375,13 +380,14 @@ export default {
       }
       var ok = 0;
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === "已审核") ok ++;
+        if (this.AnyChanged[i].statue === "已审核") ok++;
       }
 
       if (ok === this.AnyChanged.length) {
-          //this.$set(this.iptDatas[index], `showAlert`, true)
-          for(var i=0;i<this.AnyChanged.length;i++)
-        this.$set(this.AnyChanged[i],'statue',"未审核");
+        //this.$set(this.iptDatas[index], `showAlert`, true)
+        for (var i = 0; i < this.AnyChanged.length; i++)
+          this.$set(this.AnyChanged[i], "statue", "未审核");
+        this.$refs.multipleTable.clearSelection();
       } else {
         this.$message({
           message: "选中项只能包含已审核项！",
