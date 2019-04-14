@@ -12,8 +12,8 @@
             <el-button type="primary" style="margin-right: 20px" @click="getWareList">刷新</el-button>
           </div>
         </el-col>
-      </el-row> -->
-  
+      </el-row>-->
+
       <el-row :gutter="20" style="margin-top: 15px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
@@ -75,6 +75,9 @@
 
     <el-card class="box-card">
       <div>
+        <el-row :gutter="20">
+          <el-button type="primary" style="margin-right:20px" @click="ReCoverAll">恢复所选元素</el-button>
+        </el-row>
         <el-table
           :data="tableData"
           style="width: 100%; margin-top: 20px"
@@ -91,7 +94,7 @@
           <el-table-column prop="createPeople" label="创建人" align="center"></el-table-column>
           <el-table-column prop="deletePeople" label="删除人" align="center"></el-table-column>
           <el-table-column prop="deleteTime" label="删除时间" align="center"></el-table-column>
-          
+
           <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="ReCover(scope.$index, scope.row)">恢复</el-button>
@@ -262,8 +265,19 @@ export default {
     };
   },
   methods: {
-    ReCover(index){ 
-    this.tableData.splice(index, 1)
+    ReCoverAll() {
+      const that = this;
+      if (that.AnyChanged.length === 0) {
+        that.$message.error("请选择要删除的计划！");
+      } else {
+        this.AnyChanged.forEach(element => {
+          var j = this.tableData.indexOf(element);
+          this.tableData.splice(j, 1);
+        });
+      }
+    },
+    ReCover(index) {
+      this.tableData.splice(index, 1);
     },
     IsChanged(val) {
       this.AnyChanged = val;

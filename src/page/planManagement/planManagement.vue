@@ -130,11 +130,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="getPlanDetail(scope.row)"
-              type="text"
-              size="small"
-            >查看</el-button>
+            <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button
               @click.native.prevent="ModifyPlanDetail(scope.row)"
               type="text"
@@ -216,66 +212,66 @@ export default {
         {
           id: 1,
           planId: "00001",
-          planName: "计划A",
-          rangeNumber: "第一个系列",
-          clientName: "客户A",
-          brandName: "品牌A",
-          rangeName: "A系列",
-          operator: "甲",
-          department: "部门A",
+          planName: "1",
+          rangeNumber: "1",
+          clientName: "1",
+          brandName: "1",
+          rangeName: "1",
+          operator: "1",
+          department: "1",
           date: "2019-4-9",
           parentPlan: "无",
           state: "优秀",
           exception: true
         },
         {
-          id: 1,
-          planId: "00001",
-          planName: "计划A",
-          rangeNumber: "第一个系列",
-          clientName: "客户A",
-          brandName: "品牌A",
-          rangeName: "A系列",
-          operator: "甲",
-          department: "部门A",
+          id: 2,
+          planId: "00002",
+          planName: "2",
+          rangeNumber: "2",
+          clientName: "2",
+          brandName: "2",
+          rangeName: "2",
+          operator: "2",
+          department: "2",
           date: "2019-4-9",
           parentPlan: "无",
           state: "优秀",
           exception: true
         },
         {
-          id: 1,
-          planId: "00001",
-          planName: "计划A",
-          rangeNumber: "第一个系列",
-          clientName: "客户A",
-          brandName: "品牌A",
-          rangeName: "A系列",
-          operator: "甲",
-          department: "部门A",
+          id: 3,
+          planId: "00003",
+          planName: "3",
+          rangeNumber: "3",
+          clientName: "3",
+          brandName: "3",
+          rangeName: "3",
+          operator: "3",
+          department: "3",
           date: "2019-4-9",
           parentPlan: "无",
           state: "优秀",
           exception: true
         },
         {
-          id: 1,
-          planId: "00001",
-          planName: "计划A",
-          rangeNumber: "第一个系列",
-          clientName: "客户A",
-          brandName: "品牌A",
-          rangeName: "A系列",
-          operator: "甲",
-          department: "部门A",
+          id: 4,
+          planId: "00004",
+          planName: "4",
+          rangeNumber: "4",
+          clientName: "4",
+          brandName: "4",
+          rangeName: "4",
+          operator: "4",
+          department: "4",
           date: "2019-4-9",
           parentPlan: "无",
           state: "优秀",
           exception: false
         },
         {
-          id: 1,
-          planId: "00001",
+          id: 5,
+          planId: "00005",
           planName: "计划A",
           rangeNumber: "第一个系列",
           clientName: "客户A",
@@ -330,11 +326,10 @@ export default {
       if (that.selectedData.length === 0) {
         that.$message.error("请选择要删除的计划！");
       } else {
-        that.tableData.splice(0, 1);
-        that.$$message({
-          message: "删除成功！",
-          type: "success"
-        });
+        this.selectedData.forEach(element=>{
+            var j = this.tableData.indexOf(element);
+            this.tableData.splice(j, 1);
+          })
       }
     },
     changeOrder() {
@@ -362,17 +357,16 @@ export default {
       }
     },
     changeCheckBoxFun(val) {
-      const that = this;
-      that.selectedData = val;
-      console.log("selectedData:", val);
+      this.selectedData = val;
+ 
     },
     getPlanDetail(row) {
       const that = this;
       that.$router.push({
         name: "planMakeIndex",
         params: {
-          flag:4,
-          goback:"planManagement",
+          flag: 4,
+          goback: "planManagement",
           client: row.clientName,
           brand: row.brandName,
           series: row.rangeName,
@@ -386,8 +380,8 @@ export default {
       that.$router.push({
         name: "planMakeIndex",
         params: {
-          goback:"planManagement",
-          flag:5,
+          goback: "planManagement",
+          flag: 5,
           client: row.clientName,
           brand: row.brandName,
           series: row.rangeName,

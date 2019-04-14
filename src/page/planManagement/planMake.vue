@@ -158,15 +158,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划对象</div>
-            <el-select v-if="showit5" v-model="objName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in objOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input v-else v-model="objName" :rows="1" placeholder="请选择" :disabled="true"></el-input>
+            <el-input  v-model="objName" :rows="1" placeholder="请选择" ></el-input>
           </div>
         </el-col>
         <el-col :span="6">
@@ -409,20 +401,7 @@ export default {
           value: 2
         }
       ],
-      objOpt: [
-        {
-          label: "对象A",
-          value: 0
-        },
-        {
-          label: "对象B",
-          value: 1
-        },
-        {
-          label: "对象C",
-          value: 2
-        }
-      ],
+  
       PlantypeOpt: [
         {
           label: "系列计划",
