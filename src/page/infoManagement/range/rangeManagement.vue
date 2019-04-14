@@ -123,7 +123,7 @@
       </div>
     </el-card>
 
-    <el-dialog  :modal="false" title="收货地址" :visible.sync="dialogFormVisible">
+    <el-dialog  :modal="false" title="系列信息" :visible.sync="dialogFormVisible">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm"> 
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
