@@ -284,7 +284,7 @@
               <el-button type="primary" @click="SavePlanForm">保存</el-button>
             </el-col>
             <el-col :span="8">
-              <el-button type="primary" @click="handleClick()">取消</el-button>
+              <el-button type="primary" @click="CancelPlanForm()">取消</el-button>
             </el-col>
           </div>
         </el-col>
@@ -503,6 +503,17 @@ export default {
           params: {}
         });
       }
+    },
+    CancelPlanForm() {
+      this.$message({
+        message: "取消制定！",
+        type: "info"
+      });
+
+      this.$router.push({
+        name: this.goback,
+        params: {}
+      });
     },
     init() {
       // console.log(this.$route.params);

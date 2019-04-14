@@ -79,11 +79,11 @@
         <el-card>
           <div class="inputCombine">
             <span class="inputTag">字典类别名称:</span>
-            <el-input v-model="addCateName" class="input" placeholder="请输入品牌名称"></el-input>
+            <el-input v-model="addCateName" class="input" placeholder="请输入字典类别名称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">字典类别编码:</span>
-            <el-input v-model="addCateCode" class="input" placeholder="请输入品牌简称"></el-input>
+            <el-input v-model="addCateCode" class="input" placeholder="请输入字典类别编码"></el-input>
           </div>
           <div class="secondButtonDiv">
             <el-button type="primary" class="save" @click="handleAddCateSaveClick()">保存</el-button>
@@ -96,11 +96,11 @@
         <el-card>
           <div class="inputCombine">
             <span class="inputTag">字典类别名称:</span>
-            <el-input v-model="editCateName" class="input" placeholder="请输入品牌名称"></el-input>
+            <el-input v-model="editCateName" class="input" placeholder="请输入字典类别名称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">字典类别编码:</span>
-            <el-input v-model="editCateCode" class="input" placeholder="请输入品牌简称"></el-input>
+            <el-input v-model="editCateCode" class="input" placeholder="请输入字典类别编码"></el-input>
           </div>
           <div class="secondButtonDiv">
             <el-button type="primary" class="save" @click="handleEditCateSaveClick()">保存</el-button>
@@ -113,11 +113,11 @@
         <el-card>
           <div class="inputCombine">
             <span class="inputTag">类别属性名称:</span>
-            <el-input v-model="addPropName" class="input" placeholder="请输入品牌名称"></el-input>
+            <el-input v-model="addPropName" class="input" placeholder="请输入类别属性名称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">类别属性编码:</span>
-            <el-input v-model="addPropCode" class="input" placeholder="请输入品牌简称"></el-input>
+            <el-input v-model="addPropCode" class="input" placeholder="请输入类别属性编码"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属类别:</span>
@@ -141,11 +141,11 @@
         <el-card>
           <div class="inputCombine">
             <span class="inputTag">类别属性名称:</span>
-            <el-input v-model="editPropName" class="input" placeholder="请输入品牌名称"></el-input>
+            <el-input v-model="editPropName" class="input" placeholder="请输入类别属性名称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">类别属性编码:</span>
-            <el-input v-model="editPropCode" class="input" placeholder="请输入品牌简称"></el-input>
+            <el-input v-model="editPropCode" class="input" placeholder="请输入类别属性编码"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属类别:</span>

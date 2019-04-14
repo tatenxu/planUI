@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-card class="box-card">
     <el-card>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -56,11 +56,16 @@
         </el-main>
       </el-container>
     </el-card>
-  </div>
+  </el-card>
 </template>
 
 
 <style lang="less" scoped>
+  .box-card{
+    min-width: 1500px;
+    margin: 20px 50px;
+    padding: 0 20px;
+  }
   .el-row {
     margin-bottom: 20px;
     &:last-child {

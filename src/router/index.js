@@ -23,12 +23,9 @@ const styleInfo = r => require.ensure([], () => r(require('../page/infoManagemen
 const bindStyleGroup = r => require.ensure([], () => r(require('../page/infoManagement/style/bindStyleGroup.vue')), 'bindStyleGroup');
 const styleImport = r => require.ensure([], () => r(require('../page/infoManagement/style/styleImport.vue')), 'styleImport');
 
-// const predictPlanToBeMake = r => require.ensure([], () => r(require('../page/planManagement/predictPlanToBeMAke.vue')), 'predictPlanToBeMake');
-const predictPlanToBeMake = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'predictPlanToBeMake');
-// const predictPlanMaking = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMaking.vue')), 'predictPlanMaking');
-const predictPlanMaking = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'predictPlanMaking');
-// const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMade.vue')), 'predictPlanMade');
-const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'predictPlanMade');
+const predictPlanToBeMake = r => require.ensure([], () => r(require('../page/planManagement/predictPlanToBeMake.vue')), 'predictPlanToBeMake');
+const predictPlanMaking = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMaking.vue')), 'predictPlanMaking');
+const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMade.vue')), 'predictPlanMade');
 const planManagement = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'planManagement');
 const planCompletionManage = r => require.ensure([], () => r(require('../page/planManagement/planCompletionManage.vue')), 'planCompletionManage');
 const planMakeIndex = r => require.ensure([], () => r(require('../page/planManagement/planMake.vue')), 'planMakeIndex');

@@ -337,7 +337,8 @@ export default {
 
 <style lang="less" scoped>
 .body{
-  margin-left: 10px;
+  min-width: 1500px;
+  margin: 20px 50px;
 }
 .box-card {
   margin-left: 0px;
