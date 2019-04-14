@@ -1,6 +1,6 @@
 <template>
-  <div class="box-card">
-    <el-card>
+  <div class="body">
+    <el-card class="box-card">
       <el-row :gutter="20" style="margin-top:15px ; margin-bottom:15px">
         <el-col :span="8">
           <div class="grid-content bg-purple inputCombineDiv">
@@ -66,7 +66,7 @@
       </el-row>
     </el-card>
 
-    <el-card class="cardBelow">
+    <el-card class="box-card">
       <div>
         <el-table
           ref="multipleTable"
@@ -150,6 +150,8 @@
       </div>
     </el-card>
   </div>
+
+
 </template>
 
 

@@ -120,7 +120,7 @@
           <el-table-column prop="planOver" label="计划结束" align="center"></el-table-column>
           <el-table-column prop="statue" label="审核状态" align="center"></el-table-column>
 
-          <el-table-column fixed="right" width="150">
+          <el-table-column fixed="right" width="100">
             <template slot-scope="scope">
               <el-button type="text">查看详情</el-button>
             </template>
