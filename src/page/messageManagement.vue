@@ -48,7 +48,7 @@
 
         <el-card class="box-card">
           <div>
-            <el-table :data="tableData" @selection-change="read" max-height="550" border style="width : 100%">
+            <el-table :data="tableData" @selection-change="read" max-height="550"  style="width : 100%">
             <el-table-column type="selection" width="50" align="center"></el-table-column>
             <el-table-column prop="id" v-if="false"></el-table-column>
             <el-table-column prop="isRead" label="是否已读" align="center"></el-table-column>
