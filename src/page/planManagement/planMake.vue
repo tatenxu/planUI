@@ -8,11 +8,20 @@
         <span class="Mtitle" v-else>计划制定</span>
       </el-row>
       <el-row :gutter="20">
-        <el-col  :span="10">
-        </el-col>
+        <el-col :span="10"></el-col>
         <el-col :span="12">
-           <el-button v-if="flag===1" type="primary" @click="QuotePredict()" style="margin-left: 98%">引用预测</el-button>
-           <el-button v-else-if="flag===2" type="primary" @click="QuotePredict()" style="margin-left: 98%">引用系列计划</el-button>
+          <el-button
+            v-if="flag===1"
+            type="primary"
+            @click="QuotePredict()"
+            style="margin-left: 98%"
+          >引用预测</el-button>
+          <el-button
+            v-else-if="flag===2"
+            type="primary"
+            @click="QuotePredict()"
+            style="margin-left: 98%"
+          >引用系列计划</el-button>
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -98,7 +107,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-if="showit2" v-model="ClientName" clearable placeholder="请选择">
+            <el-select v-if="showit2" v-model="BrandName" clearable placeholder="请选择">
               <el-option
                 v-for="item in brandOpt"
                 :key="item.value"
@@ -108,7 +117,7 @@
             </el-select>
             <el-input
               v-else
-              v-model="ClientName"
+              v-model="BrandName"
               clearable
               :rows="1"
               placeholder="请选择"
@@ -149,7 +158,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划对象</div>
-            <el-select v-if="showit4" v-model="objName" clearable placeholder="请选择">
+            <el-select v-if="showit5" v-model="objName" clearable placeholder="请选择">
               <el-option
                 v-for="item in objOpt"
                 :key="item.value"
@@ -289,6 +298,23 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
+        <el-upload
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="3"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+          style="margin-left:11%"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+      </el-row>
+      <el-row :gutter="20">
         <el-col :span="20">
           <div class="Mbutton">
             <el-col :span="8">
@@ -308,6 +334,7 @@
 export default {
   data() {
     return {
+       fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       Date1: "",
       dsa: "",
       flag: 0,
@@ -320,7 +347,7 @@ export default {
       ProductDateType: "",
       ProductData: "",
       ClientName: "",
-      BrandNaem: "",
+      BrandName: "",
       SeriesName: "",
       objName: "",
       PlanRemark: "",
@@ -485,6 +512,18 @@ export default {
   //五个参数控制
   //所有的计划制定的跳转
   methods: {
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
     SavePlanForm() {
       if (
         this.PlanName === "" ||
@@ -530,7 +569,7 @@ export default {
       // console.log(this.$route.params);
       let data = this.$route.params;
       this.ClientName = data.client;
-      this.BrandNaem = data.brand;
+      this.BrandName = data.brand;
       this.SeriesName = data.series;
       this.objName = data.planobj;
       this.flag = data.flag;
@@ -569,6 +608,17 @@ export default {
           this.showit3 = false;
           this.showit4 = false;
           this.showit5 = false;
+          break;
+        }
+        case 4: {
+          this.showit1 = false;
+          this.showit2 = false;
+          this.showit3 = false;
+          this.showit4 = true;
+          this.showit5 = false;
+          break;
+        }
+        case 5: {
           break;
         }
         default:

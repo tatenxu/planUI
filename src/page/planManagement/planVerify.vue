@@ -138,7 +138,7 @@
           :total="pagination.total"
         ></el-pagination>
       </div>
-      <el-dialog title="驳回理由" :visible.sync="GoBack">
+      <el-dialog title="驳回理由" :visible.sync="GoBack" :modal="false">
         <div class="body">
           <el-row :gutter="20">
             <el-input type="textarea" :rows="5" placeholder="请输入内容" v-model="GoBackReason"></el-input>

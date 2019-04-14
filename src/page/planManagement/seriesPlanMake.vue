@@ -139,10 +139,10 @@
           <el-table-column prop="Department" label="部门" align="center"></el-table-column>
           <el-table-column prop="PrePlan" label="预测计划" align="center"></el-table-column>
           <el-table-column prop="State" label="状态" align="center"></el-table-column>
-          <el-table-column label="操作" align="center" width="250px">
+          <el-table-column label="操作" align="center" width="200px">
             <template slot-scope="scope">
               <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button>
-              <el-dialog title="系列详情" :visible.sync="ViewDetails">
+              <el-dialog title="系列详情" :visible.sync="ViewDetails" :modal="false">
                 <el-tree :data="SeriesDetail" :props="defaultProps"></el-tree>
                 <el-button type="primary" @click="ViewDetails=false" style="margin-left:90%">确认</el-button>
               </el-dialog>
