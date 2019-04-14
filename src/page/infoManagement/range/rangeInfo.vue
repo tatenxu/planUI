@@ -183,6 +183,9 @@ export default {
           return false;
         }
       });
+      that.$router.push({
+        path: `/range/rangeManagement`,
+      });
     },
     // 取消按钮点击
     cancel(){

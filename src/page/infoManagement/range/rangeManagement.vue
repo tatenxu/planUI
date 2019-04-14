@@ -345,6 +345,22 @@ export default {
         });
       }
     },
+  
+    //查看系列信息
+    getRangeData(row){
+      this.$router.push({
+        path: `/range/rangeInfo`,
+        query: {
+          ifRangeChange: true,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          clothingType: row.clothingType,
+          rangeName: row.rangeName,
+          rangeAmount: row.rangeAmount,
+          rangeNote: row.rangeNote,
+        }
+      });
+    },
     // 表格中的修改
     changeRangeData(row){
       const that = this;
