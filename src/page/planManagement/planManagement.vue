@@ -86,7 +86,7 @@
           <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
         </el-col>
         <el-col :span="3">
-          <el-button type="danger" size="small" @click="deletePlan">删除计划</el-button>
+          <el-button type="primary" size="small" @click="deletePlan">删除计划</el-button>
         </el-col>
         <el-col :span="4">
           <el-button type="primary" size="small" @click="changeOrder">下级计划顺序调整</el-button>
@@ -98,7 +98,7 @@
       <el-table
         :data="tableData"
         max-height="400"
-        border
+
         @selection-change="changeCheckBoxFun"
         :stripe="true"
         :highlight-current-row="true"

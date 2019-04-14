@@ -105,7 +105,7 @@
           :data="tableData"
           @selection-change="isChanged"
           max-height="550"
-          border
+          
           style="width : 100%"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>

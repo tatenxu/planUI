@@ -85,7 +85,7 @@
 
     <el-card class="box-card">
       <div>
-      <el-table :data="tableData" max-height="550" border style="width : 100%">
+      <el-table :data="tableData" max-height="550"  style="width : 100%">
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <!-- <el-table-column v-if="false" prop="id" align="center"></el-table-column> -->
         <el-table-column prop="id" label="序号" align="center"></el-table-column>
