@@ -194,7 +194,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="3" >
+        <el-col :span="3">
           <el-date-picker v-model="ProductData" type="date" placeholder="选择日期"></el-date-picker>
           <!-- <el-date-picker
             v-model="ProductData"
