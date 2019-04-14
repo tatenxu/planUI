@@ -5,7 +5,7 @@
         <el-col :span="5">
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">客户名称：</span>
-            <el-select v-model="value" placeholder="请选择">
+            <el-select v-model="CustomerName" placeholder="请选择">
               <el-option
                 v-for="item in customerOptions"
                 :key="item.value"
@@ -19,7 +19,7 @@
         <el-col :span="4">
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">品牌：</span>
-            <el-select v-model="value" placeholder="请选择">
+            <el-select v-model="BrandName" placeholder="请选择">
               <el-option
                 v-for="item in brandOptions"
                 :key="item.value"
@@ -33,7 +33,7 @@
         <el-col :span="4">
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">系列名称</span>
-            <el-select v-model="value" placeholder="请选择">
+            <el-select v-model="SeriesName" placeholder="请选择">
               <el-option
                 v-for="item in rangeOptions"
                 :key="item.value"
@@ -48,7 +48,7 @@
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">新建时间：</span>
             <el-date-picker
-              v-model="value6"
+              v-model="Data"
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -202,6 +202,11 @@
   export default {
     data() {
       return {
+        CustomerName:"",
+        Data:"",
+        BrandName:"",
+        SeriesName:"",
+        
         tableData: [
           {
             excCode: '7878787',
