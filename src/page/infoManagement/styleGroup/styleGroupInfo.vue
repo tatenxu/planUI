@@ -192,6 +192,9 @@ export default {
           }
         }
       });
+      that.$router.push({
+        path: `/styleGroup/styleGroupManagement`,
+      });
     },
     // 取消按钮点击
     cancel(){

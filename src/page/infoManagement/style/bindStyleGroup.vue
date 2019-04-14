@@ -194,6 +194,10 @@ export default {
         type: 'success'
       });
       that.controlData.storeDisabled = true;
+      console.log("取消按钮点击");
+      that.$router.push({
+        path: `/style/styleManagement`,
+      });
     },
     // 取消按钮点击
     cancel(){

@@ -380,6 +380,20 @@ export default {
         });
       }
     },
+    //查看操作
+    getStyleGroupData(row){
+      this.$router.push({
+        path: `/styleGroup/styleGroupInfo`,
+        query: {
+          ifStyleGroupChange: true,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          clothingType: row.clothingType,
+          rangeName: row.rangeName,
+          styleGroupName: row.styleGroupName,
+        }
+      });
+    },
     // 表格中的修改
     changeStyleGroupData(row){
       const that = this;
