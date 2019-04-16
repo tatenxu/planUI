@@ -192,6 +192,7 @@ export default {
     };
   },
   methods: {
+
     FinishPlan() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       const that = this;
@@ -200,7 +201,7 @@ export default {
       } else {
         this.AnyChanged.forEach(element => {
           var j = this.tableData.indexOf(element);
-          this.$set(this.tableData[j], "deletePeople","已完成");
+          this.$set(this.tableData[j], "deletePeople", "已完成");
         });
       }
     },
