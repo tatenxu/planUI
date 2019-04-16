@@ -4,8 +4,8 @@
       <el-row :gutter="20" style="margin-top:5px;">
         <el-col :span="6">
           <div class="bar">
-            <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName" >
+            <div class="title" >客户名称</div>
+            <el-select v-model="searchOptions.searchParams.customerName" @change="customerNameSelectionChange()">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.value"
@@ -229,26 +229,8 @@ export default {
           dateRange: "", 
         },
         options: {
-          customerNameOptions: [
-            {
-              value: 1,
-              label: "A客户"
-            },
-            {
-              value: 2,
-              label: "B客户"
-            },
-          ],
-          brandNameOptions: [
-            {
-              value: 1,
-              label: "X品牌"
-            },
-            {
-              value: 2,
-              label: "Y品牌"
-            },
-          ],
+          customerNameOptions: [],
+          brandNameOptions: [],
           clothingTypeOptions: [
             {
               value: 1,
@@ -381,8 +363,62 @@ export default {
   created: function () {
     const that = this;
     console.log('进入系列管理页面');
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .then(response => {
+        console.log("getCustomer 成功");
+        var resData = response.data;
+        resData.forEach(element => {
+          this.searchOptions.options.customerNameOptions.push({
+            value:element.id,
+            label:element.name,
+          });
+        });
+      })
+      .catch(error => {
+        console.log("getCustomer error!");
+        this.searchOptions.options.customerNameOptions = [
+          {
+              value: 42453,
+              label: "A客户"
+            },
+            {
+              value: 41526,
+              label: "B客户"
+            },
+        ];
+      });
   },
   methods: {
+    //客户名称选择后触发品牌的get请求
+    customerNameSelectionChange(){
+      // consol.log(val);
+      console.log("客户名称选择触发");
+      console.log(this.searchOptions.searchParams.customerName);
+      var param = {
+        customerId: this.searchOptions.searchParams.customerName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("客户名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("客户名称选择错误");
+          this.searchOptions.options.brandNameOptions = [
+            {
+              value: 1,
+              label: "X品牌"
+            },
+            {
+              value: 2,
+              label: "Y品牌"
+            },
+          ];
+        })
+    },
     // 改变日期格式
     changeDate(date){
       var y = date.getFullYear();

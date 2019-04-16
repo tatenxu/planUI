@@ -136,7 +136,7 @@
           ></el-table-column>
           <el-table-column
             prop="deleteTime"
-            label="删除时间"
+            label="创建时间"
             align="center"
             width="150px "
             show-overflow-tooltip
