@@ -30,7 +30,7 @@
         </el-col>
         <el-col :span="6">
           <div class="bar">
-            <div class="title">服装类型</div>
+            <div class="title">服装层次</div>
             <el-select v-model="searchOptions.searchParams.clothingType" >
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
@@ -112,7 +112,7 @@
           <el-table-column prop="rangeNumber" width="130" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothingType" label="服装类型" align="center"></el-table-column>
+          <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="rangeName" width="150" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="addUser" label="添加人" align="center"></el-table-column>
           <el-table-column prop="dept" label="部门" align="center"></el-table-column>
@@ -141,6 +141,76 @@
         </div>
       </div>
     </el-card>
+
+    <el-dialog  :modal="false" title="款式信息" :visible.sync="dialogFormVisible">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
+              <el-select v-model="ruleForm.customerName" >
+                <el-option
+                  v-for="item in options.customerNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
+              <el-select v-model="ruleForm.brandName" >
+                <el-option
+                  v-for="item in options.brandNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
+              <el-select v-model="ruleForm.clothingType" >
+                <el-option
+                  v-for="item in options.clothingTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="系列名称" prop="rangeName" placeholder="请选择系列名称">
+              <el-select v-model="ruleForm.rangeName" >
+                <el-option
+                  v-for="item in options.rangeNameTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="订单款号" prop="styleNumber" placeholder="请输入订单款号">
+              <el-input v-model="ruleForm.styleNumber" clearable placeholder="请输入"></el-input>
+            </el-form-item> 
+          </el-col>
+        </el-row>
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancel">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -249,6 +319,85 @@ export default {
         ]
       },
       multipleSelection: [],
+      rules: {
+        customerName: [
+          { required: true, message: '请选择客户名称', trigger: 'change' }
+        ],
+        brandName: [
+          { required: true, message: '请选择品牌', trigger: 'change' }
+        ],
+        clothingType: [
+          { required: true, message: '请选择服装层次', trigger: 'change' }
+        ],
+        rangeName: [
+          { required: true, message: '请选择系列名称', trigger: 'change' },
+        ],
+        styleNumber: [
+          { required: true, message: '请输入订单款号', trigger: 'blur' },
+        ],
+      },
+      ruleForm: {
+        customerName: "",
+        brandName: "",
+        clothingType: "",
+        rangeName: "",
+        styleNumber: "",
+      },
+      options: {
+        customerNameOptions: [
+          {
+            value: 1,
+            label: "A客户"
+          },
+          {
+            value: 2,
+            label: "B客户"
+          },
+        ],
+        brandNameOptions: [
+          {
+            value: 1,
+            label: "X品牌"
+          },
+          {
+            value: 2,
+            label: "Y品牌"
+          },
+        ],
+        clothingTypeOptions: [
+          {
+            value: 1,
+            label: "时装"
+          },
+          {
+            value: 2,
+            label: "精品"
+          },
+          {
+            value: 3,
+            label: "品牌"
+          },
+        ],
+        rangeNameTypeOptions: [
+          {
+            value: 1,
+            label: "Fall-2019(07/08/09)"
+          },
+          {
+            value: 2,
+            label: "Spring-2019(01/02/03)"
+          },
+          {
+            value: 3,
+            label: "Winter-2019(10/11/12)"
+          },
+        ],
+      },
+      controlData: {
+        ifStyleAdd: false,
+        ifStyleChange: false,
+      },
+      dialogFormVisible:false,
     };
   },
   created: function () {
@@ -313,16 +462,19 @@ export default {
       console.log(that.multipleSelection);
       console.log("changeCheckBox所选中的内容的长度为",that.multipleSelection.length);
     },
+
     // 添加款号
     addStyle(){
       const that = this;
       console.log('添加款号按钮点击');
-      that.$router.push({
+      /* that.$router.push({
         path: `/style/styleInfo`,
         query: {
           ifStyleAdd: true,
         }
-      });
+      }); */
+      this.controlData.ifStyleAdd = true;
+      this.dialogFormVisible = true;
     },
     // 导入款号
     importStyle(){
@@ -403,11 +555,11 @@ export default {
         });
       }
     },
-    // 表格中的修改
-    changeStyleData(row){
+    // 表格中的查看
+    getStyleData(row){
       const that = this;
-      console.log("点击了本行的修改");
-      that.$router.push({
+      console.log("点击了本行的查看");
+      /* that.$router.push({
         path: `/style/styleInfo`,
         query: {
           ifStyleChange: true,
@@ -417,7 +569,38 @@ export default {
           rangeName: row.rangeName,
           styleNumber: row.styleNumber,
         }
-      });
+      }); */
+      this.ruleForm.customerName = row.customerName;
+      this.ruleForm.brandName = row.brandName;
+      this.ruleForm.clothingType = row.clothingType;
+      this.ruleForm.rangeName = row.rangeName;
+      this.ruleForm.styleNumber = row.styleNumber;
+      
+      this.dialogFormVisible = true;
+    },
+    // 表格中的修改
+    changeStyleData(row){
+      const that = this;
+      console.log("点击了本行的修改");
+      /* that.$router.push({
+        path: `/style/styleInfo`,
+        query: {
+          ifStyleChange: true,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          clothingType: row.clothingType,
+          rangeName: row.rangeName,
+          styleNumber: row.styleNumber,
+        }
+      }); */
+      this.controlData.ifStyleChange = true;
+      this.ruleForm.customerName = row.customerName;
+      this.ruleForm.brandName = row.brandName;
+      this.ruleForm.clothingType = row.clothingType;
+      this.ruleForm.rangeName = row.rangeName;
+      this.ruleForm.styleNumber = row.styleNumber;
+      
+      this.dialogFormVisible = true;
     },
     // 表格中的删除
     deleteStyleData(row){
@@ -459,6 +642,38 @@ export default {
           message: '已取消删除'
         });          
       });
+    },
+    submitForm(formName){
+      const that = this;
+      console.log("保存按钮点击");
+      this.$refs[formName].validate((valid) => {
+        if(that.controlData.ifStyleAdd === true){
+          this.$message({
+            message: '成功新增款式信息',
+            type: 'success'
+          });
+        }
+        if(that.controlData.ifStyleChange === true){
+          this.$message({
+            message: '成功修改款式信息',
+            type: 'success'
+          });
+        }
+      });
+      console.log("取消按钮点击");
+      /* that.$router.push({
+        path: `/style/styleManagement`,
+      }); */
+      this.dialogFormVisible = false;
+    },
+    // 取消按钮点击
+    cancel(){
+      const that = this;
+      console.log("取消按钮点击");
+      /* that.$router.push({
+        path: `/style/styleManagement`,
+      }); */
+      this.dialogFormVisible = false;
     }
   }
 }

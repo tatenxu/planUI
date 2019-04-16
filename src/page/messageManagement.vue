@@ -56,7 +56,12 @@
             <el-table-column prop="plan" label="所属计划" align="center"></el-table-column>
             <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
             <el-table-column prop="sendPeople" label="发送人" align="center"></el-table-column>
-            <el-table-column prop="sendTime" label="删除时间" align="center"></el-table-column>
+            <el-table-column prop="sendTime" label="操作" align="center">
+              <template slot-scope="scope">
+                  <el-button type="text" size="small">详情</el-button>
+                  <el-button type="text" size="small">删除</el-button>
+                </template>
+            </el-table-column>
             </el-table>
           </div>
           <div class="block">

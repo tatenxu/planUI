@@ -28,7 +28,7 @@
             </el-form-item> 
           </el-col>
           <el-col :span="8">
-            <el-form-item label="服装类型" prop="clothingType">
+            <el-form-item label="服装层次" prop="clothingType">
               <el-select v-model="ruleForm.clothingType" >
                 <el-option
                   v-for="item in options.clothingTypeOptions"
@@ -84,7 +84,7 @@ export default {
           { required: true, message: '请选择品牌', trigger: 'change' }
         ],
         clothingType: [
-          { required: true, message: '请选择服装类型', trigger: 'change' }
+          { required: true, message: '请选择服装层次', trigger: 'change' }
         ],
         rangeName: [
           { required: true, message: '请输入系列名称', trigger: 'blur' },
@@ -182,6 +182,9 @@ export default {
           console.log('error submit!!');
           return false;
         }
+      });
+      that.$router.push({
+        path: `/range/rangeManagement`,
       });
     },
     // 取消按钮点击

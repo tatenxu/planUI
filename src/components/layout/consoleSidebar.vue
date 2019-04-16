@@ -87,14 +87,14 @@
           信息管理
         </template>
         <el-menu-item index="/range/rangeManagement"><i class="el-icon-document"></i>系列管理</el-menu-item>
-        <el-menu-item index="/range/rangeInfo"><i class="el-icon-document"></i>系列信息</el-menu-item>
+        <!-- <el-menu-item index="/range/rangeInfo"><i class="el-icon-document"></i>系列信息</el-menu-item> -->
         <el-menu-item index="/range/rangeImport"><i class="el-icon-document"></i>导入系列</el-menu-item>
         
         <el-menu-item index="/styleGroup/styleGroupManagement"><i class="el-icon-document"></i>款式组管理</el-menu-item>
-        <el-menu-item index="/styleGroup/styleGroupInfo"><i class="el-icon-document"></i>款式组信息</el-menu-item>
+        <!-- <el-menu-item index="/styleGroup/styleGroupInfo"><i class="el-icon-document"></i>款式组信息</el-menu-item> -->
 
         <el-menu-item index="/style/styleManagement"><i class="el-icon-document"></i>款式管理</el-menu-item>
-        <el-menu-item index="/style/styleInfo"><i class="el-icon-document"></i>款式信息</el-menu-item>
+        <!-- <el-menu-item index="/style/styleInfo"><i class="el-icon-document"></i>款式信息</el-menu-item> -->
         <el-menu-item index="/style/styleImport"><i class="el-icon-document"></i>导入款式</el-menu-item>
         <el-menu-item index="/style/bindStyleGroup"><i class="el-icon-document"></i>绑定款式组</el-menu-item>
 
@@ -117,13 +117,13 @@
           <el-menu-item index="/predictPlanMade"><i class="el-icon-document"></i>已制定计划</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="/planCompletionManage"><i class="el-icon-document"></i>计划完成管理</el-menu-item>
         <el-menu-item index="/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item>
         <el-menu-item index="/planMake/seriesPlanMake"><i class="el-icon-document"></i>系列计划制定</el-menu-item>
         <el-menu-item index="/planMake/styleGroupPlanMake"><i class="el-icon-document"></i>款式组计划制定</el-menu-item>
         <el-menu-item index="/planMake/stylePlanMake"><i class="el-icon-document"></i>款式计划制定</el-menu-item>
         <el-menu-item index="/planVerify"><i class="el-icon-document"></i>计划审核管理</el-menu-item>
         <el-menu-item index="/planDistribute"><i class="el-icon-document"></i>计划下发管理</el-menu-item>
+        <el-menu-item index="/planCompletionManage"><i class="el-icon-document"></i>计划完成管理</el-menu-item>
         <el-menu-item index="/planRecover"><i class="el-icon-document"></i>计划回收站</el-menu-item>
         <el-menu-item index="/exceptionManagement"><i class="el-icon-document"></i>异常管理</el-menu-item>
       </el-submenu>

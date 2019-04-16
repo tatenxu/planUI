@@ -32,7 +32,7 @@
 
         <el-col :span="8">
           <div class="bar">
-            <div class="title">服装类型</div>
+            <div class="title">服装层次</div>
             <el-select v-model="select3" clearable @change="c1">
               <el-option
                 v-for="item in options3"
@@ -94,7 +94,7 @@
         <el-table-column prop="seriesNumber" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brand" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesType" label="服装类型" align="center"></el-table-column>
+        <el-table-column prop="clothesType" label="服装层次" align="center"></el-table-column>
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="addPeople" label="添加人" align="center"></el-table-column>
         <el-table-column prop="department" label="部门" align="center"></el-table-column>

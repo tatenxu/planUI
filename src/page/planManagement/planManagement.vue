@@ -30,8 +30,8 @@
         </el-col>
         <el-col :span="6">
           <div class="bar">
-            <div class="title">服装类型</div>
-            <el-select v-model="searchOptions.searchParams.clothingType">
+            <div class="title">服装层次</div>
+            <el-select v-model="searchOptions.searchParams.clothingType" >
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.value"
