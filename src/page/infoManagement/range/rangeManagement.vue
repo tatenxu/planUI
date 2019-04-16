@@ -131,6 +131,76 @@
         </div>
       </div>
     </el-card>
+
+    <el-dialog  :modal="false" title="系列信息" :visible.sync="dialogFormVisible">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm"> 
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
+              <el-select v-model="ruleForm.customerName" >
+                <el-option
+                  v-for="item in options.customerNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item> 
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="品牌名称" prop="brandName">
+                <el-select v-model="ruleForm.brandName" >
+                  <el-option
+                    v-for="item in options.brandNameOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+            </el-form-item> 
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="服装层次" prop="clothingType">
+              <el-select v-model="ruleForm.clothingType" >
+                <el-option
+                  v-for="item in options.clothingTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="系列名称" prop="rangeName">
+              <el-input v-model="ruleForm.rangeName" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="系列款数" prop="rangeAmount">
+              <el-input v-model="ruleForm.rangeAmount" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="24" >
+            <el-form-item label="系列备注">
+              <el-input v-model="ruleForm.rangeNote" type="textarea" :rows="3" placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancel">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -138,6 +208,7 @@
 export default {
   data() {
     return {
+      dialogFormVisible: false,
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
@@ -165,7 +236,72 @@ export default {
       },
       multipleSelection: [],
       DateStart: "",
-      DateEnd: ""
+      DateEnd: "",
+      rules:{
+        customerName: [
+          { required: true, message: '请选择客户名称', trigger: 'change' }
+        ],
+        brandName: [
+          { required: true, message: '请选择品牌', trigger: 'change' }
+        ],
+        clothingType: [
+          { required: true, message: '请选择服装层次', trigger: 'change' }
+        ],
+        rangeName: [
+          { required: true, message: '请输入系列名称', trigger: 'blur' },
+        ],
+        rangeAmount: [
+          { required: true, message: '请输入系列款数', trigger: 'blur' },
+        ],
+      },
+      ruleForm: {
+        customerName: "",
+        brandName: "",
+        clothingType: "",
+        rangeName: "",
+        rangeAmount: "",
+        rangeNote: "",
+      },
+      options: {
+        customerNameOptions: [
+          {
+            value: 1,
+            label: "A客户"
+          },
+          {
+            value: 2,
+            label: "B客户"
+          },
+        ],
+        brandNameOptions: [
+          {
+            value: 1,
+            label: "X品牌"
+          },
+          {
+            value: 2,
+            label: "Y品牌"
+          },
+        ],
+        clothingTypeOptions: [
+          {
+            value: 1,
+            label: "时装"
+          },
+          {
+            value: 2,
+            label: "精品"
+          },
+          {
+            value: 3,
+            label: "品牌"
+          },
+        ],
+      },
+      controlData: {
+        ifRangeAdd: false,
+        ifRangeChange: false,
+      },
     };
   },
 
@@ -539,11 +675,15 @@ export default {
           });
       }
     },
+    //表格中的查看
+    getRangeData(row){
+      this.dialogFormVisible = true;
+    },
     // 表格中的修改
     changeRangeData(row) {
       const that = this;
       console.log("点击了本行的修改");
-      that.$router.push({
+      /* that.$router.push({
         path: `/range/rangeInfo`,
         query: {
           ifRangeChange: true,
@@ -554,7 +694,11 @@ export default {
           rangeAmount: row.rangeAmount,
           rangeNote: row.rangeNote
         }
-      });
+      }); */
+      this.ruleForm.customerName = row.customerName;
+      this.ruleForm.brandName = row.brandName;
+
+      this.dialogFormVisible = true;
     },
     // 表格中的删除
     deleteRangeData(row) {
@@ -595,6 +739,17 @@ export default {
             message: "已取消删除"
           });
         });
+    },
+    submitForm(formName){
+      const that = this;
+      console.log("保存按钮点击");
+      this.dialogFormVisible = false;
+    },
+    // 取消按钮点击
+    cancel(){
+      const that = this;
+      console.log("取消按钮点击");
+      this.dialogFormVisible = false;
     }
   }
 };
