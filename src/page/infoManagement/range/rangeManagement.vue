@@ -169,11 +169,11 @@
               <el-input v-model="ruleForm.rangeName" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <el-form-item label="系列款数" prop="rangeAmount">
               <el-input v-model="ruleForm.rangeAmount" clearable placeholder="请输入"></el-input>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24" >

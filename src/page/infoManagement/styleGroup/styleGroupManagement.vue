@@ -112,6 +112,7 @@
           <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="addUser" label="添加人" align="center"></el-table-column>
           <el-table-column prop="dept" label="部门" align="center"></el-table-column>
+          <el-table-column prop="state" width="55" label="状态" align="center"></el-table-column>
           <el-table-column prop="addTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center">
             <template slot-scope="scope">
@@ -190,7 +191,7 @@
             </el-form-item> 
           </el-col>
           <el-col :span="8">
-            <el-form-item label="订单款号" prop="styleNumber" placeholder="请输入订单款号">
+            <el-form-item label="款式组名" prop="styleNumber" placeholder="请输入款式组名">
               <el-input v-model="ruleForm.styleNumber" clearable placeholder="请输入"></el-input>
             </el-form-item> 
           </el-col>
@@ -291,6 +292,7 @@ export default {
             addUser: "刘德华",
             dept: "业务1组",
             addTime: "2019-01-01 10:15:01",
+            state:"已下发"
           },
         ]
       },
