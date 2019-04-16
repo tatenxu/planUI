@@ -8,9 +8,9 @@
             <el-select v-model="searchOptions.searchParams.customerName" @change="customerNameSelectionChange()">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -21,7 +21,7 @@
             <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelectionChange()" >
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
-                :key="item.value"
+                :key="item.name"
                 :label="item.label"
                 :value="item.value">
               </el-option>
@@ -149,19 +149,19 @@
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" >
+              <el-select v-model="ruleForm.customerName" @change="dialogCustomerNameSelectionChange()" >
                 <el-option
                   v-for="item in options.customerNameOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item> 
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
-              <el-select v-model="ruleForm.brandName" >
+              <el-select v-model="ruleForm.brandName" @change="dialogBrandSelectionChange()">
                 <el-option
                   v-for="item in options.brandNameOptions"
                   :key="item.value"
@@ -176,9 +176,9 @@
               <el-select v-model="ruleForm.clothingType" >
                 <el-option
                   v-for="item in options.clothingTypeOptions"
-                  :key="item.clothingType"
+                  :key="item.id"
                   :label="item.clothingType"
-                  :value="item.clothingType">
+                  :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item> 
@@ -273,54 +273,10 @@ export default {
         styleGroupName: "",
       },
       options: {
-        customerNameOptions: [
-          {
-            value: 1,
-            label: "A客户"
-          },
-          {
-            value: 2,
-            label: "B客户"
-          },
-        ],
-        brandNameOptions: [
-          {
-            value: 1,
-            label: "X品牌"
-          },
-          {
-            value: 2,
-            label: "Y品牌"
-          },
-        ],
-        clothingTypeOptions: [
-          {
-            value: 1,
-            label: "时装"
-          },
-          {
-            value: 2,
-            label: "精品"
-          },
-          {
-            value: 3,
-            label: "品牌"
-          },
-        ],
-        rangeNameTypeOptions: [
-          {
-            value: 1,
-            label: "Fall-2019(07/08/09)"
-          },
-          {
-            value: 2,
-            label: "Spring-2019(01/02/03)"
-          },
-          {
-            value: 3,
-            label: "Winter-2019(10/11/12)"
-          },
-        ],
+        customerNameOptions: [],
+        brandNameOptions: [],
+        clothingTypeOptions: [],
+        rangeNameTypeOptions: [],
       },
       controlData: {
         ifStyleGroupAdd: false,
@@ -347,14 +303,15 @@ export default {
         console.log("getCustomer error!");
         this.searchOptions.options.customerNameOptions = [
           {
-              value: 42453,
-              label: "A客户"
-            },
-            {
-              value: 41526,
-              label: "B客户"
-            },
+            id: 42453,
+            name: "A客户"
+          },
+          {
+            id: 41526,
+            name: "B客户"
+          },
         ];
+        this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       });
 
       that.$axios
@@ -379,6 +336,7 @@ export default {
           }
         ];
         this.searchOptions.options.clothingTypeOptions = ClothingList;
+        this.options.clothingTypeOptions = ClothingList;
       });
 
         this.$axios
@@ -473,6 +431,39 @@ export default {
           ];
         })
     },
+    //品牌名称选择后触发品牌的get请求
+    dialogBrandSelectionChange(){
+      // consol.log(val);
+      console.log("对话框品牌名称选择触发");
+      console.log(this.ruleForm.brandName);
+      var param = {
+        customerId: this.ruleForm.brandName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRange`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("对话框品牌名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("对话框品牌名称选择错误");
+          this.options.rangeNameTypeOptions = [
+            {
+              value: 1,
+              label: "Fall-2019(07/08/09)"
+            },
+            {
+              value: 2,
+              label: "Spring-2019(01/02/03)"
+            },
+            {
+              value: 3,
+              label: "Winter-2019(10/11/12)"
+            },
+          ];
+        })
+    },
     //客户名称选择后触发品牌的get请求
     customerNameSelectionChange(){
       // consol.log(val);
@@ -491,6 +482,35 @@ export default {
         .catch(error => {
           console.log("客户名称选择错误");
           this.searchOptions.options.brandNameOptions = [
+            {
+              value: 1,
+              label: "X品牌"
+            },
+            {
+              value: 2,
+              label: "Y品牌"
+            },
+          ];
+        })
+    },
+    //客户名称选择后触发品牌的get请求
+    dialogCustomerNameSelectionChange(){
+      // consol.log(val);
+      console.log("对话框客户名称选择触发");
+      console.log(this.ruleForm.customerName);
+      var param = {
+        customerId: this.ruleForm.customerName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("对话框客户名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("对话框客户名称选择错误");
+          this.options.brandNameOptions = [
             {
               value: 1,
               label: "X品牌"
@@ -792,7 +812,37 @@ export default {
     submitForm(formName){
       const that = this;
       console.log("保存按钮点击");
-      this.$refs[formName].validate((valid) => {
+
+      var params = {
+        customerId : this.ruleForm.customerName,
+        brandId : this.ruleForm.brandName,
+        rangeId : this.ruleForm.rangeName, 
+        clothingLevel : this.ruleForm.clothingType,
+        styleGroupName : this.ruleForm.styleGroupName,
+      };
+
+      console.log(params);
+
+      this.$axios
+        .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,params)
+        .then(response=>{
+          var resData = response.data;
+        })
+        .catch(error=>{
+          if(that.controlData.ifStyleGroupAdd === true){
+            this.$message({
+              message: '成功新增款式组信息',
+              type: 'success'
+            });
+          }
+          if(that.controlData.ifStyleGroupChange === true){
+            this.$message({
+              message: '成功修改款式组信息',
+              type: 'success'
+            });
+          }
+        })
+      /* this.$refs[formName].validate((valid) => {
         if (valid) {
           if(that.controlData.ifStyleGroupAdd === true){
             this.$message({
@@ -807,7 +857,7 @@ export default {
             });
           }
         }
-      });
+      }); */
       /* that.$router.push({
         path: `/styleGroup/styleGroupManagement`,
       }); */
