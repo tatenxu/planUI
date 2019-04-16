@@ -18,7 +18,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName" >
+            <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelectionChange()" >
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.value"
@@ -34,9 +34,9 @@
             <el-select v-model="searchOptions.searchParams.clothingType" >
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.clothingType"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -44,12 +44,12 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-              <el-select v-model="searchOptions.searchParams.rangeName" >
+              <el-select v-model="searchOptions.searchParams.rangeName" @change="rangeSelectionChange()">
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -59,7 +59,14 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">款式组名</div>
-              <el-input v-model=searchOptions.searchParams.styleGroupName placeholder="请输入款式组名"></el-input>
+            <el-select v-model="searchOptions.searchParams.styleGroupName" >
+              <el-option
+                v-for="item in searchOptions.options.styleGroupNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </div>
         </el-col>
         <el-col :span="12">
@@ -112,7 +119,7 @@
           <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="addUser" label="添加人" align="center"></el-table-column>
           <el-table-column prop="dept" label="部门" align="center"></el-table-column>
-          <el-table-column prop="state" width="55" label="状态" align="center"></el-table-column>
+          <el-table-column prop="state" width="70" label="状态" align="center"></el-table-column>
           <el-table-column prop="addTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center">
             <template slot-scope="scope">
@@ -169,9 +176,9 @@
               <el-select v-model="ruleForm.clothingType" >
                 <el-option
                   v-for="item in options.clothingTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.clothingType"
+                  :label="item.clothingType"
+                  :value="item.clothingType">
                 </el-option>
               </el-select>
             </el-form-item> 
@@ -231,52 +238,13 @@ export default {
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
-          clothingTypeOptions: [
-            {
-              value: 1,
-              label: "时装"
-            },
-            {
-              value: 2,
-              label: "精品"
-            },
-            {
-              value: 3,
-              label: "品牌"
-            },
-          ],
-          rangeNameOptions: [
-            {
-              value: 1,
-              label: "Fall-2019(07/08/09)"
-            },
-            {
-              value: 2,
-              label: "Spring-2019(01/02/03)"
-            },
-            {
-              value: 3,
-              label: "Winter-2019(10/11/12)"
-            },
-          ],
+          clothingTypeOptions: [],
+          rangeNameOptions: [],
+          styleGroupNameOptions:[],
         }
       },
       data:{
-        tableData:[
-          {
-            styleGroupNumber: "KSZ20190101001",
-            styleGroupName: "款式1组",
-            rangeNumber: "XL20190101001",
-            customerName: "Qi-Collection",
-            brandName: "Selkie",
-            clothingType: "时装",
-            rangeName: "Fall-2019(07/08/09)",
-            addUser: "刘德华",
-            dept: "业务1组",
-            addTime: "2019-01-01 10:15:01",
-            state:"已下发"
-          },
-        ]
+        tableData:[]
       },
       multipleSelection: [],
       dialogFormVisible: false,
@@ -388,8 +356,123 @@ export default {
             },
         ];
       });
+
+      that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .then(response => {
+        var ClothingList = response;
+        this.searchOptions.options.clothingTypeOptions = ClothingList;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            clothingType: "时装"
+          },
+          {
+            id: 2,
+            clothingType: "精品"
+          },
+          {
+            id: 3,
+            clothingType: "时尚"
+          }
+        ];
+        this.searchOptions.options.clothingTypeOptions = ClothingList;
+      });
+
+        this.$axios
+        .get(`${window.$config.HOST}/InfoManagement/getRangeList`)
+        .then(response => {
+          var SearchList = response;
+          this.data.tableData = SearchList;
+        })
+        .catch(error => {
+          var SearchList = [
+            {
+              styleGroupNumber: "KSZ20190101001",
+              styleGroupName: "款式1组",
+              rangeNumber: "XL20190101001",
+              customerName: "Qi-Collection",
+              brandName: "Selkie",
+              clothingType: "时装",
+              rangeName: "Fall-2019(07/08/09)",
+              addUser: "刘德华",
+              dept: "业务1组",
+              addTime: "2019-01-01 10:15:01",
+              state:"已下发"
+            },
+          ];
+          this.data.tableData = SearchList;
+        });
+ 
+
   },
   methods: {
+    //系列选择触发款式组名get
+    rangeSelectionChange(){
+      console.log("系列名称选择触发");
+      console.log(this.searchOptions.searchParams.rangeName);
+      var param = {
+        brandId: this.searchOptions.searchParams.rangeName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("系列名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("系列名称选择错误");
+          this.searchOptions.options.styleGroupNameOptions = [
+            {
+              id: 5451,
+              name: "款式组1"
+            },
+            {
+              id: 27452,
+              name: "款式组2"
+            },
+            {
+              id: 356,
+              name: "款式组3"
+            },
+          ];
+        })
+    },
+    //品牌选择触发系列名称get
+    brandSelectionChange(){
+      console.log("品牌名称选择触发");
+      console.log(this.searchOptions.searchParams.brandName);
+      var param = {
+        brandId: this.searchOptions.searchParams.brandName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRange`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("品牌名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("品牌名称选择错误");
+          this.searchOptions.options.rangeNameOptions = [
+            {
+              id: 1,
+              name: "Fall-2019(07/08/09)"
+            },
+            {
+              id: 2,
+              name: "Spring-2019(01/02/03)"
+            },
+            {
+              id: 3,
+              name: "Winter-2019(10/11/12)"
+            },
+          ];
+        })
+    },
     //客户名称选择后触发品牌的get请求
     customerNameSelectionChange(){
       // consol.log(val);
@@ -475,6 +558,56 @@ export default {
       const that = this;
       console.log('搜索按钮点击');
       let searchConditionParams = that.collectSearchOptions();
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getStyleGroupList`,searchConditionParams)
+        .then(response=>{
+          var data = response.data;
+
+        })
+        .catch(error=>{
+          var SearchList = [
+            {
+              styleGroupNumber: "KSZ20190101001",
+              styleGroupName: "款式1组",
+              rangeNumber: "XL20190101001",
+              customerName: "Qi-Collection",
+              brandName: "Selkie",
+              clothingType: "时装",
+              rangeName: "Fall-2019(07/08/09)",
+              addUser: "刘德华",
+              dept: "业务1组",
+              addTime: "2019-01-01 10:15:01",
+              state:"已下发"
+            },
+            {
+              styleGroupNumber: "KSZ20190101002",
+              styleGroupName: "款式2组",
+              rangeNumber: "XL20190101002",
+              customerName: "Qi-Collection",
+              brandName: "Selkie",
+              clothingType: "时装",
+              rangeName: "Fall-2019(07/08/09)",
+              addUser: "刘德华",
+              dept: "业务2组",
+              addTime: "2019-01-01 10:15:01",
+              state:"已下发"
+            },
+            {
+              styleGroupNumber: "KSZ20190101003",
+              styleGroupName: "款式3组",
+              rangeNumber: "XL20190101003",
+              customerName: "Qi-Collection",
+              brandName: "Selkie",
+              clothingType: "时装",
+              rangeName: "Fall-2019(07/08/10)",
+              addUser: "刘德华",
+              dept: "业务2组",
+              addTime: "2019-01-02 10:15:01",
+              state:"已下发"
+            },
+          ];
+          this.data.tableData = SearchList;
+        });
     },
     // 添加款式组
     addStyleGroup(){
