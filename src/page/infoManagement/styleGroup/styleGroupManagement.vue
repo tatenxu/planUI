@@ -123,7 +123,7 @@
           <el-table-column prop="addTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center">
             <template slot-scope="scope">
-              <el-button @click="getStyleGroupData(scope.row)" type="text" size="small">查看</el-button>
+              <!-- <el-button @click="getStyleGroupData(scope.row)" type="text" size="small">查看</el-button> -->
               <el-button @click="changeStyleGroupData(scope.row)" type="text" size="small">修改</el-button>
               <el-button @click="deleteStyleGroupData(scope.row)" type="text" size="small">删除</el-button>
             </template>
@@ -199,7 +199,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="款式组名" prop="styleNumber" placeholder="请输入款式组名">
-              <el-input v-model="ruleForm.styleNumber" clearable placeholder="请输入"></el-input>
+              <el-input v-model="ruleForm.styleGroupName" clearable placeholder="请输入"></el-input>
             </el-form-item> 
           </el-col>
         </el-row>
@@ -576,7 +576,7 @@ export default {
     // 搜索按钮点击
     handleSearch(){
       const that = this;
-      console.log('搜索按钮点击');
+      console.log('搜索');
       let searchConditionParams = that.collectSearchOptions();
       this.$axios
         .get(`${window.$config.HOST}/infoManagement/getStyleGroupList`,searchConditionParams)
@@ -750,17 +750,6 @@ export default {
     changeStyleGroupData(row){
       const that = this;
       console.log("点击了本行的修改");
-      /* that.$router.push({
-        path: `/styleGroup/styleGroupInfo`,
-        query: {
-          ifStyleGroupChange: true,
-          customerName: row.customerName,
-          brandName: row.brandName,
-          clothingType: row.clothingType,
-          rangeName: row.rangeName,
-          styleGroupName: row.styleGroupName,
-        }
-      }); */
       this.controlData.ifStyleGroupChange = true;
 
       this.ruleForm.customerName = row.customerName;
@@ -793,13 +782,31 @@ export default {
           (delResult["addUser"] === row.addUser) && 
           (delResult["dept"] === row.dept) && 
           (delResult["addTime"] === row.addTime)){
-            that.data.tableData.splice(j,1);
+            this.$axios.post((`${window.$config.HOST}/infoManagement/deleteStyleGroup`),{
+              styleGroupId:row.styleGroupNumber,
+            })
+            .then(response=>{
+              var resData = response.data;
+              if(resData.errorCode >= 0){
+                that.data.tableData.splice(j,1);
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+              }else{
+                this.$message({
+                  type: 'danger',
+                  message: '删除失败!'
+                }); 
+              }
+            })
+            .catch(error=>{
+              this.$message.error(
+                  '删除失败!'
+                ); 
+            });
           }
         }
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
       }).
       catch(() => {
         this.$message({
@@ -823,44 +830,45 @@ export default {
 
       console.log(params);
 
-      this.$axios
-        .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,params)
-        .then(response=>{
-          var resData = response.data;
-        })
-        .catch(error=>{
-          if(that.controlData.ifStyleGroupAdd === true){
-            this.$message({
-              message: '成功新增款式组信息',
-              type: 'success'
-            });
-          }
-          if(that.controlData.ifStyleGroupChange === true){
-            this.$message({
-              message: '成功修改款式组信息',
-              type: 'success'
-            });
-          }
-        })
-      /* this.$refs[formName].validate((valid) => {
-        if (valid) {
-          if(that.controlData.ifStyleGroupAdd === true){
-            this.$message({
-              message: '成功新增款式组信息',
-              type: 'success'
-            });
-          }
-        if(that.controlData.ifStyleGroupChange === true){
-            this.$message({
-              message: '成功修改款式组信息',
-              type: 'success'
-            });
-          }
-        }
-      }); */
-      /* that.$router.push({
-        path: `/styleGroup/styleGroupManagement`,
-      }); */
+      if(this.controlData.ifStyleGroupAdd){
+        this.$axios
+          .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,params)
+          .then(response=>{
+            var resData = response.data;
+            if(resData.errorCode >= 0){
+              this.$message({
+                message: '成功新增款式组信息',
+                type: 'success'
+              });
+            }else{
+              this.$message.error('新增款式组信息失败');
+            }
+          })
+          .catch(error=>{
+            this.$message.error('新增款式组信息失败');
+          });
+      }else if(this.controlData.ifStyleGroupChange){
+        this.$axios
+          .post(`${window.$config.HOST}/infoManagement/updateStyleGroup`,params)
+          .then(response=>{
+            var resData = response.data;
+            if(resData.errorCode >= 0){
+              this.$message({
+                message: '成功修改款式组信息',
+                type: 'success'
+              });
+            }else{
+              this.$message.error('修改款式组信息失败');
+            }
+          })
+          .catch(error=>{
+            this.$message.error('修改款式组信息失败');
+          });
+      }
+      
+      
+      this.handleSearch();
+
       this.dialogFormVisible = false;
     },
     // 取消按钮点击
