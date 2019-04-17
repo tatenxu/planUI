@@ -30,20 +30,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">服装层次</div>
-            <!-- <el-select v-model="searchOptions.searchParams.clothingType"> -->
-            <el-select v-model="ClothingLevelValue">
-              <el-option
-                v-for="item in searchOptions.options.clothingTypeOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
+        
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
@@ -52,6 +39,21 @@
             <el-select v-model="RangeValue">
               <el-option
                 v-for="item in searchOptions.options.rangeNameOption"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">服装层次</div>
+            <!-- <el-select v-model="searchOptions.searchParams.clothingType"> -->
+            <el-select v-model="ClothingLevelValue">
+              <el-option
+                v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"

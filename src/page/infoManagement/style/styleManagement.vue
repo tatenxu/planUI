@@ -28,19 +28,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingType" >
-              <el-option
-                v-for="item in searchOptions.options.clothingTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
+        
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
@@ -54,12 +42,34 @@
             </el-select>
           </div>
         </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+
         <el-col :span="6">
           <div class="bar">
             <div class="title">订单款号</div>
-              <el-input v-model=searchOptions.searchParams.styleNumber placeholder="请输入订单款号"></el-input>
+            <el-select v-model="searchOptions.searchParams.styleNumber" >
+              <el-option
+                v-for="item in searchOptions.options.styleNumberNameOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">服装层次</div>
+            <el-select v-model="searchOptions.searchParams.clothingType" >
+              <el-option
+                v-for="item in searchOptions.options.clothingTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </div>
         </el-col>
         <el-col :span="12">
@@ -280,6 +290,16 @@ export default {
             {
               value: 3,
               label: "Winter-2019(10/11/12)"
+            },
+          ],
+          styleNumberNameOptions:[
+            {
+              value: 1,
+              label: "款号1"
+            },
+             {
+              value: 2,
+              label: "款号2"
             },
           ],
         }
