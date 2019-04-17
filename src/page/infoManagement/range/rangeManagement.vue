@@ -132,42 +132,48 @@
       </div>
     </el-card>
 
-    <el-dialog  :modal="false" title="系列信息" :visible.sync="dialogFormVisible">
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm"> 
+    <el-dialog :modal="false" title="系列信息" :visible.sync="dialogFormVisible">
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" >
+              <el-select v-model="ruleForm.customerName">
                 <el-option
                   v-for="item in options.customerNameOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                ></el-option>
               </el-select>
-            </el-form-item> 
+            </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName">
-                <el-select v-model="ruleForm.brandName" >
-                  <el-option
-                    v-for="item in options.brandNameOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-            </el-form-item> 
+              <el-select v-model="ruleForm.brandName">
+                <el-option
+                  v-for="item in options.brandNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="服装层次" prop="clothingType">
-              <el-select v-model="ruleForm.clothingType" >
+              <el-select v-model="ruleForm.clothingType">
                 <el-option
                   v-for="item in options.clothingTypeOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -185,7 +191,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
-          <el-col :span="24" >
+          <el-col :span="24">
             <el-form-item label="系列备注">
               <el-input v-model="ruleForm.rangeNote" type="textarea" :rows="3" placeholder="请输入"></el-input>
             </el-form-item>
@@ -231,28 +237,27 @@ export default {
         }
       },
       data: {
-        tableData: [
-        ]
+        tableData: []
       },
       multipleSelection: [],
       DateStart: "",
       DateEnd: "",
-      rules:{
+      rules: {
         customerName: [
-          { required: true, message: '请选择客户名称', trigger: 'change' }
+          { required: true, message: "请选择客户名称", trigger: "change" }
         ],
         brandName: [
-          { required: true, message: '请选择品牌', trigger: 'change' }
+          { required: true, message: "请选择品牌", trigger: "change" }
         ],
         clothingType: [
-          { required: true, message: '请选择服装层次', trigger: 'change' }
+          { required: true, message: "请选择服装层次", trigger: "change" }
         ],
         rangeName: [
-          { required: true, message: '请输入系列名称', trigger: 'blur' },
+          { required: true, message: "请输入系列名称", trigger: "blur" }
         ],
         rangeAmount: [
-          { required: true, message: '请输入系列款数', trigger: 'blur' },
-        ],
+          { required: true, message: "请输入系列款数", trigger: "blur" }
+        ]
       },
       ruleForm: {
         customerName: "",
@@ -260,7 +265,7 @@ export default {
         clothingType: "",
         rangeName: "",
         rangeAmount: "",
-        rangeNote: "",
+        rangeNote: ""
       },
       options: {
         customerNameOptions: [
@@ -271,7 +276,7 @@ export default {
           {
             value: 2,
             label: "B客户"
-          },
+          }
         ],
         brandNameOptions: [
           {
@@ -281,7 +286,7 @@ export default {
           {
             value: 2,
             label: "Y品牌"
-          },
+          }
         ],
         clothingTypeOptions: [
           {
@@ -295,13 +300,13 @@ export default {
           {
             value: 3,
             label: "品牌"
-          },
-        ],
+          }
+        ]
       },
       controlData: {
         ifRangeAdd: false,
-        ifRangeChange: false,
-      },
+        ifRangeChange: false
+      }
     };
   },
 
@@ -390,61 +395,61 @@ export default {
         this.searchOptions.options.clothingTypeOptions = ClothingList;
       });
 
-      this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
-          params: {
-            customerId: this.searchOptions.searchParams.customerName,
-            brandId: this.searchOptions.searchParams.brandName,
-            rangeId: this.searchOptions.searchParams.rangeName,
-            clothingLevelId: this.searchOptions.searchParams.clothingType,
-            dateStart: this.DateStart,
-            dateEnd: this.DateEnd
+    this.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
+        params: {
+          customerId: this.searchOptions.searchParams.customerName,
+          brandId: this.searchOptions.searchParams.brandName,
+          rangeId: this.searchOptions.searchParams.rangeName,
+          clothingLevelId: this.searchOptions.searchParams.clothingType,
+          dateStart: this.DateStart,
+          dateEnd: this.DateEnd
+        }
+      })
+      .then(response => {
+        var SearchList = response;
+        this.data.tableData = SearchList;
+      })
+      .catch(error => {
+        var SearchList = [
+          {
+            rangeNumber: "XL20190101001",
+            customerName: "Qi-Collection",
+            brandName: "Selkie",
+            clothingType: "时装",
+            rangeName: "Fall-2019(07/08/09)",
+            addUser: "刘德华",
+            dept: "业务1组",
+            addTime: "2019-01-01 10:15:01",
+            addMethod: "手动",
+            rangeStatus: "已绑定",
+            rangeAmount: "15",
+            rangeNote: "系列备注1"
+          },
+          {
+            rangeNumber: "XL20181001002",
+            customerName: "A客户",
+            brandName: "AAA品牌",
+            clothingType: "时装",
+            rangeName: "Spring-2019(01/02/03)",
+            addUser: "刘德华",
+            dept: "业务1组",
+            addTime: "2018-10-01 09:25:01",
+            addMethod: "导入",
+            rangeStatus: "已绑定",
+            rangeAmount: "10",
+            rangeNote: "系列备注2"
           }
-        })
-        .then(response => {
-          var SearchList = response;
-          this.data.tableData = SearchList;
-        })
-        .catch(error => {
-          var SearchList = [
-            {
-              rangeNumber: "XL20190101001",
-              customerName: "Qi-Collection",
-              brandName: "Selkie",
-              clothingType: "时装",
-              rangeName: "Fall-2019(07/08/09)",
-              addUser: "刘德华",
-              dept: "业务1组",
-              addTime: "2019-01-01 10:15:01",
-              addMethod: "手动",
-              rangeStatus: "已绑定",
-              rangeAmount: "15",
-              rangeNote: "系列备注1"
-            },
-            {
-              rangeNumber: "XL20181001002",
-              customerName: "A客户",
-              brandName: "AAA品牌",
-              clothingType: "时装",
-              rangeName: "Spring-2019(01/02/03)",
-              addUser: "刘德华",
-              dept: "业务1组",
-              addTime: "2018-10-01 09:25:01",
-              addMethod: "导入",
-              rangeStatus: "已绑定",
-              rangeAmount: "10",
-              rangeNote: "系列备注2"
-            }
-          ];
-          this.data.tableData = SearchList;
-        });
+        ];
+        this.data.tableData = SearchList;
+      });
   },
 
   methods: {
     brandSelect() {
       this.$axios
         .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
-            brandId: this.searchOptions.searchParams.brandName
+          brandId: this.searchOptions.searchParams.brandName
         })
         .then(response => {
           var RangeList = response.data;
@@ -642,30 +647,45 @@ export default {
           }
         )
           .then(() => {
-            for (var i = 0; i < that.multipleSelection.length; i++) {
-              var result = that.multipleSelection[i];
-              for (var j = 0; j < that.data.tableData.length; j++) {
-                var delResult = that.data.tableData[j];
-                if (
-                  delResult["rangeNumber"] === result.rangeNumber &&
-                  delResult["customerName"] === result.customerName &&
-                  delResult["brandName"] === result.brandName &&
-                  delResult["clothingType"] === result.clothingType &&
-                  delResult["rangeName"] === result.rangeName &&
-                  delResult["addUser"] === result.addUser &&
-                  delResult["dept"] === result.dept &&
-                  delResult["addMethod"] === result.addMethod &&
-                  delResult["rangeAmount"] === result.rangeAmount &&
-                  delResult["rangeNote"] === result.rangeNote
-                ) {
-                  that.data.tableData.splice(j, 1);
-                }
-              }
-            }
-            this.$message({
-              type: "success",
-              message: "删除成功!"
+            //      this.AnyChanged.forEach(element => {
+            //   var j = this.tableData.indexOf(element);
+            //   this.$set(this.tableData[j], "deletePeople", "已完成");
+            // });
+            this.multipleSelection.forEach(element => {
+              var params = element.rangeId;
+              this.$axios
+                .post(`${window.$config.HOST}/InfoManagement/getRangeList`, {
+                  params
+                })
+                .then(response => {
+                  var ok = response;
+                  switch (ok) {
+                    case 0:
+                      this.$message({
+                        message: "保存成功",
+                        type: "success"
+                      });
+                      break;
+                    default:
+                      this.$message({
+                        message: "保存失败",
+                        type: "warning"
+                      });
+                      break;
+                  }
+                })
+                .catch(error => {
+                  this.$message({
+                    message: "出现了一些未知的错误！",
+                    type: "warning"
+                  });
+                });
             });
+
+            // this.$message({
+            //   type: "success",
+            //   message: "删除成功!"
+            // });
           })
           .catch(() => {
             this.$message({
@@ -676,7 +696,7 @@ export default {
       }
     },
     //表格中的查看
-    getRangeData(row){
+    getRangeData(row) {
       this.dialogFormVisible = true;
     },
     // 表格中的修改
@@ -740,13 +760,13 @@ export default {
           });
         });
     },
-    submitForm(formName){
+    submitForm(formName) {
       const that = this;
       console.log("保存按钮点击");
       this.dialogFormVisible = false;
     },
     // 取消按钮点击
-    cancel(){
+    cancel() {
       const that = this;
       console.log("取消按钮点击");
       this.dialogFormVisible = false;

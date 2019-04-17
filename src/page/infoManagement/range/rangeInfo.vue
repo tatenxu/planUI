@@ -1,41 +1,47 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm"> 
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" >
+              <el-select v-model="ruleForm.customerName">
                 <el-option
                   v-for="item in options.customerNameOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                ></el-option>
               </el-select>
-            </el-form-item> 
+            </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName">
-                <el-select v-model="ruleForm.brandName" >
-                  <el-option
-                    v-for="item in options.brandNameOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-            </el-form-item> 
+              <el-select v-model="ruleForm.brandName">
+                <el-option
+                  v-for="item in options.brandNameOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="服装层次" prop="clothingType">
-              <el-select v-model="ruleForm.clothingType" >
+              <el-select v-model="ruleForm.clothingType">
                 <el-option
                   v-for="item in options.clothingTypeOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -53,7 +59,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
-          <el-col :span="24" >
+          <el-col :span="24">
             <el-form-item label="系列备注">
               <el-input v-model="ruleForm.rangeNote" type="textarea" :rows="3" placeholder="请输入"></el-input>
             </el-form-item>
@@ -76,22 +82,22 @@
 export default {
   data() {
     return {
-      rules:{
+      rules: {
         customerName: [
-          { required: true, message: '请选择客户名称', trigger: 'change' }
+          { required: true, message: "请选择客户名称", trigger: "change" }
         ],
         brandName: [
-          { required: true, message: '请选择品牌', trigger: 'change' }
+          { required: true, message: "请选择品牌", trigger: "change" }
         ],
         clothingType: [
-          { required: true, message: '请选择服装层次', trigger: 'change' }
+          { required: true, message: "请选择服装层次", trigger: "change" }
         ],
         rangeName: [
-          { required: true, message: '请输入系列名称', trigger: 'blur' },
+          { required: true, message: "请输入系列名称", trigger: "blur" }
         ],
         rangeAmount: [
-          { required: true, message: '请输入系列款数', trigger: 'blur' },
-        ],
+          { required: true, message: "请输入系列款数", trigger: "blur" }
+        ]
       },
       ruleForm: {
         customerName: "",
@@ -99,7 +105,7 @@ export default {
         clothingType: "",
         rangeName: "",
         rangeAmount: "",
-        rangeNote: "",
+        rangeNote: ""
       },
       options: {
         customerNameOptions: [
@@ -110,7 +116,7 @@ export default {
           {
             value: 2,
             label: "B客户"
-          },
+          }
         ],
         brandNameOptions: [
           {
@@ -120,7 +126,7 @@ export default {
           {
             value: 2,
             label: "Y品牌"
-          },
+          }
         ],
         clothingTypeOptions: [
           {
@@ -134,25 +140,25 @@ export default {
           {
             value: 3,
             label: "品牌"
-          },
-        ],
+          }
+        ]
       },
       controlData: {
         ifRangeAdd: false,
-        ifRangeChange: false,
-      },
+        ifRangeChange: false
+      }
     };
   },
-  created: function () {
+  created: function() {
     const that = this;
     console.log("进入系列信息页面");
     var result = {};
     result = that.$route.query;
-    if (result.hasOwnProperty("ifRangeAdd")){
+    if (result.hasOwnProperty("ifRangeAdd")) {
       that.controlData.ifRangeAdd = result["ifRangeAdd"];
       console.log("当面页面用于添加系列");
     }
-    if (result.hasOwnProperty("ifRangeChange")){
+    if (result.hasOwnProperty("ifRangeChange")) {
       that.controlData.ifRangeChange = result["ifRangeChange"];
       console.log("当面页面用于修改系列");
       that.ruleForm = result;
@@ -160,43 +166,47 @@ export default {
   },
   methods: {
     // 保存按钮点击
-    submitForm(formName){
-      const that = this;
-      console.log("保存按钮点击");
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          if(that.controlData.ifRangeAdd === true){
-            this.$message({
-              message: '成功新增系列信息',
-              type: 'success'
-            });
+    submitForm(formName) {
+      var that = this;
+      that.$axios
+        .post(`${window.$config.HOST}/InfoManagement/addRange`, formName)
+        .then(response => {
+          var ok = response;
+          switch (ok) {
+            case 0:
+              this.$message({
+                message: "保存成功",
+                type: "success"
+              });
+              break;
+            default:
+              this.$message({
+                message: "保存失败",
+                type: "warning"
+              });
+              break;
           }
-          if(that.controlData.ifRangeChange === true){
-            this.$message({
-              message: '成功修改系列信息',
-              type: 'success'
-            });
-          }
-        } 
-        else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
+        })
+        .catch(error => {
+          this.$message({
+          message: "出现了一些未知的错误！",
+          type: "warning"
+        });
+        });
       that.$router.push({
-        path: `/range/rangeManagement`,
+        path: `/range/rangeManagement`
       });
     },
     // 取消按钮点击
-    cancel(){
+    cancel() {
       const that = this;
       console.log("取消按钮点击");
       that.$router.push({
-        path: `/range/rangeManagement`,
+        path: `/range/rangeManagement`
       });
     }
   }
-}
+};
 </script>
 
 
