@@ -5,12 +5,12 @@
         <el-col :span="8">
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">客户名称：</span>
-            <el-select v-model="CustomerName" placeholder="请选择">
+            <el-select v-model="searchOptions.searchParams.customerName" clearable @change="customerNameSelectionChange">
               <el-option
-                v-for="item in customerOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in searchOptions.options.customerNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -19,12 +19,12 @@
         <el-col :span="8">
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">品牌：</span>
-            <el-select v-model="BrandName" placeholder="请选择">
+            <el-select v-model="searchOptions.searchParams.brandName"  clearable  @change="brandSelectionChange">
               <el-option
-                v-for="item in brandOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in searchOptions.options.brandNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -33,13 +33,13 @@
         <el-col :span="8">
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">系列名称</span>
-            <el-select v-model="SeriesName" placeholder="请选择">
+            <el-select v-model="searchOptions.searchParams.rangeName" >
               <el-option
-                v-for="item in rangeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
+                v-for="item in searchOptions.options.rangeNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
             </el-select>
           </div>
         </el-col>
@@ -49,18 +49,18 @@
           <div class="grid-content bg-purple inputCombineDiv">
             <span class="inputTag">新建时间：</span>
             <el-date-picker
-              v-model="Data"
+              v-model="searchOptions.searchParams.dateRange"
               type="daterange"
-              range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              :default-time="['00:00:00', '23:59:59']"
             ></el-date-picker>
           </div>
         </el-col>
 
         <el-col :span="4">
           <div class="grid-content bg-purple">
-            <el-button type="primary">搜索</el-button>
+            <el-button type="primary" @click="handleSearchClick">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -144,14 +144,9 @@
             <!-- <template slot-scope="scope">{{ scope.row.deleteTime }}</template> -->
           </el-table-column>
         </el-table>
-        <div style="margin-top: 20px">
-          <el-button type="primary" @click="toggleSelection()">取消选择</el-button>
-        </div>
       </div>
     </el-card>
   </div>
-
-
 </template>
 
 
@@ -204,93 +199,220 @@
 export default {
   data() {
     return {
-      CustomerName: "",
-      Data: "",
-      BrandName: "",
-      SeriesName: "",
-
-      tableData: [
-        {
-          excCode: "7878787",
-          planCode: "45345",
-          customer: "nike",
-          brand: "耐克",
-          planName: "计划1",
-          rangeName: "系列1",
-          planObj: "大明",
-          excContent: "死机",
-          createPerson: "王小虎",
-          deleteTime: "2016-10-16"
+       searchOptions:{
+        searchParams :{
+          customerName: "",
+          brandName: "",
+          rangeName: "",
+          dateRange: "", 
         },
-        {
-          excCode: "312",
-          planCode: "5335",
-          customer: "add",
-          brand: "阿迪",
-          planName: "计划2",
-          rangeName: "系列1",
-          planObj: "大明",
-          excContent: "死机",
-          createPerson: "王小虎",
-          deleteTime: "2016-10-16"
-        },
-        {
-          excCode: "8678",
-          planCode: "45343",
-          customer: "nb",
-          brand: "nb",
-          planName: "计划6",
-          rangeName: "系列5",
-          planObj: "大明",
-          excContent: "死机",
-          createPerson: "王小虎",
-          deleteTime: "2016-10-16"
+        options: {
+          customerNameOptions: [],
+          brandNameOptions: [],
+          rangeNameOptions: [],
         }
-      ],
+      },
+      tableData: [],
       multipleSelection: [],
-      rangeOptions: [
-        {
-          value: "系列1",
-          label: "系列1"
-        },
-        {
-          value: "系列2",
-          label: "系列2"
-        }
-      ],
-      customerOptions: [
-        {
-          value: "客户1",
-          label: "客户1"
-        },
-        {
-          value: "客户2",
-          label: "客户2"
-        }
-      ],
-      brandOptions: [
-        {
-          value: "品牌1",
-          label: "品牌1"
-        },
-        {
-          value: "品牌2",
-          label: "品牌2"
-        }
-      ]
     };
   },
 
-  methods: {
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
+  created: function () {
+    const that = this;
+    console.log('进入异常管理页面');
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .then(response => {
+        console.log("getCustomer 成功");
+        var resData = response.data;
+        resData.forEach(element => {
+          this.searchOptions.options.customerNameOptions.push({
+            value:element.id,
+            label:element.name,
+          });
         });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
+      })
+      .catch(error => {
+        console.log("getCustomer error!");
+        this.searchOptions.options.customerNameOptions = [
+          {
+            id: 42453,
+            name: "A客户"
+          },
+          {
+            id: 41526,
+            name: "B客户"
+          },
+        ];
+      });
+
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getException`)
+        .then(response => {
+          var SearchList = response;
+          this.tableData = SearchList;
+        })
+        .catch(error => {
+          var SearchList = [
+            {
+              excCode: "7878787",
+              planCode: "45345",
+              customer: "nike",
+              brand: "耐克",
+              planName: "计划1",
+              rangeName: "系列1",
+              planObj: "大明",
+              excContent: "死机",
+              createPerson: "王小虎",
+              deleteTime: "2016-10-16"
+            },
+            {
+              excCode: "312",
+              planCode: "5335",
+              customer: "add",
+              brand: "阿迪",
+              planName: "计划2",
+              rangeName: "系列1",
+              planObj: "大明",
+              excContent: "死机",
+              createPerson: "王小虎",
+              deleteTime: "2016-10-16"
+            },
+            {
+              excCode: "8678",
+              planCode: "45343",
+              customer: "nb",
+              brand: "nb",
+              planName: "计划6",
+              rangeName: "系列5",
+              planObj: "大明",
+              excContent: "死机",
+              createPerson: "王小虎",
+              deleteTime: "2016-10-16"
+            }
+          ];
+          this.tableData = SearchList;
+        });
+  },
+
+  methods: {
+    //客户名称选择后触发品牌的get请求
+    customerNameSelectionChange(){
+      // consol.log(val);
+      console.log("客户名称选择触发");
+      console.log(this.searchOptions.searchParams.customerName);
+      var param = {
+        customerId: this.searchOptions.searchParams.customerName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("客户名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("客户名称选择错误");
+          this.searchOptions.options.brandNameOptions = [
+            {
+              id: 1,
+              name: "X品牌"
+            },
+            {
+              id: 2,
+              name: "Y品牌"
+            },
+          ];
+        })
     },
+    //品牌名称选择后触发请求
+    brandSelectionChange(){
+      console.log("品牌名称选择触发");
+      console.log(this.searchOptions.searchParams.brandName);
+      var param = {
+        brandId: this.searchOptions.searchParams.brandName,
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRange`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("品牌名称选择错误");
+          }
+        })
+        .catch(error => {
+          console.log("品牌名称选择错误");
+          this.searchOptions.options.rangeNameOptions = [
+            {
+              id: 1,
+              name: "Fall-2019(07/08/09)"
+            },
+            {
+              id: 2,
+              name: "Spring-2019(01/02/03)"
+            },
+            {
+              id: 3,
+              name: "Winter-2019(10/11/12)"
+            },
+          ];
+        })
+    },
+    //搜索按钮
+    handleSearchClick(){
+      var params;
+      params = {
+        customerId: this.searchOptions.searchParams.customerName,
+        brandId: this.searchOptions.searchParams.brandName,
+        rangeId: this.searchOptions.searchParams.rangeName,
+        createTime: this.searchOptions.searchParams.dateRange,
+      };
+      console.log(params);
+
+        this.$axios
+            .post(`${window.$config.HOST}/planManagement/getException`,params)
+            .then(response => {
+              var SearchList = response;
+              this.tableData = SearchList;
+            })
+            .catch(error => {
+              var SearchList = [
+                {
+                  excCode: "7878787",
+                  planCode: "45345",
+                  customer: "nike",
+                  brand: "耐克",
+                  planName: "计划1",
+                  rangeName: "系列1",
+                  planObj: "大明",
+                  excContent: "死机",
+                  createPerson: "王小虎",
+                  deleteTime: "2016-10-16"
+                },
+                {
+                  excCode: "312",
+                  planCode: "5335",
+                  customer: "add",
+                  brand: "阿迪",
+                  planName: "计划2",
+                  rangeName: "系列1",
+                  planObj: "大明",
+                  excContent: "死机",
+                  createPerson: "王小虎",
+                  deleteTime: "2016-10-16"
+                },
+              ];
+              this.tableData = SearchList;
+            });
+    },
+    // toggleSelection(rows) {
+    //   if (rows) {
+    //     rows.forEach(row => {
+    //       this.$refs.multipleTable.toggleRowSelection(row);
+    //     });
+    //   } else {
+    //     this.$refs.multipleTable.clearSelection();
+    //   }
+    // },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     }
