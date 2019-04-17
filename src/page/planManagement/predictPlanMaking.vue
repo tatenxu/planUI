@@ -98,12 +98,13 @@
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="addPeople" label="添加人" align="center"></el-table-column>
         <el-table-column prop="department" label="部门" align="center"></el-table-column>
-        <el-table-column prop="statue" label="状态" align="center"></el-table-column>
+        <!-- <el-table-column prop="statue" label="状态" align="center"></el-table-column> -->
         <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
 
-        <el-table-column  fixed="right" width="150" align="center">
+        <el-table-column  fixed="right" width="200" align="center">
           <template slot-scope="scope">
             <el-button @click="makePredict(scope.row)" type="text" size="small">查看</el-button>
+            <el-button @click="makePredict(scope.row)" type="text" size="small">提交</el-button>
             <el-button @click="makePredict(scope.row)" type="text" size="small">修改</el-button>
             <el-button @click="deleteDate(scope.row)" type="text" size="small">删除</el-button>
 

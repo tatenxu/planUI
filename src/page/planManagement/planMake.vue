@@ -25,12 +25,12 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="8">
+        <!-- <el-col :span="8">
           <div class="bar">
             <div class="title">计划编号</div>
             <el-input v-model="planID" clearable :rows="1" placeholder="planID" :disabled="true"></el-input>
           </div>
-        </el-col>
+        </el-col> -->
 
         <el-col :span="8">
           <div class="bar">

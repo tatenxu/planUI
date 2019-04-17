@@ -98,7 +98,7 @@
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="addPeople" label="添加人" align="center"></el-table-column>
         <el-table-column prop="department" label="部门" align="center"></el-table-column>
-        <el-table-column prop="statue" label="状态" align="center"></el-table-column>
+        <!-- <el-table-column prop="statue" label="状态" align="center"></el-table-column> -->
         <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
 
         <el-table-column  fixed="right" width="150" align="center">

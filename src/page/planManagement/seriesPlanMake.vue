@@ -79,16 +79,13 @@
               ></el-date-picker>-->
             </div>
           </el-col>
-          <el-col :span="8" class="MinW" style="margin-left:30px">
+          <!-- <el-col :span="8" class="MinW" style="margin-left:30px">
             <el-radio v-model="checked" label="1">未制定</el-radio>
             <el-radio v-model="checked" label="2">已制定</el-radio>
             <el-radio v-model="checked" label="3">未完成</el-radio>
             <el-radio v-model="checked" label="4">已完成</el-radio>
-            <!-- <el-checkbox v-model="checked1">未制定</el-checkbox>
-            <el-checkbox v-model="checked2">已制定</el-checkbox>
-            <el-checkbox v-model="checked3">未完成</el-checkbox>
-            <el-checkbox v-model="checked4">已完成</el-checkbox>-->
-          </el-col>
+            
+          </el-col> -->
         </el-row>
         <el-row :gutter="20">
           <el-col :span="8">
@@ -141,7 +138,7 @@
           <el-table-column prop="State" label="状态" align="center"></el-table-column>
           <el-table-column label="操作" align="center" width="200px">
             <template slot-scope="scope">
-              <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button>
+              <!-- <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button> -->
               <el-dialog title="系列详情" :visible.sync="ViewDetails" :modal="false">
                 <el-tree :data="SeriesDetail" :props="defaultProps"></el-tree>
                 <el-button type="primary" @click="ViewDetails=false" style="margin-left:90%">确认</el-button>
