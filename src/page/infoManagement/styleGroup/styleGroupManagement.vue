@@ -21,9 +21,9 @@
             <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelectionChange()" >
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
-                :key="item.name"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -62,11 +62,11 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingType" >
+            <el-select v-model="searchOptions.searchParams.clothingLevelName" >
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.id"
-                :label="item.clothingType"
+                :label="item.clothingLevelName"
                 :value="item.id">
               </el-option>
             </el-select>
@@ -119,11 +119,11 @@
           <el-table-column prop="customerName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="rangeName" width="150" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="addUser" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="dept" label="部门" align="center"></el-table-column>
+          <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="state" width="70" label="状态" align="center"></el-table-column>
-          <el-table-column prop="addTime" width="170" label="添加时间" align="center"></el-table-column>
+          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center">
             <template slot-scope="scope">
               <!-- <el-button @click="getStyleGroupData(scope.row)" type="text" size="small">查看</el-button> -->
@@ -152,7 +152,7 @@
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" @change="dialogCustomerNameSelectionChange()" >
+              <el-select v-model="ruleForm.tmpCustomer" @change="dialogCustomerNameSelectionChange()" >
                 <el-option
                   v-for="item in options.customerNameOptions"
                   :key="item.id"
@@ -164,23 +164,23 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
-              <el-select v-model="ruleForm.brandName" @change="dialogBrandSelectionChange()">
+              <el-select v-model="ruleForm.tmpBrand" @change="dialogBrandSelectionChange()">
                 <el-option
                   v-for="item in options.brandNameOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item> 
           </el-col>
           <!-- <el-col :span="8">
-            <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
-              <el-select v-model="ruleForm.clothingType" >
+            <el-form-item label="服装层次" prop="clothingLevelName" placeholder="请选择服装层次">
+              <el-select v-model="ruleForm.clothingLevelName" >
                 <el-option
                   v-for="item in options.clothingTypeOptions"
                   :key="item.id"
-                  :label="item.clothingType"
+                  :label="item.clothingLevelName"
                   :value="item.id">
                 </el-option>
               </el-select>
@@ -190,19 +190,19 @@
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="系列名称" prop="rangeName" placeholder="请选择系列名称">
-              <el-select v-model="ruleForm.rangeName" >
+              <el-select v-model="ruleForm.tmpRange" >
                 <el-option
                   v-for="item in options.rangeNameTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item> 
           </el-col>
           <el-col :span="8">
             <el-form-item label="款式组名" prop="styleNumber" placeholder="请输入款式组名">
-              <el-input v-model="ruleForm.styleGroupName" clearable placeholder="请输入"></el-input>
+              <el-input v-model="ruleForm.tmpStyleGroup" clearable placeholder="请输入"></el-input>
             </el-form-item> 
           </el-col>
         </el-row>
@@ -220,6 +220,8 @@
 </template>
 
 <script>
+import styleManagementVue from '../style/styleManagement.vue';
+import { error } from 'util';
 export default {
   data() {
     return {
@@ -233,7 +235,7 @@ export default {
         searchParams :{
           customerName: "",
           brandName: "",
-          clothingType: "",
+          clothingLevelName: "",
           rangeName: "",
           styleGroupName: "",
           dateRange: "", 
@@ -258,7 +260,7 @@ export default {
         brandName: [
           { required: true, message: '请选择品牌', trigger: 'change' }
         ],
-        clothingType: [
+        clothingLevelName: [
           { required: true, message: '请选择服装层次', trigger: 'change' }
         ],
         rangeName: [
@@ -269,11 +271,28 @@ export default {
         ],
       },
       ruleForm: {
-        customerName: "",
-        brandName: "",
-        clothingType: "",
-        rangeName: "",
+        tmpCustomer:"",
+        tmpBrand:"",
+        tmpRange:"",
+        tmpStyleGroup:"",
+
+        styleGroupId: "",
+        styleGroupNumber: "",
         styleGroupName: "",
+        rangeNumber:"" ,
+        rangeId: "",
+        rangeName:"" ,
+        customerName:"" ,
+        customerId:"",
+        brandName: "",
+        brandId: "",
+        clothingLevelName:"" ,
+        clothingLevelId:"",
+        createrName: "",
+        deptName: "",
+        createTime: "",
+        state:"",
+        havePlan:"",
       },
       options: {
         customerNameOptions: [],
@@ -289,7 +308,9 @@ export default {
   },
   created: function () {
     const that = this;
-    console.log('进入系列管理页面');
+    console.log('进入款式组管理页面');
+
+    //获取客户名称
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getCustomer`)
       .then(response => {
@@ -297,9 +318,10 @@ export default {
         var resData = response.data;
         resData.forEach(element => {
           this.searchOptions.options.customerNameOptions.push({
-            value:element.id,
-            label:element.name,
+            id:element.id,
+            name:element.name,
           });
+          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
         });
       })
       .catch(error => {
@@ -317,56 +339,186 @@ export default {
         this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       });
 
-      that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+    //获取服装层次
+    that.$axios
+    .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+    .then(response => {
+      var ClothingList = response;
+      this.searchOptions.options.clothingTypeOptions = ClothingList;
+    })
+    .catch(error => {
+      var ClothingList = [
+        {
+          id: 1,
+          clothingLevelName: "时装"
+        },
+        {
+          id: 2,
+          clothingLevelName: "精品"
+        },
+        {
+          id: 3,
+          clothingLevelName: "时尚"
+        }
+      ];
+      this.searchOptions.options.clothingTypeOptions = ClothingList;
+      this.options.clothingTypeOptions = ClothingList;
+    });
+
+    //默认获取所有款式组
+    this.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupList`)
       .then(response => {
-        var ClothingList = response;
-        this.searchOptions.options.clothingTypeOptions = ClothingList;
+        var SearchList = response.data;
+        this.data.tableData = SearchList;
+
+        SearchList.forEach(element=>{
+          this.data.tableData.push({
+            styleGroupId: element.id,
+            styleGroupNumber: element.number,
+            styleGroupName: element.name,
+            rangeNumber: element.rangeNumber,
+            rangeId: element.rangeId,
+            rangeName: element.rangeName,
+            customerName: element.customerName,
+            customerId:element.customerId,
+            brandName: element.brandName,
+            brandId: element.brandId,
+            clothingLevelName: element.clothingLevelName,
+            clothingLevelId:element.clothingLevelId,
+            createrName: element.createrName,
+            deptName: element.deptName,
+            createTime: element.createTime,
+            state:element.state,
+            havePlan:element.havePlan,
+          });
+        });
+
       })
       .catch(error => {
-        var ClothingList = [
+        var SearchList = [
+          {
+            styleGroupId: "475342343",
+            styleGroupNumber: "KSZ20190101001",
+            styleGroupName: "款式1组",
+            rangeNumber:"XL20190101001" ,
+            rangeId: "48674231",
+            rangeName:"Fall-2019(07/08/09)" ,
+            customerName:"Qi-Collection" ,
+            customerId:"745341",
+            brandName: "Selkie",
+            brandId: "574531423",
+            clothingLevelName:"时装" ,
+            clothingLevelId:"575123",
+            createrName: "刘德华",
+            deptName: "业务1组",
+            createTime: "2019-01-01 10:15:01",
+            state:"已下发",
+            havePlan:"1",
+          },
+        ];
+        this.data.tableData = SearchList;
+      });
+ 
+    //品牌名称选择获取
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("品牌名称选择错误");
+        }else{
+          response.data.forEach(element=>{
+            this.searchOptions.options.brandNameOptions.push({
+              id: element.id,
+              name: element.name
+            });
+          });
+          this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.brandNameOptions = [
           {
             id: 1,
-            clothingType: "时装"
+            name: "X品牌"
           },
           {
             id: 2,
-            clothingType: "精品"
+            name: "Y品牌"
+          },
+        ];
+        this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+      });
+
+    //获取系列
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("系列名称获取错误");
+        }else{
+          response.data.forEach(element=>{
+            this.searchOptions.options.rangeNameOptions.push({
+              id: element.id,
+              name: element.name
+            });
+          });
+
+          this.options.rangeNameTypeOptions = this.searchOptions.options.rangeNameOptions;
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.rangeNameOptions = [
+          {
+            id: 1,
+            name: "Fall-2019(07/08/09)"
+          },
+          {
+            id: 2,
+            name: "Spring-2019(01/02/03)"
           },
           {
             id: 3,
-            clothingType: "时尚"
-          }
+            name: "Winter-2019(10/11/12)"
+          },
         ];
-        this.searchOptions.options.clothingTypeOptions = ClothingList;
-        this.options.clothingTypeOptions = ClothingList;
+        this.options.rangeNameTypeOptions = this.searchOptions.options.rangeNameOptions;
       });
-
-        this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getRangeList`)
-        .then(response => {
-          var SearchList = response;
-          this.data.tableData = SearchList;
-        })
-        .catch(error => {
-          var SearchList = [
-            {
-              styleGroupNumber: "KSZ20190101001",
-              styleGroupName: "款式1组",
-              rangeNumber: "XL20190101001",
-              customerName: "Qi-Collection",
-              brandName: "Selkie",
-              clothingType: "时装",
-              rangeName: "Fall-2019(07/08/09)",
-              addUser: "刘德华",
-              dept: "业务1组",
-              addTime: "2019-01-01 10:15:01",
-              state:"已下发"
-            },
-          ];
-          this.data.tableData = SearchList;
-        });
- 
+    
+    //获取款式组名
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("款式组获取错误");
+        }else{
+          response.data.forEach(element=>{
+            this.searchOptions.options.styleGroupNameOptions.push({
+              id:element.name,
+              name:element.name
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.log("款式组获取错误");
+        this.searchOptions.options.styleGroupNameOptions = [
+          {
+            id: 5451,
+            name: "款式组1"
+          },
+          {
+            id: 27452,
+            name: "款式组2"
+          },
+          {
+            id: 356,
+            name: "款式组3"
+          },
+        ];
+      });
 
   },
   methods: {
@@ -374,156 +526,45 @@ export default {
     rangeSelectionChange(){
       console.log("系列名称选择触发");
       console.log(this.searchOptions.searchParams.rangeName);
-      var param = {
-        brandId: this.searchOptions.searchParams.rangeName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("系列名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("系列名称选择错误");
-          this.searchOptions.options.styleGroupNameOptions = [
-            {
-              id: 5451,
-              name: "款式组1"
-            },
-            {
-              id: 27452,
-              name: "款式组2"
-            },
-            {
-              id: 356,
-              name: "款式组3"
-            },
-          ];
-        })
+      // var param = {
+      //   brandId: this.searchOptions.searchParams.rangeName,
+      // };
+      
     },
     //品牌选择触发系列名称get
     brandSelectionChange(){
       console.log("品牌名称选择触发");
       console.log(this.searchOptions.searchParams.brandName);
-      var param = {
-        brandId: this.searchOptions.searchParams.brandName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRange`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("品牌名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("品牌名称选择错误");
-          this.searchOptions.options.rangeNameOptions = [
-            {
-              id: 1,
-              name: "Fall-2019(07/08/09)"
-            },
-            {
-              id: 2,
-              name: "Spring-2019(01/02/03)"
-            },
-            {
-              id: 3,
-              name: "Winter-2019(10/11/12)"
-            },
-          ];
-        })
+      // var param = {
+      //   brandId: this.searchOptions.searchParams.brandName,
+      // };
+      
     },
     //品牌名称选择后触发品牌的get请求
     dialogBrandSelectionChange(){
       // consol.log(val);
       console.log("对话框品牌名称选择触发");
       console.log(this.ruleForm.brandName);
-      var param = {
-        customerId: this.ruleForm.brandName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRange`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("对话框品牌名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("对话框品牌名称选择错误");
-          this.options.rangeNameTypeOptions = [
-            {
-              value: 1,
-              label: "Fall-2019(07/08/09)"
-            },
-            {
-              value: 2,
-              label: "Spring-2019(01/02/03)"
-            },
-            {
-              value: 3,
-              label: "Winter-2019(10/11/12)"
-            },
-          ];
-        })
+      // var param = {
+      //   customerId: this.ruleForm.brandName,
+      // };
+      
     },
     //客户名称选择后触发品牌的get请求
     customerNameSelectionChange(){
       // consol.log(val);
       console.log("客户名称选择触发");
       console.log(this.searchOptions.searchParams.customerName);
-      var param = {
-        customerId: this.searchOptions.searchParams.customerName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("客户名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("客户名称选择错误");
-          this.searchOptions.options.brandNameOptions = [
-            {
-              value: 1,
-              label: "X品牌"
-            },
-            {
-              value: 2,
-              label: "Y品牌"
-            },
-          ];
-        })
+      
     },
     //客户名称选择后触发品牌的get请求
     dialogCustomerNameSelectionChange(){
       // consol.log(val);
       console.log("对话框客户名称选择触发");
       console.log(this.ruleForm.customerName);
-      var param = {
-        customerId: this.ruleForm.customerName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("对话框客户名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("对话框客户名称选择错误");
-          this.options.brandNameOptions = [
-            {
-              value: 1,
-              label: "X品牌"
-            },
-            {
-              value: 2,
-              label: "Y品牌"
-            },
-          ];
-        })
+      // var param = {
+      //   customerId: this.ruleForm.customerName,
+      // };
     },
     // 改变日期格式
     changeDate(date){
@@ -590,43 +631,61 @@ export default {
         .catch(error=>{
           var SearchList = [
             {
+              styleGroupId: "475342343",
               styleGroupNumber: "KSZ20190101001",
               styleGroupName: "款式1组",
-              rangeNumber: "XL20190101001",
-              customerName: "Qi-Collection",
+              rangeNumber:"XL20190101001" ,
+              rangeId: "48674231",
+              rangeName:"Fall-2019(07/08/09)" ,
+              customerName:"Qi-Collection" ,
+              customerId:"745341",
               brandName: "Selkie",
-              clothingType: "时装",
-              rangeName: "Fall-2019(07/08/09)",
-              addUser: "刘德华",
-              dept: "业务1组",
-              addTime: "2019-01-01 10:15:01",
-              state:"已下发"
+              brandId: "574531423",
+              clothingLevelName:"时装" ,
+              clothingLevelId:"575123",
+              createrName: "刘德华",
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              state:"已下发",
+              havePlan:"1",
             },
             {
-              styleGroupNumber: "KSZ20190101002",
+              styleGroupId: "475342343",
+              styleGroupNumber: "KSZ20190101001",
               styleGroupName: "款式2组",
-              rangeNumber: "XL20190101002",
-              customerName: "Qi-Collection",
+              rangeNumber:"XL20190101001" ,
+              rangeId: "48674231",
+              rangeName:"Fall-2019(07/08/09)" ,
+              customerName:"Qi-Collection" ,
+              customerId:"745341",
               brandName: "Selkie",
-              clothingType: "时装",
-              rangeName: "Fall-2019(07/08/09)",
-              addUser: "刘德华",
-              dept: "业务2组",
-              addTime: "2019-01-01 10:15:01",
-              state:"已下发"
+              brandId: "574531423",
+              clothingLevelName:"时装" ,
+              clothingLevelId:"575123",
+              createrName: "刘德华",
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              state:"已下发",
+              havePlan:"1",
             },
             {
-              styleGroupNumber: "KSZ20190101003",
+              styleGroupId: "475342343",
+              styleGroupNumber: "KSZ20190101001",
               styleGroupName: "款式3组",
-              rangeNumber: "XL20190101003",
-              customerName: "Qi-Collection",
+              rangeNumber:"XL20190101001" ,
+              rangeId: "48674231",
+              rangeName:"Fall-2019(07/08/09)" ,
+              customerName:"Qi-Collection" ,
+              customerId:"745341",
               brandName: "Selkie",
-              clothingType: "时装",
-              rangeName: "Fall-2019(07/08/10)",
-              addUser: "刘德华",
-              dept: "业务2组",
-              addTime: "2019-01-02 10:15:01",
-              state:"已下发"
+              brandId: "574531423",
+              clothingLevelName:"时装" ,
+              clothingLevelId:"575123",
+              createrName: "刘德华",
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              state:"已下发",
+              havePlan:"1",
             },
           ];
           this.data.tableData = SearchList;
@@ -636,12 +695,7 @@ export default {
     addStyleGroup(){
       const that = this;
       console.log('添加款式组按钮点击');
-      /* that.$router.push({
-        path: `/styleGroup/styleGroupInfo`,
-        query: {
-          ifStyleGroupAdd: true,
-        }
-      }); */
+      
       this.controlData.ifStyleGroupAdd = true;
 
       this.dialogFormVisible = true;
@@ -666,6 +720,8 @@ export default {
         .then(() => {
           for (var i = 0; i < that.multipleSelection.length; i++){
             var result = that.multipleSelection[i];
+
+            deleteStyleGroupData(result);
             for(var j = 0; j < that.data.tableData.length; j++){
               var delResult = that.data.tableData[j];
               if ((delResult["styleGroupNumber"] === result.styleGroupNumber) && 
@@ -673,11 +729,11 @@ export default {
               (delResult["styleNumber"] === result.styleNumber) && 
               (delResult["customerName"] === result.customerName) && 
               (delResult["brandName"] === result.brandName) && 
-              (delResult["clothingType"] === result.clothingType) &&
+              (delResult["clothingLevelName"] === result.clothingLevelName) &&
               (delResult["rangeName"] === result.rangeName) && 
-              (delResult["addUser"] === result.addUser) && 
-              (delResult["dept"] === result.dept) && 
-              (delResult["addTime"] === result.addTime)){
+              (delResult["createrName"] === result.createrName) && 
+              (delResult["deptName"] === result.deptName) && 
+              (delResult["createTime"] === result.createTime)){
                 that.data.tableData.splice(j,1);
               }
             }
@@ -713,9 +769,25 @@ export default {
           type: 'warning'
         })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '解绑成功!'
+          this.multipleSelection.forEach(element=>{
+            console.log("开始解绑");
+            this.$axios.post((`${window.$config.HOST}/infoManagement/unbindStyleGroup`),{
+              id:element.styleGroupId,
+            })
+              .then(response=>{
+                var resData = response.data;
+                if(resData.errcode < 0){
+                  this.$message.error(element.styleGroupName+"解绑失败!")
+                }else{
+                  this.$message({
+                    type: 'success',
+                    message: element.styleGroupNam + '解绑成功!'
+                  });
+                }
+              })
+              .catch(error=>{
+                this.$message.error(element.styleGroupName+"解绑失败!")
+              });
           });
         })
         .catch(() => {
@@ -726,40 +798,45 @@ export default {
         });
       }
     },
-    //查看操作
+    /* //查看操作
     getStyleGroupData(row){
-      /* this.$router.push({
-        path: `/styleGroup/styleGroupInfo`,
-        query: {
-          ifStyleGroupChange: true,
-          customerName: row.customerName,
-          brandName: row.brandName,
-          clothingType: row.clothingType,
-          rangeName: row.rangeName,
-          styleGroupName: row.styleGroupName,
-        }
-      }); */
-
       this.ruleForm.customerName = row.customerName;
       this.ruleForm.brandName = row.brandName;
-      this.ruleForm.clothingType = row.clothingType;
+      this.ruleForm.clothingLevelName = row.clothingLevelName;
       this.ruleForm.rangeName = row.rangeName;
       this.ruleForm.styleGroupName = row.styleGroupName;
 
       this.dialogFormVisible = true;
 
-    },
+    }, */
     // 表格中的修改
     changeStyleGroupData(row){
       const that = this;
       console.log("点击了本行的修改");
       this.controlData.ifStyleGroupChange = true;
+      
+      this.ruleForm.tmpCustomer = row.customerName,
+      this.ruleForm.tmpBrand = row.brandName,
+      this.ruleForm.tmpRange = row.rangeName,
+      this.ruleForm.tmpStyleGroup = row.styleGroupName,
 
-      this.ruleForm.customerName = row.customerName;
-      this.ruleForm.brandName = row.brandName;
-      this.ruleForm.clothingType = row.clothingType;
-      this.ruleForm.rangeName = row.rangeName;
-      this.ruleForm.styleGroupName = row.styleGroupName;
+      this.ruleForm.styleGroupId = row.styleGroupId,
+      this.ruleForm.styleGroupNumber= row.styleGroupNumber,
+      this.ruleForm.styleGroupName= row.styleGroupName,
+      this.ruleForm.rangeNumber=row.rangeNumber,
+      this.ruleForm.rangeId=row.rangeId,
+      this.ruleForm.rangeName= row.rangeName,
+      this.ruleForm.customerName= row.customerName,
+      this.ruleForm.customerId=row.customerId,
+      this.ruleForm.brandName= row.brandName,
+      this.ruleForm.brandId= row.brandId,
+      this.ruleForm.clothingLevelName= row.clothingLevelName,
+      this.ruleForm.clothingLevelId=row.clothingLevelId,
+      this.ruleForm.createrName= row.createrName,
+      this.ruleForm.deptName= row.deptName,
+      this.ruleForm.createTime= row.createTime,
+      this.ruleForm.state=row.state,
+      this.ruleForm.havePlan=row.havePlan,
 
       this.dialogFormVisible = true;
     },
@@ -780,34 +857,34 @@ export default {
           (delResult["styleNumber"] === row.styleNumber) && 
           (delResult["customerName"] === row.customerName) && 
           (delResult["brandName"] === row.brandName) && 
-          (delResult["clothingType"] === row.clothingType) &&
+          (delResult["clothingLevelName"] === row.clothingLevelName) &&
           (delResult["rangeName"] === row.rangeName) && 
-          (delResult["addUser"] === row.addUser) && 
-          (delResult["dept"] === row.dept) && 
-          (delResult["addTime"] === row.addTime)){
+          (delResult["createrName"] === row.createrName) && 
+          (delResult["deptName"] === row.deptName) && 
+          (delResult["createTime"] === row.createTime)){
             this.$axios.post((`${window.$config.HOST}/infoManagement/deleteStyleGroup`),{
-              styleGroupId:row.styleGroupNumber,
+              id:row.styleGroupId,
             })
-            .then(response=>{
-              var resData = response.data;
-              if(resData.errorCode >= 0){
-                that.data.tableData.splice(j,1);
-                this.$message({
-                  type: 'success',
-                  message: '删除成功!'
-                });
-              }else{
-                this.$message({
-                  type: 'danger',
-                  message: '删除失败!'
-                }); 
-              }
-            })
-            .catch(error=>{
-              this.$message.error(
-                  '删除失败!'
-                ); 
-            });
+              .then(response=>{
+                var resData = response.data;
+                if(resData.errorCode >= 0){
+                  that.data.tableData.splice(j,1);
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  });
+                }else{
+                  this.$message({
+                    type: 'danger',
+                    message: '删除失败!'
+                  }); 
+                }
+              })
+              .catch(error=>{
+                this.$message.error(
+                    '删除失败!'
+                  ); 
+              });
           }
         }
       }).
@@ -823,12 +900,14 @@ export default {
       const that = this;
       console.log("保存按钮点击");
 
+      // console.log(this.ruleForm.customerId);
       var params = {
-        customerId : this.ruleForm.customerName,
-        brandId : this.ruleForm.brandName,
-        rangeId : this.ruleForm.rangeName, 
-        clothingLevel : this.ruleForm.clothingType,
-        styleGroupName : this.ruleForm.styleGroupName,
+        id : this.ruleForm.styleGroupId,
+        name : this.ruleForm.tmpStyleGroup ,
+        customerId : ((this.ruleForm.tmpCustomer === this.ruleForm.customerName)? this.ruleForm.customerId:this.ruleForm.tmpCustomer),
+        brandId : ((this.ruleForm.tmpBrand === this.ruleForm.brandName)? this.ruleForm.brandId:this.ruleForm.tmpBrand),
+        rangeId :  ((this.ruleForm.tmpRange === this.ruleForm.rangeName)? this.ruleForm.rangeId:this.ruleForm.tmpRange),
+        // clothingLevelId: this.ruleForm.clothingLevelName,
       };
 
       console.log(params);
