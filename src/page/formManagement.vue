@@ -37,7 +37,7 @@ function getDate(hours) {
 let tasks = [
   {
     id: 1,
-    label: "Make some noise",
+    label: "发红包了",
     user:
       '<a href="https://www.google.com/search?q=John+Doe" target="_blank" style="color:#0077c0;">John Doe</a>',
     start: getDate(-24 * 5),

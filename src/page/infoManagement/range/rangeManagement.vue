@@ -110,7 +110,7 @@
           :stripe="true"
           :highlight-current-row="true"
           style="width: 100%; margin-top: 20px"
-        > 
+        >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="number" width="130" label="系列编号" align="center"></el-table-column>
@@ -179,7 +179,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-             <el-col :span="8">
+          <el-col :span="8">
             <el-form-item label="系列名称">
               <el-select v-model="ruleForm.name ">
                 <el-option
@@ -348,7 +348,7 @@ export default {
           customerNameOptions: [],
           brandNameOptions: [],
           clothingTypeOptions: [],
-          
+
           rangeNameOption: []
         }
       },
@@ -371,7 +371,6 @@ export default {
         // ]
       },
       ruleForm: {
-        
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
@@ -419,12 +418,63 @@ export default {
   // },
   created: function() {
     var that = this;
+
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
+      .then(response => {
+        this.searchOptions.options.brandNameOptions = response;
+        this.ruleForm.options.brandNameOptions = response;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            name: "时装"
+          },
+          {
+            id: 2,
+            name: "精品"
+          },
+          {
+            id: 3,
+            name: "时尚"
+          }
+        ];
+        this.searchOptions.options.brandNameOptions = ClothingList;
+        this.ruleForm.options.brandNameOptions = ClothingList;
+      });
+
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .then(response => {
+        this.searchOptions.options.rangeNameOption = response;
+        this.ruleForm.options.rangeNameOption = response;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            name: "时装"
+          },
+          {
+            id: 2,
+            name: "精品"
+          },
+          {
+            id: 3,
+            name: "时尚"
+          }
+        ];
+        this.searchOptions.options.rangeNameOption = ClothingList;
+        this.ruleForm.options.rangeNameOption = ClothingList;
+      });
+
     that.$axios
       .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
       .then(response => {
         var CustomerList = response;
         this.searchOptions.options.customerNameOptions = CustomerList;
-        this.ruleForm.options.customerNameOptions=this.searchOptions.options.customerNameOptions;
+        this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       })
       .catch(error => {
         var CustomerList = [
@@ -442,7 +492,7 @@ export default {
           }
         ];
         this.searchOptions.options.customerNameOptions = CustomerList;
-        this.ruleForm.options.customerNameOptions=this.searchOptions.options.customerNameOptions;
+        this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       });
 
     that.$axios
@@ -450,7 +500,7 @@ export default {
       .then(response => {
         var ClothingList = response;
         this.searchOptions.options.clothingTypeOptions = ClothingList;
-        this.ruleForm.options.clothingTypeOptions=this.searchOptions.options.clothingTypeOptions;
+        this.ruleForm.options.clothingTypeOptions = this.searchOptions.options.clothingTypeOptions;
       })
       .catch(error => {
         var ClothingList = [
@@ -468,7 +518,7 @@ export default {
           }
         ];
         this.searchOptions.options.clothingTypeOptions = ClothingList;
-        this.ruleForm.options.clothingTypeOptions=this.searchOptions.options.clothingTypeOptions;
+        this.ruleForm.options.clothingTypeOptions = this.searchOptions.options.clothingTypeOptions;
       });
 
     this.$axios
@@ -523,128 +573,126 @@ export default {
   },
 
   methods: {
-    //当品牌改变的时候GET系列名称
-    brandSelect() {
-      this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
-          brandId: this.BrandValue
-        })
-        .then(response => {
-          var RangeList = response.data;
-          this.searchOptions.options.rangeNameOption = RangeList;
-        })
-        .catch(error => {
-          var RangeList = [
-            {
-              id: 1,
-              name: "系列A"
-            },
-            {
-              id: 2,
-              name: "系列B"
-            },
-            {
-              id: 3,
-              name: "系列C"
-            }
-          ];
-          this.searchOptions.options.rangeNameOption = RangeList;
-        });
-    },
+    // //当品牌改变的时候GET系列名称
+    // brandSelect() {
+    //   this.$axios
+    //     .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
+    //       brandId: this.BrandValue
+    //     })
+    //     .then(response => {
+    //       var RangeList = response.data;
+    //       this.searchOptions.options.rangeNameOption = RangeList;
+    //     })
+    //     .catch(error => {
+    //       var RangeList = [
+    //         {
+    //           id: 1,
+    //           name: "系列A"
+    //         },
+    //         {
+    //           id: 2,
+    //           name: "系列B"
+    //         },
+    //         {
+    //           id: 3,
+    //           name: "系列C"
+    //         }
+    //       ];
+    //       this.searchOptions.options.rangeNameOption = RangeList;
+    //     });
+    // },
 
-    //当客户名称改变的时候GET品牌信息
-    clientSelect() {
-      this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
-          params: {
-            custumerId: this.CustomerValue
-          }
-        })
-        .then(response => {
-          var BrandList = response;
-          this.searchOptions.options.brandNameOptions = BrandList;
-        })
-        .catch(error => {
-          var BrandList = [
-            {
-              id: 1,
-              name: "品牌A"
-            },
-            {
-              id: 2,
-              name: "品牌B"
-            },
-            {
-              id: 3,
-              name: "品牌C"
-            }
-          ];
-          this.searchOptions.options.brandNameOptions = BrandList;
-        });
-    },
+    // //当客户名称改变的时候GET品牌信息
+    // clientSelect() {
+    //   this.$axios
+    //     .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
+    //       params: {
+    //         custumerId: this.CustomerValue
+    //       }
+    //     })
+    //     .then(response => {
+    //       var BrandList = response;
+    //       this.searchOptions.options.brandNameOptions = BrandList;
+    //     })
+    //     .catch(error => {
+    //       var BrandList = [
+    //         {
+    //           id: 1,
+    //           name: "品牌A"
+    //         },
+    //         {
+    //           id: 2,
+    //           name: "品牌B"
+    //         },
+    //         {
+    //           id: 3,
+    //           name: "品牌C"
+    //         }
+    //       ];
+    //       this.searchOptions.options.brandNameOptions = BrandList;
+    //     });
+    // },
 
-    //当弹出框的客户名称改变的时候GET弹出框的品牌信息
-    clientSelect2() {
+    // //当弹出框的客户名称改变的时候GET弹出框的品牌信息
+    // clientSelect2() {
+    //   this.$axios
+    //     .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
+    //       params: {
+    //         custumerId: this.ruleForm.customerName
+    //       }
+    //     })
+    //     .then(response => {
+    //       var BrandList = response;
+    //       this.ruleForm.options.brandNameOptions = BrandList;
+    //     })
+    //     .catch(error => {
+    //       console.log("第一处测试点");
+    //       var BrandList = [
+    //         {
+    //           id: 1,
+    //           name: "品牌A"
+    //         },
+    //         {
+    //           id: 2,
+    //           name: "品牌B"
+    //         },
+    //         {
+    //           id: 3,
+    //           name: "品牌C"
+    //         }
+    //       ];
+    //       this.ruleForm.options.brandNameOptions = BrandList;
+    //     });
+    // },
 
-      this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
-          params: {
-            custumerId: this.ruleForm.customerName
-          }
-        })
-        .then(response => {
-          
-          var BrandList = response;
-          this.ruleForm.options.brandNameOptions = BrandList;
-        })
-        .catch(error => {
-                console.log("第一处测试点")
-          var BrandList = [
-            {
-              id: 1,
-              name: "品牌A"
-            },
-            {
-              id: 2,
-              name: "品牌B"
-            },
-            {
-              id: 3,
-              name: "品牌C"
-            }
-          ];
-          this.ruleForm.options.brandNameOptions = BrandList;
-        });
-    },
-
-    //当弹出框的品牌名称改变的时候GET弹出框的系列信息
-    brandSelect2() {
-      this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
-          brandId:this.ruleForm.brandName
-        })
-        .then(response => {
-          var RangeList = response.data;
-          this.ruleForm.options.rangeNameOption = RangeList;
-        })
-        .catch(error => {
-          var RangeList = [
-            {
-              id: 1,
-              name: "系列A"
-            },
-            {
-              id: 2,
-              name: "系列B"
-            },
-            {
-              id: 3,
-              name: "系列C"
-            }
-          ];
-          this.ruleForm.options.rangeNameOption = RangeList;
-        });
-    },
+    // //当弹出框的品牌名称改变的时候GET弹出框的系列信息
+    // brandSelect2() {
+    //   this.$axios
+    //     .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
+    //       brandId: this.ruleForm.brandName
+    //     })
+    //     .then(response => {
+    //       var RangeList = response.data;
+    //       this.ruleForm.options.rangeNameOption = RangeList;
+    //     })
+    //     .catch(error => {
+    //       var RangeList = [
+    //         {
+    //           id: 1,
+    //           name: "系列A"
+    //         },
+    //         {
+    //           id: 2,
+    //           name: "系列B"
+    //         },
+    //         {
+    //           id: 3,
+    //           name: "系列C"
+    //         }
+    //       ];
+    //       this.ruleForm.options.rangeNameOption = RangeList;
+    //     });
+    // },
 
     // 改变日期格式
     changeDate(date) {
@@ -715,46 +763,46 @@ export default {
           this.tableData = SearchList;
         })
         .catch(error => {
-           var SearchList = [
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            styleQuantity: 15,
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: "已绑定",
-            note: "系列备注1",
-            havePlan: false
-          },
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            styleQuantity: 15,
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: "已绑定",
-            note: "系列备注1",
-            havePlan: false
-          }
-        ];
+          var SearchList = [
+            {
+              id: 1,
+              number: "XL20190101001",
+              name: "Fall-2019(07/08/09)",
+              customerId: 1232131,
+              customerName: "Qi-Collection",
+              brandId: 42132131,
+              brandName: "Selkie",
+              clothingLevelId: 321321,
+              clothingLevelName: "时装",
+              createrName: "刘德华",
+              styleQuantity: 15,
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              addingMode: "手动",
+              state: "已绑定",
+              note: "系列备注1",
+              havePlan: false
+            },
+            {
+              id: 1,
+              number: "XL20190101001",
+              name: "Fall-2019(07/08/09)",
+              customerId: 1232131,
+              customerName: "Qi-Collection",
+              brandId: 42132131,
+              brandName: "Selkie",
+              clothingLevelId: 321321,
+              clothingLevelName: "时装",
+              createrName: "刘德华",
+              styleQuantity: 15,
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              addingMode: "手动",
+              state: "已绑定",
+              note: "系列备注1",
+              havePlan: false
+            }
+          ];
           this.tableData = SearchList;
         });
     },
@@ -853,32 +901,42 @@ export default {
     // 表格中的修改
     changeRangeData(row) {
       const that = this;
-      console.log("点击了本行的修改");
+      //console.log("点击了本行的修改");
+      /* that.$router.push({
+        path: `/range/rangeInfo`,
+        query: {
+          ifRangeChange: true,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          clothingType: row.clothingType,
+          rangeName: row.rangeName,
+          rangeAmount: row.rangeAmount,
+          rangeNote: row.rangeNote
+        }
+      }); */
 
-      (this.ruleForm.firstCustomerName=row.customerName),
-      (this.ruleForm.firstBrandName=row.brandName),
-      (this.ruleForm.firstRangeName=row.name),
-      (this.ruleForm.firstClothingLevel=row.clothingLevelName),
-      (this.ruleForm.id = row.id),
-      (this.ruleForm.number = row.number ),
-      (this.ruleForm.name = row.name ),
-      (this.ruleForm.customerId = row.customerId ),
-      (this.ruleForm.customerName = row.customerName ),
-      (this.ruleForm.brandId = row.brandId ),
-      (this.ruleForm.brandName = row.brandName ),
-      (this.ruleForm.clothingLevelId = row.clothingLevelId ),
-      (this.ruleForm.clothingLevelName = row.clothingLevelName ),
-      (this.ruleForm.createrName = row.createrName ),
-      (this.ruleForm.styleQuantity = row.styleQuantity ),
-      (this.ruleForm.deptName = row.deptName ),
-      (this.ruleForm.createTime = row.createTime ),
-      (this.ruleForm.addingMode = row.addingMode ),
-      (this.ruleForm.state = row.state ),
-      (this.ruleForm.note = row.note ),
-      (this.ruleForm.havePlan = row.havePlan ),
-
-
-      this.dialogFormVisible1 = true;
+      (this.ruleForm.firstCustomerName = row.customerName),
+        (this.ruleForm.firstBrandName = row.brandName),
+        (this.ruleForm.firstRangeName = row.name),
+        (this.ruleForm.firstClothingLevel = row.clothingLevelName),
+        (this.ruleForm.id = row.id),
+        (this.ruleForm.number = row.number),
+        (this.ruleForm.name = row.name),
+        (this.ruleForm.customerId = row.customerId),
+        (this.ruleForm.customerName = row.customerName),
+        (this.ruleForm.brandId = row.brandId),
+        (this.ruleForm.brandName = row.brandName),
+        (this.ruleForm.clothingLevelId = row.clothingLevelId),
+        (this.ruleForm.clothingLevelName = row.clothingLevelName),
+        (this.ruleForm.createrName = row.createrName),
+        (this.ruleForm.styleQuantity = row.styleQuantity),
+        (this.ruleForm.deptName = row.deptName),
+        (this.ruleForm.createTime = row.createTime),
+        (this.ruleForm.addingMode = row.addingMode),
+        (this.ruleForm.state = row.state),
+        (this.ruleForm.note = row.note),
+        (this.ruleForm.havePlan = row.havePlan),
+        (this.dialogFormVisible1 = true);
     },
     // 表格中的删除
     deleteRangeData(row, index) {
@@ -928,12 +986,11 @@ export default {
         });
     },
 
-
     //添加系列信息
     submitForm(formName) {
       const that = this;
       this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/addRange`, {
+        .post(`${window.$config.HOST}/InfoManagement/addRange`, {
           params: {
             // customerId: this.CustomerValue,
             // brandId: this.BrandValue,
@@ -968,38 +1025,39 @@ export default {
         .catch(error => {});
       console.log("现在要添加啦");
 
-
-        (this.ruleForm.id =""),
+      (this.ruleForm.id = ""),
         (this.ruleForm.number = ""),
-        (this.ruleForm.name = "" ),
-        (this.ruleForm.customerId = "" ),
-        (this.ruleForm.customerName = "" ),
-        (this.ruleForm.brandId = "" ),
-        (this.ruleForm.brandName = "" ),
-        (this.ruleForm.clothingLevelId = "" ),
-        (this.ruleForm.clothingLevelName = "" ),
-        (this.ruleForm.createrName = "" ),
-        (this.ruleForm.styleQuantity = "" ),
-        (this.ruleForm.deptName = "" ),
-        (this.ruleForm.createTime = "" ),
+        (this.ruleForm.name = ""),
+        (this.ruleForm.customerId = ""),
+        (this.ruleForm.customerName = ""),
+        (this.ruleForm.brandId = ""),
+        (this.ruleForm.brandName = ""),
+        (this.ruleForm.clothingLevelId = ""),
+        (this.ruleForm.clothingLevelName = ""),
+        (this.ruleForm.createrName = ""),
+        (this.ruleForm.styleQuantity = ""),
+        (this.ruleForm.deptName = ""),
+        (this.ruleForm.createTime = ""),
         (this.ruleForm.addingMode = ""),
-        (this.ruleForm.state = "" ),
-        (this.ruleForm.note = "" ),
-        (this.ruleForm.havePlan = "" ),
-      this.dialogFormVisible = false;
+        (this.ruleForm.state = ""),
+        (this.ruleForm.note = ""),
+        (this.ruleForm.havePlan = ""),
+        (this.dialogFormVisible = false);
       handleSearch();
     },
-
 
     //修改系列信息
     submitForm1(formName) {
       //第一步，将NAME转换为ID
-      if(this.ruleForm.firstCustomerName===this.ruleForm.customerName) this.ruleForm.customerName=this.ruleForm.customerId;
-      if(this.ruleForm.firstBrandName===this.ruleForm.brandName) this.ruleForm.brandName=this.ruleForm.brandId;
-      if(this.ruleForm.firstRangeName===this.ruleForm.name) this.ruleForm.name=this.ruleForm.id;
-      if(this.ruleForm.firstClothingLevel===this.ruleForm.clothingLevelName) this.ruleForm.clothingLevelName=this.ruleForm.clothingLevelId;
+      if (this.ruleForm.firstCustomerName === this.ruleForm.customerName)
+        this.ruleForm.customerName = this.ruleForm.customerId;
+      if (this.ruleForm.firstBrandName === this.ruleForm.brandName)
+        this.ruleForm.brandName = this.ruleForm.brandId;
+      if (this.ruleForm.firstRangeName === this.ruleForm.name)
+        this.ruleForm.name = this.ruleForm.id;
+      if (this.ruleForm.firstClothingLevel === this.ruleForm.clothingLevelName)
+        this.ruleForm.clothingLevelName = this.ruleForm.clothingLevelId;
 
-      
       const that = this;
       this.$axios
         .post(`${window.$config.HOST}/InfoManagement/updateRange`, {
@@ -1030,48 +1088,48 @@ export default {
         })
         .catch(error => {});
       console.log("现在要添加啦");
-        (this.ruleForm.id =""),
+      (this.ruleForm.id = ""),
         (this.ruleForm.number = ""),
-        (this.ruleForm.name = "" ),
-        (this.ruleForm.customerId = "" ),
-        (this.ruleForm.customerName = "" ),
-        (this.ruleForm.brandId = "" ),
-        (this.ruleForm.brandName = "" ),
-        (this.ruleForm.clothingLevelId = "" ),
-        (this.ruleForm.clothingLevelName = "" ),
-        (this.ruleForm.createrName = "" ),
-        (this.ruleForm.styleQuantity = "" ),
-        (this.ruleForm.deptName = "" ),
-        (this.ruleForm.createTime = "" ),
+        (this.ruleForm.name = ""),
+        (this.ruleForm.customerId = ""),
+        (this.ruleForm.customerName = ""),
+        (this.ruleForm.brandId = ""),
+        (this.ruleForm.brandName = ""),
+        (this.ruleForm.clothingLevelId = ""),
+        (this.ruleForm.clothingLevelName = ""),
+        (this.ruleForm.createrName = ""),
+        (this.ruleForm.styleQuantity = ""),
+        (this.ruleForm.deptName = ""),
+        (this.ruleForm.createTime = ""),
         (this.ruleForm.addingMode = ""),
-        (this.ruleForm.state = "" ),
-        (this.ruleForm.note = "" ),
-        (this.ruleForm.havePlan = "" ),
-      this.dialogFormVisible1 = false;
+        (this.ruleForm.state = ""),
+        (this.ruleForm.note = ""),
+        (this.ruleForm.havePlan = ""),
+        (this.dialogFormVisible1 = false);
       handleSearch();
     },
     // 取消按钮点击
     cancel() {
       const that = this;
       console.log("取消按钮点击");
-              (this.ruleForm.id =""),
+      (this.ruleForm.id = ""),
         (this.ruleForm.number = ""),
-        (this.ruleForm.name = "" ),
-        (this.ruleForm.customerId = "" ),
-        (this.ruleForm.customerName = "" ),
-        (this.ruleForm.brandId = "" ),
-        (this.ruleForm.brandName = "" ),
-        (this.ruleForm.clothingLevelId = "" ),
-        (this.ruleForm.clothingLevelName = "" ),
-        (this.ruleForm.createrName = "" ),
-        (this.ruleForm.styleQuantity = "" ),
-        (this.ruleForm.deptName = "" ),
-        (this.ruleForm.createTime = "" ),
+        (this.ruleForm.name = ""),
+        (this.ruleForm.customerId = ""),
+        (this.ruleForm.customerName = ""),
+        (this.ruleForm.brandId = ""),
+        (this.ruleForm.brandName = ""),
+        (this.ruleForm.clothingLevelId = ""),
+        (this.ruleForm.clothingLevelName = ""),
+        (this.ruleForm.createrName = ""),
+        (this.ruleForm.styleQuantity = ""),
+        (this.ruleForm.deptName = ""),
+        (this.ruleForm.createTime = ""),
         (this.ruleForm.addingMode = ""),
-        (this.ruleForm.state = "" ),
-        (this.ruleForm.note = "" ),
-        (this.ruleForm.havePlan = "" ),
-      this.dialogFormVisible = false;
+        (this.ruleForm.state = ""),
+        (this.ruleForm.note = ""),
+        (this.ruleForm.havePlan = ""),
+        (this.dialogFormVisible = false);
       this.dialogFormVisible1 = false;
     }
   }

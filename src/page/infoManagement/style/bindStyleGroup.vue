@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20" style="margin-top:5px;">
+      <!-- <el-row :gutter="20" style="margin-top:5px;">
         <el-col :span="8">
           <div class="inputBox">
             <div class="label">客户名称</div>
@@ -41,9 +41,9 @@
             </el-select>
           </div>
         </el-col>
-      </el-row>
+      </el-row>-->
       <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="8">
+        <!-- <el-col :span="8">
           <div class="inputBox">
             <div class="label">系列名称</div>
             <el-select v-model="data.rangeName" >
@@ -55,33 +55,30 @@
               </el-option>
             </el-select>
           </div>
-        </el-col>
+        </el-col>-->
         <el-col :span="8">
           <div class="inputBox">
             <div class="label">款式组名</div>
-            <el-select v-model="data.styleGroupName" >
+            <el-select v-model="data.styleGroupName">
               <el-option
                 v-for="item in options.styleGroupNameTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
       </el-row>
       <el-row style="margin: 20px 0 10px 0">
         <div class="label" align="center" style="margin: 0 0 5px 0">已选款号</div>
-        <el-table
-          :data="data.tableData"
-          border
-          style="width: 100%;">
-          <el-table-column prop="styleNumber" label="订单款号" align="center"></el-table-column>
+        <el-table :data="data.tableData" border style="width: 100%;">
+          <el-table-column prop="number" label="订单款号" align="center"></el-table-column>
           <!-- <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothingType" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="rangeName"  label="系列名称" align="center"></el-table-column> -->
+          <el-table-column prop="rangeName"  label="系列名称" align="center"></el-table-column>-->
         </el-table>
       </el-row>
       <el-row style="margin: 50px 0 10px 0">
@@ -100,115 +97,102 @@
 export default {
   data() {
     return {
+      styleIdList: [],
       data: {
-        tableData:[
-          {
-            styleNumber: "10190114(CX1901)",
-          },
-          {
-            styleNumber: "10190114(CX1902)",
-          },
-          {
-            styleNumber: "10190114(CX1903)",
-          },
-        ],
+        tableData: []
       },
       options: {
-        customerNameOptions: [
-          {
-            value: 1,
-            label: "A客户"
-          },
-          {
-            value: 2,
-            label: "B客户"
-          },
-        ],
-        brandNameOptions: [
-          {
-            value: 1,
-            label: "X品牌"
-          },
-          {
-            value: 2,
-            label: "Y品牌"
-          },
-        ],
-        clothingTypeOptions: [
-          {
-            value: 1,
-            label: "时装"
-          },
-          {
-            value: 2,
-            label: "精品"
-          },
-          {
-            value: 3,
-            label: "品牌"
-          },
-        ],
-        rangeNameTypeOptions: [
-          {
-            value: 1,
-            label: "Fall-2019(07/08/09)"
-          },
-          {
-            value: 2,
-            label: "Spring-2019(01/02/03)"
-          },
-          {
-            value: 3,
-            label: "Winter-2019(10/11/12)"
-          },
-        ],
-        styleGroupNameTypeOptions: [
-          {
-            value: 1,
-            label: "款式组1"
-          },
-        ]
+        customerNameOptions: [],
+        brandNameOptions: [],
+        clothingTypeOptions: [],
+        rangeNameTypeOptions: [],
+        styleGroupNameTypeOptions: []
       },
       controlData: {
-        storeDisabled: false,
-      },
+        storeDisabled: false
+      }
     };
   },
-  created: function () {
+  created: function() {
     const that = this;
     console.log("进入绑定款式组页面");
     var result = {};
     result = that.$route.query;
-    if (result.hasOwnProperty("bindData")){
-      console.log("传过来的绑定数据为" + result["bindData"]);
+    if (result.hasOwnProperty("bindData")) {
+      console.log("传过来的 绑定数据为" + result["bindData"]);
       that.data.tableData = result["bindData"];
     }
+
+    //得到订单款号
+    this.$axios
+      //此处的接口为GET订单款号
+      .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`)
+      .then(response => {
+        this.options.styleGroupNameTypeOptions = response;
+      })
+      .catch(error => {
+        this.options.styleGroupNameTypeOptions = [
+          {
+            id: 1,
+            name: "款式组1"
+          },
+          {
+            id: 2,
+            name: "款式组2"
+          }
+        ];
+      });
   },
   methods: {
     // 保存按钮点击
-    store(){
-      const that = this;
-      console.log("保存按钮点击");
-      this.$message({
-        message: '成功绑定款式',
-        type: 'success'
+    store() {
+        const that = this;
+      that.data.tableData.forEach(Element => {
+        this.styleIdList.push(Element.id);
       });
-      that.controlData.storeDisabled = true;
-      console.log("取消按钮点击");
+    
+
+      this.$axios
+        //此处的接口为GET订单款号
+        .post(`${window.$config.HOST}/infoManagement/bindStyleGroup`, {
+          styleGroupId: this.data.styleGroupName,
+          styleIdList: this.styleIdList
+        })
+        .then(response => {
+          var ok = response;
+          if (ok >= 0) {
+            this.$message({
+              message: "成功绑定款式",
+              type: "success"
+            });
+          } else {
+            this.$message({
+              message: "绑定款式失败",
+              type: "warning"
+            });
+          }
+        })
+        .catch(error => {
+          this.$message({
+            message: "绑定款式失败",
+            type: "warning"
+          });
+        });
+
       that.$router.push({
-        path: `/style/styleManagement`,
+        path: `/style/styleManagement`
       });
     },
     // 取消按钮点击
-    cancel(){
+    cancel() {
       const that = this;
       console.log("取消按钮点击");
       that.$router.push({
-        path: `/style/styleManagement`,
+        path: `/style/styleManagement`
       });
     }
   }
-}
+};
 </script>
 
 
