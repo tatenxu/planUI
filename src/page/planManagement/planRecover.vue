@@ -164,8 +164,8 @@ export default {
         var resData = response.data;
         resData.forEach(element => {
           this.searchOptions.options.customerNameOptions.push({
-            value:element.id,
-            label:element.name,
+            id: element.id,
+            name: element.name,
           });
         });
       })
@@ -183,77 +183,94 @@ export default {
         ];
       });
 
-        this.$axios
-          .get(`${window.$config.HOST}/planManagement/getDeletedPlan`)
-          .then(response => {
-            var SearchList = response;
-            this.tableData = SearchList;
-          })
-          .catch(error => {
-            var SearchList = [
-              {
-                planId: "JH190401001",
-                customerName: "AFL",
-                brand: "CX",
-                planName: "2001系列计划",
-                seriesName: "",
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanList`)
+        .then(response => {
+          var SearchList = response;
+          SearchList.forEach(element=>{
+            //6 表示被删除
+            if(element.state === 6){
+              this.tableData.push({
+                planId:element.id,
+                customerName: element.customerName,
+                brand: element.brandName,
+                planName: element.planName,
+                seriesName: element.rangeName,
                 planObject: "",
-                projectType: "销样",
-                createPeople: "XX",
+                projectType: element.projectType,
+                createPeople: element.createrName,
                 deletePeople: "XX",
                 deleteTime: "2019-3-28"
-              },
-              {
-                planId: "JH1904010012",
-                customerName: "AFL",
-                brand: "CX",
-                planName: "2001系列计划",
-                seriesName: "",
-                planObject: "",
-                projectType: "销样",
-                createPeople: "XX",
-                deletePeople: "XX",
-                deleteTime: "2019-3-28"
-              },
-              {
-                planId: "JH1904010013",
-                customerName: "AFL",
-                brand: "CX",
-                planName: "2001系列计划",
-                seriesName: "",
-                planObject: "",
-                projectType: "销样",
-                createPeople: "XX",
-                deletePeople: "XX",
-                deleteTime: "2019-3-28"
-              },
-              {
-                planId: "JH1904010014",
-                customerName: "AFL",
-                brand: "CX",
-                planName: "2001系列计划",
-                seriesName: "",
-                planObject: "",
-                projectType: "销样",
-                createPeople: "XX",
-                deletePeople: "XX",
-                deleteTime: "2019-3-28"
-              },
-              {
-                planId: "JH1904010015",
-                customerName: "AFL",
-                brand: "CX",
-                planName: "2001系列计划",
-                seriesName: "",
-                planObject: "",
-                projectType: "销样",
-                createPeople: "XX",
-                deletePeople: "XX",
-                deleteTime: "2019-3-28"
-              }
-            ];
-            this.tableData = SearchList;
+              });
+            }
           });
+          this.tableData = SearchList;
+        })
+        .catch(error => {
+          var SearchList = [
+            {
+              planId: "JH190401001",
+              customerName: "AFL",
+              brand: "CX",
+              planName: "2001系列计划",
+              seriesName: "",
+              planObject: "",
+              projectType: "销样",
+              createPeople: "XX",
+              deletePeople: "XX",
+              deleteTime: "2019-3-28"
+            },
+            {
+              planId: "JH1904010012",
+              customerName: "AFL",
+              brand: "CX",
+              planName: "2001系列计划",
+              seriesName: "",
+              planObject: "",
+              projectType: "销样",
+              createPeople: "XX",
+              deletePeople: "XX",
+              deleteTime: "2019-3-28"
+            },
+            {
+              planId: "JH1904010013",
+              customerName: "AFL",
+              brand: "CX",
+              planName: "2001系列计划",
+              seriesName: "",
+              planObject: "",
+              projectType: "销样",
+              createPeople: "XX",
+              deletePeople: "XX",
+              deleteTime: "2019-3-28"
+            },
+            {
+              planId: "JH1904010014",
+              customerName: "AFL",
+              brand: "CX",
+              planName: "2001系列计划",
+              seriesName: "",
+              planObject: "",
+              projectType: "销样",
+              createPeople: "XX",
+              deletePeople: "XX",
+              deleteTime: "2019-3-28"
+            },
+            {
+              planId: "JH1904010015",
+              customerName: "AFL",
+              brand: "CX",
+              planName: "2001系列计划",
+              seriesName: "",
+              planObject: "",
+              projectType: "销样",
+              createPeople: "XX",
+              deletePeople: "XX",
+              deleteTime: "2019-3-28"
+            }
+          ];
+          this.tableData = SearchList;
+        });
   },
   methods: {
     //客户名称选择后触发品牌的get请求
