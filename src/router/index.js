@@ -1,5 +1,4 @@
 import Config from '../config/index';
-
 // -------------------------------------------- 为模版原版代码 --------------------------------------------
 const Login = r => require.ensure([], () => r(require('../page/user/login')), 'login');
 const Layout = r => require.ensure([], () => r(require('../page/layout')), 'layout');
@@ -56,6 +55,7 @@ export default [{
     name: 'Login',
     component: Login
   },
+  
   {
     path: '/',
     name: 'Layout',

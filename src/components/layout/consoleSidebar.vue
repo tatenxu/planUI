@@ -131,6 +131,7 @@
       <el-menu-item index="/messageManagement"><i class="el-icon-document"></i>消息管理</el-menu-item>
       <el-menu-item index="/queryStatistic"><i class="el-icon-document"></i>查询统计</el-menu-item>
       <el-menu-item index="/formManagement"><i class="el-icon-document"></i>报表管理</el-menu-item>
+      <!-- <el-menu-item index="/gantt"><i class="el-icon-document"></i>报表管理</el-menu-item> -->
 
       <el-submenu index="backEnd">
         <template slot="title">

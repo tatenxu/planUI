@@ -20,6 +20,8 @@
     "escape-string-regexp": "^2.0.0",
     "forwarded": "^0.1.2",
     "fresh": "^0.5.2",
+    "gantt-elastic": "^0.13.9",
+    "gantt-elastic-header": "^0.1.1",
     "growl": "^1.10.0",
     "hoek": "^4.2.1",
     "https-proxy-agent": "^2.2.0",
