@@ -83,7 +83,7 @@
     <el-card class="box-card">
       <div>
         <el-row :gutter="20">
-          <el-button type="primary" style="margin-right:20px" @click="ReCoverAll">恢复所选元素</el-button>
+          <el-button type="primary" style="margin-right:20px" @click="ReCoverAll">恢复所选计划</el-button>
         </el-row>
         <el-table
           :data="tableData"
