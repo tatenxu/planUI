@@ -174,7 +174,7 @@
               </el-select>
             </el-form-item> 
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
               <el-select v-model="ruleForm.clothingType" >
                 <el-option
@@ -185,7 +185,7 @@
                 </el-option>
               </el-select>
             </el-form-item> 
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
