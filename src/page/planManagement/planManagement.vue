@@ -8,9 +8,9 @@
             <el-select v-model="searchOptions.searchParams.customerName">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -21,9 +21,9 @@
             <el-select v-model="searchOptions.searchParams.brandName">
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -31,12 +31,12 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingType" >
+            <el-select v-model="searchOptions.searchParams.clothingLevel" >
               <el-option
-                v-for="item in searchOptions.options.clothingTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in searchOptions.options.clothingLevelOptions"
+                :key="item.id"
+                :label="item.clothingLevelName"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -44,7 +44,14 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="searchOptions.searchParams.rangeName" placeholder="请输入系列名称"></el-input>
+            <el-select v-model="searchOptions.searchParams.rangeName" >
+              <el-option
+                v-for="item in searchOptions.options.rangeNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
       </el-row>
@@ -55,9 +62,9 @@
             <el-select v-model="searchOptions.searchParams.planName">
               <el-option
                 v-for="item in searchOptions.options.planNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -105,17 +112,17 @@
       >
         <el-table-column width="50" type="selection" align="center"></el-table-column>
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        <el-table-column prop="id" v-if="false"></el-table-column>
-        <el-table-column prop="planId" label="计划编号" align="center"></el-table-column>
+        <!-- <el-table-column prop="id" v-if="false"></el-table-column> -->
+        <el-table-column prop="planNumber" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
+        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="operator" label="添加人" align="center"></el-table-column>
-        <el-table-column prop="department" label="部门" align="center"></el-table-column>
+        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+        <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="date" label="添加时间" align="center"></el-table-column>
-        <el-table-column prop="parentPlan" label="上级计划" align="center"></el-table-column>
+        <el-table-column prop="parentId" label="上级计划" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center"></el-table-column>
         <el-table-column label="异常状态" width="150" align="center">
           <template slot-scope="scope">
@@ -137,7 +144,7 @@
               size="small"
             >修改</el-button>
             <el-button
-              @click.native.prevent="deleteOnePlan(scope.$index, tableData)"
+              @click.native.prevent="deleteOnePlan(scope.$index)"
               type="text"
               size="small"
             >删除</el-button>
@@ -160,6 +167,7 @@
 </template>
 
 <script>
+import { error } from 'util';
 export default {
   data() {
     return {
@@ -167,124 +175,20 @@ export default {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingType: "",
+          clothingLevel: "",
           rangeName: "",
+          planName:"",
           dateRange: ""
         },
         options: {
-          customerNameOptions: [
-            {
-              value: 1,
-              label: "A客户"
-            },
-            {
-              value: 2,
-              label: "B客户"
-            }
-          ],
-          brandNameOptions: [
-            {
-              value: 1,
-              label: "X品牌"
-            },
-            {
-              value: 2,
-              label: "Y品牌"
-            }
-          ],
-          clothingTypeOptions: [
-            {
-              value: 1,
-              label: "时装"
-            },
-            {
-              value: 2,
-              label: "精品"
-            },
-            {
-              value: 3,
-              label: "品牌"
-            }
-          ]
+          customerNameOptions: [],
+          brandNameOptions: [],
+          clothingLevelOptions: [],
+          rangeNameOptions:[],
+          planNameOptions:[],
         }
       },
-      tableData: [
-        {
-          id: 1,
-          planId: "00001",
-          planName: "1",
-          rangeNumber: "1",
-          clientName: "1",
-          brandName: "1",
-          rangeName: "1",
-          operator: "1",
-          department: "1",
-          date: "2019-4-9",
-          parentPlan: "无",
-          state: "优秀",
-          exception: true
-        },
-        {
-          id: 2,
-          planId: "00002",
-          planName: "2",
-          rangeNumber: "2",
-          clientName: "2",
-          brandName: "2",
-          rangeName: "2",
-          operator: "2",
-          department: "2",
-          date: "2019-4-9",
-          parentPlan: "无",
-          state: "优秀",
-          exception: true
-        },
-        {
-          id: 3,
-          planId: "00003",
-          planName: "3",
-          rangeNumber: "3",
-          clientName: "3",
-          brandName: "3",
-          rangeName: "3",
-          operator: "3",
-          department: "3",
-          date: "2019-4-9",
-          parentPlan: "无",
-          state: "优秀",
-          exception: true
-        },
-        {
-          id: 4,
-          planId: "00004",
-          planName: "4",
-          rangeNumber: "4",
-          clientName: "4",
-          brandName: "4",
-          rangeName: "4",
-          operator: "4",
-          department: "4",
-          date: "2019-4-9",
-          parentPlan: "无",
-          state: "优秀",
-          exception: false
-        },
-        {
-          id: 5,
-          planId: "00005",
-          planName: "计划A",
-          rangeNumber: "第一个系列",
-          clientName: "客户A",
-          brandName: "品牌A",
-          rangeName: "A系列",
-          operator: "甲",
-          department: "部门A",
-          date: "2019-4-9",
-          parentPlan: "无",
-          state: "优秀",
-          exception: false
-        }
-      ],
+      tableData: [],
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
@@ -294,11 +198,259 @@ export default {
       selectedData: []
     };
   },
+  created: function () {
+    const that = this;
+    console.log('进入计划管理页面');
+
+    //获取客户名称
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .then(response => {
+        console.log("getCustomer 成功");
+        var resData = response.data;
+        resData.forEach(element => {
+          this.searchOptions.options.customerNameOptions.push({
+            id:element.id,
+            name:element.name,
+          });
+          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
+        });
+      })
+      .catch(error => {
+        console.log("getCustomer error!");
+        this.searchOptions.options.customerNameOptions = [
+          {
+            id: 42453,
+            name: "A客户"
+          },
+          {
+            id: 41526,
+            name: "B客户"
+          },
+        ];
+      });
+
+    //获取服装层次
+    that.$axios
+    .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+    .then(response => {
+      var ClothingList = response;
+      this.searchOptions.options.clothingLevelOptions = ClothingList;
+    })
+    .catch(error => {
+      var ClothingList = [
+        {
+          id: 1,
+          clothingLevelName: "时装"
+        },
+        {
+          id: 2,
+          clothingLevelName: "精品"
+        },
+        {
+          id: 3,
+          clothingLevelName: "时尚"
+        }
+      ];
+      this.searchOptions.options.clothingLevelOptions = ClothingList;
+    });
+
+    //品牌名称选择获取
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("品牌名称选择错误");
+        }else{
+          response.data.forEach(element=>{
+            this.searchOptions.options.brandNameOptions.push({
+              id: element.id,
+              name: element.name
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.brandNameOptions = [
+          {
+            id: 1,
+            name: "X品牌"
+          },
+          {
+            id: 2,
+            name: "Y品牌"
+          },
+        ];
+      });
+
+    //获取系列
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("系列名称获取错误");
+        }else{
+          response.data.forEach(element=>{
+            this.searchOptions.options.rangeNameOptions.push({
+              id: element.id,
+              name: element.name
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.rangeNameOptions = [
+          {
+            id: 1,
+            name: "Fall-2019(07/08/09)"
+          },
+          {
+            id: 2,
+            name: "Spring-2019(01/02/03)"
+          },
+          {
+            id: 3,
+            name: "Winter-2019(10/11/12)"
+          },
+        ];
+      });
+
+    //默认获取计划列表
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("计划列表获取错误");
+        }else{
+          response.data.forEach(element=>{
+            this.tableData.push({
+              id: element.id,
+              planNumber: element.number,
+              planName: element.name,
+              rangeNumber: element.rangeNumber,
+              customerName: element.customerName,
+              brandName: element.brandName,
+              rangeName: element.rangeName,
+              createrName: element.createrName,
+              deptName: element.deptName,
+              date: element.createTime,
+              parentId: element.parentId,
+              state: element.state,
+              exception: element.haveException
+            });
+
+            //给搜索选择中的计划名称赋值
+            this.searchOptions.options.planNameOptions.push({
+              id: element.id,
+              name:element.name
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.log("计划列表获取错误");
+        this.tableData = [
+          {
+            id: 1,
+            planNumber: "00001",
+            planName: "计划1",
+            rangeNumber: "1",
+            customerName: "1",
+            brandName: "1",
+            rangeName: "1",
+            createrName: "1",
+            deptName: "1",
+            date: "2019-4-9",
+            parentId: "无",
+            state: "优秀",
+            exception: true
+          },
+          {
+            id: 2,
+            planNumber: "00002",
+            planName: "计划2",
+            rangeNumber: "2",
+            customerName: "2",
+            brandName: "2",
+            rangeName: "2",
+            createrName: "2",
+            deptName: "2",
+            date: "2019-4-9",
+            parentId: "无",
+            state: "优秀",
+            exception: true
+          },
+          {
+            id: 3,
+            planNumber: "00003",
+            planName: "计划3",
+            rangeNumber: "3",
+            customerName: "3",
+            brandName: "3",
+            rangeName: "3",
+            createrName: "3",
+            deptName: "3",
+            date: "2019-4-9",
+            parentId: "无",
+            state: "优秀",
+            exception: true
+          },
+          {
+            id: 4,
+            planNumber: "00004",
+            planName: "计划4",
+            rangeNumber: "4",
+            customerName: "4",
+            brandName: "4",
+            rangeName: "4",
+            createrName: "4",
+            deptName: "4",
+            date: "2019-4-9",
+            parentId: "无",
+            state: "优秀",
+            exception: false
+          },
+          {
+            id: 5,
+            planNumber: "00005",
+            planName: "计划A",
+            rangeNumber: "第一个系列",
+            customerName: "客户A",
+            brandName: "品牌A",
+            rangeName: "A系列",
+            createrName: "甲",
+            deptName: "部门A",
+            date: "2019-4-9",
+            parentId: "无",
+            state: "优秀",
+            exception: false
+          }
+        ];
+        this.searchOptions.options.planNameOptions = [
+          {
+            id: 475,
+            name: "计划1",
+          },
+          {
+            id: 753,
+            name: "计划2",
+          },
+          {
+            id: 986,
+            name: "计划3",
+          }
+        ];
+      });
+    
+  },
   methods: {
-    ToSearchException() {
+    ToSearchException(row) {
+      console.log("查看异常"+row.id);
       this.$router.push({
         name: "exceptionManagement",
-        params: {}
+        params: {planId: row.id}
       });
     },
     addPlanChild() {
@@ -308,7 +460,7 @@ export default {
         that.$router.push({
           name: "planMakeIndex",
           params: {
-            client: data.clientName,
+            client: data.customerName,
             brand: data.brandName,
             series: data.rangeName,
             plantype: 2,
@@ -327,9 +479,25 @@ export default {
         that.$message.error("请选择要删除的计划！");
       } else {
         this.selectedData.forEach(element=>{
-            var j = this.tableData.indexOf(element);
-            this.tableData.splice(j, 1);
-          })
+            console.log(element.id);
+            this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:element.id})
+              .then(response=>{
+                var resData = response.data;
+                if(res.resData.errcode < 0 ){
+                  this.$message.error(element.id + "删除失败!");
+                }else{
+                  this.$message({
+                    type:"success",
+                    message: element.id+"删除成功!"
+                  });
+                  var j = this.tableData.indexOf(element);
+                  this.tableData.splice(j, 1);
+                }
+              })
+              .catch(error=>{
+              this.$message.error(element.id + "删除失败!");
+            })
+          });
       }
     },
     changeOrder() {
@@ -349,6 +517,27 @@ export default {
           })
           .then(({ value }) => {
             console.log(value);
+            that.selectedData.forEach(element=>{
+              var params = {
+                planId : element.id,
+                cause : value,
+              };
+              // console.log(params);
+              that.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
+                .then(response=>{
+                  if(response.data.errcode < 0){
+                    that.$message.error(element.planName + "添加异常失败");
+                  }else{
+                    that.$message({
+                      type:"success",
+                      message:element.planName+"异常添加成功"
+                    })
+                  }
+                })
+                .catch(error=>{
+                  that.$message.error(element.planName + "添加异常失败");
+                })
+            });
             that.$message({
               type: "success",
               message: "添加异常信息成功"
@@ -367,7 +556,7 @@ export default {
         params: {
           flag: 4,
           goback: "planManagement",
-          client: row.clientName,
+          client: row.customerName,
           brand: row.brandName,
           series: row.rangeName,
           plantype: 2,
@@ -382,7 +571,7 @@ export default {
         params: {
           goback: "planManagement",
           flag: 5,
-          client: row.clientName,
+          client: row.customerName,
           brand: row.brandName,
           series: row.rangeName,
           plantype: 2,
@@ -390,9 +579,107 @@ export default {
         }
       });
     },
-    deleteOnePlan(index, row) {
-      const that = this;
-      that.tableData.splice(index, 1);
+    deleteOnePlan(planid) {
+      console.log("删除 "+planid);
+      this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:planid})
+        .then(response=>{
+          if(response.data.errcode < 0){
+            this.$message.error(planid+"删除失败");
+            return;
+          }else{
+            this.tableData.forEach(element=>{
+              if(element.id === planid){
+                var idx = this.tableData.indexOf(element);
+                this.tableData.splice(idx,1);
+                return;
+              }
+            })
+            this.$message({
+              type:"success",
+              message:planid+"删除成功"
+            });
+          }
+        })
+        .catch(error=>{
+          this.$message.error(planid+"删除失败");
+        });
+    },
+    handleSearch(){
+      var params = {
+        customerId: this.searchOptions.searchParams.customerName, 
+        brandId: this.searchOptions.searchParams.brandName, 
+        rangeId: this.searchOptions.searchParams.rangeName, 
+        id: this.searchOptions.searchParams.planName, 
+        clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
+        startDate: this.searchOptions.searchParams.dateRange,
+      };
+
+      this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,params)
+        .then(response=>{
+          var resData = response.data;
+          if(resData.errcode < 0){
+            this.$message.error("搜索失败!");
+            return;
+          }
+          resData.forEach(element=>{
+            this.tableData.push({
+              planNumber: element.number,
+              planName: element.name,
+              rangeNumber: element.rangeNumber,
+              customerName: element.customerName,
+              brandName: element.brandName,
+              rangeName: element.rangeName,
+              createrName: element.createrName,
+              deptName: element.deptName,
+              date: element.createTime,
+              parentId: element.parentId,
+              state: element.state,
+              exception: element.haveException
+            })
+          });
+        })
+        .catch(error=>{
+          this.tableData = [
+            {
+              id: 1,
+              planNumber: "00001",
+              planName: "1",
+              rangeNumber: "1",
+              customerName: "1",
+              brandName: "1",
+              rangeName: "1",
+              createrName: "1",
+              deptName: "1",
+              date: "2019-4-9",
+              parentId: "无",
+              state: "优秀",
+              exception: true
+            },
+            {
+              id: 2,
+              planNumber: "00002",
+              planName: "2",
+              rangeNumber: "2",
+              customerName: "2",
+              brandName: "2",
+              rangeName: "2",
+              createrName: "2",
+              deptName: "2",
+              date: "2019-4-9",
+              parentId: "无",
+              state: "优秀",
+              exception: true
+            },
+          ];
+          this.$message.error("搜索失败!");
+          return;
+        });
+    },
+    handleSizeChange(){
+
+    },
+    handleCurrentChange(){
+      
     }
   }
 };
