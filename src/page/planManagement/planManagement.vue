@@ -112,7 +112,7 @@
       >
         <el-table-column width="50" type="selection" align="center"></el-table-column>
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        <!-- <el-table-column prop="id" v-if="false"></el-table-column> -->
+        <el-table-column prop="id" v-if="false"></el-table-column>
         <el-table-column prop="planNumber" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
@@ -357,9 +357,9 @@ export default {
             planNumber: "00001",
             planName: "计划1",
             rangeNumber: "1",
-            customerName: "1",
-            brandName: "1",
-            rangeName: "1",
+            customerName: "客户1",
+            brandName: "品牌1",
+            rangeName: "系列1",
             createrName: "1",
             deptName: "1",
             date: "2019-4-9",
@@ -372,9 +372,9 @@ export default {
             planNumber: "00002",
             planName: "计划2",
             rangeNumber: "2",
-            customerName: "2",
-            brandName: "2",
-            rangeName: "2",
+            customerName: "客户2",
+            brandName: "品牌2",
+            rangeName: "系列2",
             createrName: "2",
             deptName: "2",
             date: "2019-4-9",
@@ -387,9 +387,9 @@ export default {
             planNumber: "00003",
             planName: "计划3",
             rangeNumber: "3",
-            customerName: "3",
-            brandName: "3",
-            rangeName: "3",
+            customerName: "客户3",
+            brandName: "品牌3",
+            rangeName: "系列3",
             createrName: "3",
             deptName: "3",
             date: "2019-4-9",
@@ -402,9 +402,9 @@ export default {
             planNumber: "00004",
             planName: "计划4",
             rangeNumber: "4",
-            customerName: "4",
-            brandName: "4",
-            rangeName: "4",
+            customerName: "客户4",
+            brandName: "品牌4",
+            rangeName: "系列4",
             createrName: "4",
             deptName: "4",
             date: "2019-4-9",
@@ -450,7 +450,15 @@ export default {
       console.log("查看异常"+row.id);
       this.$router.push({
         name: "exceptionManagement",
-        params: {planId: row.id}
+        params: {
+          planId: row.id,
+          customerId: row.customerId,
+          customerName: row.customerName,
+          brandId: row.brandId,
+          brandName: row.brandName,
+          rangeId: row.rangeId,
+          rangeName: row.rangeName,
+        }
       });
     },
     addPlanChild() {
