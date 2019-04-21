@@ -327,8 +327,17 @@ export default {
     makePredict(row){
       const that = this;
       that.$router.push({
-        path: `/planMake/planMakeIndex`,
-      })
+        name: "planMakeIndex",
+        params: {
+          goback: "predictPlanToBeMake",
+          flag: 5,
+          client: row.customerName,
+          brand: row.brandName,
+          series: row.rangeName,
+          plantype: 1,
+          planobj: row.rangeName
+        }
+      });
     },
     // 改变日期格式
     changeDate(date) {
