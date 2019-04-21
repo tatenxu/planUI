@@ -92,33 +92,33 @@
 
     <el-card class="box-card">
       <div>
-      <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true">
-        <el-table-column type="selection" width="50" align="center"></el-table-column>
-        <el-table-column width="50" type="index" label="序号" align="center">></el-table-column>
-        <el-table-column v-if="false" prop="predictPlanId" align="center"></el-table-column>
-        <el-table-column prop="predictPlanNumber" label="预测编号" align="center"></el-table-column>
-        <el-table-column prop="predictPlanName" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesLevel" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
-        <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <!-- <el-table-column prop="statue" label="状态" align="center"></el-table-column> -->
-        <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
+        <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true">
+          <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column width="50" type="index" label="序号" align="center">></el-table-column>
+          <el-table-column v-if="false" prop="predictPlanId" align="center"></el-table-column>
+          <el-table-column prop="predictPlanNumber" label="预测编号" align="center"></el-table-column>
+          <el-table-column prop="predictPlanName" label="计划名称" align="center"></el-table-column>
+          <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
+          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="clothesLevel" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+          <!-- <el-table-column prop="statue" label="状态" align="center"></el-table-column> -->
+          <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
 
-        <el-table-column  fixed="right" width="200" align="center">
-          <template slot-scope="scope">
-            <el-button @click="toPlanDetail(scope.row)" type="text" size="small">查看</el-button>
-            <el-button @click="submitPredictPlan(scope.row)" type="text" size="small">提交</el-button>
-            <el-button @click="editPredictPlan(scope.row)" type="text" size="small">修改</el-button>
-            <el-button @click="deletePredictPlan(scope.row)" type="text" size="small">删除</el-button>
+          <el-table-column  fixed="right" width="200" align="center">
+            <template slot-scope="scope">
+              <el-button @click="toPlanDetail(scope.row)" type="text" size="small">查看</el-button>
+              <el-button @click="submitPredictPlan(scope.row)" type="text" size="small">提交</el-button>
+              <el-button @click="editPredictPlan(scope.row)" type="text" size="small">修改</el-button>
+              <el-button @click="deletePredictPlan(scope.row)" type="text" size="small">删除</el-button>
 
-          </template>
-        </el-table-column>
+            </template>
+          </el-table-column>
 
-      </el-table>
+        </el-table>
       </div>
       <div class="block">
           <el-pagination

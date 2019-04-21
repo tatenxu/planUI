@@ -19,9 +19,9 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.rangeName" clearable >
+            <el-select v-model="searchOptions.searchParams.brandName" clearable >
               <el-option
-                v-for="item in searchOptions.options.rangeNameOptions"
+                v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id">
@@ -49,10 +49,10 @@
 
         <el-col :span="8">
           <div class="bar">
-            <div class="title">计划名称</div>
-            <el-select v-model="searchOptions.searchParams.planName">
+            <div class="title">系列名称</div>
+            <el-select v-model="searchOptions.searchParams.name">
               <el-option
-                v-for="item in searchOptions.options.planNameOptions"
+                v-for="item in searchOptions.options.rangeNameOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -92,20 +92,20 @@
 
     <el-card class="box-card">
       <div>
-      <el-table :data="tableData" max-height="550"  style="width : 100%">
+      <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true">
         <el-table-column type="selection" width="50" align="center"></el-table-column>
-        <!-- <el-table-column v-if="false" prop="id" align="center"></el-table-column> -->
-        <el-table-column prop="id" label="序号" align="center"></el-table-column>
-        <el-table-column prop="forecastedId" label="预测编号" align="center"></el-table-column>
-        <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="seriesNumber" label="系列编号" align="center"></el-table-column>
+        <el-table-column type="index" label="序号" align="center"></el-table-column>
+        <el-table-column v-if="false" prop="id" align="center"></el-table-column>
+        <!-- <el-table-column prop="forecastedId" label="预测编号" align="center"></el-table-column>
+        <el-table-column prop="planName" label="计划名称" align="center"></el-table-column> -->
+        <el-table-column prop="number" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-        <el-table-column prop="brand" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesType" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="addPeople" label="添加人" align="center"></el-table-column>
-        <el-table-column prop="department" label="部门" align="center"></el-table-column>
-        <!-- <el-table-column prop="statue" label="状态" align="center"></el-table-column> -->
+        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+        <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="name" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+        <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+        <!-- <el-table-column prop="state" label="状态" align="center"></el-table-column> -->
         <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
 
         <el-table-column  fixed="right" width="150" align="center">
@@ -131,22 +131,15 @@
 </template>
 
 <script>
-const cityOptions = ['已制定', '未制定', '制定中'];
 export default {
-  name: "warehouseList",
   data() {
     return {
-      checkAll: false,
-      checkedCities: [],
-      cities: cityOptions,
-      isIndeterminate: true,
-      
       searchOptions: {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingLevel: "",
-          rangeName: "",
+          clothingLevelName: "",
+          name: "",
           planName:"",
           dateRange: ""
         },
@@ -258,34 +251,35 @@ export default {
 
     //默认获取计划列表
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeList`)
       .then(response => {
         if(response.data.errcode < 0){
           console.log("计划列表获取错误");
         }else{
-          response.data.forEach(element=>{
-            this.tableData.push({
-              id: element.id,
-              planNumber: element.number,
-              planName: element.name,
-              rangeNumber: element.rangeNumber,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              rangeName: element.rangeName,
-              createrName: element.createrName,
-              deptName: element.deptName,
-              date: element.createTime,
-              parentId: element.parentId,
-              state: element.state,
-              exception: element.haveException
-            });
+          // response.data.forEach(element=>{
+          //   this.tableData.push({
+          //     id: element.id,
+          //     planNumber: element.number,
+          //     planName: element.name,
+          //     number: element.number,
+          //     customerName: element.customerName,
+          //     brandName: element.brandName,
+          //     name: element.name,
+          //     createrName: element.createrName,
+          //     deptName: element.deptName,
+          //     date: element.createTime,
+          //     parentId: element.parentId,
+          //     state: element.state,
+          //     exception: element.haveException
+          //   });
 
-            //给搜索选择中的计划名称赋值
-            this.searchOptions.options.planNameOptions.push({
-              id: element.id,
-              name:element.name
-            });
-          });
+          //   //给搜索选择中的计划名称赋值
+          //   this.searchOptions.options.planNameOptions.push({
+          //     id: element.id,
+          //     name:element.name
+          //   });
+          // });
+          this.tableData = response.data;
         }
       })
       .catch(error => {
@@ -293,34 +287,42 @@ export default {
         this.tableData = [
           {
             id:"1",
-            forecastedId:"JH001",
-            planName:"系列A计划",
-            seriesNumber:"XL20190101001",
+            number:"XL20190101001",
             customerName:"Qi-Collection",
-            brand:"Selikie",
-            clothesType:"时装",
-            seriesName:"Fall-2019(01/08/09)",
-            addPeople:"刘德华",
-            department:"业务一组",
-            statue:"未制定"
+            brandName:"Selikie",
+            clothingLevelName:"时装",
+            name:"Fall-2019(01/08/09)",
+            createrName:"刘德华",
+            deptName:"业务一组",
+            state:"未制定"
           }
         ];
-        this.searchOptions.options.planNameOptions = [
+        
+      });
+
+    this.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .then(response => {
+        this.searchOptions.options.rangeNameOptions = response;
+      })
+      .catch(error => {
+        this.searchOptions.options.rangeNameOptions = [
           {
-            id: 475,
-            name: "计划1",
+            id: 1,
+            name: "时装"
           },
           {
-            id: 753,
-            name: "计划2",
+            id: 2,
+            name: "精品"
           },
           {
-            id: 986,
-            name: "计划3",
+            id: 3,
+            name: "时尚"
           }
         ];
       });
   },
+
   methods: {
     makePredict(row){
       const that = this;
@@ -328,57 +330,88 @@ export default {
         path: `/planMake/planMakeIndex`,
       })
     },
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : [];
-      this.isIndeterminate = false;
+    // 改变日期格式
+    changeDate(date) {
+      console.log(date);
+      if(!date){
+        return "";
+      }else{
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
     },
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.cities.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
-    },
-    handleDelete(index, row) {
-      this.$confirm('这将删除该仓库下所有记录信息，是否继续？','提示',{
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        let sendData = {"id": row.id};
-        this.$axios
-          .post(`${window.$config.HOST}/warehouse/base/deleteWarehouse`, sendData)
-          .then(response => {
-            if (response.data > 0) {
-              this.$message({
-              type: 'success',
-              message: '删除成功'
-              });
-              this.tableData.splice(index, 1);
-            } else {
-              this.$message({
-                type: 'info',
-                message: '未在数据库中查到此记录对应信息！'
-              })
-            }
-          })
-          .catch(error => {
-            console.log(error);
-            this.$message({
-              type: 'info',
-              message: '非法操作！'
-            })
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消操作'
-        });
+    //获取预测计划列表
+    getUnmadedPlanList(){
+      var params = {
+        customerId: this.searchOptions.searchParams.customerName, 
+        brandId: this.searchOptions.searchParams.brandName, 
+        id: this.searchOptions.searchParams.planName, 
+        clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
+        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+      };
+      console.log(params);
+
+      this.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getRangeList`, params)
+      .then(response => {
+        var SearchList = response;
+        this.tableData = SearchList;
+      })
+      .catch(error => {
+        var SearchList = [
+          {
+            id: 1,
+            number: "XL20190101001",
+            name: "Fall-2019(07/08/09)",
+            customerId: 1232131,
+            customerName: "Qi-Collection",
+            brandId: 42132131,
+            brandName: "Selkie",
+            clothingLevelId: 321321,
+            clothingLevelName: "时装",
+            createrName: "刘德华",
+            styleQuantity: 15,
+            deptName: "业务1组",
+            createTime: "2019-01-01 10:15:01",
+            addingMode: "手动",
+            state: "已绑定",
+            note: "系列备注1",
+            havePlan: false
+          },
+          {
+            id: 1,
+            number: "XL20190101001",
+            name: "Fall-2019(07/08/09)",
+            customerId: 1232131,
+            customerName: "Qi-Collection",
+            brandId: 42132131,
+            brandName: "Selkie",
+            clothingLevelId: 321321,
+            clothingLevelName: "时装",
+            createrName: "刘德华",
+            styleQuantity: 15,
+            deptName: "业务1组",
+            createTime: "2019-01-01 10:15:01",
+            addingMode: "手动",
+            state: "已绑定",
+            note: "系列备注1",
+            havePlan: false
+          }
+        ];
+        this.tableData = SearchList;
       });
     },
-  },
-  getUnmadedPlanList(){
-    return ;
-  },
-  
+  },  
 }
 </script>
 
