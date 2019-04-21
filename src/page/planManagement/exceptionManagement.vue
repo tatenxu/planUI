@@ -88,8 +88,8 @@
           <el-table-column prop="planObject" label="计划对象" width="100px" align="center"></el-table-column>
           <el-table-column prop="excContent" label="异常内容" width="100px" align="center"></el-table-column>
           <el-table-column prop="createrName" label="创建人" width="100px" align="center"></el-table-column>
-          <el-table-column prop="createDate" label="创建时间" width="100px" align="center" show-overflow-tooltip></el-table-column>
-            <!-- <template slot-scope="scope">{{ scope.row.createDate }}</template> -->
+          <el-table-column prop="createTime" label="创建时间" width="100px" align="center" show-overflow-tooltip></el-table-column>
+            <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
         </el-table>
       </div>
     </el-card>
@@ -264,7 +264,7 @@ export default {
             planObject: element.planObject,
             excContent: element.cause,
             createrName: element.createrName,
-            createDate: element.createDate
+            createTime: element.createTime
           });
         });
         
@@ -282,7 +282,7 @@ export default {
             planObject: "大明",
             excContent: "死机",
             createrName: "王小虎",
-            createDate: "2016-10-16"
+            createTime: "2016-10-16"
           },
           {
             excId :56754,
@@ -295,7 +295,7 @@ export default {
             planObject: "大明",
             excContent: "死机",
             createrName: "王小虎",
-            createDate: "2016-10-16"
+            createTime: "2016-10-16"
           },
           {
             excId :564514,
@@ -308,7 +308,7 @@ export default {
             planObject: "大明",
             excContent: "死机",
             createrName: "王小虎",
-            createDate: "2016-10-16"
+            createTime: "2016-10-16"
           }
         ];
         this.tableData = SearchList;
@@ -350,7 +350,7 @@ export default {
               planObject: element.planObject,
               excContent: element.cause,
               createrName: element.createrName,
-              createDate: element.createDate
+              createTime: element.createTime
             });
           });
         })
@@ -367,7 +367,7 @@ export default {
               planObject: "大明",
               excContent: "死机",
               createrName: "王小虎",
-              createDate: "2016-10-16"
+              createTime: "2016-10-16"
             },
           ];
           this.tableData = SearchList;
@@ -384,7 +384,7 @@ export default {
         customerId: this.searchOptions.searchParams.customerName,
         brandId: this.searchOptions.searchParams.brandName,
         rangeId: this.searchOptions.searchParams.rangeName,
-        createDate: this.searchOptions.searchParams.dateRange,
+        createTime: this.searchOptions.searchParams.dateRange,
       };
       console.log(params);
 
@@ -407,7 +407,7 @@ export default {
               planObject: element.planObject,
               excContent: element.cause,
               createrName: element.createrName,
-              createDate: element.createDate
+              createTime: element.createTime
             });
           });
         })
@@ -424,7 +424,7 @@ export default {
               planObject: "大明",
               excContent: "死机",
               createrName: "王小虎",
-              createDate: "2016-10-16"
+              createTime: "2016-10-16"
             },
             {
               excId:"87351456",
@@ -437,7 +437,7 @@ export default {
               planObject: "大明",
               excContent: "死机",
               createrName: "王小虎",
-              createDate: "2016-10-16"
+              createTime: "2016-10-16"
             },
           ];
           this.tableData = SearchList;

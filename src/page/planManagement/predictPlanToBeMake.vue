@@ -5,12 +5,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="select1" clearable @change="c1">
+            <el-select v-model="searchOptions.searchParams.customerName" clearable >
               <el-option
-                v-for="item in options1"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in searchOptions.options.customerNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -19,12 +19,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="select2" clearable @change="c1">
+            <el-select v-model="searchOptions.searchParams.rangeName" clearable >
               <el-option
-                v-for="item in options2"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in searchOptions.options.rangeNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -33,12 +33,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="select3" clearable @change="c1">
+            <el-select v-model="searchOptions.searchParams.clothingLevelName" clearable >
               <el-option
-                v-for="item in options3"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="item in searchOptions.options.clothingLevelOptions"
+                :key="item.id"
+                :label="item.clothingLevelName"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -50,7 +50,14 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-input v-model="input3" clearable placeholder="请输入" @change="c4"></el-input>
+            <el-select v-model="searchOptions.searchParams.planName">
+              <el-option
+                v-for="item in searchOptions.options.planNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
 
@@ -58,7 +65,7 @@
           <div class="bar">
             <div class="title">制定时间</div>
             <el-date-picker
-              v-model="input1"
+              v-model="searchOptions.searchParams.dateRange"
               type="daterange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -68,7 +75,7 @@
         </el-col>
         <el-col :span="1">
           <div class="bar">
-            <el-button type="primary" @click="getWareList">搜索</el-button>
+            <el-button type="primary" @click="getUnmadedPlanList()">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -111,8 +118,7 @@
       </div>
       <div class="block">
           <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
+            
             :current-page.sync="pagination.currentPage"
             :page-sizes="pagination.pageSizes"
             :page-size="pagination.pageSize"
@@ -134,84 +140,186 @@ export default {
       checkedCities: [],
       cities: cityOptions,
       isIndeterminate: true,
-      select1: '',
-      select2: '',
-      select3: '',
-      input1:'',
-      input2:'',
-      input3:'',
-      pagination: {
-          currentPage: 1,
-          pageSizes: [5, 10, 20, 30, 50],
-          pageSize: 5,
-          total: 400,
+      
+      searchOptions: {
+        searchParams: {
+          customerName: "",
+          brandName: "",
+          clothingLevel: "",
+          rangeName: "",
+          planName:"",
+          dateRange: ""
         },
-      options1: [{
-        value: 1,
-        label: "客户A"
-      },{
-        value: 2,
-        label: "客户B"
-      },{
-        value: 3,
-        label: "客户C"
-      },{
-        value: 4,
-        label: "客户D"
-      },{
-        value: 5,
-        label: "客户E"
-      }],
-      options2: [{
-        value: 1,
-        label: "品牌A"
-      },{
-        value: 2,
-        label: "品牌B"
-      },{
-        value: 3,
-        label: "品牌C"
-      },{
-        value: 4,
-        label: "品牌D"
-      },{
-        value: 5,
-        label: "品牌E"
-      }],
-      options3: [{
-        value: 1,
-        label: "类型A"
-      },{
-        value: 2,
-        label: "类型B"
-      },{
-        value: 3,
-        label: "类型C"
-      },{
-        value: 4,
-        label: "类型D"
-      },{
-        value: 5,
-        label: "类型E"
-      }],
-      tableData: [
-        {
-          id:"1",
-          forecastedId:"JH001",
-          planName:"系列A计划",
-          seriesNumber:"XL20190101001",
-          customerName:"Qi-Collection",
-          brand:"Selikie",
-          clothesType:"时装",
-          seriesName:"Fall-2019(01/08/09)",
-          addPeople:"刘德华",
-          department:"业务一组",
-          statue:"未制定"
+        options: {
+          customerNameOptions: [],
+          brandNameOptions: [],
+          clothingLevelOptions: [],
+          rangeNameOptions:[],
+          planNameOptions:[],
         }
-      ],
+      },
+      tableData: [],
       // checked: true,
       pages: 0,
+      pagination: {
+        currentPage: 1,
+        pageSizes: [5, 10, 20, 30, 50],
+        pageSize: 5,
+        total: 400,
+      },
     }
+  },
+
+  created: function () {
+    const that = this;
+    console.log('进入未制定计划页面');
+
+    //获取客户名称
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .then(response => {
+        console.log("getCustomer 成功");
+        var resData = response.data;
+        resData.forEach(element => {
+          this.searchOptions.options.customerNameOptions.push({
+            id:element.id,
+            name:element.name,
+          });
+          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
+        });
+      })
+      .catch(error => {
+        console.log("getCustomer error!");
+        this.searchOptions.options.customerNameOptions = [
+          {
+            id: 42453,
+            name: "A客户"
+          },
+          {
+            id: 41526,
+            name: "B客户"
+          },
+        ];
+      });
+
+    //获取服装层次
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .then(response => {
+        var ClothingList = response;
+        this.searchOptions.options.clothingLevelOptions = ClothingList;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            clothingLevelName: "时装"
+          },
+          {
+            id: 2,
+            clothingLevelName: "精品"
+          },
+          {
+            id: 3,
+            clothingLevelName: "时尚"
+          }
+        ];
+        this.searchOptions.options.clothingLevelOptions = ClothingList;
+      });
+
+    //品牌名称选择获取
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("品牌名称选择错误");
+        }else{
+          response.data.forEach(element=>{
+            this.searchOptions.options.brandNameOptions.push({
+              id: element.id,
+              name: element.name
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.brandNameOptions = [
+          {
+            id: 1,
+            name: "X品牌"
+          },
+          {
+            id: 2,
+            name: "Y品牌"
+          },
+        ];
+      });
+
+    //默认获取计划列表
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("计划列表获取错误");
+        }else{
+          response.data.forEach(element=>{
+            this.tableData.push({
+              id: element.id,
+              planNumber: element.number,
+              planName: element.name,
+              rangeNumber: element.rangeNumber,
+              customerName: element.customerName,
+              brandName: element.brandName,
+              rangeName: element.rangeName,
+              createrName: element.createrName,
+              deptName: element.deptName,
+              date: element.createTime,
+              parentId: element.parentId,
+              state: element.state,
+              exception: element.haveException
+            });
+
+            //给搜索选择中的计划名称赋值
+            this.searchOptions.options.planNameOptions.push({
+              id: element.id,
+              name:element.name
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.log("计划列表获取错误");
+        this.tableData = [
+          {
+            id:"1",
+            forecastedId:"JH001",
+            planName:"系列A计划",
+            seriesNumber:"XL20190101001",
+            customerName:"Qi-Collection",
+            brand:"Selikie",
+            clothesType:"时装",
+            seriesName:"Fall-2019(01/08/09)",
+            addPeople:"刘德华",
+            department:"业务一组",
+            statue:"未制定"
+          }
+        ];
+        this.searchOptions.options.planNameOptions = [
+          {
+            id: 475,
+            name: "计划1",
+          },
+          {
+            id: 753,
+            name: "计划2",
+          },
+          {
+            id: 986,
+            name: "计划3",
+          }
+        ];
+      });
   },
   methods: {
     makePredict(row){
@@ -266,6 +374,9 @@ export default {
         });
       });
     },
+  },
+  getUnmadedPlanList(){
+    return ;
   },
   
 }

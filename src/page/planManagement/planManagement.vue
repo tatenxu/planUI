@@ -612,6 +612,26 @@ export default {
           this.$message.error(planid+"删除失败");
         });
     },
+    // 改变日期格式
+    changeDate(date) {
+      console.log(date);
+      if(!date){
+        return "";
+      }else{
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
+    },
+    //搜索按钮
     handleSearch(){
       var params = {
         customerId: this.searchOptions.searchParams.customerName, 
@@ -619,7 +639,8 @@ export default {
         rangeId: this.searchOptions.searchParams.rangeName, 
         id: this.searchOptions.searchParams.planName, 
         clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
-        startDate: this.searchOptions.searchParams.dateRange,
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
 
       this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,params)

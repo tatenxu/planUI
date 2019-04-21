@@ -695,18 +695,24 @@ export default {
     // },
 
     // 改变日期格式
+    // 改变日期格式
     changeDate(date) {
-      var y = date.getFullYear();
-      var m = date.getMonth() + 1;
-      m = m < 10 ? "0" + m : m;
-      var d = date.getDate();
-      d = d < 10 ? "0" + d : d;
-      var h = date.getHours();
-      var minute = date.getMinutes();
-      minute = minute < 10 ? "0" + minute : minute;
-      var second = date.getSeconds();
-      second = minute < 10 ? "0" + second : second;
-      return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      console.log(date);
+      if(!date){
+        return "";
+      }else{
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
     },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
