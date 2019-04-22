@@ -18,7 +18,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName" clearable @change="customerNameSelectionChange">
+            <el-select v-model="searchOptions.searchParams.customerName" clearable>
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -32,7 +32,7 @@
         <el-col :span="6" :offset="4">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName"  clearable  @change="brandSelectionChange">
+            <el-select v-model="searchOptions.searchParams.brandName"  clearable>
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -91,15 +91,15 @@
           @selection-change="tableSelectionChange"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column prop="planId" label="预测编号" align="center"></el-table-column>
+          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brand" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
+          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="createPeople" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="deletePeople" label="删除人" align="center"></el-table-column>
+          <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="删除人" align="center"></el-table-column>
           <el-table-column prop="deleteTime" label="删除时间" align="center"></el-table-column>
 
           <el-table-column fixed="right" label="操作" width="50">
@@ -123,9 +123,7 @@
 </template>
 
 <script>
-const cityOptions = ["已制定", "未制定", "制定中"];
 export default {
-  name: "warehouseList",
   data() {
     return {
       tableData: [ ],
@@ -153,10 +151,10 @@ export default {
       tableSelectionData: []
     };
   },
-
   created: function () {
     const that = this;
     console.log('进入计划回收站页面');
+    //加载客户名称
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getCustomer`)
       .then(response => {
@@ -183,167 +181,159 @@ export default {
         ];
       });
 
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`)
-        .then(response => {
-          var SearchList = response;
-          SearchList.forEach(element=>{
-            //6 表示被删除
-            if(element.state === 6){
-              this.tableData.push({
-                planId:element.id,
-                customerName: element.customerName,
-                brand: element.brandName,
-                planName: element.planName,
-                seriesName: element.rangeName,
-                planObject: "",
-                projectType: element.projectType,
-                createPeople: element.createrName,
-                deletePeople: "XX",
-                deleteTime: "2019-3-28"
-              });
-            }
-          });
-          this.tableData = SearchList;
-        })
-        .catch(error => {
-          var SearchList = [
-            {
-              planId: "JH190401001",
-              customerName: "AFL",
-              brand: "CX",
-              planName: "2001系列计划",
-              seriesName: "",
+    //加载品牌名称
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("品牌名称选择错误");
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.brandNameOptions = [
+          {
+            id: 1,
+            name: "X品牌"
+          },
+          {
+            id: 2,
+            name: "Y品牌"
+          },
+        ];
+      });
+
+    //加载系列名称
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("品牌名称选择错误");
+        }
+      })
+      .catch(error => {
+        console.log("品牌名称选择错误");
+        this.searchOptions.options.rangeNameOptions = [
+          {
+            id: 1,
+            name: "Fall-2019(07/08/09)"
+          },
+          {
+            id: 2,
+            name: "Spring-2019(01/02/03)"
+          },
+          {
+            id: 3,
+            name: "Winter-2019(10/11/12)"
+          },
+        ];
+      });
+    //加载删除的计划
+    this.$axios
+      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .then(response => {
+        var SearchList = response;
+        SearchList.forEach(element=>{
+          //6 表示被删除
+          if(element.state === 6){
+            this.tableData.push({
+              number:element.id,
+              customerName: element.customerName,
+              brandName: element.brandName,
+              name: element.name,
+              rangeName: element.rangeName,
               planObject: "",
-              projectType: "销样",
-              createPeople: "XX",
-              deletePeople: "XX",
+              type: element.type,
+              createrName: element.createrName,
+              createrName: "XX",
               deleteTime: "2019-3-28"
-            },
-            {
-              planId: "JH1904010012",
-              customerName: "AFL",
-              brand: "CX",
-              planName: "2001系列计划",
-              seriesName: "",
-              planObject: "",
-              projectType: "销样",
-              createPeople: "XX",
-              deletePeople: "XX",
-              deleteTime: "2019-3-28"
-            },
-            {
-              planId: "JH1904010013",
-              customerName: "AFL",
-              brand: "CX",
-              planName: "2001系列计划",
-              seriesName: "",
-              planObject: "",
-              projectType: "销样",
-              createPeople: "XX",
-              deletePeople: "XX",
-              deleteTime: "2019-3-28"
-            },
-            {
-              planId: "JH1904010014",
-              customerName: "AFL",
-              brand: "CX",
-              planName: "2001系列计划",
-              seriesName: "",
-              planObject: "",
-              projectType: "销样",
-              createPeople: "XX",
-              deletePeople: "XX",
-              deleteTime: "2019-3-28"
-            },
-            {
-              planId: "JH1904010015",
-              customerName: "AFL",
-              brand: "CX",
-              planName: "2001系列计划",
-              seriesName: "",
-              planObject: "",
-              projectType: "销样",
-              createPeople: "XX",
-              deletePeople: "XX",
-              deleteTime: "2019-3-28"
-            }
-          ];
-          this.tableData = SearchList;
+            });
+          }
         });
+        this.tableData = SearchList;
+      })
+      .catch(error => {
+        var SearchList = [
+          {
+            number: "JH190401001",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "",
+            planObject: "",
+            type: "销样",
+            createrName: "XX",
+            createrName: "XX",
+            deleteTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010012",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "",
+            planObject: "",
+            type: "销样",
+            createrName: "XX",
+            createrName: "XX",
+            deleteTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010013",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "",
+            planObject: "",
+            type: "销样",
+            createrName: "XX",
+            createrName: "XX",
+            deleteTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010014",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "",
+            planObject: "",
+            type: "销样",
+            createrName: "XX",
+            createrName: "XX",
+            deleteTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010015",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "",
+            planObject: "",
+            type: "销样",
+            createrName: "XX",
+            createrName: "XX",
+            deleteTime: "2019-3-28"
+          }
+        ];
+        this.tableData = SearchList;
+      });
   },
   methods: {
-    //客户名称选择后触发品牌的get请求
-    customerNameSelectionChange(){
-      // consol.log(val);
-      console.log("客户名称选择触发");
-      console.log(this.searchOptions.searchParams.customerName);
-      var param = {
-        customerId: this.searchOptions.searchParams.customerName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("客户名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("客户名称选择错误");
-          this.searchOptions.options.brandNameOptions = [
-            {
-              id: 1,
-              name: "X品牌"
-            },
-            {
-              id: 2,
-              name: "Y品牌"
-            },
-          ];
-        })
-    },
-    //品牌名称选择后触发请求
-    brandSelectionChange(){
-      console.log("品牌名称选择触发");
-      console.log(this.searchOptions.searchParams.brandName);
-      var param = {
-        brandId: this.searchOptions.searchParams.brandName,
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRange`,param)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("品牌名称选择错误");
-          }
-        })
-        .catch(error => {
-          console.log("品牌名称选择错误");
-          this.searchOptions.options.rangeNameOptions = [
-            {
-              id: 1,
-              name: "Fall-2019(07/08/09)"
-            },
-            {
-              id: 2,
-              name: "Spring-2019(01/02/03)"
-            },
-            {
-              id: 3,
-              name: "Winter-2019(10/11/12)"
-            },
-          ];
-        })
-    },
     //恢复所有选择的按钮
     ReCoverAll() {
-      this.tableSelectionData.forEach(element=>{
-        this.ReCover(element);
-      });
+      if(this.tableSelectionData.length === 0){
+        this.$message.error("请选择要恢复的计划!")
+      }else{
+        this.tableSelectionData.forEach(element=>{
+          console.log("恢复"+element.name);
+          this.ReCover(element);
+        });
+      } 
     },
     // 恢复单个的按钮
     ReCover(row) {
       console.log("行恢复");
-      var params = {id: row.planId};
+      var params = {id: row.number};
       console.log(row);
        this.$axios
         .post(`${window.$config.HOST}/planManagement/restorePlan`,params)
@@ -351,12 +341,12 @@ export default {
           var resData = response.data;
           if(resData.errcode < 0 ){
             this.tableData.forEach(element=>{
-              if(element.planId === row.planId){
+              if(element.number === row.number){
                 var idx = this.tableData.indexOf(element);
                 this.tableData.splice(idx,1);
               }
             });
-            this.$message.error(row.planId+"恢复失败！");
+            this.$message.error(row.number+"恢复失败！");
           }else{
             this.$message({
               type: 'success',
@@ -365,70 +355,90 @@ export default {
           }
         })
         .catch(error=>{
-          this.$message.error(row.planId+"恢复失败！");
+          this.$message.error(row.number+"恢复失败！");
         })
     },
     tableSelectionChange(val) {
       this.tableSelectionData = val;
     },
+    // 改变日期格式
+    changeDate(date) {
+      if(!date){
+        return "";
+      }else{
+        console.log(date);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
+    },
     //搜索按钮
     handleSearchClick(){
       var params;
       params = {
-        customerId: this.searchOptions.searchParams.customerName,
-        brandId: this.searchOptions.searchParams.brandName,
-        rangeId: this.searchOptions.searchParams.rangeName,
-        createTime: this.searchOptions.searchParams.dateRange,
+        customerId: this.searchOptions.searchParams.customerName?this.searchOptions.searchParams.customerName:"",
+        brandId: this.searchOptions.searchParams.brandName?this.searchOptions.searchParams.brandName:"",
+        rangeId: this.searchOptions.searchParams.rangeName?this.searchOptions.searchParams.rangeName:"",
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
+        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),      
       };
       console.log(params);
 
-        this.$axios
-            .post(`${window.$config.HOST}/planManagement/getDeletedPlan`,params)
-            .then(response => {
-              var SearchList = response;
-              this.tableData = SearchList;
-            })
-            .catch(error => {
-              var SearchList = [
-                {
-                  planId: "JH190401001",
-                  customerName: "AFL",
-                  brand: "CX",
-                  planName: "2001系列计划",
-                  seriesName: "",
-                  planObject: "",
-                  projectType: "销样",
-                  createPeople: "XX",
-                  deletePeople: "XX",
-                  deleteTime: "2019-3-28"
-                },
-                {
-                  planId: "JH1904010012",
-                  customerName: "AFL",
-                  brand: "CX",
-                  planName: "2001系列计划",
-                  seriesName: "",
-                  planObject: "",
-                  projectType: "销样",
-                  createPeople: "XX",
-                  deletePeople: "XX",
-                  deleteTime: "2019-3-28"
-                },
-                {
-                  planId: "JH1904010013",
-                  customerName: "AFL",
-                  brand: "CX",
-                  planName: "2001系列计划",
-                  seriesName: "",
-                  planObject: "",
-                  projectType: "销样",
-                  createPeople: "XX",
-                  deletePeople: "XX",
-                  deleteTime: "2019-3-28"
-                },
-              ];
-              this.tableData = SearchList;
-            });
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanList`,params)
+        .then(response => {
+          var SearchList = response;
+          this.tableData = SearchList;
+        })
+        .catch(error => {
+          var SearchList = [
+            {
+              number: "JH190401001",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "",
+              planObject: "",
+              type: "销样",
+              createrName: "XX",
+              createrName: "XX",
+              deleteTime: "2019-3-28"
+            },
+            {
+              number: "JH1904010012",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "",
+              planObject: "",
+              type: "销样",
+              createrName: "XX",
+              createrName: "XX",
+              deleteTime: "2019-3-28"
+            },
+            {
+              number: "JH1904010013",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "",
+              planObject: "",
+              type: "销样",
+              createrName: "XX",
+              createrName: "XX",
+              deleteTime: "2019-3-28"
+            },
+          ];
+          this.tableData = SearchList;
+        });
     },
   }
 };
