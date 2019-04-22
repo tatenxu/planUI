@@ -134,14 +134,9 @@
 </template>
 
 <script>
-const cityOptions = ['已制定', '未制定', '制定中'];
 export default {
   data() {
     return {
-      checkAll: false,
-      checkedCities: [],
-      cities: cityOptions,
-      isIndeterminate: true,
       searchOptions: {
         searchParams: {
           customerName: "",
