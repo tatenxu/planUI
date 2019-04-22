@@ -89,8 +89,11 @@
           :data="tableData"
           style="width: 100%; margin-top: 20px"
           @selection-change="tableSelectionChange"
+          :stripe="true"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
           <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -333,7 +336,7 @@ export default {
     // 恢复单个的按钮
     ReCover(row) {
       console.log("行恢复");
-      var params = {id: row.number};
+      var params = {id: row.id};
       console.log(row);
        this.$axios
         .post(`${window.$config.HOST}/planManagement/restorePlan`,params)
