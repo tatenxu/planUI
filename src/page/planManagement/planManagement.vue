@@ -59,7 +59,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-select v-model="searchOptions.searchParams.planName">
+            <el-select v-model="searchOptions.searchParams.name">
               <el-option
                 v-for="item in searchOptions.options.planNameOptions"
                 :key="item.id"
@@ -113,17 +113,22 @@
         <el-table-column width="50" type="selection" align="center"></el-table-column>
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="id" v-if="false"></el-table-column>
-        <el-table-column prop="planNumber" label="计划编号" align="center"></el-table-column>
-        <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
+        <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
+        <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="date" label="添加时间" align="center"></el-table-column>
+        <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentId" label="上级计划" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center"></el-table-column>
+        <el-table-column prop="havePlan" label="状态" align="center">
+          <template slot-scope="scope">
+            <p v-if="scope.row.havePlan">已制定</p>
+            <p v-else>未制定</p>
+          </template>
+        </el-table-column>
         <el-table-column label="异常状态" width="150" align="center">
           <template slot-scope="scope">
             <el-button
@@ -177,7 +182,7 @@ export default {
           brandName: "",
           clothingLevel: "",
           rangeName: "",
-          planName:"",
+          name:"",
           dateRange: ""
         },
         options: {
@@ -327,17 +332,17 @@ export default {
           response.data.forEach(element=>{
             this.tableData.push({
               id: element.id,
-              planNumber: element.number,
-              planName: element.name,
+              number: element.number,
+              name: element.name,
               rangeNumber: element.rangeNumber,
               customerName: element.customerName,
               brandName: element.brandName,
               rangeName: element.rangeName,
               createrName: element.createrName,
               deptName: element.deptName,
-              date: element.createTime,
+              createTime: element.createTime,
               parentId: element.parentId,
-              state: element.state,
+              havePlan: element.havePlan,
               exception: element.haveException
             });
 
@@ -354,77 +359,77 @@ export default {
         this.tableData = [
           {
             id: 1,
-            planNumber: "00001",
-            planName: "计划1",
+            number: "00001",
+            name: "计划1",
             rangeNumber: "1",
             customerName: "客户1",
             brandName: "品牌1",
             rangeName: "系列1",
             createrName: "1",
             deptName: "1",
-            date: "2019-4-9",
+            createTime: "2019-4-9",
             parentId: "无",
-            state: "优秀",
+            havePlan: true,
             exception: true
           },
           {
             id: 2,
-            planNumber: "00002",
-            planName: "计划2",
+            number: "00002",
+            name: "计划2",
             rangeNumber: "2",
             customerName: "客户2",
             brandName: "品牌2",
             rangeName: "系列2",
             createrName: "2",
             deptName: "2",
-            date: "2019-4-9",
+            createTime: "2019-4-9",
             parentId: "无",
-            state: "优秀",
+            havePlan: true,
             exception: true
           },
           {
             id: 3,
-            planNumber: "00003",
-            planName: "计划3",
+            number: "00003",
+            name: "计划3",
             rangeNumber: "3",
             customerName: "客户3",
             brandName: "品牌3",
             rangeName: "系列3",
             createrName: "3",
             deptName: "3",
-            date: "2019-4-9",
+            createTime: "2019-4-9",
             parentId: "无",
-            state: "优秀",
+            havePlan: true,
             exception: true
           },
           {
             id: 4,
-            planNumber: "00004",
-            planName: "计划4",
+            number: "00004",
+            name: "计划4",
             rangeNumber: "4",
             customerName: "客户4",
             brandName: "品牌4",
             rangeName: "系列4",
             createrName: "4",
             deptName: "4",
-            date: "2019-4-9",
+            createTime: "2019-4-9",
             parentId: "无",
-            state: "优秀",
+            havePlan: true,
             exception: false
           },
           {
             id: 5,
-            planNumber: "00005",
-            planName: "计划A",
+            number: "00005",
+            name: "计划A",
             rangeNumber: "第一个系列",
             customerName: "客户A",
             brandName: "品牌A",
             rangeName: "A系列",
             createrName: "甲",
             deptName: "部门A",
-            date: "2019-4-9",
+            createTime: "2019-4-9",
             parentId: "无",
-            state: "优秀",
+            havePlan: true,
             exception: false
           }
         ];
@@ -534,16 +539,16 @@ export default {
               that.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
                 .then(response=>{
                   if(response.data.errcode < 0){
-                    that.$message.error(element.planName + "添加异常失败");
+                    that.$message.error(element.name + "添加异常失败");
                   }else{
                     that.$message({
                       type:"success",
-                      message:element.planName+"异常添加成功"
+                      message:element.name+"异常添加成功"
                     })
                   }
                 })
                 .catch(error=>{
-                  that.$message.error(element.planName + "添加异常失败");
+                  that.$message.error(element.name + "添加异常失败");
                 })
             });
             that.$message({
@@ -637,7 +642,7 @@ export default {
         customerId: this.searchOptions.searchParams.customerName, 
         brandId: this.searchOptions.searchParams.brandName, 
         rangeId: this.searchOptions.searchParams.rangeName, 
-        id: this.searchOptions.searchParams.planName, 
+        id: this.searchOptions.searchParams.name, 
         clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
@@ -652,17 +657,17 @@ export default {
           }
           resData.forEach(element=>{
             this.tableData.push({
-              planNumber: element.number,
-              planName: element.name,
+              number: element.number,
+              name: element.name,
               rangeNumber: element.rangeNumber,
               customerName: element.customerName,
               brandName: element.brandName,
               rangeName: element.rangeName,
               createrName: element.createrName,
               deptName: element.deptName,
-              date: element.createTime,
+              createTime: element.createTime,
               parentId: element.parentId,
-              state: element.state,
+              havePlan: element.havePlan,
               exception: element.haveException
             })
           });
@@ -671,32 +676,32 @@ export default {
           this.tableData = [
             {
               id: 1,
-              planNumber: "00001",
-              planName: "1",
+              number: "00001",
+              name: "1",
               rangeNumber: "1",
               customerName: "1",
               brandName: "1",
               rangeName: "1",
               createrName: "1",
               deptName: "1",
-              date: "2019-4-9",
+              createTime: "2019-4-9",
               parentId: "无",
-              state: "优秀",
+              havePlan: true,
               exception: true
             },
             {
               id: 2,
-              planNumber: "00002",
-              planName: "2",
+              number: "00002",
+              name: "2",
               rangeNumber: "2",
               customerName: "2",
               brandName: "2",
               rangeName: "2",
               createrName: "2",
               deptName: "2",
-              date: "2019-4-9",
+              createTime: "2019-4-9",
               parentId: "无",
-              state: "优秀",
+              havePlan: true,
               exception: true
             },
           ];
