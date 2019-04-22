@@ -3,24 +3,45 @@
     <el-card class="box-card">
       <div>
         <el-row :gutter="20">
-          <el-button type="primary" style="margin-right:20px" @click="FinishPlan">计划完成</el-button>
+          <el-col :span="8">
+          <div class="bar">
+            <div class="title">下发对象</div>
+            <el-select v-model="searchOptions.searchParams.userName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.userNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select> 
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <el-button type="primary" style="margin-right:20px" @click="distributePlanClick">下发计划</el-button>
+          </div>
+        </el-col>
+          
         </el-row>
         <el-table
           :data="tableData"
           style="width: 100%; margin-top: 20px"
-          @selection-change="IsChanged"
+          @selection-change="tableSelectionChange"
+          :stripe="true"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column prop="planId" label="预测编号" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
+          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brand" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
+          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="createPeople" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="deletePeople" label="状态" align="center"></el-table-column>
-          <el-table-column prop="deleteTime" label="创建时间" align="center"></el-table-column>
+          <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
+          <el-table-column prop="state" label="状态" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -31,8 +52,6 @@
       </div>
       <div class="block">
         <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
           :current-page.sync="pagination.currentPage"
           :page-sizes="pagination.pageSizes"
           :page-size="pagination.pageSize"
@@ -45,228 +64,210 @@
 </template>
 
 <script>
-const cityOptions = ["已制定", "未制定", "制定中"];
 export default {
-  name: "warehouseList",
   data() {
     return {
-      checkAll: false,
-      checkedCities: [],
-      cities: cityOptions,
-      isIndeterminate: true,
-      select1: "",
-      select2: "",
-      select3: "",
-      input1: "",
-      input2: "",
-      input3: "",
+      searchOptions: {
+        searchParams: {
+          userName:""
+        },
+        options: {
+          userNameOptions:[],
+        }
+      },
+      
+      tableData: [],
+      tableMultpleSelection:[],
+
+      pages: 0,
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400
+        total: 400,
       },
-      options1: [
-        {
-          value: 1,
-          label: "客户A"
-        },
-        {
-          value: 2,
-          label: "客户B"
-        },
-        {
-          value: 3,
-          label: "客户C"
-        },
-        {
-          value: 4,
-          label: "客户D"
-        },
-        {
-          value: 5,
-          label: "客户E"
-        }
-      ],
-      options2: [
-        {
-          value: 1,
-          label: "品牌A"
-        },
-        {
-          value: 2,
-          label: "品牌B"
-        },
-        {
-          value: 3,
-          label: "品牌C"
-        },
-        {
-          value: 4,
-          label: "品牌D"
-        },
-        {
-          value: 5,
-          label: "品牌E"
-        }
-      ],
-      options3: [
-        {
-          value: 1,
-          label: "未审核"
-        },
-        {
-          value: 2,
-          label: "审核中"
-        },
-        {
-          value: 3,
-          label: "已审核"
-        }
-      ],
-      tableData: [
-        {
-          planId: "JH190401001",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010012",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010013",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010014",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010015",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        }
-      ],
-      // checked: true,
-      pages: 0,
-      AnyChanged: []
     };
   },
+  created:function(){
+    let that = this;
+    //获取用户信息
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getUsers`)
+      .then(response=>{
+        if(response.data.errcode < 0){
+          that.$message.error("下发对象加载失败!");
+        }
+        this.searchOptions.options.userNameOptions = response.data;
+      })
+      .catch(error=>{
+        that.$message.error("下发对象加载失败!");
+        this.searchOptions.options.userNameOptions =[
+            {
+              id:"4243",
+              name:"小王"
+            },
+            {
+              id:"574523",
+              name:"小徐"
+            },
+            {
+              id:"57531",
+              name:"小刘"
+            },
+          ];
+      });
+
+      //获取所有未下发计划
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getPlanList`)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("计划列表获取错误");
+            return ;
+          }
+          response.data.forEach(element=>{
+            if(element.type === 1 && element.state === 2){
+              this.tableData.push({
+                id: element.id,
+                number: element.number,
+                name: element.name,
+                rangeNumber: element.rangeNumber,
+                rangeName: element.rangeName,
+                customerName: element.customerName,
+                brandName: element.brandName,
+                clothingLevelName:element.clothingLevelName,
+                createrName: element.createrName,
+                deptName: element.deptName,
+                state: element.state,
+              });
+
+              //给搜索选择中的计划名称赋值
+              this.searchOptions.options.planNameOptions.push({
+                id: element.id,
+                name:element.name
+              });
+            }
+          });
+        })
+        .catch(error => {
+          console.log("计划列表获取错误");
+          this.tableData = [
+            {
+              id:"45312",
+              number: "JH190401001",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "aaaaaaaa",
+              planObject: "rwqerqwer",
+              type: "销样",
+              createrName: "XX",
+              state: "XX",
+              createTime: "2019-3-28"
+            },
+            {
+              id:"451",
+              number: "JH1904010012",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "bbbbb",
+              planObject: "qwerqwe",
+              type: "销样",
+              createrName: "XX",
+              state: "XX",
+              createTime: "2019-3-28"
+            },
+            {
+              id:"878351",
+              number: "JH1904010013",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "vvvvvvv",
+              planObject: "weqrqwer",
+              type: "销样",
+              createrName: "XX",
+              state: "XX",
+              createTime: "2019-3-28"
+            },
+            {
+              id:"87563",
+              number: "JH1904010014",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "ffffffff",
+              planObject: "ewqrqwerqwer",
+              type: "销样",
+              createrName: "XX",
+              state: "XX",
+              createTime: "2019-3-28"
+            },
+            {
+              id:"875",
+              number: "JH1904010015",
+              customerName: "AFL",
+              brandName: "CX",
+              name: "2001系列计划",
+              rangeName: "fasdfasdf",
+              planObject: "zcxzv",
+              type: "销样",
+              createrName: "XX",
+              state: "XX",
+              createTime: "2019-3-28"
+            }
+          ];
+          
+          this.searchOptions.options.planNameOptions = [
+            {
+              id: 475,
+              name: "计划1",
+            },
+            {
+              id: 753,
+              name: "计划2",
+            },
+            {
+              id: 986,
+              name: "计划3",
+            }
+          ];
+        });
+  },
   methods: {
-    FinishPlan() {
+    distributePlanClick() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
-      const that = this;
-      if (that.AnyChanged.length === 0) {
+      let that = this;
+      if (that.tableMultpleSelection.length === 0) {
         that.$message.error("请选择要删除的计划！");
-      } else {
-        this.AnyChanged.forEach(element => {
-          var j = this.tableData.indexOf(element);
-          this.$set(this.tableData[j], "deletePeople","已完成");
+      } else if (!that.searchOptions.searchParams.userName){
+        that.$message.error("请选择下发对象！");
+      }else {
+        this.tableMultpleSelection.forEach(element => {
+          this.$axios
+            .post(`${window.$config.HOST}/planManagement/distributePlan`,{
+              planId:element.id,
+              distributedUserId: this.searchOptions.searchParams.userName
+            })
+            .then(response=>{
+              if(response.errcode < 0){
+                that.$message.error(element.name+"下发失败!");
+                console.log(element.name+"下发失败!");
+              }
+              console.log(element.name+"下发成功!");
+              var j = this.tableData.indexOf(element);
+              this.$set(this.tableData[j], "state","已下发");
+            })
+            .catch(error=>{
+              that.$message.error(element.name+"下发失败!");
+              console.log(element.name+"下发失败!");
+            });
         });
       }
     },
-    ReCover(index) {
-      this.tableData.splice(index, 1);
-    },
-    IsChanged(val) {
-      this.AnyChanged = val;
-    },
-
-    check(val) {
-      val.forEach(element => {
-        this.index.push(element.planId);
-      });
-    },
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : [];
-      this.isIndeterminate = false;
-    },
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.cities.length;
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length;
-    },
-    handleDelete(index, row) {
-      this.$confirm("这将删除该仓库下所有记录信息，是否继续？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          let sendData = { id: row.id };
-          this.$axios
-            .post(
-              `${window.$config.HOST}/warehouse/base/deleteWarehouse`,
-              sendData
-            )
-            .then(response => {
-              if (response.data > 0) {
-                this.$message({
-                  type: "success",
-                  message: "删除成功"
-                });
-                this.tableData.splice(index, 1);
-              } else {
-                this.$message({
-                  type: "info",
-                  message: "未在数据库中查到此记录对应信息！"
-                });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-              this.$message({
-                type: "info",
-                message: "非法操作！"
-              });
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消操作"
-          });
-        });
+    tableSelectionChange(val){
+      this.tableMultpleSelection = val;
     }
   }
 };
