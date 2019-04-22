@@ -3,24 +3,27 @@
     <el-card class="box-card">
       <div>
         <el-row :gutter="20">
-          <el-button type="primary" style="margin-right:20px" @click="FinishPlan">计划完成</el-button>
+          <el-button type="primary" style="margin-right:20px" @click="handleCompletionClick">计划完成</el-button>
         </el-row>
         <el-table
           :data="tableData"
           style="width: 100%; margin-top: 20px"
-          @selection-change="IsChanged"
+          @selection-change="tableSelectionChange"
+          :stripe="true"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column prop="planId" label="预测编号" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
+          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brand" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
+          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="createPeople" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="deletePeople" label="状态" align="center"></el-table-column>
-          <el-table-column prop="deleteTime" label="创建时间" align="center"></el-table-column>
+          <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="state" label="状态" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -31,8 +34,6 @@
       </div>
       <div class="block">
         <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
           :current-page.sync="pagination.currentPage"
           :page-sizes="pagination.pageSizes"
           :page-size="pagination.pageSize"
@@ -45,230 +46,147 @@
 </template>
 
 <script>
-const cityOptions = ["已制定", "未制定", "制定中"];
+// import { rename } from 'fs';
 export default {
-  name: "warehouseList",
   data() {
     return {
-      checkAll: false,
-      checkedCities: [],
-      cities: cityOptions,
-      isIndeterminate: true,
-      select1: "",
-      select2: "",
-      select3: "",
-      input1: "",
-      input2: "",
-      input3: "",
+      tableData: [ ],
+      
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
         total: 400
       },
-      options1: [
-        {
-          value: 1,
-          label: "客户A"
-        },
-        {
-          value: 2,
-          label: "客户B"
-        },
-        {
-          value: 3,
-          label: "客户C"
-        },
-        {
-          value: 4,
-          label: "客户D"
-        },
-        {
-          value: 5,
-          label: "客户E"
-        }
-      ],
-      options2: [
-        {
-          value: 1,
-          label: "品牌A"
-        },
-        {
-          value: 2,
-          label: "品牌B"
-        },
-        {
-          value: 3,
-          label: "品牌C"
-        },
-        {
-          value: 4,
-          label: "品牌D"
-        },
-        {
-          value: 5,
-          label: "品牌E"
-        }
-      ],
-      options3: [
-        {
-          value: 1,
-          label: "未审核"
-        },
-        {
-          value: 2,
-          label: "审核中"
-        },
-        {
-          value: 3,
-          label: "已审核"
-        }
-      ],
-      tableData: [
-        {
-          planId: "JH190401001",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010012",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010013",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010014",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        },
-        {
-          planId: "JH1904010015",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          createPeople: "XX",
-          deletePeople: "XX",
-          deleteTime: "2019-3-28"
-        }
-      ],
-      // checked: true,
       pages: 0,
-      AnyChanged: []
+      tableSelectionData: []
     };
   },
-  methods: {
+  created: function () {
+    const that = this;
+    console.log('进入计划完成页面');
 
-    FinishPlan() {
+    //加载未完成的计划
+    this.$axios
+      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .then(response => {
+        var SearchList = response;
+        SearchList.forEach(element=>{
+          //6 表示被删除
+          if(element.state === 5){
+            this.tableData.push({
+              number:element.id,
+              customerName: element.customerName,
+              brandName: element.brandName,
+              name: element.name,
+              rangeName: element.rangeName,
+              planObject: "",
+              type: element.type,
+              state: element.state,
+              createrName: "XX",
+              createTime: "2019-3-28"
+            });
+          }
+        });
+        this.tableData = SearchList;
+      })
+      .catch(error => {
+        var SearchList = [
+          {
+            number: "JH190401001",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "法师打发斯蒂芬",
+            planObject: "fasdfasdfsda",
+            type: "销样",
+            state: "XX",
+            createrName: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010012",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "rewrqw",
+            planObject: "zxcvxzc",
+            type: "销样",
+            state: "XX",
+            createrName: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010013",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "etwervfasd",
+            planObject: "gtrehyger",
+            type: "销样",
+            state: "XX",
+            createrName: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010014",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "trhhgb",
+            planObject: "xcvbcvxnmrstj",
+            type: "销样",
+            state: "XX",
+            createrName: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            number: "JH1904010015",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "ryghrdfsvgsdfg",
+            planObject: "xcvnbsrtj",
+            type: "销样",
+            state: "XX",
+            createrName: "XX",
+            createTime: "2019-3-28"
+          }
+        ];
+        this.tableData = SearchList;
+      });
+  },
+  methods: {
+    //计划完成按钮点击
+    handleCompletionClick() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       const that = this;
-      if (that.AnyChanged.length === 0) {
+      if (that.tableSelectionData.length === 0) {
         that.$message.error("请选择要删除的计划！");
       } else {
-        this.AnyChanged.forEach(element => {
-          var j = this.tableData.indexOf(element);
-          this.$set(this.tableData[j], "deletePeople", "已完成");
+        this.tableSelectionData.forEach(element => {
+          
+          this.$axios.post(`${window.$config.HOST}/planManagement/completePlan`)
+            .then(response=>{
+              if(response.data.errcode<0){
+                this.$message.error(element.name+"添加完成失败");
+              }
+              console.log("完成"+element.name);
+              var j = this.tableData.indexOf(element);
+              this.$set(this.tableData[j], "state", "已完成");
+            })
+            .catch(error=>{
+              console.log(element.name+"完成失败");
+              this.$message.error(element.name+"添加完成失败");
+            });
         });
       }
     },
-    ReCover(index) {
-      this.tableData.splice(index, 1);
+    
+    //表格选择变化
+    tableSelectionChange(val) {
+      this.tableSelectionData = val;
     },
-    IsChanged(val) {
-      this.AnyChanged = val;
-    },
-
-    check(val) {
-      val.forEach(element => {
-        this.index.push(element.planId);
-      });
-    },
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : [];
-      this.isIndeterminate = false;
-    },
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.cities.length;
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length;
-    },
-    handleDelete(index, row) {
-      this.$confirm("这将删除该仓库下所有记录信息，是否继续？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          let sendData = { id: row.id };
-          this.$axios
-            .post(
-              `${window.$config.HOST}/warehouse/base/deleteWarehouse`,
-              sendData
-            )
-            .then(response => {
-              if (response.data > 0) {
-                this.$message({
-                  type: "success",
-                  message: "删除成功"
-                });
-                this.tableData.splice(index, 1);
-              } else {
-                this.$message({
-                  type: "info",
-                  message: "未在数据库中查到此记录对应信息！"
-                });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-              this.$message({
-                type: "info",
-                message: "非法操作！"
-              });
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消操作"
-          });
-        });
-    }
   }
 };
 </script>
