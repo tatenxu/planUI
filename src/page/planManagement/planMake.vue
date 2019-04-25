@@ -85,7 +85,7 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
-            <div class="title">客户</div>
+            <div class="title">客户名称</div>
             <el-select v-if="showit1" v-model="ClientName" clearable placeholder="请选择">
               <el-option
                 v-for="item in clientOpt"
@@ -158,13 +158,14 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划对象</div>
-            <el-input  v-model="objName" :rows="1" placeholder="请选择" ></el-input>
+            <el-input v-if="showit5" v-model="objName" :rows="1" placeholder="请选择" ></el-input>
+            <el-input v-else v-model="TopPlan" clearable :rows="1" placeholder="请输入" :disabled="true"></el-input>
           </div>
         </el-col>
         <el-col :span="6">
           <div class="bar" style="margin-left: 4px">
             <div class="title">上级计划</div>
-            <el-input v-model="TopPlan" clearable :rows="1" placeholder="请输入"></el-input>
+            <el-input  v-model="TopPlan" clearable :rows="1" placeholder="请输入"></el-input>
           </div>
         </el-col>
         <el-col :span="2">

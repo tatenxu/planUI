@@ -6,7 +6,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <!-- <el-select v-model="searchOptions.searchParams.customerName" @change="clientSelect"> -->
-            <el-select v-model="CustomerValue" @change="clientSelect">
+            <el-select v-model="CustomerValue">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -20,7 +20,7 @@
           <div class="bar">
             <div class="title">品牌</div>
             <!-- <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelect"> -->
-            <el-select v-model="BrandValue" @change="brandSelect">
+            <el-select v-model="BrandValue">
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -423,7 +423,7 @@ export default {
       .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
       .then(response => {
         this.searchOptions.options.brandNameOptions = response;
-        this.ruleForm.options.brandNameOptions = response;
+        // this.ruleForm.options.brandNameOptions = response;
       })
       .catch(error => {
         var ClothingList = [
@@ -441,14 +441,14 @@ export default {
           }
         ];
         this.searchOptions.options.brandNameOptions = ClothingList;
-        this.ruleForm.options.brandNameOptions = ClothingList;
+        // this.ruleForm.options.brandNameOptions = ClothingList;
       });
 
     that.$axios
       .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
       .then(response => {
         this.searchOptions.options.rangeNameOption = response;
-        this.ruleForm.options.rangeNameOption = response;
+        // this.ruleForm.options.rangeNameOption = response;
       })
       .catch(error => {
         var ClothingList = [
@@ -466,7 +466,7 @@ export default {
           }
         ];
         this.searchOptions.options.rangeNameOption = ClothingList;
-        this.ruleForm.options.rangeNameOption = ClothingList;
+        // this.ruleForm.options.rangeNameOption = ClothingList;
       });
 
     that.$axios
@@ -633,66 +633,66 @@ export default {
     //     });
     // },
 
-    // //当弹出框的客户名称改变的时候GET弹出框的品牌信息
-    // clientSelect2() {
-    //   this.$axios
-    //     .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
-    //       params: {
-    //         custumerId: this.ruleForm.customerName
-    //       }
-    //     })
-    //     .then(response => {
-    //       var BrandList = response;
-    //       this.ruleForm.options.brandNameOptions = BrandList;
-    //     })
-    //     .catch(error => {
-    //       console.log("第一处测试点");
-    //       var BrandList = [
-    //         {
-    //           id: 1,
-    //           name: "品牌A"
-    //         },
-    //         {
-    //           id: 2,
-    //           name: "品牌B"
-    //         },
-    //         {
-    //           id: 3,
-    //           name: "品牌C"
-    //         }
-    //       ];
-    //       this.ruleForm.options.brandNameOptions = BrandList;
-    //     });
-    // },
+    //当弹出框的客户名称改变的时候GET弹出框的品牌信息
+    clientSelect2() {
+      this.$axios
+        .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
+          params: {
+            custumerId: this.ruleForm.customerName
+          }
+        })
+        .then(response => {
+          var BrandList = response;
+          this.ruleForm.options.brandNameOptions = BrandList;
+        })
+        .catch(error => {
+          console.log("第一处测试点");
+          var BrandList = [
+            {
+              id: 1,
+              name: "品牌A"
+            },
+            {
+              id: 2,
+              name: "品牌B"
+            },
+            {
+              id: 3,
+              name: "品牌C"
+            }
+          ];
+          this.ruleForm.options.brandNameOptions = BrandList;
+        });
+    },
 
-    // //当弹出框的品牌名称改变的时候GET弹出框的系列信息
-    // brandSelect2() {
-    //   this.$axios
-    //     .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
-    //       brandId: this.ruleForm.brandName
-    //     })
-    //     .then(response => {
-    //       var RangeList = response.data;
-    //       this.ruleForm.options.rangeNameOption = RangeList;
-    //     })
-    //     .catch(error => {
-    //       var RangeList = [
-    //         {
-    //           id: 1,
-    //           name: "系列A"
-    //         },
-    //         {
-    //           id: 2,
-    //           name: "系列B"
-    //         },
-    //         {
-    //           id: 3,
-    //           name: "系列C"
-    //         }
-    //       ];
-    //       this.ruleForm.options.rangeNameOption = RangeList;
-    //     });
-    // },
+    //当弹出框的品牌名称改变的时候GET弹出框的系列信息
+    brandSelect2() {
+      this.$axios
+        .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
+          brandId: this.ruleForm.brandName
+        })
+        .then(response => {
+          var RangeList = response.data;
+          this.ruleForm.options.rangeNameOption = RangeList;
+        })
+        .catch(error => {
+          var RangeList = [
+            {
+              id: 1,
+              name: "系列A"
+            },
+            {
+              id: 2,
+              name: "系列B"
+            },
+            {
+              id: 3,
+              name: "系列C"
+            }
+          ];
+          this.ruleForm.options.rangeNameOption = RangeList;
+        });
+    },
 
     // 改变日期格式
     // 改变日期格式

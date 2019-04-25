@@ -7,8 +7,9 @@
             <div class="title">客户名称</div>
             <el-select
               v-model="searchOptions.searchParams.customerName"
-              @change="customerNameSelectionChange"
+
             >
+                          <!-- @change="customerNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -23,8 +24,10 @@
             <div class="title">品牌</div>
             <el-select
               v-model="searchOptions.searchParams.brandName"
-              @change="brandNameSelectionChange"
+           
+            
             >
+               <!-- @change="brandNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -40,8 +43,10 @@
             <div class="title">系列名称</div>
             <el-select
               v-model="searchOptions.searchParams.rangeName"
-              @change="rangeNameSelectionChange"
+           
+            
             >
+               <!-- @change="rangeNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
                 :key="item.id"
@@ -431,11 +436,11 @@ export default {
       //此处的接口为GET订单款号
       .get(`${window.$config.HOST}/infoManagement/getStyleNumber`)
       .then(response => {
-        this.options.styleNumberOptions = response;
+        // this.options.styleNumberOptions = response;
         this.searchOptions.options.styleNumberNameOptions=response;
       })
       .catch(error => {
-        this.options.styleNumberOptions = [
+        this.searchOptions.options.styleNumberNameOptions = [
           {
             id: 1,
             name: "XY——0000001"
@@ -445,18 +450,18 @@ export default {
             name: "YZ——0000002"
           }
         ];
-        this.searchOptions.options.styleNumberNameOptions=this.options.styleNumberOptions;
+     
       });
     //得到系列名称
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getRangeName`)
       .then(response => {
         this.searchOptions.options.rangeNameOptions=response;
-        this.options.rangeNameTypeOptions = response;
+        // this.options.rangeNameTypeOptions = response;
         
       })
       .catch(error => {
-        this.options.rangeNameTypeOptions = [
+        this.searchOptions.options.rangeNameOptions = [
           {
             id: 1,
             name: "A系列"
@@ -466,17 +471,17 @@ export default {
             name: "B系列"
           }
         ];
-        this.searchOptions.options.rangeNameOptions=this.options.rangeNameTypeOptions;
+        // this.searchOptions.options.rangeNameOptions=this.options.rangeNameTypeOptions;
       });
     //得到品牌名称
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getBrand`)
       .then(response => {
          this.searchOptions.options.brandNameOptions = response;
-          this.options.brandNameOptions = response;
+          // this.options.brandNameOptions = response;
       })
       .catch(error => {
-        this.options.brandNameOptions = [
+         this.searchOptions.options.brandNameOptions = [
           {
             id: 1,
             name: "X品牌"
@@ -486,7 +491,7 @@ export default {
             name: "Y品牌"
           }
         ];
-        this.searchOptions.options.brandNameOptions = this.options.brandNameOptions ;
+        // this.searchOptions.options.brandNameOptions = this.options.brandNameOptions ;
       });
     //得到客户名称
     that.$axios
@@ -576,80 +581,80 @@ export default {
       });
   },
   methods: {
-    // dialogCustomerNameSelectionChange() {
-    //   var param = {
-    //     id: this.ruleForm.customerName
-    //   };
-    //   this.$axios
-    //     .get(`${window.$config.HOST}/infoManagement/getBrand`, param)
-    //     .then(response => {
-    //       this.options.brandNameOptions = response;
-    //     })
-    //     .catch(error => {
-    //       this.options.brandNameOptions = [
-    //         {
-    //           id: 1,
-    //           name: "X品牌"
-    //         },
-    //         {
-    //           id: 2,
-    //           name: "Y品牌"
-    //         }
-    //       ];
-    //     });
+    dialogCustomerNameSelectionChange() {
+      var param = {
+        id: this.ruleForm.customerName
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getBrand`, param)
+        .then(response => {
+          this.options.brandNameOptions = response;
+        })
+        .catch(error => {
+          this.options.brandNameOptions = [
+            {
+              id: 1,
+              name: "X品牌"
+            },
+            {
+              id: 2,
+              name: "Y品牌"
+            }
+          ];
+        });
 
-    //   this.ruleForm.brandName = "";
-    //   this.ruleForm.rangeName = "";
-    //   this.ruleForm.number = "";
-    // },
-    // dialogBrandNameSelectionChange() {
-    //   var param = {
-    //     id: this.ruleForm.brandName
-    //   };
-    //   this.$axios
-    //     .get(`${window.$config.HOST}/infoManagement/getRangeName`, param)
-    //     .then(response => {
-    //       this.options.rangeNameTypeOptions = response;
-    //     })
-    //     .catch(error => {
-    //       this.options.rangeNameTypeOptions = [
-    //         {
-    //           id: 1,
-    //           name: "A系列"
-    //         },
-    //         {
-    //           id: 2,
-    //           name: "B系列"
-    //         }
-    //       ];
-    //     });
-    //   this.ruleForm.rangeName = "";
-    //   this.ruleForm.number = "";
-    // },
-    // dialogRangeNameSelectionChange() {
-    //   var param = {
-    //     id: this.ruleForm.rangeName
-    //   };
-    //   this.$axios
-    //     //此处的接口为GET订单款号
-    //     .get(`${window.$config.HOST}/infoManagement/getStyleNumber`, param)
-    //     .then(response => {
-    //       this.options.styleNumberOptions = response;
-    //     })
-    //     .catch(error => {
-    //       this.options.styleNumberOptions = [
-    //         {
-    //           id: 1,
-    //           name: "XY——0000001"
-    //         },
-    //         {
-    //           id: 2,
-    //           name: "YZ——0000002"
-    //         }
-    //       ];
-    //     });
-    //   this.ruleForm.number = "";
-    // },
+      this.ruleForm.brandName = "";
+      this.ruleForm.rangeName = "";
+      this.ruleForm.number = "";
+    },
+    dialogBrandNameSelectionChange() {
+      var param = {
+        id: this.ruleForm.brandName
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRangeName`, param)
+        .then(response => {
+          this.options.rangeNameTypeOptions = response;
+        })
+        .catch(error => {
+          this.options.rangeNameTypeOptions = [
+            {
+              id: 1,
+              name: "A系列"
+            },
+            {
+              id: 2,
+              name: "B系列"
+            }
+          ];
+        });
+      this.ruleForm.rangeName = "";
+      this.ruleForm.number = "";
+    },
+    dialogRangeNameSelectionChange() {
+      var param = {
+        id: this.ruleForm.rangeName
+      };
+      this.$axios
+        //此处的接口为GET订单款号
+        .get(`${window.$config.HOST}/infoManagement/getStyleNumber`, param)
+        .then(response => {
+          this.options.styleNumberOptions = response;
+        })
+        .catch(error => {
+          this.options.styleNumberOptions = [
+            {
+              id: 1,
+              name: "XY——0000001"
+            },
+            {
+              id: 2,
+              name: "YZ——0000002"
+            }
+          ];
+        });
+      this.ruleForm.number = "";
+    },
     // //当品牌名称改变的时候GET系列信息
     // brandNameSelectionChange() {
     //   var param = {

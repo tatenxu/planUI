@@ -7,12 +7,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select v-model="ClientName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in client"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
+              <el-option v-for="item in client" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -20,16 +15,11 @@
           <div class="bar">
             <div class="title">品牌</div>
             <el-select v-model="BrandName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in brand"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
+              <el-option v-for="item in brand" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
-        <el-col :span="8">
+        <!-- <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
             <el-select v-model="ClothesType" clearable placeholder="请选择">
@@ -43,7 +33,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+        <el-row :gutter="20">-->
         <el-col :span="8">
           <div class="bar">
             <div class="title">添加时间</div>
@@ -56,7 +46,6 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              :picker-options="pickerOptions2"
             ></el-date-picker>
             <!-- <el-date-picker
               v-model="Date1"
@@ -79,41 +68,52 @@
             ></el-date-picker>-->
           </div>
         </el-col>
-        <!-- <el-col :span="8" class="MinW" style="margin-left:30px">
-          <el-radio v-model="checked" label="1">未制定</el-radio>
-          <el-radio v-model="checked" label="2">已制定</el-radio>
-          <el-radio v-model="checked" label="3">未完成</el-radio>
-          <el-radio v-model="checked" label="4">已完成</el-radio>
-        </el-col> -->
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
             <el-select v-model="SeriesName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in series"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
+              <el-option v-for="item in series" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
-        <el-col :span="8">
+        <!-- <el-col :span="8">
           <div class="bar">
             <div class="title">款式组名称</div>
             <el-select v-model="SeriesGroupName" clearable placeholder="请选择">
               <el-option
                 v-for="item in seriesGroup"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
+        </el-col> -->
+         <el-col :span="8">
+          <div class="bar">
+            <div class="title">订单款号</div>
+            <!-- <el-input v-model="OrderId" clearable :rows="1" style="margin-left: 20px"></el-input> -->
+            <el-select v-model="OrderId">
+              <el-option
+                v-for="item in orderOption"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+         </el-col>
+        <el-col :span="5" class="MinW" style="margin-left:30px">
+          <el-radio v-model="checked" label="1">未制定</el-radio>
+          <el-radio v-model="checked" label="2">已制定</el-radio>
+           <el-button type="primary" @click="SearchIt()" style="margin-left:50px">搜索</el-button>
+          <!-- <el-radio v-model="checked" label="3">未完成</el-radio>
+          <el-radio v-model="checked" label="4">已完成</el-radio>-->
         </el-col>
       </el-row>
+      <!-- </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
@@ -130,24 +130,24 @@
         <el-col :span="3">
           <el-button type="primary" @click="SearchIt()">搜索</el-button>
         </el-col>
-      </el-row>
+      </el-row> -->
     </el-card>
 
     <!-- 搜索结果 -->
     <el-card class="box-card">
       <el-table :data="tableData" style="width: 100%; margin-top: 20px">
-        <el-table-column prop="Id" label="序号" align="center"></el-table-column>
-        <el-table-column prop="SeriesGroupId" label="款式组编号" align="center" width="100px"></el-table-column>
-        <el-table-column prop="SeriesGroupName" label="款式组名称" align="center" width="100px"></el-table-column>
-        <el-table-column prop="OrderId" label="订单款号" align="center"></el-table-column>
-        <el-table-column prop="SeriesId" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="ClientName" label="客户名称" align="center"></el-table-column>
-        <el-table-column prop="BrandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="ClothesType" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="SeriesName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="Operator" label="添加人" align="center"></el-table-column>
-        <el-table-column prop="Department" label="部门" align="center"></el-table-column>
-        <el-table-column prop="State" label="状态" align="center"></el-table-column>
+        <el-table-column prop="id" label="序号" align="center"></el-table-column>
+        <el-table-column prop="styleGroupNumber" label="款式组编号" align="center" width="100px"></el-table-column>
+        <el-table-column prop="styleGroupName" label="款式组名称" align="center" width="100px"></el-table-column>
+        <el-table-column prop="number" label="订单款号" align="center"></el-table-column>
+        <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
+        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+        <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+        <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+        <el-table-column prop="state" label="状态" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
@@ -162,11 +162,13 @@
 export default {
   data() {
     return {
-      checked:"0",
+      checked: "0",
       // checked1: false,
       // checked2: false,
       // checked3: false,
       // checked4: false,
+      DataStartTime: "",
+      DataEndTime: "",
       ClientName: "",
       BrandName: "",
       ClothesType: "",
@@ -176,118 +178,13 @@ export default {
       SeriesGroupName: "",
       PlanName: "",
       OrderId: "",
-
-      seriesGroup: [
-        {
-          label: "款式组A",
-          value: 0
-        },
-        {
-          label: "款式组B",
-          value: 1
-        },
-        {
-          label: "款式组C",
-          value: 2
-        }
-      ],
-      client: [
-        {
-          label: "客户A",
-          value: 0
-        },
-        {
-          label: "客户B",
-          value: 1
-        },
-        {
-          label: "客户C",
-          value: 2
-        },
-        {
-          label: "客户D",
-          value: 3
-        }
-      ],
-
-      brand: [
-        {
-          label: "X品牌",
-          value: 0
-        },
-        {
-          label: "Y品牌",
-          value: 1
-        },
-        {
-          label: "M品牌",
-          value: 2
-        },
-        {
-          label: "N品牌",
-          value: 3
-        }
-      ],
-      type: [
-        {
-          label: "时装",
-          value: 0
-        },
-        {
-          label: "精品",
-          value: 1
-        },
-        {
-          label: "品牌",
-          value: 2
-        }
-      ],
-
-      series: [
-        {
-          label: "系列A",
-          value: 0
-        },
-        {
-          label: "系列B",
-          value: 1
-        },
-        {
-          label: "系列C",
-          value: 2
-        }
-      ],
-
-      tableData: [
-        {
-          Id: 0,
-          SeriesGroupId: "X1-0000",
-          SeriesGroupName: "款式组A",
-          OrderId: "00000001",
-          SeriesId: "001",
-          ClientName: "客户A",
-          BrandName: "品牌A",
-          ClothesType: "服装A",
-          SeriesName: "系列A",
-          Operator: "添加人A",
-          Department: "部门A",
-          State: "无"
-        },
-        {
-          Id: 1,
-          SeriesGroupId: "X1-0010",
-          SeriesGroupName: "款式组B",
-          OrderId: "00000002",
-          SeriesId: "002",
-          ClientName: "客户C",
-          BrandName: "品牌D",
-          ClothesType: "服装D",
-          SeriesName: "系列C",
-          Operator: "添加人A",
-          Department: "部门B",
-          State: "无"
-        }
-      ],
+      orderOption:[],
+      seriesGroup: [],
+      client: [],
+      brand: [],
+      type: [],
+      series: [],
+      tableData: [],
 
       barCode: "",
       qualityTestRecordDetail: [
@@ -312,13 +209,244 @@ export default {
       }
     };
   },
+
+  created: function() {
+    var that = this;
+    //获得款式组名称
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupName`)
+      .then(response => {
+        this.seriesGroup = response;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            name: "款式组A"
+          },
+          {
+            id: 2,
+            name: "款式组B"
+          },
+          {
+            id: 3,
+            name: "款式组C"
+          }
+        ];
+        this.seriesGroup = ClothingList;
+      });
+
+    //得到系列名称
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`)
+      .then(response => {
+        this.series = response;
+      })
+      .catch(error => {
+        this.series = [
+          {
+            id: 1,
+            name: "A系列"
+          },
+          {
+            id: 2,
+            name: "B系列"
+          }
+        ];
+      });
+    //得到品牌名称
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .then(response => {
+        this.brand = response;
+      })
+      .catch(error => {
+        this.brand = [
+          {
+            id: 1,
+            name: "X品牌"
+          },
+          {
+            id: 2,
+            name: "Y品牌"
+          }
+        ];
+      });
+    //得到客户名称
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .then(response => {
+        var client = response;
+      })
+      .catch(error => {
+        var CustomerList = [
+          {
+            id: 1,
+            name: "顾客A"
+          },
+          {
+            id: 2,
+            name: "顾客B"
+          },
+          {
+            id: 3,
+            name: "顾客C"
+          }
+        ];
+        this.client = CustomerList;
+      });
+
+    //得到搜索信息
+    this.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getStyleList`)
+      .then(response => {
+        this.tableData = response;
+      })
+      .catch(error => {
+        var SearchList = [
+          {
+            rangeId: 1,
+            rangeNumber: "XL20190101001",
+            rangeName: "Fall-2019(07/08/09)",
+            styleGroupId: 213213,
+            styleGroupNumber: "KSZ20190101001",
+            styleGroupName: "款式1组",
+            id: 321321321,
+            number: "1242142131",
+            customerId: 321321321,
+            customerName: "Qi-Collection",
+            brandId: 42132131,
+            brandName: "Selkie",
+            clothingLevelId: 321321,
+            clothingLevelName: "时装",
+            createrName: "刘德华",
+            deptName: "业务1组",
+            createTime: "2019-01-01 10:15:01",
+            addingMode: "手动",
+            state: "已绑定",
+            havePlan: false
+          },
+          {
+            rangeId: 1,
+            rangeNumber: "XL20190101001",
+            rangeName: "Fall-2019(07/08/09)",
+            styleGroupId: 213213,
+            styleGroupNumber: "KSZ20190101001",
+            styleGroupName: "款式1组",
+            id: 321321321,
+            number: "1242142131",
+            customerId: 321321321,
+            customerName: "Qi-Collection",
+            brandId: 42132131,
+            brandName: "Selkie",
+            clothingLevelId: 321321,
+            clothingLevelName: "时装",
+            createrName: "刘德华",
+            deptName: "业务1组",
+            createTime: "2019-01-01 10:15:01",
+            addingMode: "手动",
+            state: "已绑定",
+            havePlan: false
+          }
+        ];
+        this.tableData = SearchList;
+      });
+  },
   methods: {
+    //改变日期格式
+    changeDate(date) {
+      console.log(date);
+      if (!date) {
+        return "";
+      } else {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
+    },
+    SearchIt() {
+      const that = this;
+      this.DataStartTime = that.changeDate(this.Date1[0]);
+      this.DataEndTime = that.changeDate(this.Date1[1]);
+      this.$axios
+        .get(`${window.$config.HOST}/InfoManagement/getStyleList`, {
+          params: {
+            customerId: this.ClientName,
+            brandId: this.BrandName,
+            rangeId: this.SeriesName,
+            number: this.OrderId,
+            clothingLevelId: 0,
+            startDate: this.DataStartTime,
+            endDate: this.DataEndTime
+          }
+        })
+        .then(response => {
+          this.tableData = response;
+        })
+        .catch(error => {
+          var SearchList = [
+            {
+              rangeId: 1,
+              rangeNumber: "XL201sssss90101001",
+              rangeName: "Fall-2019(07/08/09)",
+              styleGroupId: 213213,
+              styleGroupNumber: "KSZ20190101001",
+              styleGroupName: "款式1组",
+              id: 321321321,
+              number: "1242142131",
+              customerId: 321321321,
+              customerName: "Qi-Collection",
+              brandId: 42132131,
+              brandName: "Selkie",
+              clothingLevelId: 321321,
+              clothingLevelName: "时装",
+              createrName: "刘德华",
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              addingMode: "手动",
+              state: "已绑定",
+              havePlan: false
+            },
+            {
+              rangeId: 1,
+              rangeNumber: "XL20190101001",
+              rangeName: "Fall-2019(07/08/09)",
+              styleGroupId: 213213,
+              styleGroupNumber: "KSZ20190101001",
+              styleGroupName: "款式1组",
+              id: 321321321,
+              number: "1242142131",
+              customerId: 321321321,
+              customerName: "Qi-Collection",
+              brandId: 42132131,
+              brandName: "Selkie",
+              clothingLevelId: 321321,
+              clothingLevelName: "时装",
+              createrName: "刘德华",
+              deptName: "业务1组",
+              createTime: "2019-01-01 10:15:01",
+              addingMode: "手动",
+              state: "已绑定",
+              havePlan: false
+            }
+          ];
+          this.tableData = SearchList;
+        });
+    },
     ToPlanForm(row) {
       this.$router.push({
         name: "planMakeIndex",
         params: {
           flag: 3,
-          goback:"stylePlanMake",
+          goback: "stylePlanMake",
           client: row.ClientName,
           brand: row.BrandName,
           series: row.SeriesName,

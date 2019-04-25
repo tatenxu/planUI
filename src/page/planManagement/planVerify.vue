@@ -5,12 +5,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="select1" clearable @change="c1">
+            <el-select v-model="clientId" clearable @change="c1">
               <el-option
                 v-for="item in options1"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -19,12 +19,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="select2" clearable @change="c1">
+            <el-select v-model="brandId" clearable @change="c1">
               <el-option
                 v-for="item in options2"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -32,12 +32,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">审核状态</div>
-            <el-select v-model="select3" clearable @change="c1">
+            <el-select v-model="stateId" clearable @change="c1">
               <el-option
                 v-for="item in options3"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -49,7 +49,7 @@
           <div class="bar">
             <div class="title">新建时间</div>
             <el-date-picker
-              v-model="input1"
+              v-model="dataRange"
               type="daterange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -61,7 +61,15 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="input3" clearable @change="c4"></el-input>
+            <!-- <el-input v-model="input3" clearable @change="c4"></el-input> -->
+            <el-select v-model="rangeId" clearable @change="c1">
+              <el-option
+                v-for="item in options4"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
 
@@ -105,20 +113,19 @@
           :data="tableData"
           @selection-change="isChanged"
           max-height="550"
-          
           style="width : 100%"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column prop="planId" label="预测编号" align="center"></el-table-column>
+          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brand" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
+          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
           <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="planBegin" label="计划开始" align="center"></el-table-column>
-          <el-table-column prop="planOver" label="计划结束" align="center"></el-table-column>
-          <el-table-column prop="statue" label="审核状态" align="center"></el-table-column>
+          <el-table-column prop="startDate" label="计划开始" align="center"></el-table-column>
+          <el-table-column prop="endDate" label="计划结束" align="center"></el-table-column>
+          <el-table-column prop="state" label="审核状态" align="center"></el-table-column>
 
           <el-table-column fixed="right" width="100">
             <template slot-scope="scope">
@@ -177,133 +184,342 @@ export default {
       select1: "",
       select2: "",
       select3: "",
-      input1: "",
-      input2: "",
-      input3: "",
+      clientId: "",
+      brandId: "",
+      rangeId: "",
+      stateId: "",
+      dataRange: "",
+      dataStartTime: "",
+      dataEndTime: "",
+
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
         total: 400
       },
-      options1: [
-        {
-          value: 1,
-          label: "客户A"
-        },
-        {
-          value: 2,
-          label: "客户B"
-        },
-        {
-          value: 3,
-          label: "客户C"
-        },
-        {
-          value: 4,
-          label: "客户D"
-        },
-        {
-          value: 5,
-          label: "客户E"
-        }
-      ],
-      options2: [
-        {
-          value: 1,
-          label: "品牌A"
-        },
-        {
-          value: 2,
-          label: "品牌B"
-        },
-        {
-          value: 3,
-          label: "品牌C"
-        },
-        {
-          value: 4,
-          label: "品牌D"
-        },
-        {
-          value: 5,
-          label: "品牌E"
-        }
-      ],
+      options1: [],
+      options2: [],
       options3: [
         {
-          value: 1,
-          label: "未审核"
+          id: 1,
+          name: "已制定"
         },
         {
-          value: 2,
-          label: "审核中"
+          id: 2,
+          name: "已提交"
         },
         {
-          value: 3,
-          label: "已审核"
+          id: 3,
+          name: "被驳回"
+        },
+        {
+          id: 4,
+          name: "已审核"
+        },
+        {
+          id: 5,
+          name: "已下发"
+        },
+        {
+          id: 6,
+          name: "已删除"
         }
       ],
-      tableData: [
-        {
-          planId: "JH190401001",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          planBegin: "2019-3-28",
-          planOver: "2019-7-1",
-          statue: "未审核"
-          // other:"查看详情"
-        },
-        {
-          planId: "JH190401001",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          planBegin: "2019-3-28",
-          planOver: "2019-7-1",
-          statue: "未审核"
-          // other:"查看详情"
-        },
-        {
-          planId: "JH190401001",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          planBegin: "2019-3-28",
-          planOver: "2019-7-1",
-          statue: "审核驳回"
-          // other:"查看详情"
-        },
-        {
-          planId: "JH190401001",
-          customerName: "AFL",
-          brand: "CX",
-          planName: "2001系列计划",
-          seriesName: "",
-          planObject: "",
-          projectType: "销样",
-          planBegin: "2019-3-28",
-          planOver: "2019-7-1",
-          statue: "已审核"
-          // other:"查看详情"
-        }
-      ],
+      options4: [],
+      tableData: [],
       // checked: true,
       pages: 0,
       AnyChanged: []
     };
   },
+  created: function() {
+    var that = this;
+
+    //获得品牌下拉框
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
+      .then(response => {
+        this.options2 = response;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            name: "品牌1"
+          },
+          {
+            id: 2,
+            name: "品牌2"
+          },
+          {
+            id: 3,
+            name: "品牌3"
+          }
+        ];
+        this.options2 = ClothingList;
+      });
+
+    //获得系列下拉框
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .then(response => {
+        this.options4 = response;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            name: "系列A"
+          },
+          {
+            id: 2,
+            name: "系列B"
+          },
+          {
+            id: 3,
+            name: "系列C"
+          }
+        ];
+        this.options4 = ClothingList;
+      });
+
+    //获得客户名称下拉框
+    that.$axios
+      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .then(response => {
+        this.options1 = response;
+      })
+      .catch(error => {
+        var CustomerList = [
+          {
+            id: 1,
+            name: "顾客A"
+          },
+          {
+            id: 2,
+            name: "顾客B"
+          },
+          {
+            id: 3,
+            name: "顾客C"
+          }
+        ];
+        this.options1 = CustomerList;
+      });
+
+    //获得服装层次下拉框
+    // that.$axios
+    //   .get(`${window.$config.HOST}/InfoManagement/getClothingLevelName`)
+    //   .then(response => {
+    //     this.type = response;
+    //   })
+    //   .catch(error => {
+    //     var ClothingList = [
+    //       {
+    //         id: 1,
+    //         name: "时装"
+    //       },
+    //       {
+    //         id: 2,
+    //         name: "精品"
+    //       },
+    //       {
+    //         id: 3,
+    //         name: "时尚"
+    //       }
+    //     ];
+    //     this.type = ClothingList;
+    //   });
+
+    //获得空集搜索列表
+    that.$axios
+      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .then(response => {
+        var SearchList = response;
+        this.tableData = SearchList;
+      })
+      .catch(error => {
+        var SearchList = [
+          {
+            id: 1,
+            number: "XL20190101001",
+            name: "超级计划",
+            parentId: "创生计划",
+            rangeId: 1321,
+            rangeNumber: "XL20190101001",
+            rangeName: "Fall-2019(07/08/09)",
+            customerId: 1232131,
+            customerName: "Qi-Collection",
+            brandId: 42132131,
+            brandName: "Selkie",
+            clothingLevelId: 321321,
+            clothingLevelName: "时装",
+            type: 2,
+            planObject: "对象A",
+            projectType: "款式组计划",
+            order: 1,
+            quantity: 15,
+            product: "未知产品A",
+            productDateType: "未知A",
+            startDate: "2019-01-01 10:15:01",
+            endDate: "2119-05-31 14:25:01",
+            proposal: "无建议",
+            description: "Balabalabala",
+            state: 1,
+            createrName: "刘德华",
+            deleteTime: "",
+            deptName: "业务1组",
+            note: "系列备注1",
+            createTime: "2019-01-01 10:15:01",
+            haveException: 0
+          },
+          {
+            id: 1,
+            number: "XL20190101001",
+            name: "超级计划",
+            parentId: "创生计划",
+            rangeId: 1321,
+            rangeNumber: "XL20190101001",
+            rangeName: "Fall-2019(07/08/09)",
+            customerId: 1232131,
+            customerName: "Qi-Collection",
+            brandId: 42132131,
+            brandName: "Selkie",
+            clothingLevelId: 321321,
+            clothingLevelName: "时装",
+            type: 2,
+            planObject: "对象A",
+            projectType: "款式组计划",
+            order: 1,
+            quantity: 15,
+            product: "未知产品A",
+            productDateType: "未知A",
+            startDate: "2019-01-01 10:15:01",
+            endDate: "2119-05-31 14:25:01",
+            proposal: "无建议",
+            description: "Balabalabala",
+            state: 1,
+            createrName: "刘德华",
+            deleteTime: "",
+            deptName: "业务1组",
+            note: "系列备注1",
+            createTime: "2019-01-01 10:15:01",
+            haveException: 0
+          }
+        ];
+        this.tableData = SearchList;
+      });
+  },
   methods: {
+    //改变日期格式
+    changeDate(date) {
+      console.log(date);
+      if (!date) {
+        return "";
+      } else {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
+    },
+    getWareList() {
+      const that = this;
+      this.DataStartTime = that.changeDate(this.dataRange[0]);
+      this.DataEndTime = that.changeDate(this.dataRange[1]);
+      that.$axios
+
+        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+          customerId: this.clientId,
+          brandId: this.brandId,
+          rangeId: this.rangeId,
+          startDate: DataStartTime,
+          endDate: DataEndTime
+        })
+        .then(response => {
+          var SearchList = response;
+          this.tableData = SearchList;
+        })
+        .catch(error => {
+          var SearchList = [
+            {
+              id: 1,
+              number: "XL20190101001",
+              name: "超级计划",
+              parentId: "创生计划",
+              rangeId: 1321,
+              rangeNumber: "XL20190101001",
+              rangeName: "Fall-2019(07/08/09)",
+              customerId: 1232131,
+              customerName: "Qi-Collection",
+              brandId: 42132131,
+              brandName: "Selkie",
+              clothingLevelId: 321321,
+              clothingLevelName: "时装",
+              type: 2,
+              planObject: "对象A",
+              projectType: "款式组计划",
+              order: 1,
+              quantity: 15,
+              product: "未知产品A",
+              productDateType: "未知A",
+              startDate: "2019-01-01 10:15:01",
+              endDate: "2119-05-31 14:25:01",
+              proposal: "无建议",
+              description: "Balabalabala",
+              state: 1,
+              createrName: "刘德华",
+              deleteTime: "",
+              deptName: "业务1组",
+              note: "系列备注1",
+              createTime: "2019-01-01 10:15:01",
+              haveException: 0
+            },
+            {
+              id: 1,
+              number: "XL20190101001",
+              name: "超级计划",
+              parentId: "创生计划",
+              rangeId: 1321,
+              rangeNumber: "XL20190101001",
+              rangeName: "Fall-2019(07/08/09)",
+              customerId: 1232131,
+              customerName: "Qi-Collection",
+              brandId: 42132131,
+              brandName: "Selkie",
+              clothingLevelId: 321321,
+              clothingLevelName: "时装",
+              type: 2,
+              planObject: "对象A",
+              projectType: "款式组计划",
+              order: 1,
+              quantity: 15,
+              product: "未知产品A",
+              productDateType: "未知A",
+              startDate: "2019-01-01 10:15:01",
+              endDate: "2119-05-31 14:25:01",
+              proposal: "无建议",
+              description: "Balabalabala",
+              state: 1,
+              createrName: "刘德华",
+              deleteTime: "",
+              deptName: "业务1组",
+              note: "系列备注1",
+              createTime: "2019-01-01 10:15:01",
+              haveException: 0
+            }
+          ];
+          this.tableData = SearchList;
+        });
+    },
     isChanged(val) {
       this.AnyChanged = val;
     },
@@ -330,7 +546,7 @@ export default {
       }
       var ok = 0;
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === "未审核") ok++;
+        if (this.AnyChanged[i].statue === 2) ok++;
       }
 
       if (ok != this.AnyChanged.length) {
@@ -341,11 +557,21 @@ export default {
       } else {
         for (var i = 0; i < this.AnyChanged.length; i++) {
           //this.$set(this.iptDatas[index], `showAlert`, true)
-          this.$set(this.AnyChanged[i], "statue", "已审核");
+          that.$axios
+            .get(
+              `${window.$config.HOST}/planManagement/passPlan`,
+              {
+                id:this.AnyChanged[i].id
+              }
+            )
+            .then(response => {
+              var ok = response;
+              if (ok >= 0) console.log("成功");
+              else console.log("失败");
+            })
+            .catch(error => {});
         }
         //}
-        this.$refs.multipleTable.clearSelection();
-        return;
       }
     },
     VerifyRebut() {
@@ -358,7 +584,7 @@ export default {
       }
       var ok = 0;
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === "已审核") ok = 1;
+        if (this.AnyChanged[i].statue === 4) ok = 1;
       }
 
       if (ok === 0) {
@@ -380,13 +606,13 @@ export default {
       }
       var ok = 0;
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === "已审核") ok++;
+        if (this.AnyChanged[i].statue === 4) ok++;
       }
 
       if (ok === this.AnyChanged.length) {
         //this.$set(this.iptDatas[index], `showAlert`, true)
         for (var i = 0; i < this.AnyChanged.length; i++)
-          this.$set(this.AnyChanged[i], "statue", "未审核");
+          this.$set(this.AnyChanged[i], "statue", 2);
         this.$refs.multipleTable.clearSelection();
       } else {
         this.$message({
