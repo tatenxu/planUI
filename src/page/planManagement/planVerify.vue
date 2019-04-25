@@ -5,7 +5,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="clientId" clearable @change="c1">
+            <el-select v-model="clientId" clearable>
               <el-option
                 v-for="item in options1"
                 :key="item.id"
@@ -19,7 +19,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="brandId" clearable @change="c1">
+            <el-select v-model="brandId" clearable >
               <el-option
                 v-for="item in options2"
                 :key="item.id"
@@ -32,7 +32,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">审核状态</div>
-            <el-select v-model="stateId" clearable @change="c1">
+            <el-select v-model="stateId" clearable >
               <el-option
                 v-for="item in options3"
                 :key="item.id"
@@ -62,7 +62,7 @@
           <div class="bar">
             <div class="title">系列名称</div>
             <!-- <el-input v-model="input3" clearable @change="c4"></el-input> -->
-            <el-select v-model="rangeId" clearable @change="c1">
+            <el-select v-model="rangeId" clearable>
               <el-option
                 v-for="item in options4"
                 :key="item.id"
@@ -100,7 +100,7 @@
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="GetMasterPlan">查看总计划</el-button>
+            <el-button type="primary" style="margin-right: 20px" >查看总计划</el-button>
           </div>
         </el-col>
       </el-row>
@@ -134,7 +134,7 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="block">
+      <!-- <div class="block">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -144,7 +144,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total"
         ></el-pagination>
-      </div>
+      </div> -->
       <el-dialog title="驳回理由" :visible.sync="GoBack" :modal="false">
         <div class="body">
           <el-row :gutter="20">
@@ -530,7 +530,19 @@ export default {
     GoBackCofirm() {
       for (var i = 0; i < this.AnyChanged.length; i++) {
         //this.$set(this.iptDatas[index], `showAlert`, true)
-        this.$set(this.AnyChanged[i], "statue", "审核驳回");
+        this.AnyChanged.forEach(element => {
+          that.$axios
+            .post(`${window.$config.HOST}/planManagement/failPlan`, {
+              id: this.AnyChanged[i].id,
+              cause: this.GoBackReason
+            })
+            .then(response => {
+              var ok = response;
+              if (ok >= 0) console.log("成功");
+              else console.log("失败");
+            })
+            .catch(error => {});
+        });
       }
       this.GoBack = false;
       this.$refs.multipleTable.clearSelection();
@@ -558,12 +570,9 @@ export default {
         for (var i = 0; i < this.AnyChanged.length; i++) {
           //this.$set(this.iptDatas[index], `showAlert`, true)
           that.$axios
-            .get(
-              `${window.$config.HOST}/planManagement/passPlan`,
-              {
-                id:this.AnyChanged[i].id
-              }
-            )
+            .get(`${window.$config.HOST}/planManagement/passPlan`, {
+              id: this.AnyChanged[i].id
+            })
             .then(response => {
               var ok = response;
               if (ok >= 0) console.log("成功");
@@ -612,7 +621,18 @@ export default {
       if (ok === this.AnyChanged.length) {
         //this.$set(this.iptDatas[index], `showAlert`, true)
         for (var i = 0; i < this.AnyChanged.length; i++)
-          this.$set(this.AnyChanged[i], "statue", 2);
+        {
+           that.$axios
+            .post(`${window.$config.HOST}/planManagement/cancelPassPlan`, {
+              id: this.AnyChanged[i].id
+            })
+            .then(response => {
+              var ok = response;
+              if (ok >= 0) console.log("成功");
+              else console.log("失败");
+            })
+            .catch(error => {});
+        }
         this.$refs.multipleTable.clearSelection();
       } else {
         this.$message({

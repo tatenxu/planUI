@@ -25,8 +25,8 @@
 
               <el-col :span="6">
                 <div class="containerHeaderDiv2">
-                  <el-button type="primary">搜索客户</el-button>
-                  <el-input v-model="searchInput" class="nameInput" placeholder="请输入客户名称"></el-input>
+                  <el-button type="primary" @click="handleSearchClick(false)">搜索客户</el-button>
+                  <el-input v-model="searchInput"  class="nameInput" placeholder="请输入客户名称"></el-input>
                   <span class="inputTag">客户名称:</span>
               </div>
               </el-col>
@@ -36,40 +36,20 @@
 
           <el-main clas="containerMain">
             <el-table
-            ref="multipleTable"
-            :data="tableData"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange">
-            <el-table-column
-              type="selection"
-              width="55">
-            </el-table-column>
-            <el-table-column
-              label="客户名称"
-              width="120"
-              prop="name">
-              <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
-            </el-table-column>
-            <el-table-column
-              prop="abbr"
-              label="客户简称"
-              width="120">
-            </el-table-column>
-            <el-table-column
-              prop="description"
-              label="客户描述"
-              width="120"
-              show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column
-              prop="ownerGroup"
-              label="所属业务组"
-              show-overflow-tooltip>
-            </el-table-column>
-          </el-table>
+              ref="multipleTable"
+              :data="tableData"
+              tooltip-effect="dark"
+              style="width: 100%"
+              @selection-change="handleSelectionChange">
+              <el-table-column  type="selection"  width="55"></el-table-column>
+              <el-table-column  prop="id" label="id"  width="120"  v-if="false"></el-table-column>
+              <el-table-column  prop="name" label="客户名称"  width="120"  ></el-table-column>
+              <el-table-column  prop="abbr"  label="客户简称"  width="120"></el-table-column>
+              <el-table-column  prop="description"  label="客户描述"  width="120"  show-overflow-tooltip></el-table-column>
+              <el-table-column  prop="groupName"  label="所属业务组"  show-overflow-tooltip></el-table-column>
+            </el-table>
           <div style="margin-top: 20px">
-            <el-button type="primary" @click="toggleSelection()">取消选择</el-button>
+            <el-button type="info" @click="toggleSelection()">取消选择</el-button>
           </div>
           </el-main>
         </el-container>
@@ -87,12 +67,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-              <el-select v-model="addInfoOwnerGroup" placeholder="请选择" class="inputSelector">
+              <el-select v-model="addInfoGroupId" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
           </div>
@@ -125,12 +105,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-            <el-select v-model="editInfoOwnerGroup" placeholder="请选择" class="inputSelector">
+            <el-select v-model="editInfoGroup" placeholder="请选择" class="inputSelector">
               <el-option
                 v-for="item in selectionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -205,66 +185,88 @@
 
 
 <script>
+import { error } from 'util';
+// import { truncate } from 'fs';
+// import { constants } from 'fs';
   export default {
     data() {
       return {
         viewname: 'first',
         searchInput: '',
-        tableData: [
-          {
-            name: 'nike',
-            abbr: 'nk',
-            description: '知名客户',
-            ownerGroup:'业务组1'
-          },{
-            name: 'addidas',
-            abbr: 'ad',
-            description: '次级客户',
-            ownerGroup:'业务组2'
-          },{
-            name: 'newbalance',
-            abbr: 'nb',
-            description: '国际客户',
-            ownerGroup:'业务组3'
-          },{
-            name: '阿赛克斯',
-            abbr: 'asics',
-            description: '日本客户',
-            ownerGroup:'业务组4'
-          },],
-          selectionData: [{
-            value: '业务组1',
-            label: '业务组1'
-          }, {
-            value: '业务组2',
-            label: '业务组2'
-          }, {
-            value: '业务组3',
-            label: '业务组3'
-          }, {
-            value: '业务组4',
-            label: '业务组4'
-          },],
+        tableData: [],
+        selectionData: [],
         multipleSelection: [],
 
+        editInfoId:'',
         editInfoDescription:'',
         editInfoName:'',
         editInfoAbbr:'',
-        editInfoOwnerGroup:'',
+        editInfoGroup:'',
+        editIndoInitGroupId:'',
+        tmpeditInfoGroupName:'',
 
         addInfoDescription:'',
         addInfoName:'',
         addInfoAbbr:'',
-        addInfoOwnerGroup:'',
+        addInfoGroupId:'',
 
 
         newCardShowFlag:false,
         editCardShowFlag: false,
       };
     },
-    // computed:{
-    //   viewname: 'first',
-    // },
+    created:function(){
+      //加载默认客户信息
+      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`)
+        .then(response=>{
+          this.tableData = response.data;
+          this.tableData.forEach(element=>{
+            this.selectionData.push({
+              id:element.groupId,
+              name:element.groupName
+            });
+          });
+        })
+        .catch(error=>{
+          this.$message.error("加载失败");
+          this.tableData = [
+          {
+            id:"453142312",
+            name: 'nike',
+            abbr: 'nk',
+            description: '知名客户',
+            groupName:'业务组1',
+            groupId : "52753425",
+          },{
+            id:"2534",
+            name: 'addidas',
+            abbr: 'ad',
+            description: '次级客户',
+            groupName:'业务组2',
+            groupId : "2565464",
+          },{
+            id:"32452345",
+            name: 'newbalance',
+            abbr: 'nb',
+            description: '国际客户',
+            groupName:'业务组3',
+            groupId : "5677",
+          },{
+            id:"56456",
+            name: '阿赛克斯',
+            abbr: 'asics',
+            description: '日本客户',
+            groupName:'业务组4',
+            groupId : "26246",
+          },];
+          this.tableData.forEach(element=>{
+            this.selectionData.push({
+              id:element.groupId,
+              name:element.groupName
+            });
+          });
+        });
+    },
     methods: {
       handleTabClick(tab, event) {
         console.log(tab, event);
@@ -280,6 +282,61 @@
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
+      },
+      handleSearchClick(allFlag){
+        var param = {};
+        if(!allFlag){
+          if(this.searchInput === ""){
+            this.$message.error("请输入客户名称");
+            return;
+          }
+          param = {name: this.searchInput};
+        }
+        console.log("搜索参数"+param);
+        this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,param)
+          .then(response=>{
+            this.tableData = response.data;
+            this.selectionData = [];
+            this.tableData.forEach(element=>{
+              this.selectionData.push({
+                id:element.groupId,
+                name:element.groupName
+              });
+            });
+          })
+          .catch(error=>{
+            this.$message.error("加载失败");
+            this.tableData = [
+            {
+              id:"2534",
+              name: 'addidas',
+              abbr: 'ad',
+              description: '次级客户',
+              groupName:'业务组2',
+              groupId : "2565464",
+            },{
+              id:"32452345",
+              name: 'newbalance',
+              abbr: 'nb',
+              description: '国际客户',
+              groupName:'业务组3',
+              groupId : "5677",
+            },{
+              id:"56456",
+              name: '阿赛克斯',
+              abbr: 'asics',
+              description: '日本客户',
+              groupName:'业务组4',
+              groupId : "26246",
+            },];
+            this.selectionData = [];
+            this.tableData.forEach(element=>{
+              this.selectionData.push({
+                id:element.groupId,
+                name:element.groupName
+              });
+            });
+          });
       },
       handleNewInfoClick(){
         this.newCardShowFlag = true;
@@ -303,9 +360,12 @@
         }
         this.editCardShowFlag = true;
         console.log(this.multipleSelection[0]);
+        this.editInfoId = this.multipleSelection[0].id;
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoAbbr = this.multipleSelection[0].abbr;
-        this.editInfoOwnerGroup = this.multipleSelection[0].ownerGroup;
+        this.editInfoGroup = this.multipleSelection[0].groupName;
+        this.editIndoInitGroupId = this.multipleSelection[0].groupId;
+        this.tmpeditInfoGroupName = this.multipleSelection[0].groupName;
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';
       },
@@ -315,28 +375,69 @@
             message:'至少选择一个客户',
             type:'warning'
           });
+          return;
+        }else{
+          this.multipleSelection.forEach(element => {
+            this.$axios.post(`${window.$config.HOST}/baseInfoManagement/deleteCustomer`,{id:element.id})
+            .then(response=>{
+              if(response.data<0){
+                this.$message.error(element.name+"删除失败");
+                console.log(element.name+"删除失败");
+              }else{
+                console.log(element.name+"删除成功");
+                this.$message({
+                  type:"success",
+                  message:element.name+"删除成功"
+                });
+                var i = this.tableData.indexOf(element);
+                this.tableData.splice(i,1);
+              }
+            })
+            .catch(error=>{
+              this.$message.error(element.name+"删除失败");
+              console.log(element.name+"删除失败");
+            });
+          });
         }
-        this.multipleSelection.forEach(element => {
-          var i = this.tableData.indexOf(element);
-          this.tableData.splice(i,1);
-        });
+        
         // this.tableData = this.multipleSelection;
       },
       handleNewSaveClick(){
+        var param = {
+          name : this.addInfoName,
+          abbr : this.addInfoAbbr,
+          description : this.addInfoDescription,
+          groupId : this.addInfoGroupId,
+        };
+        console.log(param);
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error("添加失败!");
+            }else{
+              this.$message({
+                type:"success",
+                message:"添加成功"
+              });
+            }
+          })
+          .catch(error=>{
+            console.log("添加失败");
+            this.$message.error("添加失败!");
+          });
+
+        this.handleSearchClick(true);
+
+        this.addInfoName = "";
+        this.addInfoAbbr = "";
+        this.addInfoDescription = "";
+        this.addInfoGroupId = "";
+
+        this.handleSearchClick(true);
+
         this.newCardShowFlag = false;
         this.viewname = "first";
 
-        this.tableData.push({
-            name: this.addInfoName,
-            abbr: this.addInfoAbbr,
-            ownerGroup: this.addInfoOwnerGroup,
-            description:this.addInfoDescription,
-        });
-
-        this.$message({
-          message:'保存成功!',
-          type:'success'
-        });
         return;
       },
       handleNewCancelClick(){
@@ -350,12 +451,43 @@
         return;
       },
       handleEditSaveClick(){
+        var param = {
+          id : this.editInfoId,
+          name : this.editInfoName,
+          abbr : this.editInfoAbbr,
+          description : this.editInfoDescription,
+          groupId : (this.editInfoGroup === this.tmpeditInfoGroupName)?this.editIndoInitGroupId:this.editInfoGroup,
+        };
+        console.log(param);
+        
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateCustomer`,param)
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error("编辑失败");
+            }else{
+              this.$message({
+                message:'编辑成功!',
+                type:'success'
+              });
+            }
+          })
+          .catch(error=>{
+            this.$message.error("编辑失败");
+          });
+
+        this.editInfoId = "";
+        this.editInfoName = "";
+        this.editInfoAbbr = "";
+        this.editInfoGroup = "";
+        this.editIndoInitGroupId = "";
+        this.tmpeditInfoGroupName = "";
+        this.editInfoDescription = "";
+
+        this.handleSearchClick(true);
+
         this.editCardShowFlag = false;
         this.viewname = "first";
-        this.$message({
-          message:'保存成功!',
-          type:'success'
-        });
+        
         return;
       },
       handleEditCancelClick(){

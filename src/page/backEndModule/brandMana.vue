@@ -25,7 +25,7 @@
 
               <el-col :span="6">
                 <div class="containerHeaderDiv2">
-                  <el-button type="primary">搜索品牌</el-button>
+                  <el-button @click="handleSearchClick(false)" type="primary">搜索品牌</el-button>
                   <el-input v-model="searchInput" class="nameInput" placeholder="请输入品牌名称"></el-input>
                   <span class="inputTag">品牌名称:</span>
               </div>
@@ -37,37 +37,18 @@
 
           <el-main clas="containerMain">
             <el-table
-            ref="multipleTable"
-            :data="tableData"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange">
-            <el-table-column
-              type="selection"
-              width="55">
-            </el-table-column>
-            <el-table-column
-              label="品牌名称"
-              width="120"
-              prop="name">
-              <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
-            </el-table-column>
-            <el-table-column
-              prop="abbr"
-              label="品牌简称"
-              width="120">
-            </el-table-column>
-            <el-table-column
-              prop="description"
-              label="品牌描述"
-              width="120">
-            </el-table-column>
-            <el-table-column
-              prop="owner"
-              label="所属客户"
-              show-overflow-tooltip>
-            </el-table-column>
-          </el-table>
+              ref="multipleTable"
+              :data="tableData"
+              tooltip-effect="dark"
+              style="width: 100%"
+              @selection-change="handleSelectionChange">
+              <el-table-column  type="selection"  width="55"></el-table-column>
+              <el-table-column  prop="id" label="id" v-if="false"  width="120"  ></el-table-column>
+              <el-table-column  prop="name" label="品牌名称"  width="120"  ></el-table-column>
+              <el-table-column  prop="abbr"  label="品牌简称"  width="120"></el-table-column>
+              <el-table-column  prop="description"  label="品牌描述"  width="120"></el-table-column>
+              <el-table-column  prop="customerName"  label="所属客户"  show-overflow-tooltip></el-table-column>
+            </el-table>
           <div style="margin-top: 20px">
             <el-button type="info" @click="toggleSelection()">取消选择</el-button>
           </div>
@@ -87,12 +68,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-              <el-select v-model="addInfoOwner" placeholder="请选择" class="inputSelector">
+              <el-select v-model="addInfoCustomer" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
           </div>
@@ -125,12 +106,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-            <el-select v-model="editInfoOwner" placeholder="请选择" class="inputSelector">
+            <el-select v-model="editInfoCustomer" placeholder="请选择" class="inputSelector">
               <el-option
                 v-for="item in selectionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -205,53 +186,26 @@
 
 
 <script>
+// import { truncate } from 'fs';
+// import { constants } from 'fs';
   export default {
     data() {
       return {
         viewname: 'first',
         searchInput: '',
-        tableData: [
-          {
-            name: 'nike',
-            abbr: 'nk',
-            description: '知名品牌',
-            owner:'中国耐克公司'
-          },{
-            name: 'addidas',
-            abbr: 'ad',
-            description: '次级品牌',
-            owner:'中国阿迪公司'
-          },{
-            name: 'newbalance',
-            abbr: 'nb',
-            description: '国际品牌',
-            owner:'中国新百伦公司'
-          },{
-            name: '阿赛克斯',
-            abbr: 'asics',
-            description: '日本品牌',
-            owner:'日本阿赛克斯公司'
-          },],
-          selectionData: [{
-            value: '中国耐克公司',
-            label: '中国耐克公司'
-          }, {
-            value: '中国阿迪公司',
-            label: '中国阿迪公司'
-          }, {
-            value: '日本阿赛克斯公司',
-            label: '日本阿赛克斯公司'
-          }, {
-            value: '中国新百伦公司',
-            label: '中国新百伦公司'
-          },],
+        tableData: [],
         multipleSelection: [],
+        selectionData:[],
+
         editInfoDescription:'',
         editInfoName:'',
+        editInfoId:'',
         editInfoAbbr:'',
-        editInfoOwner:'',
+        editInfoCustomer:'',
+        editInfoInitCustomerId:'',
+        tmpeditInfoCustomer:'',
 
-        addInfoOwner:'',
+        addInfoCustomer:'',
         addInfoDescription:'',
         addInfoName:'',
         addInfoAbbr:'',
@@ -260,9 +214,59 @@
         editCardShowFlag: false,
       };
     },
-    // computed:{
-    //   viewname: 'first',
-    // },
+    created:function(){
+      //加载默认信息
+      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`)
+        .then(response=>{
+          this.tableData =response.data;
+          this.selectionData = [];
+          this.tableData.forEach(element=>{
+            this.selectionData.push({
+              id:element.customerId,
+              name:element.customerName
+            });
+          });
+        })
+        .catch(error=>{
+          this.$message.error("信息加载失败");
+          this.tableData = [
+            {
+              id:'536543',
+              customerId:"453142312",
+              name: 'nike',
+              abbr: 'nk',
+              description: '知名品牌',
+              customerName:'中国耐克公司'
+            },{
+              id:'52346',
+              customerId:"8478",
+              name: 'addidas',
+              abbr: 'ad',
+              description: '次级品牌',
+              customerName:'中国阿迪公司'
+            },{
+              id:'234513452',
+              customerId:"578",
+              name: 'newbalance',
+              abbr: 'nb',
+              description: '国际品牌',
+              customerName:'中国新百伦公司'
+            },{
+              id:'2562',
+              customerId:"678468",
+              name: '阿赛克斯',
+              abbr: 'asics',
+              description: '日本品牌',
+              customerName:'日本阿赛克斯公司'
+            },];
+          this.tableData.forEach(element=>{
+            this.selectionData.push({
+              id:element.customerId,
+              name:element.customerName
+            });
+          });
+        });
+    },
     methods: {
       handleTabClick(tab, event) {
         console.log(tab, event);
@@ -279,11 +283,65 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
+      handleSearchClick(allFlag){
+        var param = {};
+        if(!allFlag){
+          if(this.searchInput === ""){
+            this.$message.error("请输入品牌名称");
+            return;
+          }
+          param = {name: this.searchInput};
+        }
+        console.log("搜索参数"+param);
+        this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`,param)
+          .then(response=>{
+            this.tableData =response.data;
+            this.selectionData = [];
+            this.tableData.forEach(element=>{
+              this.selectionData.push({
+                id:element.customerId,
+                name:element.customerName
+              });
+            });
+          })
+          .catch(error=>{
+            this.$message.error("搜索失败");
+            this.selectionData = [];
+            this.tableData = [
+              {
+                id:'52346',
+                customerId:"8478",
+                name: 'addidas',
+                abbr: 'ad',
+                description: '次级品牌',
+                customerName:'中国阿迪公司'
+              },{
+                id:'234513452',
+                customerId:"578",
+                name: 'newbalance',
+                abbr: 'nb',
+                description: '国际品牌',
+                customerName:'中国新百伦公司'
+              },{
+                id:'2562',
+                customerId:"678468",
+                name: '阿赛克斯',
+                abbr: 'asics',
+                description: '日本品牌',
+                customerName:'日本阿赛克斯公司'
+              },];
+            this.tableData.forEach(element=>{
+              this.selectionData.push({
+                id:element.customerId,
+                name:element.customerName
+              });
+            });
+          });
+      },
       handleNewInfoClick(){
         this.addCardShowFlag = true;
         this.viewname = 'second';
         console.log(this.viewname);
-
       },
       handleEditInfoClick(){
         if(this.multipleSelection.length === 0){
@@ -302,9 +360,12 @@
         }
         this.editCardShowFlag = true;
         console.log(this.multipleSelection[0]);
+        this.editInfoId = this.multipleSelection[0].id;
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoAbbr = this.multipleSelection[0].abbr;
-        this.editInfoOwner = this.multipleSelection[0].owner;
+        this.editInfoCustomer = this.multipleSelection[0].customerId;
+        this.editInfoCustomerName = this.multipleSelection[0].customerName;
+        this.tmpeditInfoCustomerName = this.multipleSelection[0].customerName;
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';
       },
@@ -314,27 +375,64 @@
             message:'至少选择一个品牌',
             type:'warning'
           });
+        }else{
+          this.multipleSelection.forEach(element => {
+            this.$axios.post(`${window.$config.HOST}/baseInfoManagement/deleteBrand`,{id:element.id})
+            .then(response=>{
+              if(response.data<0){
+                this.$message.error(element.name+"删除失败");
+                console.log(element.name+"删除失败");
+              }else{
+                console.log(element.name+"删除成功");
+                this.$message({
+                  type:"success",
+                  message:element.name+"删除成功"
+                });
+                var i = this.tableData.indexOf(element);
+                this.tableData.splice(i,1);
+              }
+            })
+            .catch(error=>{
+              this.$message.error(element.name+"删除失败");
+              console.log(element.name+"删除失败");
+            });
+          });
         }
-        this.multipleSelection.forEach(element => {
-          var i = this.tableData.indexOf(element);
-          this.tableData.splice(i,1);
-        });
-        // this.tableData = this.multipleSelection;
       },
       handleNewSaveClick(){
-        this.tableData.push({
-          name:this.addInfoName,
-          abbr:this.addInfoAbbr,
-          owner:this.addInfoOwner,
-          description:this.addInfoDescription
-        });
+        var param = {
+          name : this.addInfoName,
+          abbr : this.addInfoAbbr,
+          description : this.addInfoDescription,
+          customerId : this.addInfoCustomer,
+        };
+        console.log(param);
+
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addBrand`,param)
+          .then(response=>{
+            if(response.data < 0){
+              this.$message.error("添加失败");
+            }else{
+              this.$message({
+                message:'添加成功!',
+                type:'success'
+              });
+            }
+          })
+          .catch(error=>{
+            this.$message.error("添加失败");
+            console.log("添加失败");
+          })
+        
+        this.addInfoName = "";
+        this.addInfoAbbr = "";
+        this.addInfoDescription = "";
+        this.addInfoCustomer = "";
+
+        this.handleSearchClick(true);
+
         this.addCardShowFlag = false;
         this.viewname = "first";
-
-        this.$message({
-          message:'保存成功!',
-          type:'success'
-        });
 
         return;
       },
@@ -348,13 +446,43 @@
         return;
       },
       handleEditSaveClick(){
+        var param = {
+          id : this.editInfoId,
+          name : this.editInfoName,
+          abbr : this.editInfoAbbr,
+          description : this.editInfoDescription,
+          customerId : (this.editInfoCustomer===this.tmpeditInfoCustomer)?this.editInfoInitCustomerId:this.editInfoCustomer,
+        }
+        console.log(param);
+
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateBrand`,param)
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error("编辑失败");
+            }else{
+              this.$message({
+                message:'编辑成功!',
+                type:'success'
+              });
+            }
+          })
+        .catch(error=>{
+          this.$message.error("编辑失败");
+        });
+
+        this.editInfoId = "";
+        this.editInfoName = "";
+        this.editInfoAbbr = "";
+        this.editInfoCustomer = "";
+        this.editInfoCustomerName = "";
+        this.tmpeditInfoCustomerName = "";
+        this.editInfoDescription = "";
+
+        this.handleSearchClick(true);
+
         this.editCardShowFlag = false;
         this.viewname = "first";
 
-        this.$message({
-          message:'保存成功!',
-          type:'success'
-        });
         return;
       },
       handleEditCancelClick(){

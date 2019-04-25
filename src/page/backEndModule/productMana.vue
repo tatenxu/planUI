@@ -25,7 +25,7 @@
 
               <el-col :span="6">
                 <div class="containerHeaderDiv2">
-                  <el-button type="primary">搜索产品</el-button>
+                  <el-button type="primary" @click="handleSearchClick(false)" >搜索产品</el-button>
                   <el-input v-model="searchInput" class="nameInput" placeholder="请输入产品名称"></el-input>
                   <span class="inputTag">产品名称:</span>
               </div>
@@ -36,37 +36,17 @@
 
           <el-main clas="containerMain">
             <el-table
-            ref="multipleTable"
-            :data="tableData"
-            tooltip-effect="dark"
-            style="width: 100%"
-            @selection-change="handleSelectionChange">
-            <el-table-column
-              type="selection"
-              width="55">
-            </el-table-column>
-            <el-table-column
-              label="产品编号"
-              width="120"
-              prop="code">
-              <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
-            </el-table-column>
-            <el-table-column
-              prop="name"
-              label="产品名称"
-              width="120">
-            </el-table-column>
-            <el-table-column
-              prop="description"
-              label="产品描述"
-              width="120"
-              show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column
-              prop="ownerDepart"
-              label="产品部门"
-              show-overflow-tooltip>
-            </el-table-column>
+              ref="multipleTable"
+              :data="tableData"
+              tooltip-effect="dark"
+              style="width: 100%"
+              @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" label="id" width="120" v-if="false" ></el-table-column>
+            <el-table-column prop="number" label="产品编号" width="120"  ></el-table-column>
+            <el-table-column prop="name"  label="产品名称"  width="120"></el-table-column>
+            <el-table-column prop="description"  label="产品描述"  width="120"  show-overflow-tooltip></el-table-column>
+            <el-table-column prop="departmentName"  label="产品部门"  show-overflow-tooltip> </el-table-column>
           </el-table>
           <div style="margin-top: 20px">
             <el-button type="info" @click="toggleSelection()">取消选择</el-button>
@@ -90,9 +70,9 @@
               <el-select v-model="addInfoDepartOwner" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
           </div>
@@ -125,12 +105,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品部门:</span>
-            <el-select v-model="editInfoDepartOwner" placeholder="请选择" class="inputSelector">
+            <el-select v-model="editInfoDepart" placeholder="请选择" class="inputSelector">
               <el-option
                 v-for="item in selectionData"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
           </div>
@@ -211,47 +191,17 @@
       return {
         viewname: 'first',
         searchInput: '',
-        tableData: [
-          {
-            name: 'nike',
-            code: 'nk',
-            description: '知名产品',
-            ownerDepart:'部门1'
-          },{
-            name: 'addidas',
-            code: 'ad',
-            description: '次级产品',
-            ownerDepart:'部门2'
-          },{
-            name: 'newbalance',
-            code: 'nb',
-            description: '国际产品',
-            ownerDepart:'部门3'
-          },{
-            name: '阿赛克斯',
-            code: 'asics',
-            description: '日本产品',
-            ownerDepart:'部门4'
-          },],
-          selectionData: [{
-            value: '部门1',
-            label: '部门1'
-          }, {
-            value: '部门2',
-            label: '部门2'
-          }, {
-            value: '部门3',
-            label: '部门3'
-          }, {
-            value: '部门4',
-            label: '部门4'
-          },],
+        tableData: [],
+        selectionData: [],
         multipleSelection: [],
 
+        editInfoId:'',
         editInfoDescription:'',
         editInfoName:'',
         editInfoCode:'',
-        editInfoDepartOwner:'',
+        editInfoDepart:'',
+        editInfoDepartId:'',
+        tmpeditInfoDepartName:'',
 
         addInfoDescription:'',
         addInfoName:'',
@@ -262,9 +212,62 @@
         editCardShowFlag: false,
       };
     },
-    // computed:{
-    //   viewname: 'first',
-    // },
+    created:function(){
+      let that = this;
+      that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`)
+        .then(response=>{
+          if(response.data < 0){
+            console.log("产品信息加载失败");
+            return;
+          }
+          this.tableData = response.data;
+          this.tableData.forEach(element=>{
+            this.selectionData.push({
+              id:element.departmentId,
+              name: element.departmentName,
+            });
+          });
+        })
+        .catch(error=>{
+          this.$message.error("产品信息搜索失败!");
+          this.tableData = [
+            {
+              id:453453,
+              name: 'nike',
+              number: 'nk',
+              description: '知名产品',
+              departmentId:"47853453",
+              departmentName:'部门1'
+            },{
+              id:875343,
+              name: 'addidas',
+              number: 'ad',
+              description: '次级产品',
+              departmentId:"7531436",
+              departmentName:'部门2'
+            },{
+              id:68143,
+              name: 'newbalance',
+              number: 'nb',
+              description: '国际产品',
+              departmentId:"986312",
+              departmentName:'部门3'
+            },{
+              id:984531,
+              name: '阿赛克斯',
+              number: 'asics',
+              description: '日本产品',
+              departmentId:"89753413",
+              departmentName:'部门4'
+            },];
+          this.tableData.forEach(element=>{
+            this.selectionData.push({
+              id:element.departmentId,
+              name: element.departmentName,
+            });
+          });
+        });
+    },
     methods: {
       handleTabClick(tab, event) {
         console.log(tab, event);
@@ -280,6 +283,54 @@
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
+      },
+      handleSearchClick(allFlag){
+        var param = {};
+        if(!allFlag){
+          if(this.searchInput === ""){
+            this.$message.error("请输入产品名称");
+            return;
+          }
+          param = {
+            name: this.searchInput,
+          };
+        }
+        
+        this.$axios
+          .get(`${window.$config.HOST}/baseInfoManagement/getProduct`,param)
+          .then(response=>{
+            if(response.data < 0){
+              console.log("产品信息加载失败");
+              return;
+            }
+            this.tableData = response.data;
+          })
+          .catch(error=>{
+            this.$message.error("产品信息搜索失败!");
+            this.tableData = [
+              {
+                id:875343,
+                name: 'addidas',
+                number: 'ad',
+                description: '次级产品',
+                departmentId:"7531436",
+                departmentName:'部门2'
+              },{
+                id:68143,
+                name: 'newbalance',
+                number: 'nb',
+                description: '国际产品',
+                departmentId:"986312",
+                departmentName:'部门3'
+              },{
+                id:984531,
+                name: '阿赛克斯',
+                number: 'asics',
+                description: '日本产品',
+                departmentId:"89753413",
+                departmentName:'部门4'
+              },];
+          });
       },
       handleNewInfoClick(){
         this.newCardShowFlag = true;
@@ -304,9 +355,12 @@
         this.editCardShowFlag = true;
         console.log(this.multipleSelection[0]);
         this.editInfoName = this.multipleSelection[0].name;
-        this.editInfoCode = this.multipleSelection[0].code;
-        this.editInfoDepartOwner = this.multipleSelection[0].ownerDepart;
+        this.editInfoCode = this.multipleSelection[0].number;
+        this.editInfoDepart = this.multipleSelection[0].departmentName;
+        this.editInfoDepartId = this.multipleSelection[0].departmentId;
+        this.tmpeditInfoDepartName = this.multipleSelection[0].departmentName;
         this.editInfoDescription = this.multipleSelection[0].description;
+        this.editInfoId = this.multipleSelection[0].id;
         this.viewname = 'third';
       },
       handleDeleteInfoClick(){
@@ -317,26 +371,54 @@
           });
         }
         this.multipleSelection.forEach(element => {
-          var i = this.tableData.indexOf(element);
-          this.tableData.splice(i,1);
+          this.$axios.post(`${window.$config.HOST}/baseInfoManagement/deleteProduct`,{id: element.id})
+            .then(response=>{
+              if(response.data<0){
+                console.log(element.name+"删除失败");
+                this.$message.error(element.name+"删除失败");
+              }
+              var i = this.tableData.indexOf(element);
+              this.tableData.splice(i,1);
+            })
+            .catch(error=>{
+                console.log(element.name+"删除失败");
+                this.$message.error(element.name+"删除失败");
+            });          
         });
         // this.tableData = this.multipleSelection;
       },
       handleNewSaveClick(){
+        var params = {
+          number : "",
+          name : this.addInfoName,
+          description : this.addInfoDescription,
+          departmentId : this.addInfoDepartOwner,
+        };
+        console.log(params);
+        
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,params)
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error("添加失败!");
+              return;
+            }
+            this.$message({
+              message:'保存成功!',
+              type:'success'
+            });
+            this.handleSearchClick();
+          })
+          .catch(error=>{
+            this.$message.error("添加失败!");
+            this.handleSearchClick(true);
+          });
+
         this.newCardShowFlag = false;
         this.viewname = "first";
 
-        this.tableData.push({
-          name:this.addInfoName,
-          code:this.addInfoCode,
-          ownerDepart:this.addInfoDepartOwner,
-          description: this.addInfoDescription
-        });
-
-        this.$message({
-          message:'保存成功!',
-          type:'success'
-        });
+        this.addInfoName = "";
+        this.addInfoDescription = "";
+        this.addInfoDepartOwner = "";
         return;
       },
       handleNewCancelClick(){
@@ -350,13 +432,43 @@
         return;
       },
       handleEditSaveClick(){
+         var params = {
+          id:this.editInfoId,
+          number : "",
+          name : this.editInfoName,
+          description : this.editInfoDescription,
+          departmentId : (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart,
+        };
+        console.log(params);
+        
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateProduct`,params)
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error("编辑失败!");
+              return;
+            }
+            this.$message({
+              message:'编辑成功!',
+              type:'success'
+            });
+            this.handleSearchClick();
+          })
+          .catch(error=>{
+            this.$message.error("编辑失败!");
+            this.handleSearchClick(true);
+          });
+        
+        this.editInfoName = '';
+        this.editInfoCode = '';
+        this.editInfoDepart = '';
+        this.editInfoDepartId = '';
+        this.tmpeditInfoDepartName = '';
+        this.editInfoDescription = '';
+        this.editInfoId = '';
+
         this.editCardShowFlag = false;
         this.viewname = "first";
 
-        this.$message({
-          message:'保存成功!',
-          type:'success'
-        });
         return;
       },
       handleEditCancelClick(){
