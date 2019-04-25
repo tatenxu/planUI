@@ -192,7 +192,7 @@
             <el-form-item label="系列名称" prop="rangeName" placeholder="请选择系列名称">
               <el-select v-model="ruleForm.tmpRange" >
                 <el-option
-                  v-for="item in options.rangeNameTypeOptions"
+                  v-for="item in options.rangeNameOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -298,7 +298,7 @@ export default {
         customerNameOptions: [],
         brandNameOptions: [],
         clothingTypeOptions: [],
-        rangeNameTypeOptions: [],
+        rangeNameOptions: [],
       },
       controlData: {
         ifStyleGroupAdd: false,
@@ -341,29 +341,29 @@ export default {
 
     //获取服装层次
     that.$axios
-    .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
-    .then(response => {
-      var ClothingList = response;
-      this.searchOptions.options.clothingTypeOptions = ClothingList;
-    })
-    .catch(error => {
-      var ClothingList = [
-        {
-          id: 1,
-          clothingLevelName: "时装"
-        },
-        {
-          id: 2,
-          clothingLevelName: "精品"
-        },
-        {
-          id: 3,
-          clothingLevelName: "时尚"
-        }
-      ];
-      this.searchOptions.options.clothingTypeOptions = ClothingList;
-      this.options.clothingTypeOptions = ClothingList;
-    });
+      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .then(response => {
+        var ClothingList = response;
+        this.searchOptions.options.clothingTypeOptions = ClothingList;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            clothingLevelName: "时装"
+          },
+          {
+            id: 2,
+            clothingLevelName: "精品"
+          },
+          {
+            id: 3,
+            clothingLevelName: "时尚"
+          }
+        ];
+        this.searchOptions.options.clothingTypeOptions = ClothingList;
+        this.options.clothingTypeOptions = ClothingList;
+      });
 
     //默认获取所有款式组
     this.$axios
@@ -433,7 +433,7 @@ export default {
               name: element.name
             });
           });
-          this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+          // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
         }
       })
       .catch(error => {
@@ -448,7 +448,7 @@ export default {
             name: "Y品牌"
           },
         ];
-        this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+        // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
       });
 
     //获取系列
@@ -465,7 +465,7 @@ export default {
             });
           });
 
-          this.options.rangeNameTypeOptions = this.searchOptions.options.rangeNameOptions;
+          // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
         }
       })
       .catch(error => {
@@ -484,7 +484,7 @@ export default {
             name: "Winter-2019(10/11/12)"
           },
         ];
-        this.options.rangeNameTypeOptions = this.searchOptions.options.rangeNameOptions;
+        // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
       });
     
     //获取款式组名
@@ -545,9 +545,44 @@ export default {
       // consol.log(val);
       console.log("对话框品牌名称选择触发");
       console.log(this.ruleForm.brandName);
-      // var param = {
-      //   customerId: this.ruleForm.brandName,
-      // };
+      var param = {
+        customerId: this.ruleForm.brandName,
+      };
+      //获取系列
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRange`)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("对话框系列名称加载错误");
+          }else{
+            response.data.forEach(element=>{
+              this.options.rangeNameOptions.push({
+                id: element.id,
+                name: element.name
+              });
+            });
+
+            // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
+          }
+        })
+        .catch(error => {
+          console.log("对话框系列名称加载错误");
+          this.options.rangeNameOptions = [
+            {
+              id: 1,
+              name: "Fall-2019(07/08/09)"
+            },
+            {
+              id: 2,
+              name: "Spring-2019(01/02/03)"
+            },
+            {
+              id: 3,
+              name: "Winter-2019(10/11/12)"
+            },
+          ];
+          // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
+        });
       
     },
     //客户名称选择后触发品牌的get请求
@@ -561,12 +596,40 @@ export default {
     dialogCustomerNameSelectionChange(){
       // consol.log(val);
       console.log("对话框客户名称选择触发");
-      console.log(this.ruleForm.customerName);
-      // var param = {
-      //   customerId: this.ruleForm.customerName,
-      // };
+      console.log(this.ruleForm.tmpCustomer);
+      var param = {
+        customerId: this.ruleForm.tmpCustomer,
+      };
+      //品牌名称选择获取
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getBrand`,param)
+        .then(response => {
+          if(response.data.errcode < 0){
+            console.log("对话框品牌名称加载错误");
+          }else{
+            response.data.forEach(element=>{
+              this.options.brandNameOptions.push({
+                id: element.id,
+                name: element.name
+              });
+            });
+          }
+        })
+        .catch(error => {
+          console.log("对话框品牌名称加载错误");
+          this.options.brandNameOptions = [
+            {
+              id: 1,
+              name: "X品牌"
+            },
+            {
+              id: 2,
+              name: "Y品牌"
+            },
+          ];
+        });
+
     },
-    // 改变日期格式
     // 改变日期格式
     changeDate(date) {
       console.log(date);
@@ -957,6 +1020,13 @@ export default {
       
       this.handleSearch();
 
+      this.options.brandNameOptions = [];
+      this.options.rangeNameOptions = [];
+      this.ruleForm.tmpCustomer = "";
+      this.ruleForm.tmpBrand = "";
+      this.ruleForm.tmpRange = "";
+      this.ruleForm.tmpStyleGroup = "";
+      
       this.dialogFormVisible = false;
     },
     // 取消按钮点击
