@@ -341,7 +341,7 @@ export default {
 
     //获取服装层次
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevelName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
         var ClothingList = response;
         this.searchOptions.options.clothingTypeOptions = ClothingList;
