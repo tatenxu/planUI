@@ -46,7 +46,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">款式组名</div>
-            <el-select v-model="searchOptions.searchParams.styleGroupName" >
+            <el-select v-model="searchOptions.searchParams.name" >
               <el-option
                 v-for="item in searchOptions.options.styleGroupNameOptions"
                 :key="item.id"
@@ -113,8 +113,8 @@
           style="width: 100%; margin-top: 20px">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="styleGroupNumber" width="150" label="款式组编号" align="center"></el-table-column>
-          <el-table-column prop="styleGroupName" width="150" label="款式组名称" align="center"></el-table-column>
+          <el-table-column prop="number" width="150" label="款式组编号" align="center"></el-table-column>
+          <el-table-column prop="name" width="150" label="款式组名称" align="center"></el-table-column>
           <el-table-column prop="rangeNumber" width="130" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="rangeName" width="150" label="系列名称" align="center"></el-table-column>
@@ -237,7 +237,7 @@ export default {
           brandName: "",
           clothingLevelName: "",
           rangeName: "",
-          styleGroupName: "",
+          name: "",
           dateRange: "", 
         },
         options: {
@@ -266,7 +266,7 @@ export default {
         rangeName: [
           { required: true, message: '请选择系列名称', trigger: 'change' },
         ],
-        styleGroupName: [
+        name: [
           { required: true, message: '请输入款式组名', trigger: 'blur' },
         ],
       },
@@ -276,9 +276,9 @@ export default {
         tmpRange:"",
         tmpStyleGroup:"",
 
-        styleGroupId: "",
-        styleGroupNumber: "",
-        styleGroupName: "",
+        id: "",
+        number: "",
+        name: "",
         rangeNumber:"" ,
         rangeId: "",
         rangeName:"" ,
@@ -312,7 +312,7 @@ export default {
 
     //获取客户名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
         var resData = response.data;
@@ -341,7 +341,7 @@ export default {
 
     //获取服装层次
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .get(`${window.$config.HOST}/InfoManagement/getClothingLevelName`)
       .then(response => {
         var ClothingList = response;
         this.searchOptions.options.clothingTypeOptions = ClothingList;
@@ -366,41 +366,27 @@ export default {
       });
 
     //默认获取所有款式组
+    var param = {
+      customerId:NaN,
+      brandId:NaN,
+      rangeId:NaN,
+      clothingLevelId:NaN,
+      id:NaN,
+      startDate:NaN,
+      endDate:NaN
+    };
     this.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupList`)
+      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupList`,param)
       .then(response => {
-        var SearchList = response.data;
-        this.data.tableData = SearchList;
-
-        SearchList.forEach(element=>{
-          this.data.tableData.push({
-            styleGroupId: element.id,
-            styleGroupNumber: element.number,
-            styleGroupName: element.name,
-            rangeNumber: element.rangeNumber,
-            rangeId: element.rangeId,
-            rangeName: element.rangeName,
-            customerName: element.customerName,
-            customerId:element.customerId,
-            brandName: element.brandName,
-            brandId: element.brandId,
-            clothingLevelName: element.clothingLevelName,
-            clothingLevelId:element.clothingLevelId,
-            createrName: element.createrName,
-            deptName: element.deptName,
-            createTime: element.createTime,
-            state:element.state,
-            havePlan:element.havePlan,
-          });
-        });
-
+        var SearchList = 
+        this.data.tableData = response.data;
       })
       .catch(error => {
         var SearchList = [
           {
-            styleGroupId: "475342343",
-            styleGroupNumber: "KSZ20190101001",
-            styleGroupName: "款式1组",
+            id: "475342343",
+            number: "KSZ20190101001",
+            name: "款式1组",
             rangeNumber:"XL20190101001" ,
             rangeId: "48674231",
             rangeName:"Fall-2019(07/08/09)" ,
@@ -422,19 +408,10 @@ export default {
  
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.brandNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
+          this.searchOptions.options.brandNameOptions = response.data;
           // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
-        }
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -453,23 +430,12 @@ export default {
 
     //获取系列
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("系列名称获取错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.rangeNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
-
-          // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
-        }
+        this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
+        console.log("系列名称加载错误");
         this.searchOptions.options.rangeNameOptions = [
           {
             id: 1,
@@ -489,7 +455,7 @@ export default {
     
     //获取款式组名
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`)
+      .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`,{rangeId:NaN})
       .then(response => {
         if(response.data.errcode < 0){
           console.log("款式组获取错误");
@@ -519,7 +485,6 @@ export default {
           },
         ];
       });
-
   },
   methods: {
     //系列选择触发款式组名get
@@ -546,24 +511,14 @@ export default {
       console.log("对话框品牌名称选择触发");
       console.log(this.ruleForm.brandName);
       var param = {
-        customerId: this.ruleForm.brandName,
+        brandId: (this.ruleForm.brandName==="")?NaN:this.ruleForm.brandName,
       };
-      //获取系列
+      //对话框获取系列
       this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRange`)
+        .get(`${window.$config.HOST}/infoManagement/getRangeName`,param)
         .then(response => {
-          if(response.data.errcode < 0){
-            console.log("对话框系列名称加载错误");
-          }else{
-            response.data.forEach(element=>{
-              this.options.rangeNameOptions.push({
-                id: element.id,
-                name: element.name
-              });
-            });
-
-            // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
-          }
+          this.options.rangeNameOptions = response.data;
+          // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
         })
         .catch(error => {
           console.log("对话框系列名称加载错误");
@@ -598,7 +553,7 @@ export default {
       console.log("对话框客户名称选择触发");
       console.log(this.ruleForm.tmpCustomer);
       var param = {
-        customerId: this.ruleForm.tmpCustomer,
+        customerId: (this.ruleForm.tmpCustomer==="")?NaN:this.ruleForm.tmpCustomer,
       };
       //品牌名称选择获取
       this.$axios
@@ -689,8 +644,16 @@ export default {
     // 搜索按钮点击
     handleSearch(){
       const that = this;
-      console.log('搜索');
-      let searchConditionParams = that.collectSearchOptions();
+      console.log('搜索'); 
+      var searchConditionParams = {
+        customerId:(this.searchOptions.searchOptions.customerName==="")?this.searchOptions.searchOptions.customerName:NaN,
+        brandId:(this.searchOptions.searchOptions.brandName==="")?this.searchOptions.searchOptions.brandName:NaN,
+        rangeId:(this.searchOptions.searchOptions.rangeName==="")?this.searchOptions.searchOptions.rangeName:NaN,
+        clothingLevelId:(this.searchOptions.searchOptions.clothingLevelName==="")?this.searchOptions.searchOptions.clothingLevelName:NaN,
+        id:(this.searchOptions.searchOptions.name==="")?this.searchOptions.searchOptions.name:NaN,
+        startDate:this.changeDate(this.searchOptions.searchOptions.dateRange[0]),
+        endDate:this.changeDate(this.searchOptions.searchOptions.dateRange[1])
+      }
       this.$axios
         .get(`${window.$config.HOST}/infoManagement/getStyleGroupList`,searchConditionParams)
         .then(response=>{
@@ -700,9 +663,9 @@ export default {
         .catch(error=>{
           var SearchList = [
             {
-              styleGroupId: "475342343",
-              styleGroupNumber: "KSZ20190101001",
-              styleGroupName: "款式1组",
+              id: "475342343",
+              number: "KSZ20190101001",
+              name: "款式1组",
               rangeNumber:"XL20190101001" ,
               rangeId: "48674231",
               rangeName:"Fall-2019(07/08/09)" ,
@@ -719,9 +682,9 @@ export default {
               havePlan:"1",
             },
             {
-              styleGroupId: "475342343",
-              styleGroupNumber: "KSZ20190101001",
-              styleGroupName: "款式2组",
+              id: "475342343",
+              number: "KSZ20190101001",
+              name: "款式2组",
               rangeNumber:"XL20190101001" ,
               rangeId: "48674231",
               rangeName:"Fall-2019(07/08/09)" ,
@@ -738,9 +701,9 @@ export default {
               havePlan:"1",
             },
             {
-              styleGroupId: "475342343",
-              styleGroupNumber: "KSZ20190101001",
-              styleGroupName: "款式3组",
+              id: "475342343",
+              number: "KSZ20190101001",
+              name: "款式3组",
               rangeNumber:"XL20190101001" ,
               rangeId: "48674231",
               rangeName:"Fall-2019(07/08/09)" ,
@@ -793,8 +756,8 @@ export default {
             deleteStyleGroupData(result);
             for(var j = 0; j < that.data.tableData.length; j++){
               var delResult = that.data.tableData[j];
-              if ((delResult["styleGroupNumber"] === result.styleGroupNumber) && 
-              (delResult["styleGroupName"] === result.styleGroupName) && 
+              if ((delResult["number"] === result.number) && 
+              (delResult["name"] === result.name) && 
               (delResult["styleNumber"] === result.styleNumber) && 
               (delResult["customerName"] === result.customerName) && 
               (delResult["brandName"] === result.brandName) && 
@@ -841,12 +804,12 @@ export default {
           this.multipleSelection.forEach(element=>{
             console.log("开始解绑");
             this.$axios.post((`${window.$config.HOST}/infoManagement/unbindStyleGroup`),{
-              id:element.styleGroupId,
+              id:element.id,
             })
               .then(response=>{
                 var resData = response.data;
                 if(resData.errcode < 0){
-                  this.$message.error(element.styleGroupName+"解绑失败!")
+                  this.$message.error(element.name+"解绑失败!")
                 }else{
                   this.$message({
                     type: 'success',
@@ -855,7 +818,7 @@ export default {
                 }
               })
               .catch(error=>{
-                this.$message.error(element.styleGroupName+"解绑失败!")
+                this.$message.error(element.name+"解绑失败!")
               });
           });
         })
@@ -873,7 +836,7 @@ export default {
       this.ruleForm.brandName = row.brandName;
       this.ruleForm.clothingLevelName = row.clothingLevelName;
       this.ruleForm.rangeName = row.rangeName;
-      this.ruleForm.styleGroupName = row.styleGroupName;
+      this.ruleForm.name = row.name;
 
       this.dialogFormVisible = true;
 
@@ -887,11 +850,11 @@ export default {
       this.ruleForm.tmpCustomer = row.customerName,
       this.ruleForm.tmpBrand = row.brandName,
       this.ruleForm.tmpRange = row.rangeName,
-      this.ruleForm.tmpStyleGroup = row.styleGroupName,
+      this.ruleForm.tmpStyleGroup = row.name,
 
-      this.ruleForm.styleGroupId = row.styleGroupId,
-      this.ruleForm.styleGroupNumber= row.styleGroupNumber,
-      this.ruleForm.styleGroupName= row.styleGroupName,
+      this.ruleForm.id = row.id,
+      this.ruleForm.number= row.number,
+      this.ruleForm.name= row.name,
       this.ruleForm.rangeNumber=row.rangeNumber,
       this.ruleForm.rangeId=row.rangeId,
       this.ruleForm.rangeName= row.rangeName,
@@ -921,8 +884,8 @@ export default {
       .then(() => {
         for(var j = 0; j < that.data.tableData.length; j++){
           var delResult = that.data.tableData[j];
-          if ((delResult["styleGroupNumber"] === row.styleGroupNumber) && 
-          (delResult["styleGroupName"] === row.styleGroupName) && 
+          if ((delResult["number"] === row.number) && 
+          (delResult["name"] === row.name) && 
           (delResult["styleNumber"] === row.styleNumber) && 
           (delResult["customerName"] === row.customerName) && 
           (delResult["brandName"] === row.brandName) && 
@@ -932,7 +895,7 @@ export default {
           (delResult["deptName"] === row.deptName) && 
           (delResult["createTime"] === row.createTime)){
             this.$axios.post((`${window.$config.HOST}/infoManagement/deleteStyleGroup`),{
-              id:row.styleGroupId,
+              id:row.id,
             })
               .then(response=>{
                 var resData = response.data;
@@ -971,7 +934,7 @@ export default {
 
       // console.log(this.ruleForm.customerId);
       var params = {
-        id : this.ruleForm.styleGroupId,
+        id : this.ruleForm.id,
         name : this.ruleForm.tmpStyleGroup ,
         customerId : ((this.ruleForm.tmpCustomer === this.ruleForm.customerName)? this.ruleForm.customerId:this.ruleForm.tmpCustomer),
         brandId : ((this.ruleForm.tmpBrand === this.ruleForm.brandName)? this.ruleForm.brandId:this.ruleForm.tmpBrand),
