@@ -92,7 +92,7 @@ export default {
     let that = this;
     //获取用户信息
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getUsers`)
+      .get(`${window.$config.HOST}/infoManagement/getUsers`)
       .then(response=>{
         if(response.data.errcode < 0){
           that.$message.error("下发对象加载失败!");
@@ -117,123 +117,95 @@ export default {
           ];
       });
 
-      //获取所有未下发计划
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getPlanList`)
-        .then(response => {
-          if(response.data.errcode < 0){
-            console.log("计划列表获取错误");
-            return ;
+    //获取所有未下发计划
+    var param ={
+      customerId : NaN,
+      brandId : NaN,
+      rangeId: NaN,
+      id : NaN,
+      clothingLevelId : NaN,
+      startDate : NaN,
+      endDate : NaN,
+    };
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .then(response => {
+        response.data.forEach(element=>{
+          if(element.type === 1 && element.state === 2){
+            this.tableData.push(element);
           }
-          response.data.forEach(element=>{
-            if(element.type === 1 && element.state === 2){
-              this.tableData.push({
-                id: element.id,
-                number: element.number,
-                name: element.name,
-                rangeNumber: element.rangeNumber,
-                rangeName: element.rangeName,
-                customerName: element.customerName,
-                brandName: element.brandName,
-                clothingLevelName:element.clothingLevelName,
-                createrName: element.createrName,
-                deptName: element.deptName,
-                state: element.state,
-              });
-
-              //给搜索选择中的计划名称赋值
-              this.searchOptions.options.planNameOptions.push({
-                id: element.id,
-                name:element.name
-              });
-            }
-          });
-        })
-        .catch(error => {
-          console.log("计划列表获取错误");
-          this.tableData = [
-            {
-              id:"45312",
-              number: "JH190401001",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "aaaaaaaa",
-              planObject: "rwqerqwer",
-              type: "销样",
-              createrName: "XX",
-              state: "XX",
-              createTime: "2019-3-28"
-            },
-            {
-              id:"451",
-              number: "JH1904010012",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "bbbbb",
-              planObject: "qwerqwe",
-              type: "销样",
-              createrName: "XX",
-              state: "XX",
-              createTime: "2019-3-28"
-            },
-            {
-              id:"878351",
-              number: "JH1904010013",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "vvvvvvv",
-              planObject: "weqrqwer",
-              type: "销样",
-              createrName: "XX",
-              state: "XX",
-              createTime: "2019-3-28"
-            },
-            {
-              id:"87563",
-              number: "JH1904010014",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "ffffffff",
-              planObject: "ewqrqwerqwer",
-              type: "销样",
-              createrName: "XX",
-              state: "XX",
-              createTime: "2019-3-28"
-            },
-            {
-              id:"875",
-              number: "JH1904010015",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "fasdfasdf",
-              planObject: "zcxzv",
-              type: "销样",
-              createrName: "XX",
-              state: "XX",
-              createTime: "2019-3-28"
-            }
-          ];
-          
-          this.searchOptions.options.planNameOptions = [
-            {
-              id: 475,
-              name: "计划1",
-            },
-            {
-              id: 753,
-              name: "计划2",
-            },
-            {
-              id: 986,
-              name: "计划3",
-            }
-          ];
         });
+      })
+      .catch(error => {
+        console.log("计划列表获取错误");
+        this.tableData = [
+          {
+            id:"45312",
+            number: "JH190401001",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "aaaaaaaa",
+            planObject: "rwqerqwer",
+            type: "销样",
+            createrName: "XX",
+            state: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            id:"451",
+            number: "JH1904010012",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "bbbbb",
+            planObject: "qwerqwe",
+            type: "销样",
+            createrName: "XX",
+            state: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            id:"878351",
+            number: "JH1904010013",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "vvvvvvv",
+            planObject: "weqrqwer",
+            type: "销样",
+            createrName: "XX",
+            state: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            id:"87563",
+            number: "JH1904010014",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "ffffffff",
+            planObject: "ewqrqwerqwer",
+            type: "销样",
+            createrName: "XX",
+            state: "XX",
+            createTime: "2019-3-28"
+          },
+          {
+            id:"875",
+            number: "JH1904010015",
+            customerName: "AFL",
+            brandName: "CX",
+            name: "2001系列计划",
+            rangeName: "fasdfasdf",
+            planObject: "zcxzv",
+            type: "销样",
+            createrName: "XX",
+            state: "XX",
+            createTime: "2019-3-28"
+          }
+        ];
+      });
   },
   methods: {
     distributePlanClick() {
@@ -248,16 +220,17 @@ export default {
           this.$axios
             .post(`${window.$config.HOST}/planManagement/distributePlan`,{
               planId:element.id,
-              distributedUserId: this.searchOptions.searchParams.userName
+              distributedUserId: (this.searchOptions.searchParams.userName==="") ? NaN : this.searchOptions.searchParams.userName,
             })
             .then(response=>{
-              if(response.errcode < 0){
+              if(response.data < 0){
                 that.$message.error(element.name+"下发失败!");
                 console.log(element.name+"下发失败!");
+              }else{
+                console.log(element.name+"下发成功!");
+                var j = this.tableData.indexOf(element);
+                this.$set(this.tableData[j], "state","已下发");
               }
-              console.log(element.name+"下发成功!");
-              var j = this.tableData.indexOf(element);
-              this.$set(this.tableData[j], "state","已下发");
             })
             .catch(error=>{
               that.$message.error(element.name+"下发失败!");

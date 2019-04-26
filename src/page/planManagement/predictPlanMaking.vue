@@ -270,10 +270,6 @@ export default {
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("计划列表获取错误");
-          return ;
-        }
         response.data.forEach(element=>{
           if(element.type === 1 && element.state === 1){
             this.tableData.push(element);
