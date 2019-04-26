@@ -349,7 +349,9 @@ export default {
 
     //获得品牌下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
+        customerId:NaN
+      })
       .then(response => {
         this.brand = response;
       })
@@ -373,7 +375,10 @@ export default {
 
     //获得系列下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`,
+      {
+        brandId:NaN
+      })
       .then(response => {
         this.series = response;
       })
@@ -397,7 +402,7 @@ export default {
 
     //获得客户名称下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         this.client = response;
       })
@@ -421,7 +426,7 @@ export default {
 
     //获得服装层次下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevelName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
         this.type = response;
       })
@@ -445,7 +450,15 @@ export default {
 
     //获得空集搜索列表
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeList`)
+      .get(`${window.$config.HOST}/InfoManagement/getRangeList`,
+      {
+        customerId:NaN, 
+        brandId:NaN, 
+        id:NaN, 
+        clothingLevelId:NaN, 
+        startDate:NaN, 
+        endDate:NaN
+      })
       .then(response => {
         var SearchList = response;
         this.tableData = SearchList;
@@ -499,7 +512,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return "";
+        return NaN;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -523,10 +536,10 @@ export default {
       this.$axios
         .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
           params: {
-            id: this.SeriesName,
-            customerId: this.ClientName,
-            brandId: this.BrandName,
-            clothingLevelId: this.clothingLevelId,
+            id: this.SeriesName===""?NaN:this.SeriesName,
+            customerId: this.ClientName===""?NaN:this.ClientName,
+            brandId: this.BrandName===""?NaN:this.BrandName,
+            clothingLevelId: this.clothingLevelId===""?NaN:this.clothingLevelId,
             startDate: this.DataStartTime,
             endDate: this.DataEndTime
           }

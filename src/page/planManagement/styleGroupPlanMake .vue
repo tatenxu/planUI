@@ -169,7 +169,10 @@ export default {
     var that = this;
     //获得系列名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`,
+      {
+        brandId:NaN
+      })
       .then(response => {
         this.series = response;
       })
@@ -192,7 +195,10 @@ export default {
       });
     //获得品牌名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,
+      {
+        customerId:NaN
+      })
       .then(response => {
         this.brand = response;
       })
@@ -216,7 +222,10 @@ export default {
 
     //获得款式组名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupName`)
+      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupName`,
+      {
+        rangeId:NaN
+      })
       .then(response => {
         this.seriesGroup = response;
       })
@@ -240,7 +249,7 @@ export default {
 
     //获得客户名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         this.client = response;
       })
@@ -264,7 +273,16 @@ export default {
 
     //获得初始搜索结果
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupList`)
+      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupList`,
+      {
+        customerId:NaN, 
+        brandId:NaN, 
+        rangeId:NaN, 
+        clothingLevelId:NaN, 
+        id:NaN, 
+        startDate:NaN, 
+        endDate:NaN
+      })
       .then(response => {
         this.tableData = response;
       })
@@ -317,7 +335,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return "";
+        return NaN;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -341,11 +359,11 @@ export default {
       this.$axios
         .get(`${window.$config.HOST}/InfoManagement/getStyleGroupList`, {
           params: {
-            customerId: this.ClientName,
-            brandId: this.BrandName,
-            rangeId: this.SeriesName,
-            clothingLevelId:0,
-            id: this.SeriesGroupName,
+            customerId: this.ClientName===""?NaN:this.ClientName,
+            brandId: this.BrandName===""?NaN:this.BrandName,
+            rangeId: this.SeriesName===""?NaN:this.SeriesName,
+            clothingLevelId:NaN,
+            id: this.SeriesGroupName===""?NaN:this.SeriesGroupName,
             startDate: this.DataStartTime,
             endDate: this.DataEndTime
           }

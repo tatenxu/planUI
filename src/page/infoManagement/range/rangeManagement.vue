@@ -76,8 +76,8 @@
             ></el-date-picker>-->
             <el-date-picker
               class="inputBar"
-              v-model="Data"
-              type="daterange"
+              v-model="dateRange"
+              type="dateRange"
               range-separator="至"
               start-placeholde="开始日期"
               end-placeholde="结束日期"
@@ -318,8 +318,8 @@
 export default {
   data() {
     return {
+      dateRange: "",
       RangeValue: "",
-
       CustomerValue: "",
       BrandValue: "",
       ClothingLevelValue: "",
@@ -336,6 +336,7 @@ export default {
         pageSize: 5,
         total: 400
       },
+
       searchOptions: {
         // searchParams: {
         //   customerName: "",
@@ -370,7 +371,16 @@ export default {
         //   { required: true, message: "请输入系列款数", trigger: "blur" }
         // ]
       },
+
       ruleForm: {
+        brandName: "",
+        brandId: "",
+        customerName: "",
+        customerId: "",
+        name: "",
+        id: "",
+        clothingLevelId: "",
+        clothingLevelName: "",
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
@@ -418,9 +428,11 @@ export default {
   // },
   created: function() {
     var that = this;
-
+    //获得品牌名字
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+        customerId: NaN
+      })
       .then(response => {
         this.searchOptions.options.brandNameOptions = response;
         // this.ruleForm.options.brandNameOptions = response;
@@ -444,8 +456,11 @@ export default {
         // this.ruleForm.options.brandNameOptions = ClothingList;
       });
 
+    //获得系列名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
+        brandId: NaN
+      })
       .then(response => {
         this.searchOptions.options.rangeNameOption = response;
         // this.ruleForm.options.rangeNameOption = response;
@@ -469,8 +484,9 @@ export default {
         // this.ruleForm.options.rangeNameOption = ClothingList;
       });
 
+    //获得顾客名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         var CustomerList = response;
         this.searchOptions.options.customerNameOptions = CustomerList;
@@ -495,8 +511,9 @@ export default {
         this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       });
 
+    //获得服装层次
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevelName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
         var ClothingList = response;
         this.searchOptions.options.clothingTypeOptions = ClothingList;
@@ -521,8 +538,16 @@ export default {
         this.ruleForm.options.clothingTypeOptions = this.searchOptions.options.clothingTypeOptions;
       });
 
+    //获得空搜索集
     this.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeList`)
+      .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
+        customerId: NaN,
+        brandId: NaN,
+        id: NaN,
+        clothingLevelId: NaN,
+        startDate: NaN,
+        endDate: NaN
+      })
       .then(response => {
         var SearchList = response;
         this.tableData = SearchList;
@@ -636,7 +661,7 @@ export default {
     //当弹出框的客户名称改变的时候GET弹出框的品牌信息
     clientSelect2() {
       this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getBrand`, {
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
           params: {
             custumerId: this.ruleForm.customerName
           }
@@ -694,13 +719,22 @@ export default {
         });
     },
 
-    // 改变日期格式
+    // 搜集搜索条件
+    collectSearchOptions() {
+      const that = this;
+      var dateRange = that.dateRange;
+      var DateStart = that.changeDate(dateRange[0]);
+      var DateEnd = that.changeDate(dateRange[1]);
+
+      this.DateStartTime = DateStart;
+      this.DateEndTime = DateEnd;
+    },
     // 改变日期格式
     changeDate(date) {
       console.log(date);
-      if(!date){
-        return "";
-      }else{
+      if (!date) {
+        return NaN;
+      } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
@@ -750,16 +784,14 @@ export default {
     // 搜索按钮点击
     handleSearch() {
       //首先把日期改变为Start - end
-      this.DataStartTime = that.changeDate(Data[0]);
-      this.DataEndTime = that.changeDate(Data[1]);
-
+      this.collectSearchOptions();
       this.$axios
         .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
           params: {
-            customerId: this.CustomerValue,
-            brandId: this.BrandValue,
-            rangeId: this.RangeValue,
-            clothingLevelId: this.ClothingLevelValue,
+            customerId: this.CustomerValue===""?NaN:this.CustomerValue,
+            brandId: this.BrandValue===""?NaN:this.BrandValue,
+            id: this.RangeValue===""?NaN:this.RangeValue,
+            clothingLevelId: this.ClothingLevelValue===""?NaN:this.ClothingLevelValue,
             dateStart: this.DataStartTime,
             dateEnd: this.DataEndTime
           }
@@ -860,10 +892,10 @@ export default {
             //   this.$set(this.tableData[j], "deletePeople", "已完成");
             // });
             this.multipleSelection.forEach(element => {
-              var params = element.id;
+         
               this.$axios
                 .post(`${window.$config.HOST}/InfoManagement/deleteRange`, {
-                  params
+                  id:element.id
                 })
                 .then(response => {
                   var ok = response;
@@ -1004,7 +1036,7 @@ export default {
             // clothingLevelId: this.ClothingLevelValue,
             // dateStart: this.DataStartTime,
             // dateEnd: this.DataEndTime
-            rangeName: this.ruleForm.name,
+            name: this.ruleForm.name,
             customerId: this.ruleForm.customerId,
             brandId: this.ruleForm.brandId,
             clothingLevelId: this.ruleForm.clothingLevelId,
@@ -1055,20 +1087,44 @@ export default {
     //修改系列信息
     submitForm1(formName) {
       //第一步，将NAME转换为ID
-      if (this.ruleForm.firstCustomerName === this.ruleForm.customerName)
-        this.ruleForm.customerName = this.ruleForm.customerId;
-      if (this.ruleForm.firstBrandName === this.ruleForm.brandName)
-        this.ruleForm.brandName = this.ruleForm.brandId;
-      if (this.ruleForm.firstRangeName === this.ruleForm.name)
-        this.ruleForm.name = this.ruleForm.id;
-      if (this.ruleForm.firstClothingLevel === this.ruleForm.clothingLevelName)
-        this.ruleForm.clothingLevelName = this.ruleForm.clothingLevelId;
+      if (this.ruleForm.firstCustomerName != this.ruleForm.customerName) {
+        //变了，说明显示的是ID
+        this.ruleForm.customerId = this.ruleForm.customerName; //ID赋值给ID
+        this.ruleForm.options.customerNameOption.forEach(element => {
+          if (element.id == this.ruleForm.customerId)
+            this.ruleForm.customerName = element.name;
+        });
+      }
+      if (this.ruleForm.firstBrandName != this.ruleForm.brandName) {
+        this.ruleForm.brandId = this.ruleForm.brandName;
+        this.ruleForm.options.brandNameOption.forEach(element => {
+          if (element.id == this.ruleForm.brandId)
+            this.ruleForm.brandName = element.name;
+        });
+      }
+      if (this.ruleForm.firstRangeName != this.ruleForm.name) {
+        this.ruleForm.id = this.ruleForm.name;
+        this.ruleForm.options.rangeNameOption.forEach(element => {
+          if (element.id == this.ruleForm.id) this.ruleForm.name = element.name;
+        });
+      }
+      if (
+        this.ruleForm.firstClothingLevel === this.ruleForm.clothingLevelName
+      ) {
+        this.ruleForm.clothingLevelId = this.ruleForm.clothingLevelName;
+        this.ruleForm.options.clothingTypeOptions.forEach(element => {
+          if (element.id == this.ruleForm.clothingLevelId)
+            this.ruleForm.clothingLevelName = element.name;
+        });
+      }
 
       const that = this;
+
       this.$axios
         .post(`${window.$config.HOST}/InfoManagement/updateRange`, {
           params: {
             id: this.ruleForm.id,
+            name: this.ruleForm.name,
             customerId: this.ruleForm.customerId,
             brandId: this.ruleForm.brandId,
             clothingLevelId: this.ruleForm.clothingLevelId,

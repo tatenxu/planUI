@@ -333,8 +333,8 @@ export default {
         });
       });
       this.$axios
-        //此处的接口为GET订单款号
-        .post(`${window.$config.HOST}/infoManagement/bindStyleGroup`, {
+        //此处的接口为批量导入
+        .post(`${window.$config.HOST}/infoManagement/addRangeList`, {
           RangeListAdd
         })
         .then(response => {

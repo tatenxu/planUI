@@ -19,7 +19,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="brandId" clearable >
+            <el-select v-model="brandId" clearable>
               <el-option
                 v-for="item in options2"
                 :key="item.id"
@@ -32,7 +32,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">审核状态</div>
-            <el-select v-model="stateId" clearable >
+            <el-select v-model="stateId" clearable>
               <el-option
                 v-for="item in options3"
                 :key="item.id"
@@ -100,7 +100,7 @@
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" >查看总计划</el-button>
+            <el-button type="primary" style="margin-right: 20px">查看总计划</el-button>
           </div>
         </el-col>
       </el-row>
@@ -144,7 +144,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total"
         ></el-pagination>
-      </div> -->
+      </div>-->
       <el-dialog title="驳回理由" :visible.sync="GoBack" :modal="false">
         <div class="body">
           <el-row :gutter="20">
@@ -238,7 +238,9 @@ export default {
 
     //获得品牌下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getBrandName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+        customerId: NaN
+      })
       .then(response => {
         this.options2 = response;
       })
@@ -262,7 +264,9 @@ export default {
 
     //获得系列下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
+        brandId: NaN
+      })
       .then(response => {
         this.options4 = response;
       })
@@ -286,7 +290,7 @@ export default {
 
     //获得客户名称下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         this.options1 = response;
       })
@@ -334,7 +338,15 @@ export default {
 
     //获得空集搜索列表
     that.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+        customerId: NaN,
+        brandId: NaN,
+        rangeId: NaN,
+        id: NaN,
+        clothingLevelId: NaN,
+        startDate: NaN,
+        endDate: NaN
+      })
       .then(response => {
         var SearchList = response;
         this.tableData = SearchList;
@@ -416,7 +428,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return "";
+        return NaN;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -438,9 +450,11 @@ export default {
       that.$axios
 
         .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-          customerId: this.clientId,
-          brandId: this.brandId,
-          rangeId: this.rangeId,
+          id: NaN,
+          clothingLevelId: NaN,
+          customerId: this.clientId===""?NaN:this.clientId,
+          brandId: this.brandId===""?NaN:this.brandId,
+          rangeId: this.rangeId===""?NaN:this.rangeId,
           startDate: DataStartTime,
           endDate: DataEndTime
         })
@@ -570,7 +584,7 @@ export default {
         for (var i = 0; i < this.AnyChanged.length; i++) {
           //this.$set(this.iptDatas[index], `showAlert`, true)
           that.$axios
-            .get(`${window.$config.HOST}/planManagement/passPlan`, {
+            .post(`${window.$config.HOST}/planManagement/passPlan`, {
               id: this.AnyChanged[i].id
             })
             .then(response => {
@@ -620,9 +634,8 @@ export default {
 
       if (ok === this.AnyChanged.length) {
         //this.$set(this.iptDatas[index], `showAlert`, true)
-        for (var i = 0; i < this.AnyChanged.length; i++)
-        {
-           that.$axios
+        for (var i = 0; i < this.AnyChanged.length; i++) {
+          that.$axios
             .post(`${window.$config.HOST}/planManagement/cancelPassPlan`, {
               id: this.AnyChanged[i].id
             })
@@ -655,48 +668,6 @@ export default {
       this.checkAll = checkedCount === this.cities.length;
       this.isIndeterminate =
         checkedCount > 0 && checkedCount < this.cities.length;
-    },
-    handleDelete(index, row) {
-      this.$confirm("这将删除该仓库下所有记录信息，是否继续？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          let sendData = { id: row.id };
-          this.$axios
-            .post(
-              `${window.$config.HOST}/warehouse/base/deleteWarehouse`,
-              sendData
-            )
-            .then(response => {
-              if (response.data > 0) {
-                this.$message({
-                  type: "success",
-                  message: "删除成功"
-                });
-                this.tableData.splice(index, 1);
-              } else {
-                this.$message({
-                  type: "info",
-                  message: "未在数据库中查到此记录对应信息！"
-                });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-              this.$message({
-                type: "info",
-                message: "非法操作！"
-              });
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消操作"
-          });
-        });
     }
   }
 };

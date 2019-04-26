@@ -90,7 +90,7 @@
             <div class="title">添加时间</div>
             <el-date-picker
               class="inputBar"
-              v-model="searchOptions.searchParams.dateRange"
+              v-model="dateRange"
               type="daterange"
               range-separator="至"
               start-placeholde="开始日期"
@@ -346,6 +346,7 @@
 export default {
   data() {
     return {
+      dateRange:"",
       dialogFormVisible1: false,
       DateStart: "",
       DateEnd: "",
@@ -434,7 +435,10 @@ export default {
     //得到订单款号
     this.$axios
       //此处的接口为GET订单款号
-      .get(`${window.$config.HOST}/infoManagement/getStyleNumber`)
+      .get(`${window.$config.HOST}/infoManagement/getStyleNumber`,
+      {
+        rangeId:NaN
+      })
       .then(response => {
         // this.options.styleNumberOptions = response;
         this.searchOptions.options.styleNumberNameOptions=response;
@@ -454,7 +458,10 @@ export default {
       });
     //得到系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,
+      {
+        brandId:NaN
+      })
       .then(response => {
         this.searchOptions.options.rangeNameOptions=response;
         // this.options.rangeNameTypeOptions = response;
@@ -475,7 +482,10 @@ export default {
       });
     //得到品牌名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,
+      {
+        customerId:NaN
+      })
       .then(response => {
          this.searchOptions.options.brandNameOptions = response;
           // this.options.brandNameOptions = response;
@@ -495,7 +505,7 @@ export default {
       });
     //得到客户名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         var CustomerList = response;
         this.searchOptions.options.customerNameOptions = CustomerList;
@@ -525,7 +535,16 @@ export default {
 
     //得到搜索信息
     this.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getStyleList`)
+      .get(`${window.$config.HOST}/InfoManagement/getStyleList`,
+      {
+        customerId:NaN, 
+        brandId:NaN, 
+        rangeId:NaN, 
+        number:NaN, 
+        clothingLevelId:NaN, 
+        startDate:NaN, 
+        endDate:NaN
+      })
       .then(response => {
         var SearchList = response;
         this.data.tableData = SearchList;
@@ -583,10 +602,10 @@ export default {
   methods: {
     dialogCustomerNameSelectionChange() {
       var param = {
-        id: this.ruleForm.customerName
+        customerId: this.ruleForm.customerName
       };
       this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getBrand`, param)
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, param)
         .then(response => {
           this.options.brandNameOptions = response;
         })
@@ -609,7 +628,7 @@ export default {
     },
     dialogBrandNameSelectionChange() {
       var param = {
-        id: this.ruleForm.brandName
+        brandId: this.ruleForm.brandName
       };
       this.$axios
         .get(`${window.$config.HOST}/infoManagement/getRangeName`, param)
@@ -633,7 +652,7 @@ export default {
     },
     dialogRangeNameSelectionChange() {
       var param = {
-        id: this.ruleForm.rangeName
+        rangeId: this.ruleForm.rangeName
       };
       this.$axios
         //此处的接口为GET订单款号
@@ -738,7 +757,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return "";
+        return NaN;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -785,15 +804,16 @@ export default {
     },
     // 搜索按钮点击
     handleSearch() {
+      // this.collectSearchOptions();
       this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
-          customerId: this.searchOptions.searchParams.customerName,
-          brandId: this.searchOptions.searchParams.brandName,
-          rangeId: this.searchOptions.searchParams.rangeName,
-          clothingType: this.searchOptions.searchParams.clothingType,
-          styleNumber: this.searchOptions.searchParams.styleNumber,
-          dateStart: this.DateStart,
-          dateEnd: this.DateEnd
+        .get(`${window.$config.HOST}/InfoManagement/getStyleList`, {
+          customerId: this.searchOptions.searchParams.customerName===""?NaN:this.searchOptions.searchParams.customerName,
+          brandId: this.searchOptions.searchParams.brandName===""?NaN:this.searchOptions.searchParams.brandName,
+          rangeId: this.searchOptions.searchParams.rangeName===""?NaN:this.searchOptions.searchParams.rangeName,
+          clothingType: this.searchOptions.searchParams.clothingType===""?NaN:this.searchOptions.searchParams.clothingType,
+          number: this.searchOptions.searchParams.styleNumber===""?NaN:this.searchOptions.searchParams.styleNumber,
+          dateStart: this.changeDate(dateRange[0]),
+          dateEnd: this.changeDate(dateRange[1])
         })
         .then(response => {
           var SearchList = response;
@@ -913,10 +933,10 @@ export default {
         )
           .then(() => {
             this.multipleSelection.forEach(element => {
-              var params = element.id;
+              
               this.$axios
                 .post(`${window.$config.HOST}/InfoManagement/deleteStyle`, {
-                  params
+                  id:element.id
                 })
                 .then(response => {
                   var ok = response;
