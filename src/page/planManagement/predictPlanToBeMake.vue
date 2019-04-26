@@ -169,20 +169,13 @@ export default {
 
     //获取客户名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseIinfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
-        var resData = response.data;
-        resData.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push({
-            id:element.id,
-            name:element.name,
-          });
-          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-        });
+        this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer error!");
+        console.log("getCustomer 失败!");
         this.searchOptions.options.customerNameOptions = [
           {
             id: 42453,
@@ -197,10 +190,9 @@ export default {
 
     //获取服装层次
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
-        var ClothingList = response;
-        this.searchOptions.options.clothingLevelOptions = ClothingList;
+        this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
         var ClothingList = [
@@ -222,18 +214,9 @@ export default {
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.brandNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
-        }
+        this.searchOptions.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -249,63 +232,14 @@ export default {
         ];
       });
 
-    //默认获取计划列表
+    //加载系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeList`)
-      .then(response => {
-        if(response.data.errcode < 0){
-          console.log("计划列表获取错误");
-        }else{
-          // response.data.forEach(element=>{
-          //   this.tableData.push({
-          //     id: element.id,
-          //     planNumber: element.number,
-          //     planName: element.name,
-          //     number: element.number,
-          //     customerName: element.customerName,
-          //     brandName: element.brandName,
-          //     name: element.name,
-          //     createrName: element.createrName,
-          //     deptName: element.deptName,
-          //     date: element.createTime,
-          //     parentId: element.parentId,
-          //     state: element.state,
-          //     exception: element.haveException
-          //   });
-
-          //   //给搜索选择中的计划名称赋值
-          //   this.searchOptions.options.planNameOptions.push({
-          //     id: element.id,
-          //     name:element.name
-          //   });
-          // });
-          this.tableData = response.data;
-        }
-      })
-      .catch(error => {
-        console.log("计划列表获取错误");
-        this.tableData = [
-          {
-            id:"1",
-            number:"XL20190101001",
-            customerName:"Qi-Collection",
-            brandName:"Selikie",
-            clothingLevelName:"时装",
-            name:"Fall-2019(01/08/09)",
-            createrName:"刘德华",
-            deptName:"业务一组",
-            state:"未制定"
-          }
-        ];
-        
-      });
-
-    this.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
       .then(response => {
         this.searchOptions.options.rangeNameOptions = response;
       })
       .catch(error => {
+        console.log("系列名称加载错误");
         this.searchOptions.options.rangeNameOptions = [
           {
             id: 1,
@@ -321,6 +255,38 @@ export default {
           }
         ];
       });
+
+    //默认获取计划列表
+    var param = {
+      customerId : NaN,
+      brandId : NaN,
+      id : NaN,
+      clothingLevelId : NaN,
+      startDate : NaN,
+      endDate : NaN,
+    };
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getRangeList`,param)
+      .then(response => {
+        this.tableData = response.data;
+      })
+      .catch(error => {
+        console.log("计划列表获取错误");
+        this.tableData = [
+          {
+            id:"4453",
+            number:"XL20190101001",
+            customerName:"Qi-Collection",
+            brandName:"Selikie",
+            clothingLevelName:"时装",
+            name:"Fall-2019(01/08/09)",
+            createrName:"刘德华",
+            deptName:"业务一组",
+            state:"未制定"
+          }
+        ];
+      })
+      ;
   },
 
   methods: {
@@ -343,7 +309,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return "";
+        return NaN;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -361,10 +327,10 @@ export default {
     //获取预测计划列表
     getUnmadedPlanList(){
       var params = {
-        customerId: this.searchOptions.searchParams.customerName, 
-        brandId: this.searchOptions.searchParams.brandName, 
-        id: this.searchOptions.searchParams.planName, 
-        clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName,
+        id: (this.searchOptions.searchParams.planName==="")?NaN:this.searchOptions.searchParams.planName,
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
