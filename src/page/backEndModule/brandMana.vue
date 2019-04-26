@@ -216,7 +216,7 @@
     },
     created:function(){
       //加载默认信息
-      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`)
+      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`,{name:NaN})
         .then(response=>{
           this.tableData =response.data;
           this.selectionData = [];
@@ -284,13 +284,13 @@
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {};
+        var param = {name:NaN};
         if(!allFlag){
           if(this.searchInput === ""){
             this.$message.error("请输入品牌名称");
             return;
           }
-          param = {name: this.searchInput};
+          param = {name: (this.searchInput==="")?NaN:this.searchInput};
         }
         console.log("搜索参数"+param);
         this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`,param)
@@ -401,10 +401,10 @@
       },
       handleNewSaveClick(){
         var param = {
-          name : this.addInfoName,
-          abbr : this.addInfoAbbr,
-          description : this.addInfoDescription,
-          customerId : this.addInfoCustomer,
+          name : (this.addInfoName==="")?NaN:this.addInfoName,
+          abbr : (this.addInfoAbbr==="")?NaN:this.addInfoAbbr,
+          description : (this.addInfoDescription==="")?NaN:this.addInfoDescription,
+          customerId : (this.addInfoGroupId==="")?NaN:this.addInfoCustomer,
         };
         console.log(param);
 
@@ -446,12 +446,13 @@
         return;
       },
       handleEditSaveClick(){
+        var tmp = (this.editInfoCustomer===this.tmpeditInfoCustomer)?this.editInfoInitCustomerId:this.editInfoCustomer;
         var param = {
-          id : this.editInfoId,
-          name : this.editInfoName,
-          abbr : this.editInfoAbbr,
-          description : this.editInfoDescription,
-          customerId : (this.editInfoCustomer===this.tmpeditInfoCustomer)?this.editInfoInitCustomerId:this.editInfoCustomer,
+          id : (this.editInfoId==="")?NaN:this.editInfoId,
+          name : (this.editInfoName==="")?NaN:this.editInfoName,
+          abbr : (this.editInfoAbbr==="")?NaN:this.editInfoAbbr,
+          description : (this.editInfoDescription==="")?NaN:this.editInfoDescription,
+          groupId : (tmp==="")?NaN:tmp,
         }
         console.log(param);
 
