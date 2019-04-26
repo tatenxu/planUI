@@ -803,12 +803,12 @@ export default {
         .then(() => {
           this.multipleSelection.forEach(element=>{
             console.log("开始解绑");
-            this.$axios.post((`${window.$config.HOST}/infoManagement/unbindStyleGroup`),{
+            this.$axios.post(`${window.$config.HOST}/infoManagement/unbindStyleGroup`,{
               id:element.id,
             })
               .then(response=>{
                 var resData = response.data;
-                if(resData.errcode < 0){
+                if(resData < 0){
                   this.$message.error(element.name+"解绑失败!")
                 }else{
                   this.$message({
@@ -932,21 +932,16 @@ export default {
       const that = this;
       console.log("保存按钮点击");
 
-      // console.log(this.ruleForm.customerId);
-      var params = {
-        id : this.ruleForm.id,
-        name : this.ruleForm.tmpStyleGroup ,
-        customerId : ((this.ruleForm.tmpCustomer === this.ruleForm.customerName)? this.ruleForm.customerId:this.ruleForm.tmpCustomer),
-        brandId : ((this.ruleForm.tmpBrand === this.ruleForm.brandName)? this.ruleForm.brandId:this.ruleForm.tmpBrand),
-        rangeId :  ((this.ruleForm.tmpRange === this.ruleForm.rangeName)? this.ruleForm.rangeId:this.ruleForm.tmpRange),
-        // clothingLevelId: this.ruleForm.clothingLevelName,
-      };
-
-      console.log(params);
-
       if(this.controlData.ifStyleGroupAdd){
+
+        var params = {
+          customerId : (this.ruleForm.tmpCustomer === "")? NaN:this.ruleForm.tmpCustomer,
+          brandId : (this.ruleForm.tmpBrand === "")? NaN:this.ruleForm.tmpBrand,
+          rangeId : (this.ruleForm.tmpRange === "")? NaN:this.ruleForm.tmpRange, 
+          name : (this.ruleForm.tmpStyleGroup==="")?NaN:this.ruleForm.tmpStyleGroup,
+        };
         this.$axios
-          .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,params)
+          .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,param)
           .then(response=>{
             var resData = response.data;
             if(resData.errorCode >= 0){
@@ -962,8 +957,16 @@ export default {
             this.$message.error('新增款式组信息失败');
           });
       }else if(this.controlData.ifStyleGroupChange){
+        var param = {
+          id : this.ruleForm.id,
+          name : (this.ruleForm.tmpStyleGroup==="")?NaN:this.ruleForm.tmpStyleGroup,
+          customerId : ((this.ruleForm.tmpCustomer === this.ruleForm.customerName)? this.ruleForm.customerId:this.ruleForm.tmpCustomer),
+          brandId : ((this.ruleForm.tmpBrand === this.ruleForm.brandName)? this.ruleForm.brandId:this.ruleForm.tmpBrand),
+          rangeId :  ((this.ruleForm.tmpRange === this.ruleForm.rangeName)? this.ruleForm.rangeId:this.ruleForm.tmpRange),
+          // clothingLevelId: this.ruleForm.clothingLevelName,
+        };
         this.$axios
-          .post(`${window.$config.HOST}/infoManagement/updateStyleGroup`,params)
+          .post(`${window.$config.HOST}/infoManagement/updateStyleGroup`,param)
           .then(response=>{
             var resData = response.data;
             if(resData.errorCode >= 0){
