@@ -159,19 +159,13 @@ export default {
     console.log('进入计划回收站页面');
     //加载客户名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
-        var resData = response.data;
-        resData.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push({
-            id: element.id,
-            name: element.name,
-          });
-        });
+        this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer error!");
+        console.log("getCustomer 失败!");
         this.searchOptions.options.customerNameOptions = [
           {
             id: 42453,
@@ -186,14 +180,12 @@ export default {
 
     //加载品牌名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }
+        this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
+        console.log("品牌名称加载错误");
         this.searchOptions.options.brandNameOptions = [
           {
             id: 1,
@@ -208,11 +200,9 @@ export default {
 
     //加载系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }
+        this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -232,32 +222,28 @@ export default {
         ];
       });
     //加载删除的计划
+    var param ={
+      customerId : NaN,
+      brandId : NaN,
+      rangeId: NaN,
+      id : NaN,
+      clothingLevelId : NaN,
+      startDate : NaN,
+      endDate : NaN,
+    };
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
       .then(response => {
-        var SearchList = response;
-        SearchList.forEach(element=>{
-          //6 表示被删除
-          if(element.state === 6){
-            this.tableData.push({
-              number:element.id,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              name: element.name,
-              rangeName: element.rangeName,
-              planObject: "",
-              type: element.type,
-              createrName: element.createrName,
-              createrName: "XX",
-              deleteTime: "2019-3-28"
-            });
+        response.data.forEach(element=>{
+          if(element.state === '6'){
+            this.tableData.push(element);
           }
         });
-        this.tableData = SearchList;
       })
       .catch(error => {
         var SearchList = [
           {
+            id:"4234234",
             number: "JH190401001",
             customerName: "AFL",
             brandName: "CX",
@@ -270,6 +256,7 @@ export default {
             deleteTime: "2019-3-28"
           },
           {
+            id:"57657",
             number: "JH1904010012",
             customerName: "AFL",
             brandName: "CX",
@@ -282,6 +269,7 @@ export default {
             deleteTime: "2019-3-28"
           },
           {
+            id:"657567",
             number: "JH1904010013",
             customerName: "AFL",
             brandName: "CX",
@@ -294,6 +282,7 @@ export default {
             deleteTime: "2019-3-28"
           },
           {
+            id:"2345",
             number: "JH1904010014",
             customerName: "AFL",
             brandName: "CX",
@@ -306,6 +295,7 @@ export default {
             deleteTime: "2019-3-28"
           },
           {
+            id:"34626",
             number: "JH1904010015",
             customerName: "AFL",
             brandName: "CX",
@@ -342,19 +332,19 @@ export default {
         .post(`${window.$config.HOST}/planManagement/restorePlan`,params)
         .then(response=>{
           var resData = response.data;
-          if(resData.errcode < 0 ){
+          if(resData < 0 ){
+            this.$message.error(row.number+"恢复失败！");
+          }else{
+            this.$message({
+              type: 'success',
+              message: "恢复成功！"
+            });
             this.tableData.forEach(element=>{
               if(element.number === row.number){
                 var idx = this.tableData.indexOf(element);
                 this.tableData.splice(idx,1);
               }
             });
-            this.$message.error(row.number+"恢复失败！");
-          }else{
-            this.$message({
-              type: 'success',
-              message: "恢复成功！"
-            })
           }
         })
         .catch(error=>{
@@ -387,9 +377,11 @@ export default {
     handleSearchClick(){
       var params;
       params = {
-        customerId: this.searchOptions.searchParams.customerName?this.searchOptions.searchParams.customerName:"",
-        brandId: this.searchOptions.searchParams.brandName?this.searchOptions.searchParams.brandName:"",
-        rangeId: this.searchOptions.searchParams.rangeName?this.searchOptions.searchParams.rangeName:"",
+        customerId : (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName,
+        brandId : (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName,
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?NaN:this.searchOptions.searchParams.rangeName,
+        id : NaN,
+        clothingLevelId : NaN,
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),      
       };
@@ -398,8 +390,12 @@ export default {
       this.$axios
         .get(`${window.$config.HOST}/planManagement/getPlanList`,params)
         .then(response => {
-          var SearchList = response;
-          this.tableData = SearchList;
+          this.tableData = [];
+          response.data.forEach(element=>{
+            if(element.state === '6'){
+              this.tableData.push(element);
+            }
+          })
         })
         .catch(error => {
           var SearchList = [
