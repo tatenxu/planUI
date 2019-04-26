@@ -67,7 +67,7 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品部门:</span>
-              <el-select v-model="addInfoDepartOwner" placeholder="请选择" class="inputSelector">
+              <el-select v-model="addInfoDepart" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
                   :key="item.id"
@@ -206,7 +206,7 @@
         addInfoDescription:'',
         addInfoName:'',
         addInfoCode:'',
-        addInfoDepartOwner:'',
+        addInfoDepart:'',
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -214,12 +214,8 @@
     },
     created:function(){
       let that = this;
-      that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`)
+      that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`,{name:NaN})
         .then(response=>{
-          if(response.data < 0){
-            console.log("产品信息加载失败");
-            return;
-          }
           this.tableData = response.data;
           this.tableData.forEach(element=>{
             this.selectionData.push({
@@ -285,24 +281,20 @@
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {};
+        var param = {name:NaN};
         if(!allFlag){
           if(this.searchInput === ""){
             this.$message.error("请输入产品名称");
             return;
           }
           param = {
-            name: this.searchInput,
+            name: (this.searchInput==="")?NaN:this.searchInput,
           };
         }
         
         this.$axios
           .get(`${window.$config.HOST}/baseInfoManagement/getProduct`,param)
           .then(response=>{
-            if(response.data < 0){
-              console.log("产品信息加载失败");
-              return;
-            }
             this.tableData = response.data;
           })
           .catch(error=>{
@@ -388,15 +380,15 @@
         // this.tableData = this.multipleSelection;
       },
       handleNewSaveClick(){
-        var params = {
-          number : "",
-          name : this.addInfoName,
-          description : this.addInfoDescription,
-          departmentId : this.addInfoDepartOwner,
+        var param = {
+          number : NaN,
+          name : (this.addInfoName==="")?NaN:this.addInfoName,
+          description : (this.addInfoDescription==="")?NaN:this.addInfoDescription,
+          departmentId : (this.addInfoDepart==="")?NaN:this.addInfoDepart,
         };
-        console.log(params);
+        console.log(param);
         
-        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,params)
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,param)
           .then(response=>{
             if(response.data<0){
               this.$message.error("添加失败!");
@@ -406,7 +398,7 @@
               message:'保存成功!',
               type:'success'
             });
-            this.handleSearchClick();
+            this.handleSearchClick(true);
           })
           .catch(error=>{
             this.$message.error("添加失败!");
@@ -418,7 +410,7 @@
 
         this.addInfoName = "";
         this.addInfoDescription = "";
-        this.addInfoDepartOwner = "";
+        this.addInfoDepart = "";
         return;
       },
       handleNewCancelClick(){
@@ -432,16 +424,17 @@
         return;
       },
       handleEditSaveClick(){
-         var params = {
-          id:this.editInfoId,
-          number : "",
-          name : this.editInfoName,
-          description : this.editInfoDescription,
-          departmentId : (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart,
+        var departInfoTmp = (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart;
+        var param = {
+          id: this.editInfoId,
+          number : NaN,
+          name : (this.editInfoName==="")?NaN:this.editInfoName,
+          description : (this.editInfoDescription==="")?NaN:this.editInfoDescription,
+          departmentId : (departInfoTmp==="")?NaN:departInfoTmp,
         };
-        console.log(params);
+        console.log(param);
         
-        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateProduct`,params)
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateProduct`,param)
           .then(response=>{
             if(response.data<0){
               this.$message.error("编辑失败!");
@@ -451,7 +444,7 @@
               message:'编辑成功!',
               type:'success'
             });
-            this.handleSearchClick();
+            this.handleSearchClick(true);
           })
           .catch(error=>{
             this.$message.error("编辑失败!");
