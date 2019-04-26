@@ -22,16 +22,9 @@
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleCategSelectionChange">
-                    <el-table-column
-                      type="selection"
-                      width="55">
-                    </el-table-column>
-                    
-                    <el-table-column
-                      prop="name"
-                      label="字典类别"
-                      show-overflow-tooltip>
-                    </el-table-column>
+                    <el-table-column  type="selection"  width="55"> </el-table-column>
+                    <el-table-column  prop="id"  v-if="false" label="id"  show-overflow-tooltip></el-table-column>
+                    <el-table-column  prop="category"   label="字典类别"  show-overflow-tooltip></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -57,16 +50,9 @@
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handlePropSelectionChange">
-                    <el-table-column
-                      type="selection"
-                      width="55">
-                    </el-table-column>
-                    
-                    <el-table-column
-                      prop="propName"
-                      label="类别属性"
-                      show-overflow-tooltip>
-                    </el-table-column>
+                    <el-table-column  type="selection"  width="55"></el-table-column>
+                    <el-table-column  prop="id"  label="id"  v-if="false" show-overflow-tooltip></el-table-column>
+                    <el-table-column  prop="name"  label="类别属性"  show-overflow-tooltip></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -121,12 +107,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属类别:</span>
-              <el-select v-model="addPropOwnerCate" placeholder="请选择" class="inputSelector">
+              <el-select v-model="addPropCategoryId" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in dictionCategories"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name">
+                  :key="item.id"
+                  :label="item.category"
+                  :value="item.id">
                 </el-option>
               </el-select>
           </div>
@@ -149,12 +135,12 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属类别:</span>
-              <el-select v-model="editPropOwnerCate" placeholder="请选择" class="inputSelector">
+              <el-select v-model="editPropCate" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in dictionCategories"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name">
+                  :key="item.id"
+                  :label="item.category"
+                  :value="item.id">
                 </el-option>
               </el-select>
           </div>
@@ -230,58 +216,27 @@ export default {
   data(){
     return{
       viewname:'first',
-      dictionCategories:[
-        {
-          name:"性别",
-          code:"sex",
-          detail:{
-            prop1:"男",
-            prop2:"女",
-          }
-        },
-        {
-          name:"职称",
-          code:"job",
-          detail:{
-            prop1:"高工",
-            prop2:"工人",
-            prop3:"客户经理"
-          }
-        },
-        {
-          name:"学历",
-          code:"education",
-          detail:{
-            prop1:"高中",
-            prop2:"学士",
-            prop3:"硕士",
-            prop4:"博士",
-          }
-        },
-        {
-          name:"客户类型",
-          code:"customerType",
-          detail:{
-            prop1:"大",
-            prop2:"小",
-            prop3:"中",
-            prop4:"跨国",
-          }
-        },
-      ],
+      dictionCategories:[],
       multiCateSelection:[],
       selectedCateProps:[],
       multiplePropSelection:[],
+
       addCateName:'',
       addCateCode:'',
+
+      editCateId:'',
       editCateName:'',
       editCateCode:'',
+
       addPropName:'',
       addPropCode:'',
-      addPropOwnerCate:'',
+      addPropCategoryId:'',
+
+      editPropId:'',
       editPropName:'',
       editPropCode:'',
-      editPropOwnerCate:'',
+      editPropCate:'',
+      initeditPropCateName:'',
 
       addCateShowFlag:false,
       editCateShowFlag:false,
@@ -290,8 +245,118 @@ export default {
 
     }
   },
-
+  created:function(){
+    //加载所有的字典类别
+    this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getAllDictionaryCategory`)
+      .then(response=>{
+        this.dictionCategories = response.data;
+      })
+      .catch(error=>{
+        console.log("字典类别加载错误");
+        this.dictionCategories = [
+          {
+            id:"241234",
+            category:"性别",
+            code:"sex",
+          },
+          {
+            id:"4234",
+            category:"职称",
+            code:"job",
+          },
+          {
+            id:"2345234",
+            category:"学历",
+            code:"education",
+          },
+          {
+            id:"2412764",
+            category:"客户类型",
+            code:"customerType",
+          },
+        ];
+      });
+  },
   methods:{
+    reSearchProperty(cateId){
+      this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,{categoryId:cateId})
+            .then(response=>{
+              this.selectedCateProps = response.data;
+            })
+            .catch(error=>{
+              this.$message.error("属性信息加载失败");
+              this.selectedCateProps = [
+                {
+                  id : "3245123",
+                  name : "属性1",
+                  code : "faksjdk",
+                  categoryId : "54145",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "1543",
+                  name : "属性2",
+                  code : "adsf",
+                  categoryId : "54145",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "3245123",
+                  name : "属性3",
+                  code : "xggffh",
+                  categoryId : "54145",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "3245123",
+                  name : "属性4",
+                  code : "ertdf ",
+                  categoryId : "54145",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "76867",
+                  name : "属性7",
+                  code : "dfgadf",
+                  categoryId : "54145",
+                  categoryName:"类别1"
+                },
+              ]
+            });
+    },
+    reSearchCategory(){
+      console.log("再搜索");
+      //重新加载
+      this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getAllDictionaryCategory`)
+        .then(response=>{
+          this.dictionCategories = response.data;
+        })
+        .catch(error=>{
+          console.log("字典类别加载错误");
+          this.dictionCategories = [
+            {
+              id:"241234",
+              category:"性别",
+              code:"sex",
+            },
+            {
+              id:"4234",
+              category:"职称",
+              code:"job",
+            },
+            {
+              id:"2345234",
+              category:"学历",
+              code:"education",
+            },
+            {
+              id:"241234",
+              category:"客户类型",
+              code:"customerType",
+            },
+          ];
+        });
+    },
     handleViewChange(tab, event) {
       console.log(tab, event);
     },
@@ -299,14 +364,43 @@ export default {
         this.multiCateSelection = val;
         this.selectedCateProps = [];
         if(val.length >= 1){
-          var det = val[0].detail;
-         
-          for(var prop in det){
-            this.selectedCateProps.push({
-              name:val[0].name,propName:det[prop]
-              });
-          }
-          console.log(this.selectedCateProps);
+          this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,{categoryId:val[0].id})
+            .then(response=>{
+              this.selectedCateProps = response.data;
+            })
+            .catch(error=>{
+              this.$message.error("属性信息加载失败");
+              this.selectedCateProps = [
+                {
+                  id : "3245123",
+                  name : "属性1",
+                  code : "faksjdk",
+                  categoryId : "54145",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "1543",
+                  name : "属性2",
+                  code : "adsf",
+                  categoryId : "2352",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "3245123",
+                  name : "属性3",
+                  code : "xggffh",
+                  categoryId : "56436",
+                  categoryName:"类别1"
+                },
+                {
+                  id : "3245123",
+                  name : "属性4",
+                  code : "ertdf ",
+                  categoryId : "7567",
+                  categoryName:"类别1"
+                },
+              ]
+            });
         }
     },
     handlePropSelectionChange(val){
@@ -326,7 +420,8 @@ export default {
          alert("只能选择一个字典类别!");
          return;
       }
-      this.editCateName = this.multiCateSelection[0].name;
+      this.editCateId = this.multiCateSelection[0].id;
+      this.editCateName = this.multiCateSelection[0].category;
       this.editCateCode = this.multiCateSelection[0].code;
       this.editCateShowFlag = true;
       this.viewname = 'third';
@@ -339,13 +434,28 @@ export default {
           });
         }
       this.multiCateSelection.forEach(element => {
-        var i = this.dictionCategories.indexOf(element);
-        this.dictionCategories.splice(i,1);
+        console.log("删除"+element.category);
+        this.$axios.post(`${window.$config.HOST}/dictionaryManagement/deleteDictionaryCategory`,{id:element.id})
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error(elemenet.category+"删除失败");
+              console.log(elemenet.category+"删除失败");
+            }else{
+              this.$message({
+                message:elemenet.category+"删除成功!",
+                type:"success"
+              });
+              console.log(elemenet.category+"删除成功");
+              this.reSearchCategory();
+            }
+          })
+          .catch(error=>{
+            this.$message.error(elemenet.category+"删除失败");
+            console.log(elemenet.category+"删除失败");
+          });
+        
       });
-      this.$message({
-        message:"删除成功!",
-        type:"success"
-      });
+      
     },
     handleAddPropClick(){
       this.addPropShowFlag = true;
@@ -362,9 +472,12 @@ export default {
          return;
       }
 
-      this.editPropName = this.multiplePropSelection[0].propName;
-      this.editPropCode = this.multiplePropSelection[0].propName;
-      this.editPropOwnerCate = this.multiplePropSelection[0].name;
+      this.editPropId = this.multiplePropSelection[0].id
+      this.editPropName = this.multiplePropSelection[0].name;
+      this.editPropCode = this.multiplePropSelection[0].code;
+      this.editPropCate = this.multiplePropSelection[0].categoryName;
+      this.initeditPropCateId = this.multiplePropSelection[0].categoryId;
+      this.initeditPropCateName = this.editPropCate;
 
       this.editPropShowFlag = true;
       this.viewname = 'fifth';
@@ -377,23 +490,50 @@ export default {
           });
         }
       this.multiplePropSelection.forEach(element => {
-        var i = this.selectedCateProps.indexOf(element);
-        this.selectedCateProps.splice(i,1);
+        this.$axios.post(`${window.$config.HOST}/dictionaryManagement/deletecCategoryProperty`,{id:element.id})
+          .then(response=>{
+            if(response.data<0){
+              this.$message.error("删除失败");
+            }else{
+              this.$message({
+                message:"删除成功!",
+                type:"success"
+              });
+              this.reSearchProperty(element.categoryId);
+            }
+          })
+          .catch(error=>{
+            this.$message.error("删除失败");
+          });
       });
-      this.$message({
-        message:"删除成功!",
-        type:"success"
-      });
+      
     },
     handleAddCateSaveClick(){
-      this.dictionCategories.push({
-        name: this.addCateName,
-        code: this.addCateCode,
-      });
-      this.$message({
-        message:"保存成功!",
-        type:"success"
-      });
+      var param = {
+        category : (this.addCateName==='')?NaN:this.addCateName,
+		    code : (this.addCateCode==='')?NaN:this.addCateCode,
+      }
+      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addDictionaryCategory`,param)
+        .then(response=>{
+          if(response.data<0){
+            this.$message.error("添加失败");
+          }else{
+            this.$message({
+              message:"添加成功!",
+              type:"success"
+            });
+            this.reSearchCategory();
+          }
+        })
+        .catch(error=>{
+          this.$message.error("添加失败");
+        });
+
+      this.addCateName = "";
+      this.addCateCode ="";
+
+
+
       this.addCateShowFlag = false;
       this.viewname = 'first';
     },
@@ -402,14 +542,39 @@ export default {
         message:"取消新增!",
         type:"info"
       });
+
+      this.addCateName = "";
+      this.addCateCode ="";
+
       this.addCateShowFlag = false;
       this.viewname = 'first';
     },
     handleEditCateSaveClick(){
-      this.$message({
-        message:"保存成功!",
-        type:"success"
-      });
+      var param = {
+        id : (this.editCateId==="")?NaN:this.editCateId,
+        category : (this.editCateName==="")?NaN:this.editCateName,
+        code : (this.editCateCode==="")?NaN:this.editCateCode,
+      };
+    
+      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateDictionaryCategory`,param)
+        .then(response=>{
+          if(response.data<0){
+            this.$message.error("编辑失败");
+          }else{
+            this.$message({
+              message:"编辑成功!",
+              type:"success"
+            });
+            this.reSearchCategory();
+          }
+        });
+
+      this.editCateId = "";
+      this.editCateName = "";
+      this.editPropCode = "";
+      
+
+
       this.editCateShowFlag = false;
       this.viewname = 'first';
     },
@@ -422,15 +587,35 @@ export default {
       this.viewname = 'first';
     },
     handleAddPropSaveClick(){
-      this.$message({
-        message:"保存成功!",
-        type:"success"
-      });
-      this.selectedCateProps.push({
-        name: this.editPropName,
-        propName: this.editPropOwnerCate,
-      });
-      console.log(this.selectedCateProps);
+      var param = {
+        name : (this.addPropName==='')?NaN:this.addPropName,
+        code : (this.addPropCode==='')?NaN:this.addPropCode,
+        categoryId : (this.addPropCategoryId==='')?NaN:this.addPropCategoryId,
+      };
+
+      console.log(param);
+
+      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addPropCategoryId`,param)
+        .then(response=>{
+          if(response.data<0){
+            this.$message.error("添加失败");
+          }else{
+            this.$message({
+              message:"添加成功!",
+              type:"success"
+            });
+            this.reSearchProperty(this.addPropCategoryId);
+          }
+        })
+        .catch(error=>{
+          this.$message.error("添加失败");
+        });
+
+      
+
+      this.addPropName = "";
+      this.addPropCode ="";
+      this.addPropCategoryId ="";
 
       this.addPropShowFlag = false;
       this.viewname = 'first';
@@ -440,14 +625,47 @@ export default {
         message:"取消新增!",
         type:"info"
       });
+      
+      this.addPropName = "";
+      this.addPropCode = "";
+      this.addPropCategoryId = "";
+
       this.addPropShowFlag = false;
       this.viewname = 'first';
     },
     handleEditPropSaveClick(){
-      this.$message({
-        message:"保存成功!",
-        type:"success"
-      });
+      var tmp = (this.editPropCate===this.initeditPropCateName)?this.initeditPropCateId:this.editPropCate;
+      var param={
+        id : (this.editPropId==="")? NaN:this.editPropId,
+        name : (this.editPropName==="")? NaN:this.editPropName,
+        code : (this.editPropCode==="")? NaN:this.editPropCode,
+        categoryId :  (tmp==="")? NaN:tmp,
+      }
+      console.log(param);
+
+      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateDictionaryCategory`,param)
+        .then(response=>{
+          if(response.data<0){
+            this.$message.error("编辑失败");
+          }else{
+            this.$message({
+              message:"保存成功!",
+              type:"success"
+            });
+            this.reSearchProperty(this.initeditPropCateId);
+          }
+        })
+        .catch(error=>{
+          this.$message.error("编辑失败");
+        });
+
+      this.editPropId = "";
+      this.editPropName = "";
+      this.editPropCode = "";
+      this.editPropCate = "";
+      this.initeditPropCateId = "";
+      this.initeditPropCateName = "";
+      
       this.editPropShowFlag = false;
       this.viewname = 'first';
     },
