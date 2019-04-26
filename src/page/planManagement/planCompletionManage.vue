@@ -67,25 +67,22 @@ export default {
     console.log('进入计划完成页面');
 
     //加载未完成的计划
+    var param ={
+      customerId : NaN,
+      brandId : NaN,
+      rangeId: NaN,
+      id : NaN,
+      clothingLevelId : NaN,
+      startDate : NaN,
+      endDate : NaN,
+    };
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
       .then(response => {
-        var SearchList = response;
-        SearchList.forEach(element=>{
+        response.data.forEach(element=>{
           //6 表示被删除
           if(element.state === 5){
-            this.tableData.push({
-              number:element.id,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              name: element.name,
-              rangeName: element.rangeName,
-              planObject: "",
-              type: element.type,
-              state: element.state,
-              createrName: "XX",
-              createTime: "2019-3-28"
-            });
+            this.tableData.push(element);
           }
         });
         this.tableData = SearchList;
@@ -93,6 +90,7 @@ export default {
       .catch(error => {
         var SearchList = [
           {
+            id:'42453453',
             number: "JH190401001",
             customerName: "AFL",
             brandName: "CX",
@@ -105,6 +103,7 @@ export default {
             createTime: "2019-3-28"
           },
           {
+            id:'42454523553',
             number: "JH1904010012",
             customerName: "AFL",
             brandName: "CX",
@@ -117,6 +116,7 @@ export default {
             createTime: "2019-3-28"
           },
           {
+            id:'547367',
             number: "JH1904010013",
             customerName: "AFL",
             brandName: "CX",
@@ -129,6 +129,7 @@ export default {
             createTime: "2019-3-28"
           },
           {
+            id:'7876',
             number: "JH1904010014",
             customerName: "AFL",
             brandName: "CX",
@@ -141,6 +142,7 @@ export default {
             createTime: "2019-3-28"
           },
           {
+            id:'23453245',
             number: "JH1904010015",
             customerName: "AFL",
             brandName: "CX",
@@ -165,15 +167,16 @@ export default {
         that.$message.error("请选择要删除的计划！");
       } else {
         this.tableSelectionData.forEach(element => {
-          
-          this.$axios.post(`${window.$config.HOST}/planManagement/completePlan`)
+          console.log("删除"+element.name);
+          this.$axios.post(`${window.$config.HOST}/planManagement/completePlan`,{id:element.id})
             .then(response=>{
-              if(response.data.errcode<0){
+              if(response.data<0){
                 this.$message.error(element.name+"添加完成失败");
+              }else{
+                console.log("完成"+element.name);
+                var j = this.tableData.indexOf(element);
+                this.$set(this.tableData[j], "state", "已完成");
               }
-              console.log("完成"+element.name);
-              var j = this.tableData.indexOf(element);
-              this.$set(this.tableData[j], "state", "已完成");
             })
             .catch(error=>{
               console.log(element.name+"完成失败");
