@@ -357,7 +357,7 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return "";
+        return NaN;
       }else{
         console.log(date);
         var y = date.getFullYear();

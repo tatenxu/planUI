@@ -78,15 +78,15 @@
         >
           <el-table-column type="selection" width="50px"></el-table-column>
           <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
-          <el-table-column prop="excId" v-if="false"></el-table-column>
-          <el-table-column prop="excNumber" label="异常编号" width="100px" align="center"></el-table-column>
+          <el-table-column prop="id" v-if="false"></el-table-column>
+          <el-table-column prop="number" label="异常编号" width="100px" align="center"></el-table-column>
           <el-table-column prop="planNumber" label="计划编号" width="100px" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户" width="100px" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" width="100px" align="center"></el-table-column>
           <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="rangeName" label="系列名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="planObject" label="计划对象" width="100px" align="center"></el-table-column>
-          <el-table-column prop="excContent" label="异常内容" width="100px" align="center"></el-table-column>
+          <el-table-column prop="cause" label="异常内容" width="100px" align="center"></el-table-column>
           <el-table-column prop="createrName" label="创建人" width="100px" align="center"></el-table-column>
           <el-table-column prop="createTime" label="创建时间" width="100px" align="center" show-overflow-tooltip></el-table-column>
             <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
@@ -171,19 +171,13 @@ export default {
 
     //客户名称加载
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
-        var resData = response.data;
-        resData.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push({
-            value:element.id,
-            label:element.name,
-          });
-        });
+        this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer error!");
+        console.log("getCustomer 失败!");
         this.searchOptions.options.customerNameOptions = [
           {
             id: 42453,
@@ -198,11 +192,9 @@ export default {
 
     //品牌名称加载
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌加载失败");
-        }
+        this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
         console.log("品牌加载失败");
@@ -220,11 +212,9 @@ export default {
     
     //加载系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("系列名称加载失败");
-        }
+        this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
         console.log("系列名称加载失败");
@@ -245,68 +235,56 @@ export default {
       });
 
     //加载默认所有的异常计划
+    var param = {
+      customerId: NaN, 
+      brandId: NaN, 
+      rangeId: NaN,  
+      startDate: NaN,  
+      endDate: NaN, 
+    }
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`)
+      .get(`${window.$config.HOST}/planManagement/getException`,param)
       .then(response => {
-        var resData = response.data;
-        if(resData.errcode < 0){
-          this.$methods.error("加载异常信息失败");
-        }
-        resData.forEach(element=>{
-          this.tableData.push({
-            excId :element.id,
-            excNumber: element.number,
-            planNumber: element.planNumber,
-            customerName: element.customerName,
-            brandName: element.brandName,
-            planName: element.planName,
-            rangeName: element.rangeName,
-            planObject: element.planObject,
-            excContent: element.cause,
-            createrName: element.createrName,
-            createTime: element.createTime
-          });
-        });
-        
+        this.tableData = response.data;
       })
       .catch(error => {
         var SearchList = [
           {
-            excId :5674,
-            excNumber: "7878787",
+            id :5674,
+            number: "7878787",
             planNumber: "45345",
             customerName: "nike",
             brandName: "耐克",
             planName: "计划1",
             rangeName: "系列1",
             planObject: "大明",
-            excContent: "死机",
+            cause: "死机",
             createrName: "王小虎",
             createTime: "2016-10-16"
           },
           {
-            excId :56754,
-            excNumber: "312",
+            id :56754,
+            number: "312",
             planNumber: "5335",
             customerName: "add",
             brandName: "阿迪",
             planName: "计划2",
             rangeName: "系列1",
             planObject: "大明",
-            excContent: "死机",
+            cause: "死机",
             createrName: "王小虎",
             createTime: "2016-10-16"
           },
           {
-            excId :564514,
-            excNumber: "8678",
+            id :564514,
+            number: "8678",
             planNumber: "45343",
             customerName: "nb",
             brandName: "nb",
             planName: "计划6",
             rangeName: "系列5",
             planObject: "大明",
-            excContent: "死机",
+            cause: "死机",
             createrName: "王小虎",
             createTime: "2016-10-16"
           }
@@ -323,49 +301,32 @@ export default {
       this.searchOptions.searchParams.rangeName = routData.rangeName;
       this.searchDisabled = true;
 
-      var params;
-      params = {
-        customerId: routData.customerId,
-        brandId: routData.customerId,
-        rangeId: routData.customerId,
-      };
+      var param = {
+        customerId: (routData.customerName==="")?NaN:routData.customerName, 
+        brandId: (routData.brandName==="")?NaN:routData.brandName,
+        rangeId: (routData.rangeName==="")?NaN:routData.rangeName,  
+        startDate: NaN,  
+        endDate: NaN, 
+      }
       console.log(params);
 
       this.$axios
-        .post(`${window.$config.HOST}/planManagement/getException`,params)
+        .get(`${window.$config.HOST}/planManagement/getException`,param)
         .then(response => {
-          var resData = response.data;
-          if(resData.errcode < 0){
-            this.$methods.error("加载异常信息失败");
-          }
-          resData.forEach(element=>{
-            this.tableData.push({
-              excId :element.id,
-              excNumber: element.number,
-              planNumber: element.planNumber,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              planName: element.planName,
-              rangeName: element.rangeName,
-              planObject: element.planObject,
-              excContent: element.cause,
-              createrName: element.createrName,
-              createTime: element.createTime
-            });
-          });
+          this.tableData = response.data;
         })
         .catch(error => {
           var SearchList = [
             {
-              excId:"7458756415",
-              excNumber: "7878787",
+              id:"7458756415",
+              number: "7878787",
               planNumber: "45345",
               customerName: "nike",
               brandName: "耐克",
               planName: "计划1",
               rangeName: "系列1",
               planObject: "大明",
-              excContent: "死机",
+              cause: "死机",
               createrName: "王小虎",
               createTime: "2016-10-16"
             },
@@ -377,65 +338,66 @@ export default {
     
   },
   methods: {
+    // 改变日期格式
+    changeDate(date) {
+      if(!date){
+        return NaN;
+      }else{
+        console.log(date);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
+    },
     //搜索按钮
     handleSearchClick(){
-      var params;
-      params = {
-        customerId: this.searchOptions.searchParams.customerName,
-        brandId: this.searchOptions.searchParams.brandName,
-        rangeId: this.searchOptions.searchParams.rangeName,
-        createTime: this.searchOptions.searchParams.dateRange,
-      };
-      console.log(params);
+      var param = {
+        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName,
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?NaN:this.searchOptions.searchParams.rangeName,  
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),  
+        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]), 
+      }
+      console.log(param);
 
       this.$axios
-        .post(`${window.$config.HOST}/planManagement/getException`,params)
+        .get(`${window.$config.HOST}/planManagement/getException`,param)
         .then(response => {
-          var resData = response.data;
-          if(resData.errcode < 0){
-            this.$methods.error("加载异常信息失败");
-          }
-          resData.forEach(element=>{
-            this.tableData.push({
-              excId :element.id,
-              excNumber: element.number,
-              planNumber: element.planNumber,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              planName: element.planName,
-              rangeName: element.rangeName,
-              planObject: element.planObject,
-              excContent: element.cause,
-              createrName: element.createrName,
-              createTime: element.createTime
-            });
-          });
+          this.tableData = response.data;
         })
         .catch(error => {
           var SearchList = [
             {
-              excId:"7458756415",
-              excNumber: "7878787",
+              id:"7458756415",
+              number: "7878787",
               planNumber: "45345",
               customerName: "nike",
               brandName: "耐克",
               planName: "计划1",
               rangeName: "系列1",
               planObject: "大明",
-              excContent: "死机",
+              cause: "死机",
               createrName: "王小虎",
               createTime: "2016-10-16"
             },
             {
-              excId:"87351456",
-              excNumber: "312",
+              id:"87351456",
+              number: "312",
               planNumber: "5335",
               customerName: "add",
               brandName: "阿迪",
               planName: "计划2",
               rangeName: "系列1",
               planObject: "大明",
-              excContent: "死机",
+              cause: "死机",
               createrName: "王小虎",
               createTime: "2016-10-16"
             },
