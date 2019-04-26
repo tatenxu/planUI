@@ -217,7 +217,7 @@ import { error } from 'util';
     },
     created:function(){
       //加载默认客户信息
-      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`)
+      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,{name:NaN})
         .then(response=>{
           this.tableData = response.data;
           this.tableData.forEach(element=>{
@@ -284,13 +284,13 @@ import { error } from 'util';
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {};
+        var param = {name:NaN};
         if(!allFlag){
           if(this.searchInput === ""){
             this.$message.error("请输入客户名称");
             return;
           }
-          param = {name: this.searchInput};
+          param = {name: (this.searchInput==="")?NaN:this.searchInput};
         }
         console.log("搜索参数"+param);
         this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,param)
@@ -404,10 +404,10 @@ import { error } from 'util';
       },
       handleNewSaveClick(){
         var param = {
-          name : this.addInfoName,
-          abbr : this.addInfoAbbr,
-          description : this.addInfoDescription,
-          groupId : this.addInfoGroupId,
+          name : (this.addInfoName==="")?NaN:this.addInfoName,
+          abbr : (this.addInfoAbbr==="")?NaN:this.addInfoAbbr,
+          description : (this.addInfoDescription==="")?NaN:this.addInfoDescription,
+          groupId : (this.addInfoGroupId==="")?NaN:this.addInfoGroupId,
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
@@ -451,12 +451,13 @@ import { error } from 'util';
         return;
       },
       handleEditSaveClick(){
+        var groupidTmp = (this.editInfoGroup === this.tmpeditInfoGroupName)?this.editIndoInitGroupId:this.editInfoGroup;
         var param = {
-          id : this.editInfoId,
-          name : this.editInfoName,
-          abbr : this.editInfoAbbr,
-          description : this.editInfoDescription,
-          groupId : (this.editInfoGroup === this.tmpeditInfoGroupName)?this.editIndoInitGroupId:this.editInfoGroup,
+          id : (this.editInfoId==="")?NaN:this.editInfoId,
+          name : (this.editInfoName==="")?NaN:this.editInfoName,
+          abbr : (this.editInfoAbbr==="")?NaN:this.editInfoAbbr,
+          description : (this.editInfoDescription==="")?NaN:this.editInfoDescription,
+          groupId : (groupidTmp==="")?NaN:groupidTmp,
         };
         console.log(param);
         
