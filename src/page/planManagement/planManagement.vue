@@ -414,7 +414,6 @@ export default {
             }
           ];
         });
-    
   },
   methods: {
     ToSearchException(row) {

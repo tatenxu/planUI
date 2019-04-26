@@ -33,11 +33,11 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevelName" clearable >
+            <el-select v-model="searchOptions.searchParams.name" clearable >
               <el-option
                 v-for="item in searchOptions.options.clothingLevelOptions"
                 :key="item.id"
-                :label="item.clothingLevelName"
+                :label="item.name"
                 :value="item.id">
               </el-option>
             </el-select>
@@ -50,7 +50,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-select v-model="searchOptions.searchParams.predictPlanName">
+            <el-select v-model="searchOptions.searchParams.name">
               <el-option
                 v-for="item in searchOptions.options.planNameOptions"
                 :key="item.id"
@@ -95,14 +95,14 @@
         <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center">></el-table-column>
-          <el-table-column v-if="false" prop="predictPlanId" align="center"></el-table-column>
-          <el-table-column prop="predictPlanNumber" label="预测编号" align="center"></el-table-column>
-          <el-table-column prop="predictPlanName" label="计划名称" align="center"></el-table-column>
+          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
+          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
+          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
           <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevel" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <!-- <el-table-column prop="statue" label="状态" align="center"></el-table-column> -->
@@ -143,7 +143,7 @@ export default {
           brandName: "",
           clothingLevel: "",
           rangeName: "",
-          predictPlanName:"",
+          name:"",
           dateRange: ""
         },
         options: {
@@ -171,17 +171,10 @@ export default {
 
     //获取客户名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
-        var resData = response.data;
-        resData.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push({
-            id:element.id,
-            name:element.name,
-          });
-          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-        });
+        this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
         console.log("getCustomer error!");
@@ -199,24 +192,23 @@ export default {
 
     //获取服装层次
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
-        var ClothingList = response;
-        this.searchOptions.options.clothingLevelOptions = ClothingList;
+        this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
         var ClothingList = [
           {
             id: 1,
-            clothingLevelName: "时装"
+            name: "时装"
           },
           {
             id: 2,
-            clothingLevelName: "精品"
+            name: "精品"
           },
           {
             id: 3,
-            clothingLevelName: "时尚"
+            name: "时尚"
           }
         ];
         this.searchOptions.options.clothingLevelOptions = ClothingList;
@@ -224,18 +216,9 @@ export default {
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.brandNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
-        }
+         this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -251,90 +234,90 @@ export default {
         ];
       });
 
-    //默认获取计划列表
-    this.$axios
-    .get(`${window.$config.HOST}/infoManagement/getPlanList`)
-    .then(response => {
-      if(response.data.errcode < 0){
-        console.log("计划列表获取错误");
-        return ;
-      }
-      response.data.forEach(element=>{
-        if(element.type === 1 && element.state === 1){
-          this.tableData.push({
-            predictPlanId: element.id,
-            predictPlanNumber: element.number,
-            predictPlanName: element.name,
-            rangeNumber: element.rangeNumber,
-            rangeName: element.rangeName,
-            customerName: element.customerName,
-            brandName: element.brandName,
-            clothesLevel:element.clothingLevelName,
-            createrName: element.createrName,
-            deptName: element.deptName,
-            state: element.state,
-          });
-
-          //给搜索选择中的计划名称赋值
-          this.searchOptions.options.planNameOptions.push({
-            id: element.id,
-            name:element.name
-          });
-        }
+    //加载计划名称呢
+    this.$axios.get(`${window.$config.HOST}/infoManagement/getPlanName`,{rangeId:NaN})
+      .then(response=>{
+        this.searchOptions.options.planNameOptions = response.data;
+      })
+      .catch(error=>{
+        console.log("计划名称加载错误");
+        this.searchOptions.options.planNameOptions = [
+          {
+            id: 475,
+            name: "计划1",
+          },
+          {
+            id: 753,
+            name: "计划2",
+          },
+          {
+            id: 986,
+            name: "计划3",
+          }
+        ];
       });
-    })
-    .catch(error => {
-      console.log("计划列表获取错误");
-      this.tableData = [
-        {
-          predictPlanId:"7946",
-          predictPlanNumber:"JH001",
-          predictPlanName:"系列A计划",
-          rangeNumber:"XL20190101001",
-          customerName:"Qi-Collection",
-          brandName:"Selikie",
-          clothesLevel:"时装",
-          rangeName:"Fall-2019(01/08/09)",
-          createrName:"刘德华",
-          deptName:"业务一组",
-          state:"未制定"
-        },
-        {
-          predictPlanId:"4545",
-          predictPlanNumber:"JH002",
-          predictPlanName:"系列B计划",
-          rangeNumber:"XL20190101001",
-          customerName:"Qi-Collection",
-          brandName:"Selikie",
-          clothesLevel:"时装",
-          rangeName:"Fall-2019(01/08/09)",
-          createrName:"刘德华",
-          deptName:"业务二组",
-          state:"未制定"
+
+    //默认获取计划列表
+    var param ={
+      customerId : NaN,
+      brandId : NaN,
+      rangeId: NaN,
+      id : NaN,
+      clothingLevelId : NaN,
+      startDate : NaN,
+      endDate : NaN,
+    };
+    this.$axios
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .then(response => {
+        if(response.data.errcode < 0){
+          console.log("计划列表获取错误");
+          return ;
         }
-      ];
-      this.searchOptions.options.planNameOptions = [
-        {
-          id: 475,
-          name: "计划1",
-        },
-        {
-          id: 753,
-          name: "计划2",
-        },
-        {
-          id: 986,
-          name: "计划3",
-        }
-      ];
-    });
+        response.data.forEach(element=>{
+          if(element.type === 1 && element.state === 1){
+            this.tableData.push(element);
+          }
+        });
+      })
+      .catch(error => {
+        console.log("计划列表获取错误");
+        this.tableData = [
+          {
+            id:"7946",
+            number:"JH001",
+            name:"系列A计划",
+            rangeNumber:"XL20190101001",
+            customerName:"Qi-Collection",
+            brandName:"Selikie",
+            clothingLevelName:"时装",
+            rangeName:"Fall-2019(01/08/09)",
+            createrName:"刘德华",
+            deptName:"业务一组",
+            state:"未制定"
+          },
+          {
+            id:"4545",
+            number:"JH002",
+            name:"系列B计划",
+            rangeNumber:"XL20190101001",
+            customerName:"Qi-Collection",
+            brandName:"Selikie",
+            clothingLevelName:"时装",
+            rangeName:"Fall-2019(01/08/09)",
+            createrName:"刘德华",
+            deptName:"业务二组",
+            state:"未制定"
+          }
+        ];
+      });
   },
   methods: {
     // 改变日期格式
     changeDate(date) {
       console.log(date);
       if(!date){
-        return "";
+        return NaN;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -352,10 +335,10 @@ export default {
     //获取预测计划列表
     getMakingPredictPlanList(){
       var params = {
-        customerId: this.searchOptions.searchParams.customerName, 
-        brandId: this.searchOptions.searchParams.brandName, 
-        id: this.searchOptions.searchParams.planName, 
-        clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName, 
+        id: (this.searchOptions.searchParams.name==="")?NaN:this.searchOptions.searchParams.name, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelOptions==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
@@ -364,44 +347,22 @@ export default {
       this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,params)
         .then(response=>{
           var resData = response.data;
-          if(resData.errcode < 0){
-            this.$message.error("搜索失败!");
-            return;
-          }
           resData.forEach(element=>{
             if(element.type === 1 && element.state === 1){
-              this.tableData.push({
-                predictPlanId: element.id,
-                predictPlanNumber: element.number,
-                predictPlanName: element.name,
-                rangeNumber: element.rangeNumber,
-                rangeName: element.rangeName,
-                customerName: element.customerName,
-                brandName: element.brandName,
-                clothesLevel:element.clothingLevelName,
-                createrName: element.createrName,
-                deptName: element.deptName,
-                state: element.state,
-              });
-
-              //给搜索选择中的计划名称赋值
-              this.searchOptions.options.planNameOptions.push({
-                id: element.id,
-                name:element.name
-              });
+              this.tableData.push(element);
             }
           });
         })
         .catch(error=>{
           this.tableData = [
             {
-              predictPlanId:"4545",
-              predictPlanNumber:"JH002",
-              predictPlanName:"系列B计划",
+              id:"4545",
+              number:"JH002",
+              name:"系列B计划",
               rangeNumber:"XL20190101001",
               customerName:"Qi-Collection",
               brandName:"Selikie",
-              clothesLevel:"时装",
+              clothingLevelName:"时装",
               rangeName:"Fall-2019(01/08/09)",
               createrName:"刘德华",
               deptName:"业务二组",
@@ -431,18 +392,18 @@ export default {
 
     //提交已制定的预测计划
     submitPredictPlan(row){
-      // console.log("提交计划"+row.predictPlanId);
-      this.$confirm("是否确认提交计划"+row.predictPlanName+"?", "提示", {
+      // console.log("提交计划"+row.id);
+      this.$confirm("是否确认提交计划"+row.name+"?", "提示", {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
         .then(()=>{
-          console.log("提交计划"+row.predictPlanId);
-          this.$axios.post(`${window.$config.HOST}/planManagement/submitPlan`,{id:row.predictPlanId})
+          console.log("提交计划"+row.id);
+          this.$axios.post(`${window.$config.HOST}/planManagement/submitPlan`,{id:row.id})
             .then(response=>{
               var resData = response.data;
-              if(resData.errcode < 0){
+              if(resData < 0){
                 this.$message.error("提交失败,失败代码:"+(-resData.errcode));
               }else{
                 this.$message({
@@ -482,17 +443,17 @@ export default {
 
     //删除预测计划
     deletePredictPlan(row){
-      this.$confirm("是否确认删除计划"+row.predictPlanName+"?", "提示", {
+      this.$confirm("是否确认删除计划"+row.name+"?", "提示", {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
         .then(()=>{
-          console.log("删除计划"+row.predictPlanId);
-          this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:row.predictPlanId})
+          console.log("删除计划"+row.id);
+          this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:row.id})
             .then(response=>{
               var resData = response.data;
-              if(resData.errcode < 0){
+              if(resData < 0){
                 this.$message.error("删除失败,失败代码:"+(-resData.errcode));
               }else{
                 this.$message({
