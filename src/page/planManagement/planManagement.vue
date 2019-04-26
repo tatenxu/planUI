@@ -135,7 +135,7 @@
               @click.native.prevent="ToSearchException(scope.row)"
               type="text"
               size="small"
-              v-if="scope.row.exception"
+              v-if="scope.row.haveException"
             >有异常，查看</el-button>
             <p v-else>无异常</p>
           </template>
@@ -149,7 +149,7 @@
               size="small"
             >修改</el-button>
             <el-button
-              @click.native.prevent="deleteOnePlan(scope.$index)"
+              @click.native.prevent="deleteOnePlan(scope.row.id)"
               type="text"
               size="small"
             >删除</el-button>
@@ -209,17 +209,10 @@ export default {
 
     //获取客户名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
-        var resData = response.data;
-        resData.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push({
-            id:element.id,
-            name:element.name,
-          });
-          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-        });
+        this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
         console.log("getCustomer error!");
@@ -237,43 +230,33 @@ export default {
 
     //获取服装层次
     that.$axios
-    .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
-    .then(response => {
-      var ClothingList = response;
-      this.searchOptions.options.clothingLevelOptions = ClothingList;
-    })
-    .catch(error => {
-      var ClothingList = [
-        {
-          id: 1,
-          clothingLevelName: "时装"
-        },
-        {
-          id: 2,
-          clothingLevelName: "精品"
-        },
-        {
-          id: 3,
-          clothingLevelName: "时尚"
-        }
-      ];
-      this.searchOptions.options.clothingLevelOptions = ClothingList;
-    });
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
+      .then(response => {
+        this.searchOptions.options.clothingLevelOptions = response.data;
+      })
+      .catch(error => {
+        var ClothingList = [
+          {
+            id: 1,
+            clothingLevelName: "时装"
+          },
+          {
+            id: 2,
+            clothingLevelName: "精品"
+          },
+          {
+            id: 3,
+            clothingLevelName: "时尚"
+          }
+        ];
+        this.searchOptions.options.clothingLevelOptions = ClothingList;
+      });
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.brandNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
-        }
+        this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -291,18 +274,9 @@ export default {
 
     //获取系列
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRange`)
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("系列名称获取错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.rangeNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
-        }
+        this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -323,42 +297,25 @@ export default {
       });
 
     //默认获取计划列表
+    var param = {
+      customerId: NaN,
+      brandId: NaN,
+      rangeId: NaN,
+      id: NaN,
+      clothingLevelId: NaN, 
+      startDate: NaN,
+      endDate: NaN,
+    }
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`)
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("计划列表获取错误");
-        }else{
-          response.data.forEach(element=>{
-            this.tableData.push({
-              id: element.id,
-              number: element.number,
-              name: element.name,
-              rangeNumber: element.rangeNumber,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              rangeName: element.rangeName,
-              createrName: element.createrName,
-              deptName: element.deptName,
-              createTime: element.createTime,
-              parentId: element.parentId,
-              havePlan: element.havePlan,
-              exception: element.haveException
-            });
-
-            //给搜索选择中的计划名称赋值
-            this.searchOptions.options.planNameOptions.push({
-              id: element.id,
-              name:element.name
-            });
-          });
-        }
+        this.tableData = response.data;
       })
       .catch(error => {
         console.log("计划列表获取错误");
         this.tableData = [
           {
-            id: 1,
+            id: 454754,
             number: "00001",
             name: "计划1",
             rangeNumber: "1",
@@ -370,10 +327,10 @@ export default {
             createTime: "2019-4-9",
             parentId: "无",
             havePlan: true,
-            exception: true
+            haveException: true
           },
           {
-            id: 2,
+            id: 4165453,
             number: "00002",
             name: "计划2",
             rangeNumber: "2",
@@ -385,10 +342,10 @@ export default {
             createTime: "2019-4-9",
             parentId: "无",
             havePlan: true,
-            exception: true
+            haveException: true
           },
           {
-            id: 3,
+            id: 587453,
             number: "00003",
             name: "计划3",
             rangeNumber: "3",
@@ -400,10 +357,10 @@ export default {
             createTime: "2019-4-9",
             parentId: "无",
             havePlan: true,
-            exception: true
+            haveException: true
           },
           {
-            id: 4,
+            id: 2345345,
             number: "00004",
             name: "计划4",
             rangeNumber: "4",
@@ -415,10 +372,10 @@ export default {
             createTime: "2019-4-9",
             parentId: "无",
             havePlan: true,
-            exception: false
+            haveException: false
           },
           {
-            id: 5,
+            id: 5475,
             number: "00005",
             name: "计划A",
             rangeNumber: "第一个系列",
@@ -430,24 +387,33 @@ export default {
             createTime: "2019-4-9",
             parentId: "无",
             havePlan: true,
-            exception: false
-          }
-        ];
-        this.searchOptions.options.planNameOptions = [
-          {
-            id: 475,
-            name: "计划1",
-          },
-          {
-            id: 753,
-            name: "计划2",
-          },
-          {
-            id: 986,
-            name: "计划3",
+            haveException: false
           }
         ];
       });
+
+      //加载计划名称
+      this.$axios.get(`${window.$config.HOST}/infoManagement/getPlanName`,{rangeId:NaN})
+        .then(response=>{
+          this.searchOptions.options.planNameOptions = response.data;
+        })
+        .catch(error=>{
+          console.log("计划名称加载错误");
+          this.searchOptions.options.planNameOptions = [
+            {
+              id: 475,
+              name: "计划1",
+            },
+            {
+              id: 753,
+              name: "计划2",
+            },
+            {
+              id: 986,
+              name: "计划3",
+            }
+          ];
+        });
     
   },
   methods: {
@@ -495,8 +461,7 @@ export default {
             console.log(element.id);
             this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:element.id})
               .then(response=>{
-                var resData = response.data;
-                if(res.resData.errcode < 0 ){
+                if(response.data < 0 ){
                   this.$message.error(element.id + "删除失败!");
                 }else{
                   this.$message({
@@ -508,8 +473,8 @@ export default {
                 }
               })
               .catch(error=>{
-              this.$message.error(element.id + "删除失败!");
-            })
+                this.$message.error(element.id + "删除失败!");
+              })
           });
       }
     },
@@ -533,12 +498,12 @@ export default {
             that.selectedData.forEach(element=>{
               var params = {
                 planId : element.id,
-                cause : value,
+                cause : (value==="")?NaN:value,
               };
               // console.log(params);
               that.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
                 .then(response=>{
-                  if(response.data.errcode < 0){
+                  if(response.data < 0){
                     that.$message.error(element.name + "添加异常失败");
                   }else{
                     that.$message({
@@ -550,10 +515,6 @@ export default {
                 .catch(error=>{
                   that.$message.error(element.name + "添加异常失败");
                 })
-            });
-            that.$message({
-              type: "success",
-              message: "添加异常信息成功"
             });
           });
       }
@@ -621,7 +582,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return "";
+        return NaN;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -639,11 +600,11 @@ export default {
     //搜索按钮
     handleSearch(){
       var params = {
-        customerId: this.searchOptions.searchParams.customerName, 
-        brandId: this.searchOptions.searchParams.brandName, 
-        rangeId: this.searchOptions.searchParams.rangeName, 
-        id: this.searchOptions.searchParams.name, 
-        clothingLevelId :this.searchOptions.searchParams.clothingLevelName, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName, 
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?NaN:this.searchOptions.searchParams.rangeName,  
+        id: (this.searchOptions.searchParams.name==="")?NaN:this.searchOptions.searchParams.name, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
@@ -668,7 +629,7 @@ export default {
               createTime: element.createTime,
               parentId: element.parentId,
               havePlan: element.havePlan,
-              exception: element.haveException
+              haveException: element.haveException
             })
           });
         })
@@ -687,7 +648,7 @@ export default {
               createTime: "2019-4-9",
               parentId: "无",
               havePlan: true,
-              exception: true
+              haveException: true
             },
             {
               id: 2,
@@ -702,7 +663,7 @@ export default {
               createTime: "2019-4-9",
               parentId: "无",
               havePlan: true,
-              exception: true
+              haveException: true
             },
           ];
           this.$message.error("搜索失败!");

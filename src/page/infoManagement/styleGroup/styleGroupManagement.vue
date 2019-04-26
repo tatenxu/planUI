@@ -589,7 +589,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return "";
+        return NaN;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
