@@ -37,7 +37,7 @@
               <el-option
                 v-for="item in searchOptions.options.clothingLevelOptions"
                 :key="item.id"
-                :label="item.clothingLevelName"
+                :label="item.name"
                 :value="item.id">
               </el-option>
             </el-select>
@@ -168,17 +168,10 @@ export default {
 
     //获取客户名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getCustomer`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("getCustomer 成功");
-        var resData = response.data;
-        resData.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push({
-            id:element.id,
-            name:element.name,
-          });
-          this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-        });
+        this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
         console.log("getCustomer error!");
@@ -196,24 +189,23 @@ export default {
 
     //获取服装层次
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getClothingLevel`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
-        var ClothingList = response;
-        this.searchOptions.options.clothingLevelOptions = ClothingList;
+        this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
         var ClothingList = [
           {
             id: 1,
-            clothingLevelName: "时装"
+            name: "时装"
           },
           {
             id: 2,
-            clothingLevelName: "精品"
+            name: "精品"
           },
           {
             id: 3,
-            clothingLevelName: "时尚"
+            name: "时尚"
           }
         ];
         this.searchOptions.options.clothingLevelOptions = ClothingList;
@@ -221,18 +213,9 @@ export default {
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getBrand`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("品牌名称选择错误");
-        }else{
-          response.data.forEach(element=>{
-            this.searchOptions.options.brandNameOptions.push({
-              id: element.id,
-              name: element.name
-            });
-          });
-        }
+         this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
         console.log("品牌名称选择错误");
@@ -248,35 +231,45 @@ export default {
         ];
       });
 
+    //加载计划名称呢
+    this.$axios.get(`${window.$config.HOST}/infoManagement/getPlanName`,{rangeId:NaN})
+      .then(response=>{
+        this.searchOptions.options.planNameOptions = response.data;
+      })
+      .catch(error=>{
+        console.log("计划名称加载错误");
+        this.searchOptions.options.planNameOptions = [
+          {
+            id: 475,
+            name: "计划x",
+          },
+          {
+            id: 753,
+            name: "计划2",
+          },
+          {
+            id: 986,
+            name: "计划3",
+          }
+        ];
+      });
+
     //默认获取计划列表
+    var param ={
+      customerId : NaN,
+      brandId : NaN,
+      rangeId: NaN,
+      id : NaN,
+      clothingLevelId : NaN,
+      startDate : NaN,
+      endDate : NaN,
+    };
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`)
+      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
       .then(response => {
-        if(response.data.errcode < 0){
-          console.log("计划列表获取错误");
-          return ;
-        }
         response.data.forEach(element=>{
           if(element.type === 1 && element.state === 2){
-            this.tableData.push({
-              id: element.id,
-              number: element.number,
-              name: element.name,
-              rangeNumber: element.rangeNumber,
-              rangeName: element.rangeName,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              clothingLevelName:element.clothingLevelName,
-              createrName: element.createrName,
-              deptName: element.deptName,
-              state: element.state,
-            });
-
-            //给搜索选择中的计划名称赋值
-            this.searchOptions.options.planNameOptions.push({
-              id: element.id,
-              name:element.name
-            });
+            this.tableData.push(element);
           }
         });
       })
@@ -310,27 +303,14 @@ export default {
             state:"未制定"
           }
         ];
-        this.searchOptions.options.planNameOptions = [
-          {
-            id: 475,
-            name: "计划1",
-          },
-          {
-            id: 753,
-            name: "计划2",
-          },
-          {
-            id: 986,
-            name: "计划3",
-          }
-        ];
+        
       });
   },
   methods: {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return "";
+        return NaN;
       }else{
         console.log(date);
         var y = date.getFullYear();
@@ -348,10 +328,10 @@ export default {
     },
     handleSearchClick(){
       var params = {
-        customerId: this.searchOptions.searchParams.customerName?this.searchOptions.searchParams.customerName:"", 
-        brandId: this.searchOptions.searchParams.brandName?this.searchOptions.searchParams.brandName:"", 
-        id: this.searchOptions.searchParams.planName?this.searchOptions.searchParams.planName:"", 
-        clothingLevelId :this.searchOptions.searchParams.clothingLevelName?this.searchOptions.searchParams.clothingLevelName:"", 
+        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName, 
+        id: (this.searchOptions.searchParams.predictPlanName==="")?NaN:this.searchOptions.searchParams.predictPlanName, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
@@ -367,25 +347,7 @@ export default {
           }
           response.data.forEach(element=>{
             if(element.type === 1 && element.state === 2){
-              this.tableData.push({
-                id: element.id,
-                number: element.number,
-                name: element.name,
-                rangeNumber: element.rangeNumber,
-                rangeName: element.rangeName,
-                customerName: element.customerName,
-                brandName: element.brandName,
-                clothingLevelName:element.clothingLevelName,
-                createrName: element.createrName,
-                deptName: element.deptName,
-                state: element.state,
-              });
-
-              //给搜索选择中的计划名称赋值
-              this.searchOptions.options.planNameOptions.push({
-                id: element.id,
-                name:element.name
-              });
+              this.tableData.push(element);
             }
           });
         })
@@ -405,33 +367,6 @@ export default {
               deptName:"业务一组",
               state:"未制定"
             },
-            // {
-            //   id:"4545",
-            //   number:"JH002",
-            //   name:"系列B计划",
-            //   rangeNumber:"XL20190101001",
-            //   customerName:"Qi-Collection",
-            //   brandName:"Selikie",
-            //   clothingLevelName:"时装",
-            //   rangeName:"Fall-2019(01/08/09)",
-            //   createrName:"刘德华",
-            //   deptName:"业务二组",
-            //   state:"未制定"
-            // }
-          ];
-          this.searchOptions.options.planNameOptions = [
-            {
-              id: 475,
-              name: "计划1",
-            },
-            {
-              id: 753,
-              name: "计划2",
-            },
-            {
-              id: 986,
-              name: "计划3",
-            }
           ];
         });
     },

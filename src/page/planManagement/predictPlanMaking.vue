@@ -33,7 +33,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.name" clearable >
+            <el-select v-model="searchOptions.searchParams.clothingLevelName" clearable >
               <el-option
                 v-for="item in searchOptions.options.clothingLevelOptions"
                 :key="item.id"
@@ -338,7 +338,7 @@ export default {
         customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName, 
         id: (this.searchOptions.searchParams.name==="")?NaN:this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.clothingLevelOptions==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
