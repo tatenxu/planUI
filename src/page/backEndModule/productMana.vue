@@ -46,7 +46,7 @@
             <el-table-column prop="number" label="产品编号" width="120"  ></el-table-column>
             <el-table-column prop="name"  label="产品名称"  width="120"></el-table-column>
             <el-table-column prop="description"  label="产品描述"  width="120"  show-overflow-tooltip></el-table-column>
-            <el-table-column prop="departmentName"  label="产品部门"  show-overflow-tooltip> </el-table-column>
+            <el-table-column prop="deptName"  label="产品部门"  show-overflow-tooltip> </el-table-column>
           </el-table>
           <div style="margin-top: 20px">
             <el-button type="info" @click="toggleSelection()">取消选择</el-button>
@@ -57,24 +57,25 @@
 
       <el-tab-pane label="新增产品信息" name="second" v-if="newCardShowFlag">
         <el-card>
-          <!-- <div class="inputCombine">
+          <div class="inputCombine">
             <span class="inputTag">产品编号:</span>
             <el-input v-model="addInfoCode" class="input" placeholder="请输入产品名称"></el-input>
-          </div> -->
+          </div>
           <div class="inputCombine">
             <span class="inputTag">产品名称:</span>
             <el-input v-model="addInfoName" class="input" placeholder="请输入产品简称"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品部门:</span>
-              <el-select v-model="addInfoDepart" placeholder="请选择" class="inputSelector">
+              <!-- <el-select v-model="addInfoDepart" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
                   :key="item.id"
-                  :label="item.name"
+                  :label="item.name"  
                   :value="item.id">
                 </el-option>
-              </el-select>
+              </el-select> -->
+              <el-input  class="input"  placeholder="请输入产品部门"  v-model="addInfoDepart"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品描述:</span>
@@ -105,14 +106,15 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品部门:</span>
-            <el-select v-model="editInfoDepart" placeholder="请选择" class="inputSelector">
+            <!-- <el-select v-model="editInfoDepart" placeholder="请选择" class="inputSelector">
               <el-option
                 v-for="item in selectionData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id">
               </el-option>
-            </el-select>
+            </el-select> -->
+            <el-input  class="input"  placeholder="请输入产品部门"  v-model="editInfoDepart"></el-input>
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品描述:</span>
@@ -214,13 +216,15 @@
     },
     created:function(){
       let that = this;
-      that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`,{name:NaN})
+      that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`,{
+        params:{ name:null },
+      })
         .then(response=>{
           this.tableData = response.data;
           this.tableData.forEach(element=>{
             this.selectionData.push({
-              id:element.departmentId,
-              name: element.departmentName,
+              id:element.deptName,
+              name: element.deptName,
             });
           });
         })
@@ -233,33 +237,33 @@
               number: 'nk',
               description: '知名产品',
               departmentId:"47853453",
-              departmentName:'部门1'
+              deptName:'部门1'
             },{
               id:875343,
               name: 'addidas',
               number: 'ad',
               description: '次级产品',
               departmentId:"7531436",
-              departmentName:'部门2'
+              deptName:'部门2'
             },{
               id:68143,
               name: 'newbalance',
               number: 'nb',
               description: '国际产品',
               departmentId:"986312",
-              departmentName:'部门3'
+              deptName:'部门3'
             },{
               id:984531,
               name: '阿赛克斯',
               number: 'asics',
               description: '日本产品',
               departmentId:"89753413",
-              departmentName:'部门4'
+              deptName:'部门4'
             },];
           this.tableData.forEach(element=>{
             this.selectionData.push({
-              id:element.departmentId,
-              name: element.departmentName,
+              id:element.deptName,
+              name: element.deptName,
             });
           });
         });
@@ -281,19 +285,23 @@
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {name:NaN};
+        var param = {name:null};
         if(!allFlag){
-          if(this.searchInput === ""){
+          /* if(this.searchInput === ""){
             this.$message.error("请输入产品名称");
             return;
-          }
+          } */
           param = {
-            name: (this.searchInput==="")?NaN:this.searchInput,
+            name: (this.searchInput==="")?null:this.searchInput,
           };
         }
         
+        console.log("搜索"+this.searchInput);
+
         this.$axios
-          .get(`${window.$config.HOST}/baseInfoManagement/getProduct`,param)
+          .get(`${window.$config.HOST}/baseInfoManagement/getProduct`,{
+            params:param,
+          })
           .then(response=>{
             this.tableData = response.data;
           })
@@ -306,21 +314,21 @@
                 number: 'ad',
                 description: '次级产品',
                 departmentId:"7531436",
-                departmentName:'部门2'
+                deptName:'部门2'
               },{
                 id:68143,
                 name: 'newbalance',
                 number: 'nb',
                 description: '国际产品',
                 departmentId:"986312",
-                departmentName:'部门3'
+                deptName:'部门3'
               },{
                 id:984531,
                 name: '阿赛克斯',
                 number: 'asics',
                 description: '日本产品',
                 departmentId:"89753413",
-                departmentName:'部门4'
+                deptName:'部门4'
               },];
           });
       },
@@ -348,9 +356,9 @@
         console.log(this.multipleSelection[0]);
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoCode = this.multipleSelection[0].number;
-        this.editInfoDepart = this.multipleSelection[0].departmentName;
+        this.editInfoDepart = this.multipleSelection[0].deptName;
         this.editInfoDepartId = this.multipleSelection[0].departmentId;
-        this.tmpeditInfoDepartName = this.multipleSelection[0].departmentName;
+        this.tmpeditInfoDepartName = this.multipleSelection[0].deptName;
         this.editInfoDescription = this.multipleSelection[0].description;
         this.editInfoId = this.multipleSelection[0].id;
         this.viewname = 'third';
@@ -363,7 +371,9 @@
           });
         }
         this.multipleSelection.forEach(element => {
-          this.$axios.post(`${window.$config.HOST}/baseInfoManagement/deleteProduct`,{id: element.id})
+          this.$axios.delete(`${window.$config.HOST}/baseInfoManagement/deleteProduct`,{
+            params:{id: element.id}
+          })
             .then(response=>{
               if(response.data<0){
                 console.log(element.name+"删除失败");
@@ -381,16 +391,17 @@
       },
       handleNewSaveClick(){
         var param = {
-          number : NaN,
-          name : (this.addInfoName==="")?NaN:this.addInfoName,
-          description : (this.addInfoDescription==="")?NaN:this.addInfoDescription,
-          departmentId : (this.addInfoDepart==="")?NaN:this.addInfoDepart,
+          number : (this.addInfoCode==="")?null:this.addInfoCode,
+          name : (this.addInfoName==="")?null:this.addInfoName,
+          description : (this.addInfoDescription==="")?null:this.addInfoDescription,
+          deptName : (this.addInfoDepart==="")?null:this.addInfoDepart,
         };
         console.log(param);
         
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,param)
           .then(response=>{
             if(response.data<0){
+              console.log("后台添加失败");
               this.$message.error("添加失败!");
               return;
             }
@@ -427,16 +438,16 @@
         var departInfoTmp = (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart;
         var param = {
           id: this.editInfoId,
-          number : NaN,
-          name : (this.editInfoName==="")?NaN:this.editInfoName,
-          description : (this.editInfoDescription==="")?NaN:this.editInfoDescription,
-          departmentId : (departInfoTmp==="")?NaN:departInfoTmp,
+          number : (this.editInfoCode==="")?null:this.editInfoCode,
+          name : (this.editInfoName==="")?null:this.editInfoName,
+          description : (this.editInfoDescription==="")?null:this.editInfoDescription,
+          deptName : (departInfoTmp==="")?null:departInfoTmp,
         };
         console.log(param);
         
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateProduct`,param)
           .then(response=>{
-            if(response.data<0){
+            if(response.data < 0){
               this.$message.error("编辑失败!");
               return;
             }

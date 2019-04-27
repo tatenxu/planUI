@@ -67,14 +67,15 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-              <el-select v-model="addInfoGroupId" placeholder="请选择" class="inputSelector">
+              <el-input v-model="addInfoGroup" class="input" placeholder="请输入所属客户"></el-input>
+              <!-- <el-select v-model="addInfoGroup" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
                 </el-option>
-              </el-select>
+              </el-select> -->
           </div>
           <div class="inputCombine">
             <span class="inputTag">客户描述:</span>
@@ -105,14 +106,15 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属客户:</span>
-            <el-select v-model="editInfoGroup" placeholder="请选择" class="inputSelector">
+            <el-input v-model="editInfoGroup" class="input" placeholder="请输入所属客户"></el-input>
+            <!-- <el-select v-model="editInfoGroup" placeholder="请选择" class="inputSelector">
               <el-option
                 v-for="item in selectionData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id">
               </el-option>
-            </el-select>
+            </el-select> -->
           </div>
           <div class="inputCombine">
             <span class="inputTag">客户描述:</span>
@@ -208,7 +210,7 @@ import { error } from 'util';
         addInfoDescription:'',
         addInfoName:'',
         addInfoAbbr:'',
-        addInfoGroupId:'',
+        addInfoGroup:'',
 
 
         newCardShowFlag:false,
@@ -217,7 +219,10 @@ import { error } from 'util';
     },
     created:function(){
       //加载默认客户信息
-      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,{name:NaN})
+      this.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,{
+          params:{name:null},
+        })
         .then(response=>{
           this.tableData = response.data;
           this.tableData.forEach(element=>{
@@ -284,17 +289,22 @@ import { error } from 'util';
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {name:NaN};
+        var param = {name:null};
         if(!allFlag){
-          if(this.searchInput === ""){
+          /* if(this.searchInput === ""){
             this.$message.error("请输入客户名称");
             return;
-          }
-          param = {name: (this.searchInput==="")?NaN:this.searchInput};
+          } */
+          param = {name: (this.searchInput==="")?null:this.searchInput};
         }
-        console.log("搜索参数"+param);
-        this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,param)
+        console.log("搜索参数"+ allFlag);
+        console.log(param);
+        this.$axios
+          .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,{
+            params:param,
+          })
           .then(response=>{
+            console.log(response.data);
             this.tableData = response.data;
             this.selectionData = [];
             this.tableData.forEach(element=>{
@@ -378,36 +388,39 @@ import { error } from 'util';
           return;
         }else{
           this.multipleSelection.forEach(element => {
-            this.$axios.post(`${window.$config.HOST}/baseInfoManagement/deleteCustomer`,{id:element.id})
-            .then(response=>{
-              if(response.data<0){
+            this.$axios
+              .delete(`${window.$config.HOST}/baseInfoManagement/deleteCustomer`,{
+                params:{id:element.id}
+              })
+              .then(response=>{
+                if(response.data<0){
+                  this.$message.error(element.name+"删除失败");
+                  console.log(element.name+"删除失败");
+                }else{
+                  console.log(element.name+"删除成功");
+                  this.$message({
+                    type:"success",
+                    message:element.name+"删除成功"
+                  });
+                  var i = this.tableData.indexOf(element);
+                  this.tableData.splice(i,1);
+                }
+              })
+              .catch(error=>{
                 this.$message.error(element.name+"删除失败");
                 console.log(element.name+"删除失败");
-              }else{
-                console.log(element.name+"删除成功");
-                this.$message({
-                  type:"success",
-                  message:element.name+"删除成功"
-                });
-                var i = this.tableData.indexOf(element);
-                this.tableData.splice(i,1);
-              }
-            })
-            .catch(error=>{
-              this.$message.error(element.name+"删除失败");
-              console.log(element.name+"删除失败");
+              });
             });
-          });
         }
         
         // this.tableData = this.multipleSelection;
       },
       handleNewSaveClick(){
         var param = {
-          name : (this.addInfoName==="")?NaN:this.addInfoName,
-          abbr : (this.addInfoAbbr==="")?NaN:this.addInfoAbbr,
-          description : (this.addInfoDescription==="")?NaN:this.addInfoDescription,
-          groupId : (this.addInfoGroupId==="")?NaN:this.addInfoGroupId,
+          name : (this.addInfoName==="")?null:this.addInfoName,
+          abbr : (this.addInfoAbbr==="")?null:this.addInfoAbbr,
+          description : (this.addInfoDescription==="")?null:this.addInfoDescription,
+          groupName : (this.addInfoGroup==="")?null:this.addInfoGroup,
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
@@ -419,6 +432,7 @@ import { error } from 'util';
                 type:"success",
                 message:"添加成功"
               });
+              this.handleSearchClick(true);
             }
           })
           .catch(error=>{
@@ -426,14 +440,10 @@ import { error } from 'util';
             this.$message.error("添加失败!");
           });
 
-        this.handleSearchClick(true);
-
         this.addInfoName = "";
         this.addInfoAbbr = "";
         this.addInfoDescription = "";
-        this.addInfoGroupId = "";
-
-        this.handleSearchClick(true);
+        this.addInfoGroup = "";
 
         this.newCardShowFlag = false;
         this.viewname = "first";
@@ -451,13 +461,14 @@ import { error } from 'util';
         return;
       },
       handleEditSaveClick(){
-        var groupidTmp = (this.editInfoGroup === this.tmpeditInfoGroupName)?this.editIndoInitGroupId:this.editInfoGroup;
+        // var groupidTmp = (this.editInfoGroup === this.tmpeditInfoGroupName)?this.editIndoInitGroupId:this.editInfoGroup;
         var param = {
-          id : (this.editInfoId==="")?NaN:this.editInfoId,
-          name : (this.editInfoName==="")?NaN:this.editInfoName,
-          abbr : (this.editInfoAbbr==="")?NaN:this.editInfoAbbr,
-          description : (this.editInfoDescription==="")?NaN:this.editInfoDescription,
-          groupId : (groupidTmp==="")?NaN:groupidTmp,
+          id : (this.editInfoId==="")?null:this.editInfoId,
+          name : (this.editInfoName==="")?null:this.editInfoName,
+          abbr : (this.editInfoAbbr==="")?null:this.editInfoAbbr,
+          description : (this.editInfoDescription==="")?null:this.editInfoDescription,
+          // groupName : (groupidTmp==="")?null:groupidTmp,
+          groupName : (this.editInfoGroup==="")?null:this.editInfoGroup,
         };
         console.log(param);
         
@@ -470,6 +481,7 @@ import { error } from 'util';
                 message:'编辑成功!',
                 type:'success'
               });
+              this.handleSearchClick(true);
             }
           })
           .catch(error=>{
@@ -483,8 +495,6 @@ import { error } from 'util';
         this.editIndoInitGroupId = "";
         this.tmpeditInfoGroupName = "";
         this.editInfoDescription = "";
-
-        this.handleSearchClick(true);
 
         this.editCardShowFlag = false;
         this.viewname = "first";

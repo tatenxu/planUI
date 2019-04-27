@@ -247,7 +247,8 @@ export default {
   },
   created:function(){
     //加载所有的字典类别
-    this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getAllDictionaryCategory`)
+    this.$axios
+      .get(`${window.$config.HOST}/dictionaryManagement/getAllDictionaryCategory`)
       .then(response=>{
         this.dictionCategories = response.data;
       })
@@ -279,50 +280,54 @@ export default {
   },
   methods:{
     reSearchProperty(cateId){
-      this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,{categoryId:cateId})
-            .then(response=>{
-              this.selectedCateProps = response.data;
-            })
-            .catch(error=>{
-              this.$message.error("属性信息加载失败");
-              this.selectedCateProps = [
-                {
-                  id : "3245123",
-                  name : "属性1",
-                  code : "faksjdk",
-                  categoryId : "54145",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "1543",
-                  name : "属性2",
-                  code : "adsf",
-                  categoryId : "54145",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "3245123",
-                  name : "属性3",
-                  code : "xggffh",
-                  categoryId : "54145",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "3245123",
-                  name : "属性4",
-                  code : "ertdf ",
-                  categoryId : "54145",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "76867",
-                  name : "属性7",
-                  code : "dfgadf",
-                  categoryId : "54145",
-                  categoryName:"类别1"
-                },
-              ]
-            });
+      console.log(cateId);
+      this.$axios
+        .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,{
+          params:{categoryId:cateId}
+        })
+        .then(response=>{
+          this.selectedCateProps = response.data;
+        })
+        .catch(error=>{
+          this.$message.error("属性信息加载失败");
+          this.selectedCateProps = [
+            {
+              id : "3245123",
+              name : "属性1",
+              code : "faksjdk",
+              categoryId : "54145",
+              categoryName:"类别1"
+            },
+            {
+              id : "1543",
+              name : "属性2",
+              code : "adsf",
+              categoryId : "54145",
+              categoryName:"类别1"
+            },
+            {
+              id : "3245123",
+              name : "属性3",
+              code : "xggffh",
+              categoryId : "54145",
+              categoryName:"类别1"
+            },
+            {
+              id : "3245123",
+              name : "属性4",
+              code : "ertdf ",
+              categoryId : "54145",
+              categoryName:"类别1"
+            },
+            {
+              id : "76867",
+              name : "属性7",
+              code : "dfgadf",
+              categoryId : "54145",
+              categoryName:"类别1"
+            },
+          ]
+        });
     },
     reSearchCategory(){
       console.log("再搜索");
@@ -364,43 +369,7 @@ export default {
         this.multiCateSelection = val;
         this.selectedCateProps = [];
         if(val.length >= 1){
-          this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,{categoryId:val[0].id})
-            .then(response=>{
-              this.selectedCateProps = response.data;
-            })
-            .catch(error=>{
-              this.$message.error("属性信息加载失败");
-              this.selectedCateProps = [
-                {
-                  id : "3245123",
-                  name : "属性1",
-                  code : "faksjdk",
-                  categoryId : "54145",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "1543",
-                  name : "属性2",
-                  code : "adsf",
-                  categoryId : "2352",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "3245123",
-                  name : "属性3",
-                  code : "xggffh",
-                  categoryId : "56436",
-                  categoryName:"类别1"
-                },
-                {
-                  id : "3245123",
-                  name : "属性4",
-                  code : "ertdf ",
-                  categoryId : "7567",
-                  categoryName:"类别1"
-                },
-              ]
-            });
+          this.reSearchProperty(val[0].id);
         }
     },
     handlePropSelectionChange(val){
@@ -434,26 +403,28 @@ export default {
           });
         }
       this.multiCateSelection.forEach(element => {
-        console.log("删除"+element.category);
-        this.$axios.post(`${window.$config.HOST}/dictionaryManagement/deleteDictionaryCategory`,{id:element.id})
+        console.log("删除"+element.id);
+        this.$axios
+          .delete(`${window.$config.HOST}/dictionaryManagement/deleteDictionaryCategory`,{
+            params:{id:element.id}
+          })
           .then(response=>{
-            if(response.data<0){
-              this.$message.error(elemenet.category+"删除失败");
-              console.log(elemenet.category+"删除失败");
+            if(response.data < 0){
+              this.$message.error("删除失败");
+              console.log("删除失败");
             }else{
               this.$message({
-                message:elemenet.category+"删除成功!",
+                message:"删除成功!",
                 type:"success"
               });
-              console.log(elemenet.category+"删除成功");
+              console.log("删除成功");
               this.reSearchCategory();
             }
           })
           .catch(error=>{
-            this.$message.error(elemenet.category+"删除失败");
-            console.log(elemenet.category+"删除失败");
+            this.$message.error("删除失败");
+            console.log("删除失败");
           });
-        
       });
       
     },
@@ -475,7 +446,8 @@ export default {
       this.editPropId = this.multiplePropSelection[0].id
       this.editPropName = this.multiplePropSelection[0].name;
       this.editPropCode = this.multiplePropSelection[0].code;
-      this.editPropCate = this.multiplePropSelection[0].categoryName;
+      //Attention!!!!!!
+      this.editPropCate = this.multiCateSelection[0].category;
       this.initeditPropCateId = this.multiplePropSelection[0].categoryId;
       this.initeditPropCateName = this.editPropCate;
 
@@ -490,7 +462,10 @@ export default {
           });
         }
       this.multiplePropSelection.forEach(element => {
-        this.$axios.post(`${window.$config.HOST}/dictionaryManagement/deletecCategoryProperty`,{id:element.id})
+        this.$axios
+          .delete(`${window.$config.HOST}/dictionaryManagement/deleteCategoryProperty`,{
+            params:{id:element.id}
+          })
           .then(response=>{
             if(response.data<0){
               this.$message.error("删除失败");
@@ -510,8 +485,8 @@ export default {
     },
     handleAddCateSaveClick(){
       var param = {
-        category : (this.addCateName==='')?NaN:this.addCateName,
-		    code : (this.addCateCode==='')?NaN:this.addCateCode,
+        category : (this.addCateName==='')?null:this.addCateName,
+		    code : (this.addCateCode==='')?null:this.addCateCode,
       }
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addDictionaryCategory`,param)
         .then(response=>{
@@ -551,9 +526,9 @@ export default {
     },
     handleEditCateSaveClick(){
       var param = {
-        id : (this.editCateId==="")?NaN:this.editCateId,
-        category : (this.editCateName==="")?NaN:this.editCateName,
-        code : (this.editCateCode==="")?NaN:this.editCateCode,
+        id : (this.editCateId==="")?null:this.editCateId,
+        category : (this.editCateName==="")?null:this.editCateName,
+        code : (this.editCateCode==="")?null:this.editCateCode,
       };
     
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateDictionaryCategory`,param)
@@ -588,30 +563,29 @@ export default {
     },
     handleAddPropSaveClick(){
       var param = {
-        name : (this.addPropName==='')?NaN:this.addPropName,
-        code : (this.addPropCode==='')?NaN:this.addPropCode,
-        categoryId : (this.addPropCategoryId==='')?NaN:this.addPropCategoryId,
+        name : (this.addPropName==='')?null:this.addPropName,
+        code : (this.addPropCode==='')?null:this.addPropCode,
+        categoryId : (this.addPropCategoryId==='')?null:this.addPropCategoryId,
       };
 
       console.log(param);
 
-      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addPropCategoryId`,param)
+      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addCategoryProperty`,param)
         .then(response=>{
-          if(response.data<0){
+          if(response.data < 0){
             this.$message.error("添加失败");
           }else{
+            console.log("添加成功");
             this.$message({
               message:"添加成功!",
               type:"success"
             });
-            this.reSearchProperty(this.addPropCategoryId);
+            this.reSearchProperty(param.categoryId);
           }
         })
         .catch(error=>{
           this.$message.error("添加失败");
         });
-
-      
 
       this.addPropName = "";
       this.addPropCode ="";
@@ -636,23 +610,24 @@ export default {
     handleEditPropSaveClick(){
       var tmp = (this.editPropCate===this.initeditPropCateName)?this.initeditPropCateId:this.editPropCate;
       var param={
-        id : (this.editPropId==="")? NaN:this.editPropId,
-        name : (this.editPropName==="")? NaN:this.editPropName,
-        code : (this.editPropCode==="")? NaN:this.editPropCode,
-        categoryId :  (tmp==="")? NaN:tmp,
+        id : (this.editPropId==="")? null:this.editPropId,
+        name : (this.editPropName==="")? null:this.editPropName,
+        code : (this.editPropCode==="")? null:this.editPropCode,
+        categoryId :  (tmp==="")? null:tmp,
       }
       console.log(param);
 
-      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateDictionaryCategory`,param)
+      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateCategoryProperty`,param)
         .then(response=>{
           if(response.data<0){
             this.$message.error("编辑失败");
           }else{
+            console.log("编辑成功");
             this.$message({
-              message:"保存成功!",
+              message:"编辑成功!",
               type:"success"
             });
-            this.reSearchProperty(this.initeditPropCateId);
+            this.reSearchProperty(param.categoryId);
           }
         })
         .catch(error=>{

@@ -215,17 +215,24 @@
       };
     },
     created:function(){
-      //加载默认信息
-      this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`,{name:NaN})
+      //加载客户选择信息
+      this.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
         .then(response=>{
+          this.selectionData = response.data;
+        })
+        .catch(error=>{
+          console.log("客户信息加载失败");
+        });
+
+      //加载默认信息
+      this.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrand`,{
+          params:{name:null},
+        })
+        .then(response=>{
+          console.log(response.data);
           this.tableData =response.data;
-          this.selectionData = [];
-          this.tableData.forEach(element=>{
-            this.selectionData.push({
-              id:element.customerId,
-              name:element.customerName
-            });
-          });
         })
         .catch(error=>{
           this.$message.error("信息加载失败");
@@ -259,12 +266,7 @@
               description: '日本品牌',
               customerName:'日本阿赛克斯公司'
             },];
-          this.tableData.forEach(element=>{
-            this.selectionData.push({
-              id:element.customerId,
-              name:element.customerName
-            });
-          });
+          
         });
     },
     methods: {
@@ -284,25 +286,22 @@
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {name:NaN};
+        var param = {name:null};
         if(!allFlag){
-          if(this.searchInput === ""){
+          /* if(this.searchInput === ""){
             this.$message.error("请输入品牌名称");
             return;
-          }
-          param = {name: (this.searchInput==="")?NaN:this.searchInput};
+          } */
+          param = {name: (this.searchInput==="")?null:this.searchInput};
         }
-        console.log("搜索参数"+param);
-        this.$axios.get(`${window.$config.HOST}/baseInfoManagement/getBrand`,param)
+        console.log("搜索参数");
+        console.log(param);
+        this.$axios
+          .get(`${window.$config.HOST}/baseInfoManagement/getBrand`,{
+            params:param,
+          })
           .then(response=>{
             this.tableData =response.data;
-            this.selectionData = [];
-            this.tableData.forEach(element=>{
-              this.selectionData.push({
-                id:element.customerId,
-                name:element.customerName
-              });
-            });
           })
           .catch(error=>{
             this.$message.error("搜索失败");
@@ -330,12 +329,6 @@
                 description: '日本品牌',
                 customerName:'日本阿赛克斯公司'
               },];
-            this.tableData.forEach(element=>{
-              this.selectionData.push({
-                id:element.customerId,
-                name:element.customerName
-              });
-            });
           });
       },
       handleNewInfoClick(){
@@ -377,34 +370,37 @@
           });
         }else{
           this.multipleSelection.forEach(element => {
-            this.$axios.post(`${window.$config.HOST}/baseInfoManagement/deleteBrand`,{id:element.id})
-            .then(response=>{
-              if(response.data<0){
+            this.$axios
+              .delete(`${window.$config.HOST}/baseInfoManagement/deleteBrand`,{
+                params:{id:element.id},
+              })
+              .then(response=>{
+                if(response.data<0){
+                  this.$message.error(element.name+"删除失败");
+                  console.log(element.name+"删除失败");
+                }else{
+                  console.log(element.name+"删除成功");
+                  this.$message({
+                    type:"success",
+                    message:element.name+"删除成功"
+                  });
+                  var i = this.tableData.indexOf(element);
+                  this.tableData.splice(i,1);
+                }
+              })
+              .catch(error=>{
                 this.$message.error(element.name+"删除失败");
                 console.log(element.name+"删除失败");
-              }else{
-                console.log(element.name+"删除成功");
-                this.$message({
-                  type:"success",
-                  message:element.name+"删除成功"
-                });
-                var i = this.tableData.indexOf(element);
-                this.tableData.splice(i,1);
-              }
-            })
-            .catch(error=>{
-              this.$message.error(element.name+"删除失败");
-              console.log(element.name+"删除失败");
-            });
+              });
           });
         }
       },
       handleNewSaveClick(){
         var param = {
-          name : (this.addInfoName==="")?NaN:this.addInfoName,
-          abbr : (this.addInfoAbbr==="")?NaN:this.addInfoAbbr,
-          description : (this.addInfoDescription==="")?NaN:this.addInfoDescription,
-          customerId : (this.addInfoGroupId==="")?NaN:this.addInfoCustomer,
+          name : (this.addInfoName==="")?null:this.addInfoName,
+          abbr : (this.addInfoAbbr==="")?null:this.addInfoAbbr,
+          description : (this.addInfoDescription==="")?null:this.addInfoDescription,
+          customerId : (this.addInfoGroupId==="")?null:this.addInfoCustomer,
         };
         console.log(param);
 
@@ -417,6 +413,7 @@
                 message:'添加成功!',
                 type:'success'
               });
+              this.handleSearchClick(true);
             }
           })
           .catch(error=>{
@@ -428,8 +425,6 @@
         this.addInfoAbbr = "";
         this.addInfoDescription = "";
         this.addInfoCustomer = "";
-
-        this.handleSearchClick(true);
 
         this.addCardShowFlag = false;
         this.viewname = "first";
@@ -448,11 +443,11 @@
       handleEditSaveClick(){
         var tmp = (this.editInfoCustomer===this.tmpeditInfoCustomer)?this.editInfoInitCustomerId:this.editInfoCustomer;
         var param = {
-          id : (this.editInfoId==="")?NaN:this.editInfoId,
-          name : (this.editInfoName==="")?NaN:this.editInfoName,
-          abbr : (this.editInfoAbbr==="")?NaN:this.editInfoAbbr,
-          description : (this.editInfoDescription==="")?NaN:this.editInfoDescription,
-          groupId : (tmp==="")?NaN:tmp,
+          id : (this.editInfoId==="")?null:this.editInfoId,
+          name : (this.editInfoName==="")?null:this.editInfoName,
+          abbr : (this.editInfoAbbr==="")?null:this.editInfoAbbr,
+          description : (this.editInfoDescription==="")?null:this.editInfoDescription,
+          customerId : (tmp==="")?null:tmp,
         }
         console.log(param);
 
@@ -465,6 +460,7 @@
                 message:'编辑成功!',
                 type:'success'
               });
+              this.handleSearchClick(true);
             }
           })
         .catch(error=>{
@@ -478,8 +474,6 @@
         this.editInfoCustomerName = "";
         this.tmpeditInfoCustomerName = "";
         this.editInfoDescription = "";
-
-        this.handleSearchClick(true);
 
         this.editCardShowFlag = false;
         this.viewname = "first";
