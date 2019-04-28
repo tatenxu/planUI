@@ -552,14 +552,11 @@ export default {
           params:param
         })
         .then(response => {
-          if(response.data.errcode < 0){
+          if(response.data < 0){
             console.log("对话框品牌名称加载错误");
           }else{
             response.data.forEach(element=>{
-              this.options.brandNameOptions.push({
-                id: element.id,
-                name: element.name
-              });
+              this.options.brandNameOptions = response.data;
             });
           }
         })
@@ -853,8 +850,32 @@ export default {
       this.ruleForm.tmpRange = row.rangeName,
       this.ruleForm.tmpStyleGroup = row.name,
 
+      //对话框品牌名称选择获取
+      this.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
+          params:{customerId:row.customerId}
+        })
+        .then(response => {
+            this.options.brandNameOptions = response.data;
+            // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+        })
+        .catch(error => {
+          console.log("对话框品牌名称加载错误");
+        });
+      //对话框获取系列
+      this.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRangeName`,{
+          params:{brandId:row.brandId}
+        })
+        .then(response => {
+          this.options.rangeNameOptions = response.data;
+          // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
+        })
+        .catch(error => {
+          console.log("对话框系列名称加载错误");
+        });
       this.options.rangeNameOptions = [];
-      this.options.brandNameOptions = [];
+      
 
       this.ruleForm.id = row.id,
       this.ruleForm.number= row.number,
