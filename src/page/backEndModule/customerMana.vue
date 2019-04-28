@@ -66,8 +66,8 @@
             <el-input v-model="addInfoAbbr" class="input" placeholder="请输入客户简称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">所属客户:</span>
-              <el-input v-model="addInfoGroup" class="input" placeholder="请输入所属客户"></el-input>
+            <span class="inputTag">所属业务组:</span>
+              <el-input v-model="addInfoGroup" class="input" placeholder="请输入所属业务组"></el-input>
               <!-- <el-select v-model="addInfoGroup" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in selectionData"
@@ -105,8 +105,8 @@
             <el-input v-model="editInfoAbbr" class="input" placeholder="请输入客户简称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">所属客户:</span>
-            <el-input v-model="editInfoGroup" class="input" placeholder="请输入所属客户"></el-input>
+            <span class="inputTag">所属业务组:</span>
+            <el-input v-model="editInfoGroup" class="input" placeholder="请输入所属业务组"></el-input>
             <!-- <el-select v-model="editInfoGroup" placeholder="请选择" class="inputSelector">
               <el-option
                 v-for="item in selectionData"
@@ -155,7 +155,7 @@
       max-width: 200px;
     }
     .inputTag{
-      font-size: 18px;
+      font-size: 14px;
       line-height: 40px;
       min-width: 90px;
     }
@@ -168,7 +168,7 @@
     min-width: 250px;
     max-width: 500px;
     .inputTag{
-      font-size: 18px;
+      font-size: 14px;
       line-height: 40px;
       min-width: 90px;
     }

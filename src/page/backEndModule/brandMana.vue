@@ -217,7 +217,7 @@
     created:function(){
       //加载客户选择信息
       this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+        .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`)
         .then(response=>{
           this.selectionData = response.data;
         })

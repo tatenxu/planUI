@@ -423,7 +423,7 @@ export default {
       })
       .catch(error => {
         console.log("系列名称加载错误");
-        this.searchOptions.options.rangeNameOptions = [
+        /* this.searchOptions.options.rangeNameOptions = [
           {
             id: 1,
             name: "Fall-2019(07/08/09)"
@@ -436,7 +436,7 @@ export default {
             id: 3,
             name: "Winter-2019(10/11/12)"
           },
-        ];
+        ]; */
         // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
       });
     
@@ -498,10 +498,13 @@ export default {
     dialogBrandSelectionChange(){
       // consol.log(val);
       console.log("对话框品牌名称选择触发");
-      console.log(this.ruleForm.brandName);
+      console.log(this.ruleForm.tmpBrand);
+      this.ruleForm.tmpRange = "";
       var param = {
-        brandId: (this.ruleForm.brandName==="")?"":this.ruleForm.brandName,
+        brandId: (this.ruleForm.brandName===this.ruleForm.tmpBrand)?this.ruleForm.brandId:this.ruleForm.tmpBrand,
       };
+      console.log(param);
+      this.options.rangeNameOptions = [];
       //对话框获取系列
       this.$axios
         .get(`${window.$config.HOST}/infoManagement/getRangeName`,{
@@ -513,20 +516,6 @@ export default {
         })
         .catch(error => {
           console.log("对话框系列名称加载错误");
-          this.options.rangeNameOptions = [
-            {
-              id: 1,
-              name: "Fall-2019(07/08/09)"
-            },
-            {
-              id: 2,
-              name: "Spring-2019(01/02/03)"
-            },
-            {
-              id: 3,
-              name: "Winter-2019(10/11/12)"
-            },
-          ];
           // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
         });
       
@@ -541,11 +530,13 @@ export default {
     //客户名称选择后触发品牌的get请求
     dialogCustomerNameSelectionChange(){
       // consol.log(val);
+      this.ruleForm.tmpBrand = "";
+      this.ruleForm.tmpRange = "";
       console.log("对话框客户名称选择触发");
-      console.log(this.ruleForm.tmpCustomer);
       var param = {
-        customerId: (this.ruleForm.tmpCustomer==="")?"":this.ruleForm.tmpCustomer,
+        customerId: (this.ruleForm.tmpCustomer===this.ruleForm.customerName)?this.ruleForm.customerId:this.ruleForm.tmpCustomer,
       };
+      console.log(param);
       //品牌名称选择获取
       this.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
