@@ -360,10 +360,20 @@ export default {
           console.log("response:" + response.data);
           var ok = response.data;
           if (ok >= 0) {
-            this.$message({
+            if(ok<RangeListAdd.length){
+              this.$message({
+              message: "还有"+(RangeListAdd.length-ok)+"条数据未导入",
+              type: "waring"
+            });
+            }
+            else{
+           this.$message({
               message: "成功添加",
               type: "success"
             });
+            }
+              
+ 
           } else {
             this.$message({
               message: "添加失败",

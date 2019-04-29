@@ -564,11 +564,12 @@ export default {
       .then(response => {
         var SearchList = response.data;
         this.data.tableData = SearchList;
-        //         this.data.tableData.forEach(element=>{
-        //   var d = new Date(element.createTime);
-        //   let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
-        //   element.createTime=time;
-        // });
+                this.data.tableData.forEach(element=>{
+          var d = new Date(element.createTime);
+                let time =  d.toLocaleString();
+         // let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+          element.createTime=time;
+        });
       })
       .catch(error => {
         this.$message({
@@ -702,11 +703,12 @@ export default {
             (this.dateRange = "");
           var SearchList = response.data;
             this.data.tableData = SearchList;
-          //           this.data.tableData.forEach(element=>{
-          //   var d = new Date(element.createTime);
-          //   let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
-          //   element.createTime=time;
-          // });
+                    this.data.tableData.forEach(element=>{
+            var d = new Date(element.createTime);
+            let time =  d.toLocaleString();
+            // let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+            element.createTime=time;
+          });
         })
         .catch(error => {
           this.$message({
@@ -1041,7 +1043,7 @@ export default {
               if (ok < 0) {
                 this.$message({
                   type: "error",
-                  message: "失败"
+                  message: "修改失败"
                 });
               } else {
                 this.handleSearch();

@@ -309,7 +309,6 @@
 </template>
 
 <script>
-import { log } from 'util';
 export default {
   data() {
     return {
@@ -540,8 +539,7 @@ export default {
         this.tableData = SearchList;
         this.tableData.forEach(element=>{
           var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          // let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+          let time =  d.toLocaleString();
           element.createTime=time;
         });
       })
@@ -653,8 +651,7 @@ export default {
           (this.tableData = response.data);
           this.tableData.forEach(element=>{
             var d = new Date(element.createTime);
-            let time = d.toLocaleString();
-            // let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+            let time =  d.toLocaleString();
             element.createTime=time;
           });
         })
@@ -830,7 +827,7 @@ export default {
               var ok = response.data;
               if (ok < 0) {
                 this.$message({
-                  message: "删除1失败",
+                  message: "删除失败",
                   type: "error"
                 });
               } else {
@@ -880,7 +877,7 @@ export default {
               var ok = response.data;
               if (ok < 0) {
                 this.$message({
-                  message: "添加1失败",
+                  message: "添加失败",
                   type: "warning"
                 });
               } else {

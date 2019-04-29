@@ -377,13 +377,23 @@ export default {
       });
           var ok = response.data;
           if (ok >= 0) {
-            this.$message({
+            if(ok===RangeListAdd.length)
+            {
+this.$message({
               message: "成功添加",
               type: "success"
             });
+            }
+            else {
+              this.$message({
+              message: (RangeListAdd.length-ok)+"条数据未导入",
+              type: "success"
+            });
+            }
+            
           } else {
             this.$message({
-              message: "添加失败",
+              message: "导入失败",
               type: "warning"
             });
           }

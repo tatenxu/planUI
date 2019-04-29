@@ -951,7 +951,7 @@ export default {
         this.$axios
           .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,param)
           .then(response=>{
-            if(response.data >= 0){
+            if(response.data < 0){
               this.$message({
                 message: '成功新增款式组信息',
                 type: 'success'
@@ -985,7 +985,7 @@ export default {
           .post(`${window.$config.HOST}/infoManagement/updateStyleGroup`,param)
           .then(response=>{
             var resData = response.data;
-            if(resData >= 0){
+            if(resData < 0){
               this.$message({
                 message: '成功修改款式组信息',
                 type: 'success'

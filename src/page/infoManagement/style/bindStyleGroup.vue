@@ -121,18 +121,28 @@ export default {
         .post(`${window.$config.HOST}/infoManagement/bindStyleGroup`, list)
         .then(response => {
           var ok = response.data;
-          if (ok >= 0) {
-            console.log(ok)
+          if (ok >=0) {
+            if(ok===this. styleIdList.length)
+            {
+                          console.log(ok)
             this.$message({
-              message: "成功绑定款式",
+              message: "绑定成功!",
               type: "success"
             });
                   that.$router.push({
         path: `/style/styleManagement`
       });
+            }
+            else{
+               this.$message({
+              message: (this. styleIdList.length-ok)+"条数据未添加成功",
+              type: "warning"
+            });
+            }
+
           } else {
             this.$message({
-              message: "绑定款式失败",
+              message:"绑定失败",
               type: "warning"
             });
           }
