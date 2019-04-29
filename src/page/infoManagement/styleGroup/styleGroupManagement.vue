@@ -363,9 +363,14 @@ export default {
       .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`,param)
       .then(response => {
         this.data.tableData = response.data;
+        this.data.tableData.forEach(element=>{
+          var newDate = new Date(element.createTime);
+          element.createTime = newDate.toLocaleString();
+        });
       })
       .catch(error => {
-        var SearchList = [
+        console.log("款式组信息加载错误")
+        /* var SearchList = [
           {
             id: "475342343",
             number: "KSZ20190101001",
@@ -386,7 +391,7 @@ export default {
             havePlan:"1",
           },
         ];
-        this.data.tableData = SearchList;
+        this.data.tableData = Sear */chList;
       });
  
     //品牌名称选择获取
@@ -641,8 +646,11 @@ export default {
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`,param)
         .then(response=>{
-          // console.log(response.data);
           this.data.tableData = response.data;
+          this.data.tableData.forEach(element=>{
+            var newDate = new Date(element.createTime);
+            element.createTime = newDate.toLocaleString();
+          });
         })
         .catch(error=>{
           console.log("款式组列表加载错误");

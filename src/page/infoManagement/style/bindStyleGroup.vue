@@ -110,7 +110,7 @@ export default {
           styleGroupId: this.data.styleGroupName,
           styleGroupNumber: styleGroupNumber,
           styleGroupName: styleGroupNames,
-          StyleNumber: element.number
+          styleNumber: element.number
         });
         console.log(this.styleIdList)
       });
