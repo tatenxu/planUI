@@ -1,61 +1,7 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <!-- <el-row :gutter="20" style="margin-top:5px;">
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">客户名称</div>
-            <el-select v-model="data.customerName" >
-              <el-option
-                v-for="item in options.customerNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">品牌</div>
-            <el-select v-model="data.brandName" >
-              <el-option
-                v-for="item in options.brandNameOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">服装层次</div>
-            <el-select v-model="data.clothingType" >
-              <el-option
-                v-for="item in options.clothingTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>-->
       <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <!-- <el-col :span="8">
-          <div class="inputBox">
-            <div class="label">系列名称</div>
-            <el-select v-model="data.rangeName" >
-              <el-option
-                v-for="item in options.rangeNameTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>-->
         <el-col :span="8">
           <div class="inputBox">
             <div class="label">款式组名</div>
@@ -126,45 +72,64 @@ export default {
     //得到订单款号
     this.$axios
       //此处的接口为GET订单款号
-      .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`)
+      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
+        customerId: null,
+        brandId: null,
+        rangeId: null,
+        clothingLevelId: null,
+        id: null,
+        startDate: null,
+        endDate: null
+      })
       .then(response => {
-        this.options.styleGroupNameTypeOptions = response;
+        console.log(response.data);
+        this.options.styleGroupNameTypeOptions = response.data;
       })
       .catch(error => {
-        this.options.styleGroupNameTypeOptions = [
-          {
-            id: 1,
-            name: "款式组1"
-          },
-          {
-            id: 2,
-            name: "款式组2"
-          }
-        ];
+        console.log("拿款式组出错");
       });
   },
   methods: {
     // 保存按钮点击
     store() {
-        const that = this;
-      that.data.tableData.forEach(Element => {
-        this.styleIdList.push(Element.id);
+      
+      const that = this;
+      let styleGroupNames;
+      let styleGroupNumber;
+      this.options.styleGroupNameTypeOptions.forEach(element => {
+        if (element.id === this.data.styleGroupName) {
+          styleGroupNames = element.name;
+          styleGroupNumber = element.number;
+        }
       });
-    
 
+      
+      that.data.tableData.forEach(element => {
+        
+        this.styleIdList.push({
+          styleGroupId: this.data.styleGroupName,
+          styleGroupNumber: styleGroupNumber,
+          styleGroupName: styleGroupNames,
+          StyleNumber: element.number
+        });
+        console.log(this.styleIdList)
+      });
+      let list = this. styleIdList;
+      console.log(list);
       this.$axios
         //此处的接口为GET订单款号
-        .post(`${window.$config.HOST}/infoManagement/bindStyleGroup`, {
-          styleGroupId: this.data.styleGroupName,
-          styleIdList: this.styleIdList
-        })
+        .post(`${window.$config.HOST}/infoManagement/bindStyleGroup`, list)
         .then(response => {
-          var ok = response;
+          var ok = response.data;
           if (ok >= 0) {
+            console.log(ok)
             this.$message({
               message: "成功绑定款式",
               type: "success"
             });
+                  that.$router.push({
+        path: `/style/styleManagement`
+      });
           } else {
             this.$message({
               message: "绑定款式失败",
@@ -179,9 +144,7 @@ export default {
           });
         });
 
-      that.$router.push({
-        path: `/style/styleManagement`
-      });
+
     },
     // 取消按钮点击
     cancel() {

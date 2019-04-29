@@ -10,37 +10,37 @@
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName">
+            <el-form-item label="客户名称"  placeholder="请选择客户名称">
+              <el-select v-model="ruleForm.customerName" @change="clientSelect2">
                 <el-option
                   v-for="item in options.customerNameOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
+            <el-form-item label="品牌名称" placeholder="请选择品牌名称">
               <el-select v-model="ruleForm.brandName">
                 <el-option
                   v-for="item in options.brandNameOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
+            <el-form-item label="服装层次"  placeholder="请选择服装层次">
               <el-select v-model="ruleForm.clothingType">
                 <el-option
                   v-for="item in options.clothingTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -116,63 +116,95 @@ export default {
         brandName: "",
         clothingType: "",
         filePath: "",
-        tableData: [
-          {
-            rangeName: "Winter-2018(10/11/12)",
-            rangeAmount: "20",
-            rangeNote: "备注1"
-          },
-          {
-            rangeName: "Winter-2019(10/11/12)",
-            rangeAmount: "30",
-            rangeNote: "备注2"
-          }
-        ]
+        tableData: [ ]
       },
       options: {
-        customerNameOptions: [
-          {
-            value: 1,
-            label: "A客户"
-          },
-          {
-            value: 2,
-            label: "B客户"
-          }
-        ],
-        brandNameOptions: [
-          {
-            value: 1,
-            label: "X品牌"
-          },
-          {
-            value: 2,
-            label: "Y品牌"
-          }
-        ],
-        clothingTypeOptions: [
-          {
-            value: 1,
-            label: "时装"
-          },
-          {
-            value: 2,
-            label: "精品"
-          },
-          {
-            value: 3,
-            label: "品牌"
-          }
-        ]
+        customerNameOptions: [ ],
+        brandNameOptions: [ ],
+        clothingTypeOptions: [ ]
       },
       fileList: []
     };
   },
   created: function() {
-    const that = this;
-    console.log("进入导入系列页面");
+    var that = this;
+  
+
+    //获得顾客名称
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+      .then(response => {
+        console.log("获得顾客信息成功了");
+        var CustomerList = response.data;
+        this.options.customerNameOptions = CustomerList;
+
+      })
+      .catch(error => {
+        this.$message({
+          message: "获取顾客信息失败",
+          type: "error"
+        });
+        // console.log("获得顾客信息失败了");
+        // var CustomerList = [
+        //   {
+        //     id: 1,
+        //     name: "顾客A"
+        //   },
+        //   {
+        //     id: 2,
+        //     name: "顾客B"
+        //   },
+        //   {
+        //     id: 3,
+        //     name: "顾客C"
+        //   }
+        // ];
+        // this.searchOptions.options.customerNameOptions = CustomerList;
+        // this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
+      });
+
+    //获得服装层次
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
+      .then(response => {
+        console.log("获得服装层次信息成功了");
+        var ClothingList = response.data;
+        this.options.clothingTypeOptions = ClothingList;
+
+      })
+      .catch(error => {
+        this.$message({
+          message: "获取服装层次失败",
+          type: "error"
+        });
+      });
+
+   
   },
   methods: {
+     clientSelect2() {
+      this.ruleForm.brandName="";
+      let list={
+            customerId: this.ruleForm.customerName
+          };
+          console.log(list);
+      this.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+          params: list
+        })
+        .then(response => {
+          console.log(response.data);
+          this.options.brandNameOptions = response.data;
+        })
+        .catch(error => {
+          this.$message({
+            message: "获取品牌信息失败",
+            type: "error"
+          });
+        });
+    },
+
+
     ////////////// methods for xls /////////////
     readExcel(file) {
       // 解析Excel
@@ -332,13 +364,18 @@ export default {
           note: element.rangeNote
         });
       });
+
+
       this.$axios
         //此处的接口为批量导入
-        .post(`${window.$config.HOST}/infoManagement/addRangeList`, {
+        .post(`${window.$config.HOST}/infoManagement/addRangeList`, 
           RangeListAdd
-        })
+        )
         .then(response => {
-          var ok = response;
+        this.$router.push({
+        path: `/range/rangeManagement`
+      });
+          var ok = response.data;
           if (ok >= 0) {
             this.$message({
               message: "成功添加",
@@ -358,9 +395,7 @@ export default {
           });
         });
 
-      this.$router.push({
-        path: `/range/rangeManagement`
-      });
+
     },
     // 取消按钮点击
     cancel() {
