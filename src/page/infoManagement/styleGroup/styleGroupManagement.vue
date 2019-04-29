@@ -781,7 +781,7 @@ export default {
         });
       }
       else if(that.multipleSelection.length >= 1){
-        console.log("有" + that.multipleSelection.length + "条数据被选中");
+        // console.log("有" + that.multipleSelection.length + "条数据被选中");
         this.$confirm("解绑所选的" + that.multipleSelection.length + "条款式组, 是否继续?", "提示", {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -791,8 +791,8 @@ export default {
           this.multipleSelection.forEach(element=>{
             console.log("开始解绑");
             this.$axios
-              .post(`${window.$config.HOST}/infoManagement/unbindStyleGroup`,{
-                id:element.id,
+              .get(`${window.$config.HOST}/infoManagement/unbindStyleGroup`,{
+                params:{id:element.id}
               })
               .then(response=>{
                 if(response.data < 0){
