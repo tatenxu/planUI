@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title" >客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName" @change="customerNameSelectionChange()" clearable>
+            <el-select v-model="searchOptions.searchParams.customerValue" @change="customerNameSelectionChange()" clearable>
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -18,7 +18,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelectionChange()" clearable>
+            <el-select v-model="searchOptions.searchParams.brandValue" @change="brandSelectionChange()" clearable>
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -32,7 +32,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-              <el-select v-model="searchOptions.searchParams.rangeName" @change="rangeSelectionChange()" clearable>
+              <el-select v-model="searchOptions.searchParams.rangeValue" @change="rangeSelectionChange()" clearable>
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
                 :key="item.id"
@@ -46,7 +46,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">款式组名</div>
-            <el-select v-model="searchOptions.searchParams.name" clearable>
+            <el-select v-model="searchOptions.searchParams.idValue" clearable>
               <el-option
                 v-for="item in searchOptions.options.styleGroupNameOptions"
                 :key="item.id"
@@ -62,7 +62,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevelName" clearable>
+            <el-select v-model="searchOptions.searchParams.clothingLevelValue" clearable>
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.id"
@@ -392,7 +392,7 @@ export default {
             havePlan:"1",
           },
         ];
-        this.data.tableData = Sear */chList;
+        this.data.tableData = SearchList;*/
       });
  
     //品牌名称选择获取
@@ -485,18 +485,18 @@ export default {
     //系列选择触发款式组名get
     rangeSelectionChange(){
       console.log("系列名称选择触发");
-      console.log(this.searchOptions.searchParams.rangeName);
+      console.log(this.searchOptions.searchParams.rangeValue);
       // var param = {
-      //   brandId: this.searchOptions.searchParams.rangeName,
+      //   brandId: this.searchOptions.searchParams.rangeValue,
       // };
       
     },
     //品牌选择触发系列名称get
     brandSelectionChange(){
       console.log("品牌名称选择触发");
-      console.log(this.searchOptions.searchParams.brandName);
+      console.log(this.searchOptions.searchParams.brandValue);
       // var param = {
-      //   brandId: this.searchOptions.searchParams.brandName,
+      //   brandId: this.searchOptions.searchParams.brandValue,
       // };
       
     },
@@ -530,7 +530,7 @@ export default {
     customerNameSelectionChange(){
       // consol.log(val);
       console.log("客户名称选择触发");
-      console.log(this.searchOptions.searchParams.customerName);
+      console.log(this.searchOptions.searchParams.customerValue);
       
     },
     //客户名称选择后触发品牌的get请求
@@ -632,14 +632,13 @@ export default {
     },
     // 搜索按钮点击
     handleSearch(){
-      const that = this;
-      console.log('搜索'+this.searchOptions.searchParams.customerName); 
+      console.log('搜索'+this.searchOptions.searchParams.customerValue); 
       var param = {
-        customerId:(this.searchOptions.searchParams.customerName==="")?"":this.searchOptions.searchParams.customerName,
-        brandId:(this.searchOptions.searchParams.brandName==="")?"":this.searchOptions.searchParams.brandName,
-        rangeId:(this.searchOptions.searchParams.rangeName==="")?"":this.searchOptions.searchParams.rangeName,
-        clothingLevelId:(this.searchOptions.searchParams.clothingLevelName==="")?"":this.searchOptions.searchParams.clothingLevelName,
-        id:(this.searchOptions.searchParams.name === "")?"":this.searchOptions.searchParams.name,
+        customerId:(this.searchOptions.searchParams.customerValue==="")?"":this.searchOptions.searchParams.customerValue,
+        brandId:(this.searchOptions.searchParams.brandValue==="")?"":this.searchOptions.searchParams.brandValue,
+        rangeId:(this.searchOptions.searchParams.rangeValue==="")?"":this.searchOptions.searchParams.rangeValue,
+        clothingLevelId:(this.searchOptions.searchParams.clothingLevelValue==="")?"":this.searchOptions.searchParams.clothingLevelValue,
+        id:(this.searchOptions.searchParams.idValue === "")?"":this.searchOptions.searchParams.idValue,
         startDate:this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1])
       }
