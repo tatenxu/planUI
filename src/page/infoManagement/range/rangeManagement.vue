@@ -6,7 +6,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <!-- <el-select v-model="searchOptions.searchParams.customerName" @change="clientSelect"> -->
-            <el-select v-model="CustomerValue">
+            <el-select v-model="CustomerValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -20,7 +20,7 @@
           <div class="bar">
             <div class="title">品牌</div>
             <!-- <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelect"> -->
-            <el-select v-model="BrandValue">
+            <el-select v-model="BrandValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -36,7 +36,7 @@
             <div class="title">系列名称</div>
             <!-- <el-input v-model="searchOptions.searchParams.rangeName" placeholder="请输入系列名称"></el-input> -->
             <!-- <el-select v-model="searchOptions.searchParams.rangeName"> -->
-            <el-select v-model="RangeValue">
+            <el-select v-model="RangeValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.rangeNameOption"
                 :key="item.id"
@@ -51,7 +51,7 @@
           <div class="bar">
             <div class="title">服装层次</div>
             <!-- <el-select v-model="searchOptions.searchParams.clothingType"> -->
-            <el-select v-model="ClothingLevelValue">
+            <el-select v-model="ClothingLevelValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.id"
@@ -69,10 +69,11 @@
             <el-date-picker
               class="inputBar"
               v-model="dateRange"
-              type="daterange"
+              type="daterange" 
               range-separator="至"
               start-placeholde="开始日期"
               end-placeholde="结束日期"
+              :clearable="true"
             ></el-date-picker>
           </div>
         </el-col>
@@ -539,7 +540,8 @@ export default {
         this.tableData = SearchList;
         this.tableData.forEach(element=>{
           var d = new Date(element.createTime);
-          let time =  d.toLocaleString();
+                let time =  d.toLocaleString();
+       //   let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
           element.createTime=time;
         });
       })
@@ -643,16 +645,17 @@ export default {
           endDate: this.changeDate(this.dateRange[1])
         })
         .then(response => {
-          (this.CustomerValue = ""),
-          (this.BrandValue = ""),
-          (this.RangeValue = ""),
-          (this.ClothingLevelValue = ""),
-          (this.dateRange = ""),
-          (this.tableData = response.data);
-          this.tableData.forEach(element=>{
-            var d = new Date(element.createTime);
-            let time =  d.toLocaleString();
-            element.createTime=time;
+            // (this.CustomerValue = ""),
+            // (this.BrandValue = ""),
+            // (this.RangeValue = ""),
+            // (this.ClothingLevelValue = ""),
+            // (this.dateRange = ""),
+            (this.tableData = response.data);
+                  this.tableData.forEach(element=>{
+          var d = new Date(element.createTime);
+                let time =  d.toLocaleString();
+       //   let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
+          element.createTime=time;
           });
         })
         .catch(error => {

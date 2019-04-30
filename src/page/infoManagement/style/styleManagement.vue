@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName">
+            <el-select v-model="searchOptions.searchParams.customerName" :clearable="true">
               <!-- @change="customerNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
@@ -19,7 +19,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName">
+            <el-select v-model="searchOptions.searchParams.brandName" :clearable="true">
               <!-- @change="brandNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
@@ -34,7 +34,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-select v-model="searchOptions.searchParams.rangeName">
+            <el-select v-model="searchOptions.searchParams.rangeName" :clearable="true"> 
               <!-- @change="rangeNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
@@ -49,7 +49,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">订单款号</div>
-            <el-select v-model="searchOptions.searchParams.number">
+            <el-select v-model="searchOptions.searchParams.number" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.styleNumberNameOptions"
                 :key="item.id"
@@ -84,6 +84,7 @@
               range-separator="至"
               start-placeholde="开始日期"
               end-placeholde="结束日期"
+              :clearable="true"
             ></el-date-picker>
           </div>
         </el-col>
@@ -696,12 +697,12 @@ export default {
         .then(response => {
           console.log(response.data);
 
-          (this.searchOptions.searchParams.customerName = ""),
-            (this.searchOptions.searchParams.brandName = ""),
-            (this.searchOptions.searchParams.rangeName = ""),
-            (this.searchOptions.searchParams.number = ""),
-            (this.dateRange = "");
-          var SearchList = response.data;
+          // (this.searchOptions.searchParams.customerName = ""),
+          //   (this.searchOptions.searchParams.brandName = ""),
+          //   (this.searchOptions.searchParams.rangeName = ""),
+          //   (this.searchOptions.searchParams.number = ""),
+          //   (this.dateRange = "");
+          var SearchList = response.data; 
             this.data.tableData = SearchList;
                     this.data.tableData.forEach(element=>{
             var d = new Date(element.createTime);

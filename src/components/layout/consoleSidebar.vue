@@ -155,9 +155,9 @@
           <el-menu-item index="/backEndModule/roleManagement"><i class="el-icon-document"></i>角色管理</el-menu-item>
         </el-submenu> -->
 
-        <!-- <el-menu-item index="/quick"><i class="el-icon-message"></i>权限管理</el-menu-item>
+        <el-menu-item index="/backEndModule/privilegeManagement"><i class="el-icon-message"></i>权限管理</el-menu-item>
 
-        <el-submenu index="/quick">
+        <!-- <el-submenu index="/quick">
           <template slot="title">
             <i class="el-icon-message"></i>
             系统配置
