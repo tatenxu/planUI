@@ -18,7 +18,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelectionChange()" >
+            <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelectionChange()" clearable>
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -32,7 +32,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-              <el-select v-model="searchOptions.searchParams.rangeName" @change="rangeSelectionChange()">
+              <el-select v-model="searchOptions.searchParams.rangeName" @change="rangeSelectionChange()" clearable>
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
                 :key="item.id"
@@ -46,7 +46,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">款式组名</div>
-            <el-select v-model="searchOptions.searchParams.name" >
+            <el-select v-model="searchOptions.searchParams.name" clearable>
               <el-option
                 v-for="item in searchOptions.options.styleGroupNameOptions"
                 :key="item.id"
@@ -62,7 +62,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevelName" >
+            <el-select v-model="searchOptions.searchParams.clothingLevelName" clearable>
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.id"
@@ -81,7 +81,8 @@
               type="daterange"
               range-separator="至"
               start-placeholde="开始日期"
-              end-placeholde="结束日期">
+              end-placeholde="结束日期"
+              clearable>
             </el-date-picker>
           </div>
         </el-col>
@@ -638,7 +639,7 @@ export default {
         brandId:(this.searchOptions.searchParams.brandName==="")?"":this.searchOptions.searchParams.brandName,
         rangeId:(this.searchOptions.searchParams.rangeName==="")?"":this.searchOptions.searchParams.rangeName,
         clothingLevelId:(this.searchOptions.searchParams.clothingLevelName==="")?"":this.searchOptions.searchParams.clothingLevelName,
-        id:(this.searchOptions.searchParams.name==="")?"":this.searchOptions.searchParams.name,
+        id:(this.searchOptions.searchParams.name === "")?"":this.searchOptions.searchParams.name,
         startDate:this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1])
       }
@@ -654,66 +655,6 @@ export default {
         })
         .catch(error=>{
           console.log("款式组列表加载错误");
-          /* var SearchList = [
-            {
-              id: "475342343",
-              number: "KSZ20190101001",
-              name: "款式1组",
-              rangeNumber:"XL20190101001" ,
-              rangeId: "48674231",
-              rangeName:"Fall-2019(07/08/09)" ,
-              customerName:"Qi-Collection" ,
-              customerId:"745341",
-              brandName: "Selkie",
-              brandId: "574531423",
-              clothingLevelName:"时装" ,
-              clothingLevelId:"575123",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              state:"已下发",
-              havePlan:"1",
-            },
-            {
-              id: "475342343",
-              number: "KSZ20190101001",
-              name: "款式2组",
-              rangeNumber:"XL20190101001" ,
-              rangeId: "48674231",
-              rangeName:"Fall-2019(07/08/09)" ,
-              customerName:"Qi-Collection" ,
-              customerId:"745341",
-              brandName: "Selkie",
-              brandId: "574531423",
-              clothingLevelName:"时装" ,
-              clothingLevelId:"575123",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              state:"已下发",
-              havePlan:"1",
-            },
-            {
-              id: "475342343",
-              number: "KSZ20190101001",
-              name: "款式3组",
-              rangeNumber:"XL20190101001" ,
-              rangeId: "48674231",
-              rangeName:"Fall-2019(07/08/09)" ,
-              customerName:"Qi-Collection" ,
-              customerId:"745341",
-              brandName: "Selkie",
-              brandId: "574531423",
-              clothingLevelName:"时装" ,
-              clothingLevelId:"575123",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              state:"已下发",
-              havePlan:"1",
-            },
-          ]; */
-          /* this.data.tableData = SearchList; */
         });
     },
     // 添加款式组
@@ -951,7 +892,7 @@ export default {
         this.$axios
           .post(`${window.$config.HOST}/infoManagement/addStyleGroup`,param)
           .then(response=>{
-            if(response.data < 0){
+            if(response.data >= 0){
               this.$message({
                 message: '成功新增款式组信息',
                 type: 'success'

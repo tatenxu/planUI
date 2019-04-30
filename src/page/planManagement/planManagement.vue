@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName">
+            <el-select v-model="searchOptions.searchParams.customerName" clearable>
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -18,7 +18,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName">
+            <el-select v-model="searchOptions.searchParams.brandName" clearable>
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -31,11 +31,11 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevel" >
+            <el-select v-model="searchOptions.searchParams.clothingLevel" clearable>
               <el-option
                 v-for="item in searchOptions.options.clothingLevelOptions"
                 :key="item.id"
-                :label="item.clothingLevelName"
+                :label="item.name"
                 :value="item.id"
               ></el-option>
             </el-select>
@@ -44,7 +44,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-select v-model="searchOptions.searchParams.rangeName" >
+            <el-select v-model="searchOptions.searchParams.rangeName" clearable>
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
                 :key="item.id"
@@ -59,7 +59,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-select v-model="searchOptions.searchParams.name">
+            <el-select v-model="searchOptions.searchParams.name" clearable>
               <el-option
                 v-for="item in searchOptions.options.planNameOptions"
                 :key="item.id"
@@ -79,8 +79,17 @@
               range-separator="至"
               start-placeholde="开始日期"
               end-placeholde="结束日期"
+              clearable
             ></el-date-picker>
           </div>
+        </el-col>
+        <el-col :span="6">
+          <el-switch
+            v-model="isSelfMadePlan"
+            inactive-color="#13ce66"
+            active-text="制定的计划"
+            inactive-text="被下发计划">
+          </el-switch>
         </el-col>
         <el-col :span="2">
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
@@ -89,16 +98,16 @@
     </el-card>
     <el-card class="box-card">
       <el-row :gutter="20">
-        <el-col :span="3">
+        <el-col :span="3" v-if="isSelfMadePlan">
+          <el-button type="primary" size="small" @click="deletePlan" >删除计划</el-button>
+        </el-col>
+        <el-col :span="3" v-if="!isSelfMadePlan">
           <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
         </el-col>
-        <el-col :span="3">
-          <el-button type="primary" size="small" @click="deletePlan">删除计划</el-button>
-        </el-col>
-        <el-col :span="4">
+        <el-col :span="4" v-if="!isSelfMadePlan">
           <el-button type="primary" size="small" @click="changeOrder">下级计划顺序调整</el-button>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="3" v-if="!isSelfMadePlan">
           <el-button type="primary" size="small" @click="addException">添加异常</el-button>
         </el-col>
       </el-row>
@@ -144,11 +153,13 @@
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button
+              v-if="isSelfMadePlan"
               @click.native.prevent="ModifyPlanDetail(scope.row)"
               type="text"
               size="small"
             >修改</el-button>
             <el-button
+              v-if="isSelfMadePlan"
               @click.native.prevent="deleteOnePlan(scope.row.id)"
               type="text"
               size="small"
@@ -176,6 +187,7 @@ import { error } from 'util';
 export default {
   data() {
     return {
+      isSelfMadePlan:false,
       searchOptions: {
         searchParams: {
           customerName: "",
@@ -215,17 +227,7 @@ export default {
         this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer error!");
-        this.searchOptions.options.customerNameOptions = [
-          {
-            id: 42453,
-            name: "A客户"
-          },
-          {
-            id: 41526,
-            name: "B客户"
-          },
-        ];
+        console.log("初始化客户选项错误!");
       });
 
     //获取服装层次
@@ -235,93 +237,61 @@ export default {
         this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            clothingLevelName: "时装"
-          },
-          {
-            id: 2,
-            clothingLevelName: "精品"
-          },
-          {
-            id: 3,
-            clothingLevelName: "时尚"
-          }
-        ];
-        this.searchOptions.options.clothingLevelOptions = ClothingList;
+        console.log("服装层次加载错误");
       });
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
+        params:{customerId:null}
+      })
       .then(response => {
         this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
-        this.searchOptions.options.brandNameOptions = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          },
-        ];
+        console.log("初始化品牌名称选择错误");
       });
 
     //获取系列
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{
+        params:{brandId:""}
+      })
       .then(response => {
         this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
-        this.searchOptions.options.rangeNameOptions = [
-          {
-            id: 1,
-            name: "Fall-2019(07/08/09)"
-          },
-          {
-            id: 2,
-            name: "Spring-2019(01/02/03)"
-          },
-          {
-            id: 3,
-            name: "Winter-2019(10/11/12)"
-          },
-        ];
+        console.log("初始化系列名称加载错误");
       });
 
     //默认获取计划列表
     var param = {
-      customerId: NaN,
-      brandId: NaN,
-      rangeId: NaN,
-      id: NaN,
-      clothingLevelId: NaN, 
-      startDate: NaN,
-      endDate: NaN,
+      customerId: null,
+      brandId: null,
+      rangeId: null,
+      name:null,
+      clothingLevelId: null, 
+      startDate: null,
+      endDate: null,
     }
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+        params:param
+      })
       .then(response => {
         this.tableData = response.data;
       })
       .catch(error => {
-        console.log("计划列表获取错误");
+        console.log("初始化计划列表获取错误");
         this.tableData = [
           {
-            id: 454754,
+            id: 1,
             number: "00001",
-            name: "计划1",
+            name: "1",
             rangeNumber: "1",
-            customerName: "客户1",
-            brandName: "品牌1",
-            rangeName: "系列1",
+            customerName: "1",
+            brandName: "1",
+            rangeName: "1",
             createrName: "1",
             deptName: "1",
             createTime: "2019-4-9",
@@ -330,13 +300,13 @@ export default {
             haveException: true
           },
           {
-            id: 4165453,
+            id: 2,
             number: "00002",
-            name: "计划2",
+            name: "2",
             rangeNumber: "2",
-            customerName: "客户2",
-            brandName: "品牌2",
-            rangeName: "系列2",
+            customerName: "2",
+            brandName: "2",
+            rangeName: "2",
             createrName: "2",
             deptName: "2",
             createTime: "2019-4-9",
@@ -344,75 +314,17 @@ export default {
             havePlan: true,
             haveException: true
           },
-          {
-            id: 587453,
-            number: "00003",
-            name: "计划3",
-            rangeNumber: "3",
-            customerName: "客户3",
-            brandName: "品牌3",
-            rangeName: "系列3",
-            createrName: "3",
-            deptName: "3",
-            createTime: "2019-4-9",
-            parentId: "无",
-            havePlan: true,
-            haveException: true
-          },
-          {
-            id: 2345345,
-            number: "00004",
-            name: "计划4",
-            rangeNumber: "4",
-            customerName: "客户4",
-            brandName: "品牌4",
-            rangeName: "系列4",
-            createrName: "4",
-            deptName: "4",
-            createTime: "2019-4-9",
-            parentId: "无",
-            havePlan: true,
-            haveException: false
-          },
-          {
-            id: 5475,
-            number: "00005",
-            name: "计划A",
-            rangeNumber: "第一个系列",
-            customerName: "客户A",
-            brandName: "品牌A",
-            rangeName: "A系列",
-            createrName: "甲",
-            deptName: "部门A",
-            createTime: "2019-4-9",
-            parentId: "无",
-            havePlan: true,
-            haveException: false
-          }
         ];
       });
 
       //加载计划名称
-      this.$axios.get(`${window.$config.HOST}/infoManagement/getPlanName`,{rangeId:NaN})
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanName`)
         .then(response=>{
           this.searchOptions.options.planNameOptions = response.data;
         })
         .catch(error=>{
-          console.log("计划名称加载错误");
-          this.searchOptions.options.planNameOptions = [
-            {
-              id: 475,
-              name: "计划1",
-            },
-            {
-              id: 753,
-              name: "计划2",
-            },
-            {
-              id: 986,
-              name: "计划3",
-            }
-          ];
+          console.log("初始化计划名称加载错误");
         });
   },
   methods: {
@@ -497,7 +409,7 @@ export default {
             that.selectedData.forEach(element=>{
               var params = {
                 planId : element.id,
-                cause : (value==="")?NaN:value,
+                cause : (value==="")?null:value,
               };
               // console.log(params);
               that.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
@@ -581,34 +493,37 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return NaN;
+        return "";
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
         var d = date.getDate();
         d = d < 10 ? "0" + d : d;
-        var h = date.getHours();
-        var minute = date.getMinutes();
-        minute = minute < 10 ? "0" + minute : minute;
-        var second = date.getSeconds();
-        second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        // var h = date.getHours();
+        // var minute = date.getMinutes();
+        // minute = minute < 10 ? "0" + minute : minute;
+        // var second = date.getSeconds();
+        // second = minute < 10 ? "0" + second : second;
+        // return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        return y + "-" + m + "-" + d;
       }
     },
     //搜索按钮
     handleSearch(){
-      var params = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName, 
-        rangeId: (this.searchOptions.searchParams.rangeName==="")?NaN:this.searchOptions.searchParams.rangeName,  
-        id: (this.searchOptions.searchParams.name==="")?NaN:this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
+      var param = {
+        customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?null:this.searchOptions.searchParams.rangeName,  
+        id: (this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
+        clothingLevelId :(this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
 
-      this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,params)
+      this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,{
+        params:param
+      })
         .then(response=>{
           var resData = response.data;
           if(resData.errcode < 0){

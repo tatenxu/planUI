@@ -143,6 +143,7 @@
         <el-menu-item index="/backEndModule/dictionary/productMana"><i class="el-icon-document"></i>产品管理</el-menu-item>
         <el-menu-item index="/backEndModule/dictionary/customerMana"><i class="el-icon-document"></i>客户管理</el-menu-item>
         <el-menu-item index="/backEndModule/dictionary/brandMana"><i class="el-icon-document"></i>品牌管理</el-menu-item>
+        <el-menu-item index="/backEndModule/dictionary/clothingLevelMana"><i class="el-icon-document"></i>服装类型管理</el-menu-item>
         <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana"><i class="el-icon-document"></i>数据字典管理</el-menu-item>
         <!-- <el-submenu index="dictionary">
           <template slot="title">

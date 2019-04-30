@@ -47,6 +47,7 @@ const beRoleManagement = r => require.ensure([], () => r(require('../page/backEn
 const brandMana = r => require.ensure([], () => r(require('../page/backEndModule/brandMana.vue')), 'brandMana');
 const customerMana = r => require.ensure([], () => r(require('../page/backEndModule/customerMana.vue')), 'customerMana');
 const productMana = r => require.ensure([], () => r(require('../page/backEndModule/productMana.vue')), 'productMana');
+const clothingLevelMana = r => require.ensure([], () => r(require('../page/backEndModule/clothingLevelMana.vue')), 'clothingLevelMana');
 const dictionaryCateMana = r => require.ensure([], () => r(require('../page/backEndModule/dictionaryCateMana.vue')), 'dictionaryCateMana');
 
 // -------------------------------------------- 路由配置部分 --------------------------------------------
@@ -89,6 +90,14 @@ export default [{
         path: '/backEndModule/dictionary/productMana',
         name: 'productMana',
         component: productMana,
+        meta: {
+          bcrumd: ['后台管理模块', '数据字典', '产品信息管理'],
+        }
+      },
+      {
+        path: '/backEndModule/dictionary/clothingLevelMana',
+        name: 'clothingLevelMana',
+        component: clothingLevelMana,
         meta: {
           bcrumd: ['后台管理模块', '数据字典', '产品信息管理'],
         }
