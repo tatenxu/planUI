@@ -69,7 +69,7 @@
             <el-date-picker
               class="inputBar"
               v-model="dateRange"
-              type="daterange" 
+              type="daterange"
               range-separator="至"
               start-placeholde="开始日期"
               end-placeholde="结束日期"
@@ -114,8 +114,8 @@
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addingMode" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
+          <el-table-column prop="addingModeName" label="添加方式" align="center"></el-table-column>
+          <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
@@ -538,11 +538,19 @@ export default {
         console.log("获得搜索列表成功了");
         var SearchList = response.data;
         this.tableData = SearchList;
-        this.tableData.forEach(element=>{
+        this.tableData.forEach(element => {
+          if(element.addingMode===1) element.addingModeName="手动";
+          else element.addingModeName="导入";
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
           var d = new Date(element.createTime);
-                let time =  d.toLocaleString();
-       //   let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
-          element.createTime=time;
+          let time = d.toLocaleString();
+          element.createTime = time;
         });
       })
       .catch(error => {
@@ -645,17 +653,25 @@ export default {
           endDate: this.changeDate(this.dateRange[1])
         })
         .then(response => {
-            // (this.CustomerValue = ""),
-            // (this.BrandValue = ""),
-            // (this.RangeValue = ""),
-            // (this.ClothingLevelValue = ""),
-            // (this.dateRange = ""),
-            (this.tableData = response.data);
-                  this.tableData.forEach(element=>{
+          // (this.CustomerValue = ""),
+          // (this.BrandValue = ""),
+          // (this.RangeValue = ""),
+          // (this.ClothingLevelValue = ""),
+          // (this.dateRange = ""),
+          this.tableData = response.data;
+          this.tableData.forEach(element => {
+              if(element.addingMode===1) element.addingModeName="手动";
+          else element.addingModeName="导入";
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
           var d = new Date(element.createTime);
-                let time =  d.toLocaleString();
-       //   let time = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1) + '-' + (d.getDate()<10?"0"+d.getDate():d.getDate()) + ' ' + (d.getHours()<10?"0"+d.getHours():d.getHours()) + ':' + (d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes()) + ':' + (d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds());
-          element.createTime=time;
+          let time = d.toLocaleString();
+          element.createTime = time;
           });
         })
         .catch(error => {
@@ -945,10 +961,8 @@ export default {
 
     //修改系列信息
     submitForm1(formName) {
-      
       this.$refs[formName].validate(valid => {
         if (valid) {
-          
           //第一步，将NAME转换为ID
           if (this.ruleForm.firstCustomerName != this.ruleForm.customerName) {
             //变了，说明显示的是ID
@@ -989,26 +1003,26 @@ export default {
                 });
               } else {
                 (this.ruleForm.id = ""),
-        (this.ruleForm.number = ""),
-        (this.ruleForm.name = ""),
-        (this.ruleForm.customerId = ""),
-        (this.ruleForm.customerName = ""),
-        (this.ruleForm.brandId = ""),
-        (this.ruleForm.brandName = ""),
-        (this.ruleForm.clothingLevelId = ""),
-        (this.ruleForm.clothingLevelName = ""),
-        (this.ruleForm.createrName = ""),
-        (this.ruleForm.styleQuantity = ""),
-        (this.ruleForm.deptName = ""),
-        (this.ruleForm.createTime = ""),
-        (this.ruleForm.addingMode = ""),
-        (this.ruleForm.state = ""),
-        (this.ruleForm.note = ""),
-        (this.ruleForm.havePlan = ""),
-        (this.ruleForm.options.brandNameOptions = ""),
-        (this.ruleForm.options.rangeNameOption = ""),
-        (this.dialogFormVisible1 = false);
-      this.handleSearch();
+                  (this.ruleForm.number = ""),
+                  (this.ruleForm.name = ""),
+                  (this.ruleForm.customerId = ""),
+                  (this.ruleForm.customerName = ""),
+                  (this.ruleForm.brandId = ""),
+                  (this.ruleForm.brandName = ""),
+                  (this.ruleForm.clothingLevelId = ""),
+                  (this.ruleForm.clothingLevelName = ""),
+                  (this.ruleForm.createrName = ""),
+                  (this.ruleForm.styleQuantity = ""),
+                  (this.ruleForm.deptName = ""),
+                  (this.ruleForm.createTime = ""),
+                  (this.ruleForm.addingMode = ""),
+                  (this.ruleForm.state = ""),
+                  (this.ruleForm.note = ""),
+                  (this.ruleForm.havePlan = ""),
+                  (this.ruleForm.options.brandNameOptions = ""),
+                  (this.ruleForm.options.rangeNameOption = ""),
+                  (this.dialogFormVisible1 = false);
+                this.handleSearch();
                 this.$message({
                   message: "修改成功",
                   type: "success"
@@ -1023,14 +1037,12 @@ export default {
               });
             });
         } else {
-          
           this.$message({
             message: "修改失败!",
             type: "error"
           });
         }
       });
-      
     },
     // 取消按钮点击
     cancel() {

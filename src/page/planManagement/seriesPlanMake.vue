@@ -52,64 +52,21 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
               ></el-date-picker>
-              <!-- :picker-options="pickerOptions2" -->
-              <!-- <el-date-picker
-                v-model="Date1"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                type="datetime"
-                placeholder="选择日期"
-                clearable
-              ></el-date-picker>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">至</div>
-              <el-date-picker
-                v-model="Date2"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                type="datetime"
-                placeholder="选择日期"
-                clearable
-              ></el-date-picker>-->
             </div>
           </el-col>
           <el-col :span="8">
             <div class="bar">
               <div class="title">服装层次</div>
-              <el-select v-model="ClothesType" clearable placeholder="请选择">
+              <el-select v-model="clothingLevelId" clearable placeholder="请选择">
                 <el-option v-for="item in type" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
           </el-col>
-          <el-col :span="8" class="MinW" style="margin-left:30px">
+          <el-col :span="4" class="MinW" style="margin-left:30px">
             <el-radio v-model="checked" label="1">未制定</el-radio>
             <el-radio v-model="checked" label="2">已制定</el-radio>
-            <!-- <el-radio v-model="checked" label="3">未完成</el-radio>
-            <el-radio v-model="checked" label="4">已完成</el-radio>-->
           </el-col>
         </el-row>
-        <!-- <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">系列名称</div>
-              <el-select v-model="SeriesName" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in series"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">计划名称</div>
-              <el-input v-model="PlanName" clearable :rows="1" style="margin-left: 20px"></el-input>
-            </div>
-          </el-col>
-        </el-row>-->
         <el-row :gutter="20">
           <el-col :span="20">
             <el-col :span="3">
@@ -137,7 +94,7 @@
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="addingMode" label="预测计划" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
+          <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
           <el-table-column label="操作" align="center" width="200px">
             <template slot-scope="scope">
               <!-- <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button> -->
@@ -300,6 +257,7 @@
 export default {
   data() {
     return {
+      clothingLevelId:"",
       DataStartTime: "",
       DataEndTime: "",
       ViewDetails: false,
@@ -347,164 +305,106 @@ export default {
   created: function() {
     var that = this;
 
+    let customer={
+      customerId:""
+    }
     //获得品牌下拉框
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
-        customerId:NaN
-      })
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,
+          {
+            params:customer
+          }
+      )
       .then(response => {
-        this.brand = response;
+        this.brand = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "品牌1"
-          },
-          {
-            id: 2,
-            name: "品牌2"
-          },
-          {
-            id: 3,
-            name: "品牌3"
-          }
-        ];
-        this.brand = ClothingList;
+          this.$message({
+                  message: "获取品牌名称失败！",
+                  type: "warning"
+                });
+      });
+      
+
+       //获得服装层次下拉框
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
+      .then(response => {
+        this.type = response.data;
+      })
+      .catch(error => {
+          this.$message({
+                  message: "获取品牌名称失败！",
+                  type: "warning"
+                });
       });
 
     //获得系列下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`,
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`,
       {
-        brandId:NaN
+        params:{
+        brandId:""
+      }
       })
       .then(response => {
-        this.series = response;
+        this.series = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "系列A"
-          },
-          {
-            id: 2,
-            name: "系列B"
-          },
-          {
-            id: 3,
-            name: "系列C"
-          }
-        ];
-        this.series = ClothingList;
+         this.$message({
+                  message: "获取系列名称失败！",
+                  type: "warning"
+                });
       });
 
     //获得客户名称下拉框
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        this.client = response;
+        this.client = response.data;
       })
       .catch(error => {
-        var CustomerList = [
-          {
-            id: 1,
-            name: "顾客A"
-          },
-          {
-            id: 2,
-            name: "顾客B"
-          },
-          {
-            id: 3,
-            name: "顾客C"
-          }
-        ];
-        this.client = CustomerList;
-      });
-
-    //获得服装层次下拉框
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
-      .then(response => {
-        this.type = response;
-      })
-      .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "时装"
-          },
-          {
-            id: 2,
-            name: "精品"
-          },
-          {
-            id: 3,
-            name: "时尚"
-          }
-        ];
-        this.type = ClothingList;
+           this.$message({
+                  message: "获取客户名称失败！",
+                  type: "warning"
+                });
       });
 
     //获得空集搜索列表
-    that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeList`,
-      {
-        customerId:NaN, 
-        brandId:NaN, 
-        id:NaN, 
-        clothingLevelId:NaN, 
-        startDate:NaN, 
-        endDate:NaN
+  this.$axios
+      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+        customerId: null,
+        brandId: null,
+        id: null,
+        clothingLevelId: null,
+        startDate: null,
+        endDate: null
       })
       .then(response => {
-        var SearchList = response;
+        console.log("获得搜索列表成功了");
+        var SearchList = response.data;
         this.tableData = SearchList;
+        this.tableData.forEach(element=>{
+          var d = new Date(element.createTime);
+        if(element.addingMode===1) element.addingModeName="手动";
+          else element.addingModeName="导入";
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
+          var d = new Date(element.createTime);
+          let time = d.toLocaleString();
+          element.createTime = time;
+        });
       })
       .catch(error => {
-        var SearchList = [
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            styleQuantity: 15,
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: 1,
-            note: "系列备注1",
-            havePlan: 1
-          },
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            styleQuantity: 15,
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: 1,
-            note: "系列备注1",
-            havePlan: 1
-          }
-        ];
-        this.tableData = SearchList;
+        this.$message({
+          message: "获取搜索结果失败",
+          type: "error"
+        });
       });
   },
   methods: {
@@ -512,7 +412,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return NaN;
+        return null;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -524,7 +424,7 @@ export default {
         minute = minute < 10 ? "0" + minute : minute;
         var second = date.getSeconds();
         second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        return y + "-" + m + "-" + d;
       }
     },
 
@@ -533,63 +433,62 @@ export default {
       const that = this;
       this.DataStartTime = that.changeDate(this.Date1[0]);
       this.DataEndTime = that.changeDate(this.Date1[1]);
-      this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getRangeList`, {
-          params: {
-            id: this.SeriesName===""?NaN:this.SeriesName,
-            customerId: this.ClientName===""?NaN:this.ClientName,
-            brandId: this.BrandName===""?NaN:this.BrandName,
-            clothingLevelId: this.clothingLevelId===""?NaN:this.clothingLevelId,
+      let list={
+                    id: this.SeriesName===""?"":this.SeriesName,
+            customerId: this.ClientName===""?"":this.ClientName,
+            brandId: this.BrandName===""?"":this.BrandName,
+            clothingLevelId: this.clothingLevelId===""?"":this.clothingLevelId,
             startDate: this.DataStartTime,
             endDate: this.DataEndTime
-          }
+      }
+      console.log(list);
+      this.$axios
+        .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+            id: this.SeriesName===""?null:this.SeriesName,
+            customerId: this.ClientName===""?null:this.ClientName,
+            brandId: this.BrandName===""?null:this.BrandName,
+            clothingLevelId: this.clothingLevelId===""?null:this.clothingLevelId,
+            startDate: this.DataStartTime,
+            endDate: this.DataEndTime
         })
         .then(response => {
-          var SearchList = response;
-          this.tableData = SearchList;
+          console.log("checked=",this.checked);
+          var SearchList = response.data;
+          this.tableData = [];
+           SearchList.forEach(element=>{
+             console.log("这次havePlan的值为:"+element.havePlan)
+          var d = new Date(element.createTime);
+        if(element.addingMode===1) element.addingModeName="手动";
+          else element.addingModeName="导入";
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
+          var d = new Date(element.createTime);
+          let time = d.toLocaleString();
+          element.createTime = time;
+
+          if(this.checked!=0){
+            if(this.checked==1&&element.havePlan===false){
+              this.tableData.push(element);
+
+            }
+            else if(this.checked==2&&element.havePlan===true)
+            {
+              this.tableData.push(element);
+            }
+          }
+          else this.tableData.push(element);
+        });
         })
         .catch(error => {
-          var SearchList = [
-            {
-              id: 1,
-              number: "XL20190101001",
-              name: "Fall-2019(07/08/09)",
-              customerId: 1232131,
-              customerName: "Qi-Collection",
-              brandId: 42132131,
-              brandName: "Selkie",
-              clothingLevelId: 321321,
-              clothingLevelName: "时装",
-              createrName: "刘德华",
-              styleQuantity: 15,
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              addingMode: "手动",
-              state: 1,
-              note: "系列备注1",
-              havePlan: 1
-            },
-            {
-              id: 1,
-              number: "XL20190101001",
-              name: "Fall-2019(07/08/09)",
-              customerId: 1232131,
-              customerName: "Qi-Collection",
-              brandId: 42132131,
-              brandName: "Selkie",
-              clothingLevelId: 321321,
-              clothingLevelName: "时装",
-              createrName: "刘德华",
-              styleQuantity: 15,
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              addingMode: "手动",
-              state: 1,
-              note: "系列备注1",
-              havePlan: 1
-            }
-          ];
-          this.tableData = SearchList;
+                  this.$message({
+          message: "获取搜索结果失败",
+          type: "error"
+        });
         });
     },
 

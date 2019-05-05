@@ -8,9 +8,9 @@
             <el-select v-model="userName" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.userNameOptions"
-                :key="item.userId"
-                :label="item.userName"
-                :value="item.userId"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -108,9 +108,9 @@
               <el-select v-model="ruleForm.userName">
                 <el-option
                   v-for="item in ruleForm.options.userNameOptions"
-                  :key="item.userId"
-                  :label="item.userName"
-                  :value="item.userId"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -191,6 +191,7 @@ export default {
       },
 
       ruleForm: {
+        userName:"",
         brandName: "",
         brandId: "",
         customerName: "",
@@ -198,9 +199,24 @@ export default {
         name: "",
         id: "",
         options: {
-          customerNameOptions: [],
-          brandNameOptions: [],
-          userNameOptions: []
+          customerNameOptions: [
+            {
+              id: 0,
+              name: "*"
+            }
+          ],
+          brandNameOptions: [
+            {
+              id: 0,
+              name: "*"
+            }
+          ],
+          userNameOptions: [
+            {
+              id: 0,
+              name: "*"
+            }
+          ]
         }
       }
     };
@@ -214,8 +230,11 @@ export default {
         customerId: ""
       })
       .then(response => {
-        console.log("获得品牌信息成功了");
-        this.searchOptions.options.brandNameOptions = response.data;
+        // this.searchOptions.options.brandNameOptions = response.data;
+        response.data.forEach(element => {
+          this.searchOptions.options.brandNameOptions.push(element);
+          // this.ruleForm.options.brandNameOptions.push(element);
+        });
         // this.ruleForm.options.brandNameOptions = response;
       })
       .catch(error => {
@@ -229,11 +248,10 @@ export default {
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        console.log("获得顾客信息成功了");
-        var CustomerList = response.data;
-        this.searchOptions.options.customerNameOptions = CustomerList;
-        this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-        console.log(response.data);
+        response.data.forEach(element => {
+          this.searchOptions.options.customerNameOptions.push(element);
+          this.ruleForm.options.customerNameOptions.push(element);
+        });
       })
       .catch(error => {
         this.$message({
@@ -243,7 +261,7 @@ export default {
       });
     //获得空搜索
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandNamsss`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getUserList`)
       .then(response => {
         console.log("获得品牌信息成功了");
         this.tableData = response.data;
@@ -272,35 +290,42 @@ export default {
           }
         ];
       });
-    //获得空搜索集
+    //获得用户名称
     this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getUser`, {})
+      .post(`${window.$config.HOST}/infoManagement/getUserName`, {})
       .then(response => {
-        var SearchList = response.data;
-        this.searchOptions.options.userNameOptions = SearchList;
-        this.ruleForm.options.userNameOptions = SearchList;
+        // var SearchList = response.data;
+        // this.searchOptions.options.userNameOptions = SearchList;
+        // this.ruleForm.options.userNameOptions = SearchList;
+        response.data.forEach(element => {
+          this.searchOptions.options.userNameOptions.push(element);
+          this.ruleForm.options.userNameOptions.push(element);
+        });
       })
       .catch(error => {
-        this.searchOptions.options.userNameOptions = [
+        var listlist = [
           {
-            userId: 1,
-            userName: "李四"
+            id: 1,
+            name: "李四"
           },
           {
-            userId: 2,
-            userName: "王二"
+            id: 2,
+            name: "王二"
           },
           {
-            userId: 3,
-            userName: "张三"
+            id: 3,
+            name: "张三"
           }
         ];
-        this.ruleForm.options.userNameOptions = this.searchOptions.options.userNameOptions;
+        listlist.forEach(element => {
+          this.searchOptions.options.userNameOptions.push(element);
+          this.ruleForm.options.userNameOptions.push(element);
+        });
       });
   },
 
   methods: {
-	      // 表格中的删除
+    // 表格中的删除
     deleteRangeData(row, index) {
       const that = this;
       console.log("点击了本行的删除");
@@ -452,7 +477,11 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.$axios
-            .post(`${window.$config.HOST}/infoManagement/ssss`)
+            .post(`${window.$config.HOST}/infoManagement/addUser`,{
+              userId:this.ruleForm.userName,
+              brandId:this.ruleForm.brandName,
+              customerId:this.ruleForm.customerName
+            })
             .then(response => {
               var ok = response.data;
               if (ok < 0) {
@@ -462,7 +491,7 @@ export default {
                 });
               } else {
                 this.handleSearch();
-                (this.ruleForm.customerName = ""),
+                  (this.ruleForm.customerName = ""),
                   (this.ruleForm.brandName = ""),
                   (this.ruleForm.userName = ""),
                   (this.dialogFormVisible = false);

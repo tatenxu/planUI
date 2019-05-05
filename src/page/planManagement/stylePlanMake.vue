@@ -19,22 +19,18 @@
             </el-select>
           </div>
         </el-col>
-        <!-- <el-col :span="8">
+         <el-col :span="8">
           <div class="bar">
-            <div class="title">服装层次</div>
-            <el-select v-model="ClothesType" clearable placeholder="请选择">
-              <el-option
-                v-for="item in type"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
+            <div class="title">系列名称</div>
+            <el-select v-model="SeriesName" clearable placeholder="请选择">
+              <el-option v-for="item in series" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
+
       </el-row>
-        <el-row :gutter="20">-->
-        <el-col :span="8">
+      <el-row :gutter="20">
+                <el-col :span="8">
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
@@ -43,94 +39,37 @@
               type="daterange"
               align="right"
               unlink-panels
+              clearable
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
             ></el-date-picker>
-            <!-- <el-date-picker
-              v-model="Date1"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              type="datetime"
-              placeholder="选择日期"
-              clearable
-            ></el-date-picker>
           </div>
         </el-col>
+       
         <el-col :span="8">
-          <div class="bar">
-            <div class="title">至</div>
-            <el-date-picker
-              v-model="Date2"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              type="datetime"
-              placeholder="选择日期"
-              clearable
-            ></el-date-picker>-->
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">系列名称</div>
-            <el-select v-model="SeriesName" clearable placeholder="请选择">
-              <el-option v-for="item in series" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <!-- <el-col :span="8">
-          <div class="bar">
-            <div class="title">款式组名称</div>
-            <el-select v-model="SeriesGroupName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in seriesGroup"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col> -->
-         <el-col :span="8">
           <div class="bar">
             <div class="title">订单款号</div>
             <!-- <el-input v-model="OrderId" clearable :rows="1" style="margin-left: 20px"></el-input> -->
-            <el-select v-model="OrderId">
+            <el-select v-model="OrderId" clearable>
               <el-option
                 v-for="item in orderOption"
                 :key="item.id"
-                :label="item.name"
-                :value="item.id"
+                :label="item.number"
+                :value="item.number"
+                
               ></el-option>
             </el-select>
           </div>
-         </el-col>
+        </el-col>
         <el-col :span="5" class="MinW" style="margin-left:30px">
           <el-radio v-model="checked" label="1">未制定</el-radio>
           <el-radio v-model="checked" label="2">已制定</el-radio>
-           <el-button type="primary" @click="SearchIt()" style="margin-left:50px">搜索</el-button>
+          <el-button type="primary" @click="SearchIt()" style="margin-left:50px">搜索</el-button>
           <!-- <el-radio v-model="checked" label="3">未完成</el-radio>
           <el-radio v-model="checked" label="4">已完成</el-radio>-->
         </el-col>
       </el-row>
-      <!-- </el-row>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划名称</div>
-            <el-input v-model="PlanName" clearable :rows="1" style="margin-left: 20px"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">订单款号</div>
-            <el-input v-model="OrderId" clearable :rows="1" style="margin-left: 20px"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="3">
-          <el-button type="primary" @click="SearchIt()">搜索</el-button>
-        </el-col>
-      </el-row> -->
     </el-card>
 
     <!-- 搜索结果 -->
@@ -147,7 +86,7 @@
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center"></el-table-column>
+        <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
@@ -163,10 +102,7 @@ export default {
   data() {
     return {
       checked: "0",
-      // checked1: false,
-      // checked2: false,
-      // checked3: false,
-      // checked4: false,
+
       DataStartTime: "",
       DataEndTime: "",
       ClientName: "",
@@ -178,7 +114,7 @@ export default {
       SeriesGroupName: "",
       PlanName: "",
       OrderId: "",
-      orderOption:[],
+      orderOption: [],
       seriesGroup: [],
       client: [],
       brand: [],
@@ -212,156 +148,102 @@ export default {
 
   created: function() {
     var that = this;
-    //获得款式组名称
+    //获得订单款号名称
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getStyleGroupName`,
-      {
-        rangeId:NaN
+      .get(`${window.$config.HOST}/infoManagement/getStyleNumber`, {
+        params: {
+          rangeId: ""
+        }
       })
       .then(response => {
-        this.seriesGroup = response;
+        this.orderOption = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "款式组A"
-          },
-          {
-            id: 2,
-            name: "款式组B"
-          },
-          {
-            id: 3,
-            name: "款式组C"
-          }
-        ];
-        this.seriesGroup = ClothingList;
+          this.$message({
+          message: "获取订单款号失败",
+          type: "error"
+        });
       });
 
     //得到系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,
-      {
-        brandId:NaN
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
+        params: {
+          brandId: ""
+        }
       })
       .then(response => {
-        this.series = response;
+        this.series = response.data;
       })
       .catch(error => {
-        this.series = [
-          {
-            id: 1,
-            name: "A系列"
-          },
-          {
-            id: 2,
-            name: "B系列"
-          }
-        ];
+        this.$message({
+          message: "获取系列名称失败",
+          type: "error"
+        });
       });
     //得到品牌名称
     this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,
-      {
-        customerId:NaN
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+        params: {
+          customerId: ""
+        }
       })
       .then(response => {
-        this.brand = response;
+        this.brand = response.data;
       })
       .catch(error => {
-        this.brand = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          }
-        ];
+        this.$message({
+          message: "获取品牌名称失败",
+          type: "error"
+        });
       });
     //得到客户名称
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        var client = response;
+        this.client = response.data;
       })
       .catch(error => {
-        var CustomerList = [
-          {
-            id: 1,
-            name: "顾客A"
-          },
-          {
-            id: 2,
-            name: "顾客B"
-          },
-          {
-            id: 3,
-            name: "顾客C"
-          }
-        ];
-        this.client = CustomerList;
+        this.$message({
+          message: "获取客户名称失败",
+          type: "error"
+        });
       });
 
     //得到搜索信息
     this.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getStyleList`,
-      {
-        customerId:NaN, brandId:NaN, rangeId:NaN, number:NaN, clothingLevelId:NaN, startDate:NaN, endDate:NaN
+      .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
+        customerId: null,
+        brandId: null,
+        rangeId: null,
+        number: null,
+        clothingLevelId: null,
+        startDate: null,
+        endDate: null
       })
       .then(response => {
-        this.tableData = response;
+         this.tableData = response.data;
+           this.tableData.forEach(element=>{
+    
+          var d = new Date(element.createTime);
+
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
+          var d = new Date(element.createTime);
+          let time = d.toLocaleString();
+          element.createTime = time;
+           });
       })
       .catch(error => {
-        var SearchList = [
-          {
-            rangeId: 1,
-            rangeNumber: "XL20190101001",
-            rangeName: "Fall-2019(07/08/09)",
-            styleGroupId: 213213,
-            styleGroupNumber: "KSZ20190101001",
-            styleGroupName: "款式1组",
-            id: 321321321,
-            number: "1242142131",
-            customerId: 321321321,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: "已绑定",
-            havePlan: false
-          },
-          {
-            rangeId: 1,
-            rangeNumber: "XL20190101001",
-            rangeName: "Fall-2019(07/08/09)",
-            styleGroupId: 213213,
-            styleGroupNumber: "KSZ20190101001",
-            styleGroupName: "款式1组",
-            id: 321321321,
-            number: "1242142131",
-            customerId: 321321321,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: "已绑定",
-            havePlan: false
-          }
-        ];
-        this.tableData = SearchList;
+        this.$message({
+          message: "获取搜索结果失败",
+          type: "error"
+        });
       });
   },
   methods: {
@@ -369,7 +251,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return NaN;
+        return null;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -389,68 +271,55 @@ export default {
       this.DataStartTime = that.changeDate(this.Date1[0]);
       this.DataEndTime = that.changeDate(this.Date1[1]);
       this.$axios
-        .get(`${window.$config.HOST}/InfoManagement/getStyleList`, {
-          params: {
-            customerId: this.ClientName===""?NaN:this.ClientName,
-            brandId: this.BrandName===""?NaN:this.BrandName,
-            rangeId: this.SeriesName===""?NaN:this.SeriesName,
-            number: this.OrderId===""?NaN:this.OrderId,
-            clothingLevelId: NaN,
+        .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
+         
+            customerId: this.ClientName === "" ? null : this.ClientName,
+            brandId: this.BrandName === "" ? null : this.BrandName,
+            rangeId: this.SeriesName === "" ? null : this.SeriesName,
+            number: this.OrderId === "" ? null : this.OrderId,
+            clothingLevelId: null,
             startDate: this.DataStartTime,
             endDate: this.DataEndTime
-          }
+          
         })
         .then(response => {
-          this.tableData = response;
+                  console.log(response.data)
+        console.log("checked=",this.checked);
+          var SearchList = response.data;
+          this.tableData = [];
+           SearchList.forEach(element=>{
+             console.log("这次havePlan的值为:"+element.havePlan)
+          var d = new Date(element.createTime);
+  
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
+          var d = new Date(element.createTime);
+          let time = d.toLocaleString();
+          element.createTime = time;
+
+          if(this.checked!=0){
+            if(this.checked==1&&element.havePlan===false){
+              this.tableData.push(element);
+
+            }
+            else if(this.checked==2&&element.havePlan===true)
+            {
+              this.tableData.push(element);
+            }
+          }
+          else this.tableData.push(element);
+        });
         })
         .catch(error => {
-          var SearchList = [
-            {
-              rangeId: 1,
-              rangeNumber: "XL201sssss90101001",
-              rangeName: "Fall-2019(07/08/09)",
-              styleGroupId: 213213,
-              styleGroupNumber: "KSZ20190101001",
-              styleGroupName: "款式1组",
-              id: 321321321,
-              number: "1242142131",
-              customerId: 321321321,
-              customerName: "Qi-Collection",
-              brandId: 42132131,
-              brandName: "Selkie",
-              clothingLevelId: 321321,
-              clothingLevelName: "时装",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              addingMode: "手动",
-              state: "已绑定",
-              havePlan: false
-            },
-            {
-              rangeId: 1,
-              rangeNumber: "XL20190101001",
-              rangeName: "Fall-2019(07/08/09)",
-              styleGroupId: 213213,
-              styleGroupNumber: "KSZ20190101001",
-              styleGroupName: "款式1组",
-              id: 321321321,
-              number: "1242142131",
-              customerId: 321321321,
-              customerName: "Qi-Collection",
-              brandId: 42132131,
-              brandName: "Selkie",
-              clothingLevelId: 321321,
-              clothingLevelName: "时装",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              addingMode: "手动",
-              state: "已绑定",
-              havePlan: false
-            }
-          ];
-          this.tableData = SearchList;
+          this.$message({
+          message: "获取搜索结果失败",
+          type: "error"
+        });
         });
     },
     ToPlanForm(row) {
