@@ -161,78 +161,36 @@ export default {
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        console.log("getCustomer 成功");
         this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer 失败!");
-        this.searchOptions.options.customerNameOptions = [
-          {
-            id: 42453,
-            name: "A客户"
-          },
-          {
-            id: 41526,
-            name: "B客户"
-          },
-        ];
+        console.log("初始化加载客户名称失败!");
       });
 
     //加载品牌名称
     this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`)
       .then(response => {
         this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称加载错误");
-        this.searchOptions.options.brandNameOptions = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          },
-        ];
+        console.log("初始化品牌名称加载错误");
       });
 
     //加载系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`)
       .then(response => {
         this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
-        this.searchOptions.options.rangeNameOptions = [
-          {
-            id: 1,
-            name: "Fall-2019(07/08/09)"
-          },
-          {
-            id: 2,
-            name: "Spring-2019(01/02/03)"
-          },
-          {
-            id: 3,
-            name: "Winter-2019(10/11/12)"
-          },
-        ];
+        console.log("初始化系列名称加载错误");
       });
     //加载删除的计划
-    var param ={
-      customerId : NaN,
-      brandId : NaN,
-      rangeId: NaN,
-      id : NaN,
-      clothingLevelId : NaN,
-      startDate : NaN,
-      endDate : NaN,
-    };
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+        params:{stage:"delete"}
+      })
       .then(response => {
         response.data.forEach(element=>{
           if(element.state === '6'){
@@ -241,74 +199,75 @@ export default {
         });
       })
       .catch(error => {
-        var SearchList = [
-          {
-            id:"4234234",
-            number: "JH190401001",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "",
-            planObject: "",
-            type: "销样",
-            createrName: "XX",
-            createrName: "XX",
-            deleteTime: "2019-3-28"
-          },
-          {
-            id:"57657",
-            number: "JH1904010012",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "",
-            planObject: "",
-            type: "销样",
-            createrName: "XX",
-            createrName: "XX",
-            deleteTime: "2019-3-28"
-          },
-          {
-            id:"657567",
-            number: "JH1904010013",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "",
-            planObject: "",
-            type: "销样",
-            createrName: "XX",
-            createrName: "XX",
-            deleteTime: "2019-3-28"
-          },
-          {
-            id:"2345",
-            number: "JH1904010014",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "",
-            planObject: "",
-            type: "销样",
-            createrName: "XX",
-            createrName: "XX",
-            deleteTime: "2019-3-28"
-          },
-          {
-            id:"34626",
-            number: "JH1904010015",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "",
-            planObject: "",
-            type: "销样",
-            createrName: "XX",
-            createrName: "XX",
-            deleteTime: "2019-3-28"
-          }
-        ];
-        this.tableData = SearchList;
+        console.log("初始化删除计划加载错误");
+        // var SearchList = [
+        //   {
+        //     id:"4234234",
+        //     number: "JH190401001",
+        //     customerName: "AFL",
+        //     brandName: "CX",
+        //     name: "2001系列计划",
+        //     rangeName: "",
+        //     planObject: "",
+        //     type: "销样",
+        //     createrName: "XX",
+        //     createrName: "XX",
+        //     deleteTime: "2019-3-28"
+        //   },
+        //   {
+        //     id:"57657",
+        //     number: "JH1904010012",
+        //     customerName: "AFL",
+        //     brandName: "CX",
+        //     name: "2001系列计划",
+        //     rangeName: "",
+        //     planObject: "",
+        //     type: "销样",
+        //     createrName: "XX",
+        //     createrName: "XX",
+        //     deleteTime: "2019-3-28"
+        //   },
+        //   {
+        //     id:"657567",
+        //     number: "JH1904010013",
+        //     customerName: "AFL",
+        //     brandName: "CX",
+        //     name: "2001系列计划",
+        //     rangeName: "",
+        //     planObject: "",
+        //     type: "销样",
+        //     createrName: "XX",
+        //     createrName: "XX",
+        //     deleteTime: "2019-3-28"
+        //   },
+        //   {
+        //     id:"2345",
+        //     number: "JH1904010014",
+        //     customerName: "AFL",
+        //     brandName: "CX",
+        //     name: "2001系列计划",
+        //     rangeName: "",
+        //     planObject: "",
+        //     type: "销样",
+        //     createrName: "XX",
+        //     createrName: "XX",
+        //     deleteTime: "2019-3-28"
+        //   },
+        //   {
+        //     id:"34626",
+        //     number: "JH1904010015",
+        //     customerName: "AFL",
+        //     brandName: "CX",
+        //     name: "2001系列计划",
+        //     rangeName: "",
+        //     planObject: "",
+        //     type: "销样",
+        //     createrName: "XX",
+        //     createrName: "XX",
+        //     deleteTime: "2019-3-28"
+        //   }
+        // ];
+        // this.tableData = SearchList;
       });
   },
   methods: {
@@ -326,10 +285,12 @@ export default {
     // 恢复单个的按钮
     ReCover(row) {
       console.log("行恢复");
-      var params = {id: row.id};
+      var param = {id: row.id};
       console.log(row);
        this.$axios
-        .post(`${window.$config.HOST}/planManagement/restorePlan`,params)
+        .get(`${window.$config.HOST}/planManagement/restorePlan`,{
+          params:param
+        })
         .then(response=>{
           var resData = response.data;
           if(resData < 0 ){
@@ -357,9 +318,8 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return NaN;
+        return undefined;
       }else{
-        console.log(date);
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
@@ -375,20 +335,23 @@ export default {
     },
     //搜索按钮
     handleSearchClick(){
-      var params;
-      params = {
-        customerId : (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName,
-        brandId : (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName,
-        rangeId: (this.searchOptions.searchParams.rangeName==="")?NaN:this.searchOptions.searchParams.rangeName,
-        id : NaN,
-        clothingLevelId : NaN,
+      var param;
+      param = {
+        customerId : (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName,
+        brandId : (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName,
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,
+        name : undefined,
+        clothingLevelId : undefined,
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),      
+        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),  
+        stage: "delete",    
       };
-      console.log(params);
+      console.log(param);
 
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`,params)
+        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+          params:param
+        })
         .then(response => {
           this.tableData = [];
           response.data.forEach(element=>{
@@ -398,45 +361,7 @@ export default {
           })
         })
         .catch(error => {
-          var SearchList = [
-            {
-              number: "JH190401001",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "",
-              planObject: "",
-              type: "销样",
-              createrName: "XX",
-              createrName: "XX",
-              deleteTime: "2019-3-28"
-            },
-            {
-              number: "JH1904010012",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "",
-              planObject: "",
-              type: "销样",
-              createrName: "XX",
-              createrName: "XX",
-              deleteTime: "2019-3-28"
-            },
-            {
-              number: "JH1904010013",
-              customerName: "AFL",
-              brandName: "CX",
-              name: "2001系列计划",
-              rangeName: "",
-              planObject: "",
-              type: "销样",
-              createrName: "XX",
-              createrName: "XX",
-              deleteTime: "2019-3-28"
-            },
-          ];
-          this.tableData = SearchList;
+          console.log("搜索失败");
         });
     },
   }

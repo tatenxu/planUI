@@ -221,7 +221,7 @@ export default {
           this.$axios
             .post(`${window.$config.HOST}/planManagement/distributePlan`,{
               planId:element.id,
-              distributedUserId: (this.searchOptions.searchParams.userName==="") ? null : this.searchOptions.searchParams.userName,
+              executerIdList: (this.searchOptions.searchParams.userName==="") ? null : this.searchOptions.searchParams.userName,
             })
             .then(response=>{
               if(response.data < 0){

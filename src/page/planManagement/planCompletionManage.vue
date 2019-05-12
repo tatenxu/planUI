@@ -122,14 +122,49 @@ export default {
       } else {
         this.tableSelectionData.forEach(element => {
           console.log("删除"+element.name);
-          this.$axios.post(`${window.$config.HOST}/planManagement/completePlan`,{id:element.id})
+          this.$axios
+            .get(`${window.$config.HOST}/infoManagement/completeRange`,{
+              params:{id:element.id}
+            })
             .then(response=>{
-              if(response.data<0){
+              if(response.data < 0){
                 this.$message.error(element.name+"添加完成失败");
               }else{
                 console.log("完成"+element.name);
-                var j = this.tableData.indexOf(element);
-                this.$set(this.tableData[j], "state", "已完成");
+                this.$axios
+                  .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+                    customerId: "",
+                    brandId: "",
+                    id: "",
+                    clothingLevelId: "",
+                    startDate: "",
+                    endDate: ""
+                  })
+                  .then(response => {
+                    // response.data.forEach(element=>{
+                    //   if(element.state === 5){
+                    //     this.tableData.push(element);
+                    //   }
+                    // });
+                    this.tableData = response.data;
+                    this.tableData.forEach(element => {
+                      if(element.addingMode===1) element.addingModeName="手动";
+                      else element.addingModeName="导入";
+
+                      if(element.state===1) element.stateName="已制定";
+                      else if(element.state===2) element.stateName="已提交";
+                      else if(element.state===3) element.stateName="被驳回";
+                      else if(element.state===4) element.stateName="已审核";
+                      else if(element.state===5) element.stateName="已下发";
+                      else if(element.state===6) element.stateName="已删除";
+                      var d = new Date(element.createTime);
+                      let time = d.toLocaleString();
+                      element.createTime = time;
+                    });
+                  })
+                  .catch(error => {
+                    console.log("加载系列失败");
+                  });
               }
             })
             .catch(error=>{

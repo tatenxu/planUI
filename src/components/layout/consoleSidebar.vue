@@ -123,7 +123,7 @@
         <el-menu-item index="/planMake/stylePlanMake"><i class="el-icon-document"></i>款式计划制定</el-menu-item>
         <el-menu-item index="/planVerify"><i class="el-icon-document"></i>计划审核管理</el-menu-item>
         <el-menu-item index="/planDistribute"><i class="el-icon-document"></i>计划下发管理</el-menu-item>
-        <el-menu-item index="/planCompletionManage"><i class="el-icon-document"></i>计划完成管理</el-menu-item>
+        <el-menu-item index="/planCompletionManage"><i class="el-icon-document"></i>系列完成管理</el-menu-item>
         <el-menu-item index="/planRecover"><i class="el-icon-document"></i>计划回收站</el-menu-item>
         <el-menu-item index="/exceptionManagement"><i class="el-icon-document"></i>异常管理</el-menu-item>
       </el-submenu>

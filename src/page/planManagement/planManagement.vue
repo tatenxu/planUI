@@ -86,6 +86,7 @@
         <el-col :span="6">
           <el-switch
             v-model="isSelfMadePlan"
+            @change="planTypeSwitchChange"
             inactive-color="#13ce66"
             active-text="制定的计划"
             inactive-text="被下发计划">
@@ -263,20 +264,18 @@ export default {
         console.log("初始化系列名称加载错误");
       });
 
-    //默认获取计划列表
+    //默认获取被下发计划列表
     var param = {
       stage: "manage"
     }
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-        params:param
-      })
+      .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
       .then(response => {
         this.tableData = response.data;
         this.searchOptions.options.planNameOptions = response.data;
       })
       .catch(error => {
-        console.log("初始化计划列表获取错误");
+        console.log("初始化被下发计划列表获取错误");
         // this.tableData = [
         //   {
         //     id: 1,
@@ -363,8 +362,7 @@ export default {
                     type:"success",
                     message: element.id+"删除成功!"
                   });
-                  var j = this.tableData.indexOf(element);
-                  this.tableData.splice(j, 1);
+                  this.handleSearch()
                 }
               })
               .catch(error=>{
@@ -416,7 +414,6 @@ export default {
     },
     changeCheckBoxFun(val) {
       this.selectedData = val;
- 
     },
     getPlanDetail(row) {
       const that = this;
@@ -450,19 +447,15 @@ export default {
     },
     deleteOnePlan(planid) {
       console.log("删除 "+planid);
-      this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:planid})
+      this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{
+        params:{id:planid}
+      })
         .then(response=>{
-          if(response.data.errcode < 0){
+          if(response.data < 0){
             this.$message.error(planid+"删除失败");
             return;
           }else{
-            this.tableData.forEach(element=>{
-              if(element.id === planid){
-                var idx = this.tableData.indexOf(element);
-                this.tableData.splice(idx,1);
-                return;
-              }
-            })
+            this.handleSearch();
             this.$message({
               type:"success",
               message:planid+"删除成功"
@@ -476,7 +469,7 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return "";
+        return undefined;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -495,27 +488,65 @@ export default {
     //搜索按钮
     handleSearch(){
       var param = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
-        rangeId: (this.searchOptions.searchParams.rangeName==="")?null:this.searchOptions.searchParams.rangeName,  
-        name: (this.searchOptions.searchParams.name==="")?"":this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName, 
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,  
+        name: (this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
+        clothingLevelId :(this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
-        stage:"manage",
       };
-      console.log(param);
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-          params:param
-        })
-        .then(response=>{
-          this.tableData = response.data;
-        })
-        .catch(error=>{
-          
-          this.$message.error("搜索失败!");
-        });
+
+      if(this.isSelfMadePlan){
+        param.stage = "manage";
+        console.log(param);
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+            params:param
+          })
+          .then(response=>{
+            this.tableData = response.data;
+          })
+          .catch(error=>{
+            this.$message.error("搜索失败!");
+          });
+      }else{
+        console.log(param);
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`,{
+            params:param
+          })
+          .then(response=>{
+            this.tableData = response.data;
+          })
+          .catch(error=>{
+            this.$message.error("搜索失败!");
+          });
+      }
+    },
+    planTypeSwitchChange(){
+      this.tableData = [];
+      if(this.isSelfMadePlan){
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+            params:{stage:"manage"}
+          })
+          .then(response=>{
+            this.tableData = response.data;
+          })
+          .catch(error=>{
+            this.$message.error("搜索失败!");
+          });
+      }else{
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
+          .then(response=>{
+            this.tableData = response.data;
+          })
+          .catch(error=>{
+            this.$message.error("搜索失败!");
+          });
+      }
     },
     handleSizeChange(){
 

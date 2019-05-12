@@ -173,123 +173,82 @@ export default {
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        console.log("getCustomer 成功");
         this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
         console.log("getCustomer 失败!");
-        this.searchOptions.options.customerNameOptions = [
-          {
-            id: 42453,
-            name: "A客户"
-          },
-          {
-            id: 41526,
-            name: "B客户"
-          },
-        ];
       });
 
     //品牌名称加载
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`)
       .then(response => {
-        this.searchOptions.options.rangeNameOptions = response.data;
+        this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌加载失败");
-        this.searchOptions.options.brandNameOptions = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          },
-        ];
+        console.log("初始化品牌加载失败");
       });
     
     //加载系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`)
       .then(response => {
         this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
-        console.log("系列名称加载失败");
-        this.searchOptions.options.rangeNameOptions = [
-          {
-            id: 1,
-            name: "Fall-2019(07/08/09)"
-          },
-          {
-            id: 2,
-            name: "Spring-2019(01/02/03)"
-          },
-          {
-            id: 3,
-            name: "Winter-2019(10/11/12)"
-          },
-        ];
+        console.log("初始化系列名称加载失败");
       });
 
     //加载默认所有的异常计划
-    var param = {
-      customerId: NaN, 
-      brandId: NaN, 
-      rangeId: NaN,  
-      startDate: NaN,  
-      endDate: NaN, 
-    }
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getException`,param)
+      .get(`${window.$config.HOST}/planManagement/getExceptionList`)
       .then(response => {
         this.tableData = response.data;
       })
       .catch(error => {
-        var SearchList = [
-          {
-            id :5674,
-            number: "7878787",
-            planNumber: "45345",
-            customerName: "nike",
-            brandName: "耐克",
-            planName: "计划1",
-            rangeName: "系列1",
-            planObject: "大明",
-            cause: "死机",
-            createrName: "王小虎",
-            createTime: "2016-10-16"
-          },
-          {
-            id :56754,
-            number: "312",
-            planNumber: "5335",
-            customerName: "add",
-            brandName: "阿迪",
-            planName: "计划2",
-            rangeName: "系列1",
-            planObject: "大明",
-            cause: "死机",
-            createrName: "王小虎",
-            createTime: "2016-10-16"
-          },
-          {
-            id :564514,
-            number: "8678",
-            planNumber: "45343",
-            customerName: "nb",
-            brandName: "nb",
-            planName: "计划6",
-            rangeName: "系列5",
-            planObject: "大明",
-            cause: "死机",
-            createrName: "王小虎",
-            createTime: "2016-10-16"
-          }
-        ];
-        this.tableData = SearchList;
+        console.log("初始化系列异常加载失败");
+        // var SearchList = [
+        //   {
+        //     id :5674,
+        //     number: "7878787",
+        //     planNumber: "45345",
+        //     customerName: "nike",
+        //     brandName: "耐克",
+        //     planName: "计划1",
+        //     rangeName: "系列1",
+        //     planObject: "大明",
+        //     cause: "死机",
+        //     createrName: "王小虎",
+        //     createTime: "2016-10-16"
+        //   },
+        //   {
+        //     id :56754,
+        //     number: "312",
+        //     planNumber: "5335",
+        //     customerName: "add",
+        //     brandName: "阿迪",
+        //     planName: "计划2",
+        //     rangeName: "系列1",
+        //     planObject: "大明",
+        //     cause: "死机",
+        //     createrName: "王小虎",
+        //     createTime: "2016-10-16"
+        //   },
+        //   {
+        //     id :564514,
+        //     number: "8678",
+        //     planNumber: "45343",
+        //     customerName: "nb",
+        //     brandName: "nb",
+        //     planName: "计划6",
+        //     rangeName: "系列5",
+        //     planObject: "大明",
+        //     cause: "死机",
+        //     createrName: "王小虎",
+        //     createTime: "2016-10-16"
+        //   }
+        // ];
+        // this.tableData = SearchList;
       });
   },
   mounted(){
@@ -302,16 +261,16 @@ export default {
       this.searchDisabled = true;
 
       var param = {
-        customerId: (routData.customerName==="")?NaN:routData.customerName, 
-        brandId: (routData.brandName==="")?NaN:routData.brandName,
-        rangeId: (routData.rangeName==="")?NaN:routData.rangeName,  
-        startDate: NaN,  
-        endDate: NaN, 
+        customerId: (routData.customerName==="")?undefined:routData.customerName, 
+        brandId: (routData.brandName==="")?undefined:routData.brandName,
+        rangeId: (routData.rangeName==="")?undefined:routData.rangeName,  
+        startDate: undefined,  
+        endDate: undefined, 
       }
       console.log(params);
 
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/getException`,param)
+        .get(`${window.$config.HOST}/planManagement/getExceptionList`,param)
         .then(response => {
           this.tableData = response.data;
         })
@@ -341,7 +300,7 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return NaN;
+        return undefined;
       }else{
         console.log(date);
         var y = date.getFullYear();
@@ -360,49 +319,23 @@ export default {
     //搜索按钮
     handleSearchClick(){
       var param = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName,
-        rangeId: (this.searchOptions.searchParams.rangeName==="")?NaN:this.searchOptions.searchParams.rangeName,  
+        customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName,
+        rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,  
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),  
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]), 
       }
       console.log(param);
 
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/getException`,param)
+        .get(`${window.$config.HOST}/planManagement/getExceptionList`,{
+          params:param
+        })
         .then(response => {
           this.tableData = response.data;
         })
         .catch(error => {
-          var SearchList = [
-            {
-              id:"7458756415",
-              number: "7878787",
-              planNumber: "45345",
-              customerName: "nike",
-              brandName: "耐克",
-              planName: "计划1",
-              rangeName: "系列1",
-              planObject: "大明",
-              cause: "死机",
-              createrName: "王小虎",
-              createTime: "2016-10-16"
-            },
-            {
-              id:"87351456",
-              number: "312",
-              planNumber: "5335",
-              customerName: "add",
-              brandName: "阿迪",
-              planName: "计划2",
-              rangeName: "系列1",
-              planObject: "大明",
-              cause: "死机",
-              createrName: "王小虎",
-              createTime: "2016-10-16"
-            },
-          ];
-          this.tableData = SearchList;
+          console.log("异常搜索失败");
         });
     },
     // toggleSelection(rows) {
