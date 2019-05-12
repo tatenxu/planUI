@@ -123,7 +123,7 @@
           <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="state" width="70" label="状态" align="center"></el-table-column>
+          <el-table-column prop="stateName" width="70" label="状态" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
@@ -365,6 +365,12 @@ export default {
       .then(response => {
         this.data.tableData = response.data;
         this.data.tableData.forEach(element=>{
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
           var newDate = new Date(element.createTime);
           element.createTime = newDate.toLocaleString();
         });
@@ -648,12 +654,18 @@ export default {
         .then(response=>{
           this.data.tableData = response.data;
           this.data.tableData.forEach(element=>{
+            if(element.state===1) element.stateName="已制定";
+            else if(element.state===2) element.stateName="已提交";
+            else if(element.state===3) element.stateName="被驳回";
+            else if(element.state===4) element.stateName="已审核";
+            else if(element.state===5) element.stateName="已下发";
+            else if(element.state===6) element.stateName="已删除";
             var newDate = new Date(element.createTime);
             element.createTime = newDate.toLocaleString();
           });
         })
         .catch(error=>{
-          console.log("款式组列表加载错误");
+          console.log("款式组列表搜索错误");
         });
     },
     // 添加款式组
@@ -925,7 +937,7 @@ export default {
           .post(`${window.$config.HOST}/infoManagement/updateStyleGroup`,param)
           .then(response=>{
             var resData = response.data;
-            if(resData < 0){
+            if(resData >= 0){
               this.$message({
                 message: '成功修改款式组信息',
                 type: 'success'

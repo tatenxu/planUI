@@ -118,23 +118,24 @@ export default {
       });
 
     //获取所有未下发计划
-    var param ={
-      customerId : NaN,
-      brandId : NaN,
-      rangeId: NaN,
-      id : NaN,
-      clothingLevelId : NaN,
-      startDate : NaN,
-      endDate : NaN,
+    // var param ={
+    //   customerId : null,
+    //   brandId : null,
+    //   rangeId: null,
+    //   id : null,
+    //   clothingLevelId : null,
+    //   startDate : null,
+    //   endDate : null,
+    // };
+    var param = {
+      stage:"distribute"
     };
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+        params:param
+      })
       .then(response => {
-        response.data.forEach(element=>{
-          if(element.type === 1 && element.state === 2){
-            this.tableData.push(element);
-          }
-        });
+        console.log("初始化加载下发计划成功");
       })
       .catch(error => {
         console.log("计划列表获取错误");
@@ -220,7 +221,7 @@ export default {
           this.$axios
             .post(`${window.$config.HOST}/planManagement/distributePlan`,{
               planId:element.id,
-              distributedUserId: (this.searchOptions.searchParams.userName==="") ? NaN : this.searchOptions.searchParams.userName,
+              distributedUserId: (this.searchOptions.searchParams.userName==="") ? null : this.searchOptions.searchParams.userName,
             })
             .then(response=>{
               if(response.data < 0){

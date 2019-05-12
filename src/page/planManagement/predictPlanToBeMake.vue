@@ -33,11 +33,11 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevelName" clearable >
+            <el-select v-model="searchOptions.searchParams.name" clearable >
               <el-option
                 v-for="item in searchOptions.options.clothingLevelOptions"
                 :key="item.id"
-                :label="item.clothingLevelName"
+                :label="item.name"
                 :value="item.id">
               </el-option>
             </el-select>
@@ -101,7 +101,7 @@
         <el-table-column prop="number" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="name" label="服装层次" align="center"></el-table-column>
         <el-table-column prop="name" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
@@ -138,7 +138,7 @@ export default {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingLevelName: "",
+          name: "",
           name: "",
           planName:"",
           dateRange: ""
@@ -169,13 +169,12 @@ export default {
 
     //获取客户名称
     this.$axios
-      .get(`${window.$config.HOST}/baseIinfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        console.log("getCustomer 成功");
         this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer 失败!");
+        console.log("初始化获取客户失败!");
         this.searchOptions.options.customerNameOptions = [
           {
             id: 42453,
@@ -195,98 +194,53 @@ export default {
         this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            clothingLevelName: "时装"
-          },
-          {
-            id: 2,
-            clothingLevelName: "精品"
-          },
-          {
-            id: 3,
-            clothingLevelName: "时尚"
-          }
-        ];
-        this.searchOptions.options.clothingLevelOptions = ClothingList;
+        console.log("初始化服装层次错误");        
       });
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`)
       .then(response => {
-        this.searchOptions.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+        this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
-        this.searchOptions.options.brandNameOptions = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          },
-        ];
+        console.log("初始化品牌名称选择错误");
       });
 
     //加载系列名称
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{brandId:NaN})
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`)
       .then(response => {
-        this.searchOptions.options.rangeNameOptions = response;
+        this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
         console.log("系列名称加载错误");
-        this.searchOptions.options.rangeNameOptions = [
-          {
-            id: 1,
-            name: "时装"
-          },
-          {
-            id: 2,
-            name: "精品"
-          },
-          {
-            id: 3,
-            name: "时尚"
-          }
-        ];
       });
 
     //默认获取计划列表
     var param = {
-      customerId : NaN,
-      brandId : NaN,
-      id : NaN,
-      clothingLevelId : NaN,
-      startDate : NaN,
-      endDate : NaN,
+      customerId : null,
+      brandId : null,
+      id : null,
+      clothingLevelId : null,
+      startDate : null,
+      endDate : null,
     };
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeList`,param)
+      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+        customerId: "",
+        brandId: "",
+        id: "",
+        clothingLevelId: "",
+        startDate: "",
+        endDate: ""
+      })
       .then(response => {
         this.tableData = response.data;
       })
       .catch(error => {
-        console.log("计划列表获取错误");
-        this.tableData = [
-          {
-            id:"4453",
-            number:"XL20190101001",
-            customerName:"Qi-Collection",
-            brandName:"Selikie",
-            clothingLevelName:"时装",
-            name:"Fall-2019(01/08/09)",
-            createrName:"刘德华",
-            deptName:"业务一组",
-            state:"未制定"
-          }
-        ];
-      })
-      ;
+        console.log("初始化计划列表获取错误");
+      });
   },
 
   methods: {
@@ -307,9 +261,8 @@ export default {
     },
     // 改变日期格式
     changeDate(date) {
-      console.log(date);
       if(!date){
-        return NaN;
+        return "";
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -327,64 +280,23 @@ export default {
     //获取预测计划列表
     getUnmadedPlanList(){
       var params = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName,
-        id: (this.searchOptions.searchParams.planName==="")?NaN:this.searchOptions.searchParams.planName,
-        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?"":this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?"":this.searchOptions.searchParams.brandName,
+        id: (this.searchOptions.searchParams.planName==="")?"":this.searchOptions.searchParams.planName,
+        clothingLevelId :(this.searchOptions.searchParams.name==="")?"":this.searchOptions.searchParams.name, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };
       console.log(params);
 
       this.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeList`, params)
-      .then(response => {
-        var SearchList = response;
-        this.tableData = SearchList;
-      })
-      .catch(error => {
-        var SearchList = [
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            styleQuantity: 15,
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: "已绑定",
-            note: "系列备注1",
-            havePlan: false
-          },
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            createrName: "刘德华",
-            styleQuantity: 15,
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            addingMode: "手动",
-            state: "已绑定",
-            note: "系列备注1",
-            havePlan: false
-          }
-        ];
-        this.tableData = SearchList;
-      });
+        .post(`${window.$config.HOST}/infoManagement/getRangeList`, params)
+        .then(response => {
+          this.tableData = response.data;
+        })
+        .catch(error => {
+          console.log("搜索失败");
+        });
     },
   },  
 }

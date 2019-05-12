@@ -173,21 +173,10 @@ export default {
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        console.log("getCustomer 成功");
         this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
-        console.log("getCustomer error!");
-        this.searchOptions.options.customerNameOptions = [
-          {
-            id: 42453,
-            name: "A客户"
-          },
-          {
-            id: 41526,
-            name: "B客户"
-          },
-        ];
+        console.log("初始化获取客户名称失败");
       });
 
     //获取服装层次
@@ -197,78 +186,35 @@ export default {
         this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "时装"
-          },
-          {
-            id: 2,
-            name: "精品"
-          },
-          {
-            id: 3,
-            name: "时尚"
-          }
-        ];
-        this.searchOptions.options.clothingLevelOptions = ClothingList;
+        console.log("初始化获取服装层次名称失败");
       });
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:NaN})
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`)
       .then(response => {
          this.searchOptions.options.brandNameOptions = response.data;
       })
       .catch(error => {
-        console.log("品牌名称选择错误");
-        this.searchOptions.options.brandNameOptions = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          },
-        ];
-      });
-
-    //加载计划名称呢
-    this.$axios.get(`${window.$config.HOST}/infoManagement/getPlanName`,{rangeId:NaN})
-      .then(response=>{
-        this.searchOptions.options.planNameOptions = response.data;
-      })
-      .catch(error=>{
-        console.log("计划名称加载错误");
-        this.searchOptions.options.planNameOptions = [
-          {
-            id: 475,
-            name: "计划1",
-          },
-          {
-            id: 753,
-            name: "计划2",
-          },
-          {
-            id: 986,
-            name: "计划3",
-          }
-        ];
+        console.log("初始化获取品牌名称失败");
       });
 
     //默认获取计划列表
     var param ={
-      customerId : NaN,
-      brandId : NaN,
-      rangeId: NaN,
-      id : NaN,
-      clothingLevelId : NaN,
-      startDate : NaN,
-      endDate : NaN,
+      customerId : null,
+      brandId : null,
+      rangeId: null,
+      id : null,
+      clothingLevelId : null,
+      startDate : null,
+      endDate : null,
     };
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+        params:{
+          stage:"predict"
+        }
+      })
       .then(response => {
         response.data.forEach(element=>{
           if(element.type === 1 && element.state === 1){
@@ -277,35 +223,35 @@ export default {
         });
       })
       .catch(error => {
-        console.log("计划列表获取错误");
-        this.tableData = [
-          {
-            id:"7946",
-            number:"JH001",
-            name:"系列A计划",
-            rangeNumber:"XL20190101001",
-            customerName:"Qi-Collection",
-            brandName:"Selikie",
-            clothingLevelName:"时装",
-            rangeName:"Fall-2019(01/08/09)",
-            createrName:"刘德华",
-            deptName:"业务一组",
-            state:"未制定"
-          },
-          {
-            id:"4545",
-            number:"JH002",
-            name:"系列B计划",
-            rangeNumber:"XL20190101001",
-            customerName:"Qi-Collection",
-            brandName:"Selikie",
-            clothingLevelName:"时装",
-            rangeName:"Fall-2019(01/08/09)",
-            createrName:"刘德华",
-            deptName:"业务二组",
-            state:"未制定"
-          }
-        ];
+        console.log("初始化计划列表获取错误");
+        // this.tableData = [
+        //   {
+        //     id:"7946",
+        //     number:"JH001",
+        //     name:"系列A计划",
+        //     rangeNumber:"XL20190101001",
+        //     customerName:"Qi-Collection",
+        //     brandName:"Selikie",
+        //     clothingLevelName:"时装",
+        //     rangeName:"Fall-2019(01/08/09)",
+        //     createrName:"刘德华",
+        //     deptName:"业务一组",
+        //     state:"未制定"
+        //   },
+        //   {
+        //     id:"4545",
+        //     number:"JH002",
+        //     name:"系列B计划",
+        //     rangeNumber:"XL20190101001",
+        //     customerName:"Qi-Collection",
+        //     brandName:"Selikie",
+        //     clothingLevelName:"时装",
+        //     rangeName:"Fall-2019(01/08/09)",
+        //     createrName:"刘德华",
+        //     deptName:"业务二组",
+        //     state:"未制定"
+        //   }
+        // ];
       });
   },
   methods: {
@@ -313,7 +259,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return NaN;
+        return null;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -331,10 +277,10 @@ export default {
     //获取预测计划列表
     getMakingPredictPlanList(){
       var params = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?NaN:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?NaN:this.searchOptions.searchParams.brandName, 
-        id: (this.searchOptions.searchParams.name==="")?NaN:this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?NaN:this.searchOptions.searchParams.clothingLevelName, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
+        id: (this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?null:this.searchOptions.searchParams.clothingLevelName, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
       };

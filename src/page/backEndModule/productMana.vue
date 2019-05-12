@@ -435,13 +435,14 @@
         return;
       },
       handleEditSaveClick(){
-        var departInfoTmp = (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart;
+        // var departInfoTmp = (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart;
+        var departInfoTmp = this.editInfoDepart;
         var param = {
           id: this.editInfoId,
           number : (this.editInfoCode==="")?null:this.editInfoCode,
           name : (this.editInfoName==="")?null:this.editInfoName,
           description : (this.editInfoDescription==="")?null:this.editInfoDescription,
-          deptName : (departInfoTmp==="")?null:departInfoTmp,
+          deptName : (departInfoTmp === "")?null:departInfoTmp,
         };
         console.log(param);
         

@@ -14,16 +14,16 @@
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" align="center"></el-table-column>
           <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
+          <el-table-column prop="number" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
-          <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+          <el-table-column prop="clothingLevelName" label="服装类型" align="center"></el-table-column>
+          <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
+          <el-table-column prop="addingModeName" label="添加方式" align="center"></el-table-column>
+          <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -67,95 +67,49 @@ export default {
     console.log('进入计划完成页面');
 
     //加载未完成的计划
-    var param ={
-      customerId : NaN,
-      brandId : NaN,
-      rangeId: NaN,
-      id : NaN,
-      clothingLevelId : NaN,
-      startDate : NaN,
-      endDate : NaN,
-    };
+    // var param ={
+    //   customerId : null,
+    //   brandId : null,
+    //   rangeId: null,
+    //   id : null,
+    //   clothingLevelId : null,
+    //   startDate : null,
+    //   endDate : null,
+    // };
+    
     this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getPlanList`,param)
+      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+        customerId: "",
+        brandId: "",
+        id: "",
+        clothingLevelId: "",
+        startDate: "",
+        endDate: ""
+      })
       .then(response => {
-        response.data.forEach(element=>{
-          //6 表示被删除
-          if(element.state === 5){
-            this.tableData.push(element);
-          }
+        // response.data.forEach(element=>{
+        //   if(element.state === 5){
+        //     this.tableData.push(element);
+        //   }
+        // });
+        this.tableData = response.data;
+        this.tableData.forEach(element => {
+          if(element.addingMode===1) element.addingModeName="手动";
+          else element.addingModeName="导入";
+
+          if(element.state===1) element.stateName="已制定";
+          else if(element.state===2) element.stateName="已提交";
+          else if(element.state===3) element.stateName="被驳回";
+          else if(element.state===4) element.stateName="已审核";
+          else if(element.state===5) element.stateName="已下发";
+          else if(element.state===6) element.stateName="已删除";
+          var d = new Date(element.createTime);
+          let time = d.toLocaleString();
+          element.createTime = time;
         });
-        this.tableData = SearchList;
       })
       .catch(error => {
-        var SearchList = [
-          {
-            id:'42453453',
-            number: "JH190401001",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "法师打发斯蒂芬",
-            planObject: "fasdfasdfsda",
-            type: "销样",
-            state: "XX",
-            createrName: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:'42454523553',
-            number: "JH1904010012",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "rewrqw",
-            planObject: "zxcvxzc",
-            type: "销样",
-            state: "XX",
-            createrName: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:'547367',
-            number: "JH1904010013",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "etwervfasd",
-            planObject: "gtrehyger",
-            type: "销样",
-            state: "XX",
-            createrName: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:'7876',
-            number: "JH1904010014",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "trhhgb",
-            planObject: "xcvbcvxnmrstj",
-            type: "销样",
-            state: "XX",
-            createrName: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:'23453245',
-            number: "JH1904010015",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "ryghrdfsvgsdfg",
-            planObject: "xcvnbsrtj",
-            type: "销样",
-            state: "XX",
-            createrName: "XX",
-            createTime: "2019-3-28"
-          }
-        ];
-        this.tableData = SearchList;
+        console.log("初始化加载系列失败");
       });
   },
   methods: {

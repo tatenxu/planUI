@@ -62,9 +62,9 @@
             <el-select v-model="searchOptions.searchParams.name" clearable>
               <el-option
                 v-for="item in searchOptions.options.planNameOptions"
-                :key="item.id"
+                :key="item.name"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               ></el-option>
             </el-select>
           </div>
@@ -131,7 +131,7 @@
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
-        <el-table-column prop="parentId" label="上级计划" align="center"></el-table-column>
+        <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
         <el-table-column prop="havePlan" label="状态" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.havePlan">已制定</p>
@@ -223,7 +223,6 @@ export default {
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        console.log("getCustomer 成功");
         this.searchOptions.options.customerNameOptions = response.data;
       })
       .catch(error => {
@@ -237,13 +236,13 @@ export default {
         this.searchOptions.options.clothingLevelOptions = response.data;
       })
       .catch(error => {
-        console.log("服装层次加载错误");
+        console.log("初始化服装层次加载错误");
       });
 
     //品牌名称选择获取
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
-        params:{customerId:null}
+        params:{customerId:""}
       })
       .then(response => {
         this.searchOptions.options.brandNameOptions = response.data;
@@ -252,7 +251,7 @@ export default {
         console.log("初始化品牌名称选择错误");
       });
 
-    //获取系列
+    //初始化获取系列
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getRangeName`,{
         params:{brandId:""}
@@ -266,13 +265,7 @@ export default {
 
     //默认获取计划列表
     var param = {
-      customerId: null,
-      brandId: null,
-      rangeId: null,
-      name:null,
-      clothingLevelId: null, 
-      startDate: null,
-      endDate: null,
+      stage: "manage"
     }
     this.$axios
       .get(`${window.$config.HOST}/planManagement/getPlanList`,{
@@ -280,52 +273,43 @@ export default {
       })
       .then(response => {
         this.tableData = response.data;
+        this.searchOptions.options.planNameOptions = response.data;
       })
       .catch(error => {
         console.log("初始化计划列表获取错误");
-        this.tableData = [
-          {
-            id: 1,
-            number: "00001",
-            name: "1",
-            rangeNumber: "1",
-            customerName: "1",
-            brandName: "1",
-            rangeName: "1",
-            createrName: "1",
-            deptName: "1",
-            createTime: "2019-4-9",
-            parentId: "无",
-            havePlan: true,
-            haveException: true
-          },
-          {
-            id: 2,
-            number: "00002",
-            name: "2",
-            rangeNumber: "2",
-            customerName: "2",
-            brandName: "2",
-            rangeName: "2",
-            createrName: "2",
-            deptName: "2",
-            createTime: "2019-4-9",
-            parentId: "无",
-            havePlan: true,
-            haveException: true
-          },
-        ];
+        // this.tableData = [
+        //   {
+        //     id: 1,
+        //     number: "00001",
+        //     name: "1",
+        //     rangeNumber: "1",
+        //     customerName: "1",
+        //     brandName: "1",
+        //     rangeName: "1",
+        //     createrName: "1",
+        //     deptName: "1",
+        //     createTime: "2019-4-9",
+        //     parentId: "无",
+        //     havePlan: true,
+        //     haveException: true
+        //   },
+        //   {
+        //     id: 2,
+        //     number: "00002",
+        //     name: "2",
+        //     rangeNumber: "2",
+        //     customerName: "2",
+        //     brandName: "2",
+        //     rangeName: "2",
+        //     createrName: "2",
+        //     deptName: "2",
+        //     createTime: "2019-4-9",
+        //     parentId: "无",
+        //     havePlan: true,
+        //     haveException: true
+        //   },
+        // ];
       });
-
-      //加载计划名称
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanName`)
-        .then(response=>{
-          this.searchOptions.options.planNameOptions = response.data;
-        })
-        .catch(error=>{
-          console.log("初始化计划名称加载错误");
-        });
   },
   methods: {
     ToSearchException(row) {
@@ -409,7 +393,7 @@ export default {
             that.selectedData.forEach(element=>{
               var params = {
                 planId : element.id,
-                cause : (value==="")?null:value,
+                cause : (value==="")?"":value,
               };
               // console.log(params);
               that.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
@@ -491,7 +475,6 @@ export default {
     },
     // 改变日期格式
     changeDate(date) {
-      console.log(date);
       if(!date){
         return "";
       }else{
@@ -515,73 +498,23 @@ export default {
         customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
         rangeId: (this.searchOptions.searchParams.rangeName==="")?null:this.searchOptions.searchParams.rangeName,  
-        id: (this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
+        name: (this.searchOptions.searchParams.name==="")?"":this.searchOptions.searchParams.name, 
         clothingLevelId :(this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+        stage:"manage",
       };
-
-      this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,{
-        params:param
-      })
+      console.log(param);
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+          params:param
+        })
         .then(response=>{
-          var resData = response.data;
-          if(resData.errcode < 0){
-            this.$message.error("搜索失败!");
-            return;
-          }
-          resData.forEach(element=>{
-            this.tableData.push({
-              number: element.number,
-              name: element.name,
-              rangeNumber: element.rangeNumber,
-              customerName: element.customerName,
-              brandName: element.brandName,
-              rangeName: element.rangeName,
-              createrName: element.createrName,
-              deptName: element.deptName,
-              createTime: element.createTime,
-              parentId: element.parentId,
-              havePlan: element.havePlan,
-              haveException: element.haveException
-            })
-          });
+          this.tableData = response.data;
         })
         .catch(error=>{
-          this.tableData = [
-            {
-              id: 1,
-              number: "00001",
-              name: "1",
-              rangeNumber: "1",
-              customerName: "1",
-              brandName: "1",
-              rangeName: "1",
-              createrName: "1",
-              deptName: "1",
-              createTime: "2019-4-9",
-              parentId: "无",
-              havePlan: true,
-              haveException: true
-            },
-            {
-              id: 2,
-              number: "00002",
-              name: "2",
-              rangeNumber: "2",
-              customerName: "2",
-              brandName: "2",
-              rangeName: "2",
-              createrName: "2",
-              deptName: "2",
-              createTime: "2019-4-9",
-              parentId: "无",
-              havePlan: true,
-              haveException: true
-            },
-          ];
+          
           this.$message.error("搜索失败!");
-          return;
         });
     },
     handleSizeChange(){
