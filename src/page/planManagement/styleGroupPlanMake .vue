@@ -59,10 +59,16 @@
           </div>
         </el-col>
         <el-col :span="5" class="MinW" style="margin-left:30px">
-          <el-radio v-model="checked" label="1">未制定</el-radio>
-          <el-radio v-model="checked" label="2">已制定</el-radio>
-          <!-- <el-radio v-model="checked" label="3">未完成</el-radio>
-          <el-radio v-model="checked" label="4">已完成</el-radio>-->
+          <!-- <el-radio v-model="checked" label="1">未制定</el-radio>
+          <el-radio v-model="checked" label="2">已制定</el-radio> -->
+            <el-switch
+            v-model="checked"
+            @change="planTypeSwitchChange"
+            inactive-color="#13ce66"
+            active-text="未制定"
+            inactive-text="已制定">
+          </el-switch>
+      
 
           <el-button type="primary" @click="searchStyleGroup" style="margin-left:50px">搜索</el-button>
         </el-col>
@@ -93,10 +99,10 @@
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="stateName" label="系列计划" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="250" align="center">
           <template slot-scope="scope">
-            <!-- <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button> -->
+            <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button>
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
           </template>
         </el-table-column>
@@ -235,6 +241,67 @@ export default {
       });
   },
   methods: {
+       planTypeSwitchChange(){
+      console.log("ssssssssss="+this.checked)
+      const that = this;
+      this.DataStartTime = that.changeDate(this.Date1[0]);
+      this.DataEndTime = that.changeDate(this.Date1[1]);
+      let list={
+            id: this.SeriesName===""?"":this.SeriesName,
+            customerId: this.ClientName===""?"":this.ClientName,
+            brandId: this.BrandName===""?"":this.BrandName,
+            clothingLevelId: this.clothingLevelId===""?"":this.clothingLevelId,
+            startDate: this.DataStartTime,
+            endDate: this.DataEndTime
+      }
+      console.log(list);
+      this.$axios
+        .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+            id: this.SeriesName===""?null:this.SeriesName,
+            customerId: this.ClientName===""?null:this.ClientName,
+            brandId: this.BrandName===""?null:this.BrandName,
+            clothingLevelId: this.clothingLevelId===""?null:this.clothingLevelId,
+            startDate: this.DataStartTime,
+            endDate: this.DataEndTime
+        })
+        .then(response => {
+          console.log("checked=",this.checked);
+          var SearchList = response.data;
+          this.tableData = [];
+           SearchList.forEach(element=>{
+             console.log("这次havePlan的值为:"+element.havePlan)
+          var d = new Date(element.createTime);
+        if(element.addingMode===1) element.addingModeName="手动";
+          else element.addingModeName="导入";
+
+
+          if(element.havePlan===true) element.PlanState="已制定";
+          else if(element.havePlan===false) element.PlanState="未制定";
+          if(element.havePredictPlan===true) element.predictState="已预测";
+          else if(element.havePredictPlan===false) element.predictState="未预测";
+          var d = new Date(element.createTime);
+          let time = d.toLocaleString();
+          element.createTime = time;
+
+   
+            if(this.checked==true&&element.havePlan===false){
+              this.tableData.push(element);
+
+            }
+            else if(this.checked==false&&element.havePlan===true)
+            {
+              this.tableData.push(element);
+            }
+
+        });
+        })
+        .catch(error => {
+                  this.$message({
+          message: "获取搜索结果失败",
+          type: "error"
+        });
+        });
+    },
     //改变日期格式
     changeDate(date) {
       console.log(date);
@@ -357,11 +424,12 @@ export default {
         params: {
           flag: 2,
           goback: "styleGroupPlanMake",
-          client: row.ClientName,
-          brand: row.BrandName,
-          series: row.SeriesName,
+          client: row.customerName,
+          brand: row.brandName,
+          series: row.rangeName,
           plantype: 2,
-          planobj: row.StyleGroupName
+          planobj: row.name,
+           id:row.id,
         }
       });
     },
@@ -375,7 +443,8 @@ export default {
           brand: row.brandName,
           series: row.rangeName,
           plantype: 2,
-          planobj: false
+           id:row.id,
+          planobj: row.name
         }
       });
     }

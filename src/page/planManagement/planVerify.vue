@@ -109,11 +109,13 @@
       <br>
       <div>
         <el-table
-          ref="multipleTable"
           :data="tableData"
+          max-height="400"
+          border
           @selection-change="isChanged"
-          max-height="550"
-          style="width : 100%"
+          :stripe="true"
+          :highlight-current-row="true"
+          style="width: 100%; margin-top: 20px"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
@@ -129,7 +131,7 @@
 
           <el-table-column fixed="right" width="100">
             <template slot-scope="scope">
-              <el-button type="text">查看详情</el-button>
+              <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -153,7 +155,7 @@
           <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
             <el-col :span="2">
               <div class="bar">
-                <el-button type="primary" style="margin-right: 20px" @click="GoBackCofirm">确认</el-button>
+                <el-button type="primary" style="margin-right: 20px" @click="GoBackConfirm">确认</el-button>
               </div>
             </el-col>
             <el-col :offset="1" :span="2">
@@ -202,27 +204,23 @@ export default {
       options2: [],
       options3: [
         {
-          id: 1,
+          id: "已制定",
           name: "已制定"
         },
         {
-          id: 2,
+          id: "已提交",
           name: "已提交"
         },
         {
-          id: 3,
-          name: "被驳回"
-        },
-        {
-          id: 4,
+          id: "已审核",
           name: "已审核"
         },
         {
-          id: 5,
+          id: "已下发",
           name: "已下发"
         },
         {
-          id: 6,
+          id: "已删除",
           name: "已删除"
         }
       ],
@@ -239,196 +237,101 @@ export default {
     //获得品牌下拉框
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-        customerId: NaN
+        customerId: undefined
       })
       .then(response => {
-        this.options2 = response;
+        this.options2 = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "品牌1"
-          },
-          {
-            id: 2,
-            name: "品牌2"
-          },
-          {
-            id: 3,
-            name: "品牌3"
-          }
-        ];
-        this.options2 = ClothingList;
+        console.log("获取品牌失败");
       });
 
     //获得系列下拉框
     that.$axios
-      .get(`${window.$config.HOST}/InfoManagement/getRangeName`, {
-        brandId: NaN
+      .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
+        brandId: undefined
       })
       .then(response => {
-        this.options4 = response;
+        this.options4 = response.data;
       })
       .catch(error => {
-        var ClothingList = [
-          {
-            id: 1,
-            name: "系列A"
-          },
-          {
-            id: 2,
-            name: "系列B"
-          },
-          {
-            id: 3,
-            name: "系列C"
-          }
-        ];
-        this.options4 = ClothingList;
+        console.log("获取系列信息失败");
       });
 
     //获得客户名称下拉框
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
-        this.options1 = response;
+        this.options1 = response.data;
       })
       .catch(error => {
-        var CustomerList = [
-          {
-            id: 1,
-            name: "顾客A"
-          },
-          {
-            id: 2,
-            name: "顾客B"
-          },
-          {
-            id: 3,
-            name: "顾客C"
-          }
-        ];
-        this.options1 = CustomerList;
+        console.log("获取客户信息失败");
       });
 
-    //获得服装层次下拉框
-    // that.$axios
-    //   .get(`${window.$config.HOST}/InfoManagement/getClothingLevelName`)
-    //   .then(response => {
-    //     this.type = response;
-    //   })
-    //   .catch(error => {
-    //     var ClothingList = [
-    //       {
-    //         id: 1,
-    //         name: "时装"
-    //       },
-    //       {
-    //         id: 2,
-    //         name: "精品"
-    //       },
-    //       {
-    //         id: 3,
-    //         name: "时尚"
-    //       }
-    //     ];
-    //     this.type = ClothingList;
-    //   });
-
     //获得空集搜索列表
+    let list = {
+      stage: "review",
+      customerId: undefined,
+      brandId: undefined,
+      rangeId: undefined,
+      name: undefined,
+      clothingLevelId: undefined,
+      startDate: undefined,
+      endDate: undefined
+    };
+    console.log(list);
     that.$axios
       .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-        customerId: NaN,
-        brandId: NaN,
-        rangeId: NaN,
-        id: NaN,
-        clothingLevelId: NaN,
-        startDate: NaN,
-        endDate: NaN
+        params: list
       })
       .then(response => {
-        var SearchList = response;
-        this.tableData = SearchList;
+        console.log("获取空搜索集成功");
+        this.tableData = response.data;
+        console.log(response.data);
       })
       .catch(error => {
-        var SearchList = [
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "超级计划",
-            parentId: "创生计划",
-            rangeId: 1321,
-            rangeNumber: "XL20190101001",
-            rangeName: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            type: 2,
-            planObject: "对象A",
-            projectType: "款式组计划",
-            order: 1,
-            quantity: 15,
-            product: "未知产品A",
-            productDateType: "未知A",
-            startDate: "2019-01-01 10:15:01",
-            endDate: "2119-05-31 14:25:01",
-            proposal: "无建议",
-            description: "Balabalabala",
-            state: 1,
-            createrName: "刘德华",
-            deleteTime: "",
-            deptName: "业务1组",
-            note: "系列备注1",
-            createTime: "2019-01-01 10:15:01",
-            haveException: 0
-          },
-          {
-            id: 1,
-            number: "XL20190101001",
-            name: "超级计划",
-            parentId: "创生计划",
-            rangeId: 1321,
-            rangeNumber: "XL20190101001",
-            rangeName: "Fall-2019(07/08/09)",
-            customerId: 1232131,
-            customerName: "Qi-Collection",
-            brandId: 42132131,
-            brandName: "Selkie",
-            clothingLevelId: 321321,
-            clothingLevelName: "时装",
-            type: 2,
-            planObject: "对象A",
-            projectType: "款式组计划",
-            order: 1,
-            quantity: 15,
-            product: "未知产品A",
-            productDateType: "未知A",
-            startDate: "2019-01-01 10:15:01",
-            endDate: "2119-05-31 14:25:01",
-            proposal: "无建议",
-            description: "Balabalabala",
-            state: 1,
-            createrName: "刘德华",
-            deleteTime: "",
-            deptName: "业务1组",
-            note: "系列备注1",
-            createTime: "2019-01-01 10:15:01",
-            haveException: 0
-          }
-        ];
-        this.tableData = SearchList;
+        console.log("获取空搜索集失败");
       });
   },
   methods: {
+    //查看详情
+    searchDetails(row) {
+       this.$router.push({
+        name: "planMakeIndex",
+        params: {
+          flag: 0,
+          goback: "seriesPlanMake",
+          client: row.customerName,
+          brand: row.brandName,
+          series: row.rangeName,
+          id:row.planObjectId ,
+          plantype:0,
+          planobj: row.planObject ,
+          TopPlan:0,
+          TopPlanName:"根计划",
+          planName:row.name,
+          projectType: row.projectType ,
+          number:row.number,
+          dataStart:row.startDate,
+          dataEnd:row.dataEnd,
+          productDate:row.productDate ,
+          productDateType:row.productDateType ,
+          productId :row.productId,
+          proposal :row.proposal ,
+          note:row.note ,
+          description :row.description
+
+
+
+
+        }
+      });
+    },
     //改变日期格式
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return NaN;
+        return undefined;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -440,98 +343,45 @@ export default {
         minute = minute < 10 ? "0" + minute : minute;
         var second = date.getSeconds();
         second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        return y + "-" + m + "-" + d ;
       }
     },
     getWareList() {
       const that = this;
       this.DataStartTime = that.changeDate(this.dataRange[0]);
       this.DataEndTime = that.changeDate(this.dataRange[1]);
+      let list={
+          stage: "review",
+          customerId:this.clientId===""?undefined:this.clientId,
+          brandId:this.brandId===""?undefined:this.brandId, 
+          rangeId:this.rangeId===""?undefined:this.rangeId, 
+          name:undefined, 
+          clothingLevelId:undefined, 
+          startDate:this.DataStartTime, 
+          endDate:this.DataEndTime
+      }
+      console.log(list)
       that.$axios
 
-        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-          id: NaN,
-          clothingLevelId: NaN,
-          customerId: this.clientId===""?NaN:this.clientId,
-          brandId: this.brandId===""?NaN:this.brandId,
-          rangeId: this.rangeId===""?NaN:this.rangeId,
-          startDate: DataStartTime,
-          endDate: DataEndTime
+        .get(`${window.$config.HOST}/planManagement/getPlanList`, 
+        {
+          params:list
         })
         .then(response => {
-          var SearchList = response;
-          this.tableData = SearchList;
+          if(this.stateId!="")
+          {
+            this.tableData=[],
+                      response.data.forEach(element=>{
+            if(element.state===this.stateId)
+            {
+              this.tableData.push(element)
+            }
+          })
+          }
+          else this.tableData=response.data;
         })
         .catch(error => {
-          var SearchList = [
-            {
-              id: 1,
-              number: "XL20190101001",
-              name: "超级计划",
-              parentId: "创生计划",
-              rangeId: 1321,
-              rangeNumber: "XL20190101001",
-              rangeName: "Fall-2019(07/08/09)",
-              customerId: 1232131,
-              customerName: "Qi-Collection",
-              brandId: 42132131,
-              brandName: "Selkie",
-              clothingLevelId: 321321,
-              clothingLevelName: "时装",
-              type: 2,
-              planObject: "对象A",
-              projectType: "款式组计划",
-              order: 1,
-              quantity: 15,
-              product: "未知产品A",
-              productDateType: "未知A",
-              startDate: "2019-01-01 10:15:01",
-              endDate: "2119-05-31 14:25:01",
-              proposal: "无建议",
-              description: "Balabalabala",
-              state: 1,
-              createrName: "刘德华",
-              deleteTime: "",
-              deptName: "业务1组",
-              note: "系列备注1",
-              createTime: "2019-01-01 10:15:01",
-              haveException: 0
-            },
-            {
-              id: 1,
-              number: "XL20190101001",
-              name: "超级计划",
-              parentId: "创生计划",
-              rangeId: 1321,
-              rangeNumber: "XL20190101001",
-              rangeName: "Fall-2019(07/08/09)",
-              customerId: 1232131,
-              customerName: "Qi-Collection",
-              brandId: 42132131,
-              brandName: "Selkie",
-              clothingLevelId: 321321,
-              clothingLevelName: "时装",
-              type: 2,
-              planObject: "对象A",
-              projectType: "款式组计划",
-              order: 1,
-              quantity: 15,
-              product: "未知产品A",
-              productDateType: "未知A",
-              startDate: "2019-01-01 10:15:01",
-              endDate: "2119-05-31 14:25:01",
-              proposal: "无建议",
-              description: "Balabalabala",
-              state: 1,
-              createrName: "刘德华",
-              deleteTime: "",
-              deptName: "业务1组",
-              note: "系列备注1",
-              createTime: "2019-01-01 10:15:01",
-              haveException: 0
-            }
-          ];
-          this.tableData = SearchList;
+  
         });
     },
     isChanged(val) {
@@ -539,27 +389,44 @@ export default {
     },
     GoBackCancel() {
       this.GoBack = false;
-      this.$refs.multipleTable.clearSelection();
+    
     },
-    GoBackCofirm() {
-      for (var i = 0; i < this.AnyChanged.length; i++) {
+    GoBackConfirm() {
+    
         //this.$set(this.iptDatas[index], `showAlert`, true)
         this.AnyChanged.forEach(element => {
-          that.$axios
-            .post(`${window.$config.HOST}/planManagement/failPlan`, {
-              id: this.AnyChanged[i].id,
-              cause: this.GoBackReason
-            })
-            .then(response => {
-              var ok = response;
-              if (ok >= 0) console.log("成功");
-              else console.log("失败");
-            })
-            .catch(error => {});
+          console.log(element)
+          let list={
+                          id:  element.id,
+              reason:this.GoBackReason
+          }
+          console.log(list)
+          this.$axios
+          .get(`${window.$config.HOST}/planManagement/failPlan`, {
+            params: list
+          })
+          .then(response => {
+            var ok = response.data;
+            if (ok >= 0) {
+              this.$message({
+                message: "操作成功",
+                type: "success"
+              });
+            } else {
+              this.$message({
+                message: "操作失败",
+                type: "error"
+              });
+            }
+          })
+          .catch(error => {
+              this.$message({
+                message: "操作失败!",
+                type: "error"
+              });
+          });
         });
-      }
       this.GoBack = false;
-      this.$refs.multipleTable.clearSelection();
     },
     VerifyPass() {
       if (this.AnyChanged.length === 0) {
@@ -567,34 +434,36 @@ export default {
           message: "请至少选择一项！",
           type: "warning"
         });
-
         return;
       }
-      var ok = 0;
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === 2) ok++;
-      }
-
-      if (ok != this.AnyChanged.length) {
-        this.$message({
-          message: "选中项不全是未审核项！",
-          type: "warning"
-        });
-      } else {
-        for (var i = 0; i < this.AnyChanged.length; i++) {
-          //this.$set(this.iptDatas[index], `showAlert`, true)
-          that.$axios
-            .post(`${window.$config.HOST}/planManagement/passPlan`, {
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/passPlan`, {
+            params: {
               id: this.AnyChanged[i].id
-            })
-            .then(response => {
-              var ok = response;
-              if (ok >= 0) console.log("成功");
-              else console.log("失败");
-            })
-            .catch(error => {});
-        }
-        //}
+            }
+          })
+          .then(response => {
+            console.log(response.data)
+            var ok = response.data;
+            if (ok >= 0) {
+              this.$message({
+                message: "操作成功",
+                type: "success"
+              });
+            } else {
+              this.$message({
+                message: "操作失败",
+                type: "error"
+              });
+            }
+          })
+          .catch(error => {
+             this.$message({
+                message: "操作失败!",
+                type: "error"
+              });
+          });
       }
     },
     VerifyRebut() {
@@ -605,19 +474,8 @@ export default {
         });
         return;
       }
-      var ok = 0;
-      for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === 4) ok = 1;
-      }
-
-      if (ok === 0) {
         this.GoBack = true;
-      } else {
-        this.$message({
-          message: "选中项包含已审核项！",
-          type: "warning"
-        });
-      }
+  
     },
     CancelVerify() {
       if (this.AnyChanged.length === 0) {
@@ -627,32 +485,36 @@ export default {
         });
         return;
       }
-      var ok = 0;
-      for (var i = 0; i < this.AnyChanged.length; i++) {
-        if (this.AnyChanged[i].statue === 4) ok++;
-      }
-
-      if (ok === this.AnyChanged.length) {
+    
         //this.$set(this.iptDatas[index], `showAlert`, true)
         for (var i = 0; i < this.AnyChanged.length; i++) {
-          that.$axios
-            .post(`${window.$config.HOST}/planManagement/cancelPassPlan`, {
+          this.$axios
+          .get(`${window.$config.HOST}/planManagement/cancelPassPlan`, {
+            params: {
               id: this.AnyChanged[i].id
-            })
-            .then(response => {
-              var ok = response;
-              if (ok >= 0) console.log("成功");
-              else console.log("失败");
-            })
-            .catch(error => {});
+            }
+          })
+          .then(response => {
+            var ok = response.data;
+            if (ok >= 0) {
+              this.$message({
+                message: "操作成功",
+                type: "success"
+              });
+            } else {
+              this.$message({
+                message: "操作失败",
+                type: "error"
+              });
+            }
+          })
+          .catch(error => {
+             this.$message({
+                message: "操作失败!",
+                type: "error"
+              });
+          });
         }
-        this.$refs.multipleTable.clearSelection();
-      } else {
-        this.$message({
-          message: "选中项只能包含已审核项！",
-          type: "warning"
-        });
-      }
     },
     handleCheckAllChange(val) {
       this.checkedCities = val ? cityOptions : [];

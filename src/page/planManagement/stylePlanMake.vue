@@ -87,8 +87,9 @@
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="150" align="center">
+        <el-table-column fixed="right" label="操作" width="250" align="center">
           <template slot-scope="scope">
+             <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button>
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
           </template>
         </el-table-column>
@@ -328,14 +329,30 @@ export default {
         params: {
           flag: 3,
           goback: "stylePlanMake",
-          client: row.ClientName,
-          brand: row.BrandName,
-          series: row.SeriesName,
+          client: row.customerName,
+          brand: row.brandName,
+          series: row.rangeName,
+           id:row.id,
           plantype: 3,
-          planobj: row.OrderId
+          planobj: row.number
         }
       });
-    }
+    },
+    QuoteSeriesPlan(row) {
+      this.$router.push({
+        name: "planMakeIndex",
+        params: {
+          flag: 2,
+          goback: "stylePlanMake",
+          client: row.customerName,
+          brand: row.brandName,
+           id:row.id,
+          series: row.rangeName,
+          plantype: 2,
+          planobj: row.number
+        }
+      });
+    },
   }
 };
 </script>

@@ -8,41 +8,105 @@
         <span class="Mtitle" v-else>计划制定</span>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="10"></el-col>
-        <el-col :span="12">
-          <el-button
-            v-if="flag===1"
-            type="primary"
-            @click="QuotePredict()"
-            style="margin-left: 98%"
-          >引用预测</el-button>
-          <el-button
-            v-else-if="flag===2"
-            type="primary"
-            @click="QuotePredict()"
-            style="margin-left: 98%"
-          >引用系列计划</el-button>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">客户名称</div>
+            <el-input v-model="ClientName" clearable :rows="1" placeholder="请选择" :disabled="true"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">品牌</div>
+            <el-input v-model="BrandName" clearable :rows="1" placeholder="请选择" :disabled="true"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">系列</div>
+
+            <el-input v-model="SeriesName" :rows="1" placeholder="请选择" :disabled="true"></el-input>
+          </div>
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <!-- <el-col :span="8">
+        <el-col :span="8">
           <div class="bar">
-            <div class="title">计划编号</div>
-            <el-input v-model="planID" clearable :rows="1" placeholder="planID" :disabled="true"></el-input>
-          </div>
-        </el-col> -->
+            <div class="title">计划类型</div>
 
+            <el-input v-model="PlanType" :rows="1" placeholder="请选择" :disabled="true"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">计划对象</div>
+            <el-input v-model="objName" clearable :rows="1" placeholder="请输入" :disabled="true"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar" style="margin-left: 4px">
+            <div class="title">上级计划</div>
+            <el-input v-model="TopPlanName" clearable :rows="1" placeholder="请输入" :disabled="true"></el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-input v-model="planName" clearable :rows="1" placeholder="请输入"></el-input>
+            <el-input v-if="showit1" v-model="planName" clearable :rows="1" placeholder="请输入"></el-input>
+            <el-input
+              v-else
+              v-model="planName"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
+            ></el-input>
           </div>
         </el-col>
-
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">项目类型</div>
+            <el-select v-if="showit1" v-model="ProjectType" clearable placeholder="请选择">
+              <el-option
+                v-for="item in ProjectTypeOpt"
+                :key="item.label"
+                :label="item.label"
+                :value="item.label"
+              ></el-option>
+            </el-select>
+            <el-input
+              v-else
+              v-model="ProjectType"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
+            ></el-input>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">计划款数</div>
+            <el-input v-if="showit1" v-model="PlanPrice" clearable :rows="1" placeholder="请输入"></el-input>
+            <el-input
+              v-else
+              v-model="PlanPrice"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
+            ></el-input>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
             <div class="title">起止时间</div>
             <el-date-picker
+              v-if="showit1"
               style="margin-left:20px "
               v-model="Date1"
               type="daterange"
@@ -51,197 +115,65 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              :picker-options="pickerOptions2"
             ></el-date-picker>
+            <el-input v-else v-model="Date1" clearable :rows="1" placeholder="请选择" :disabled="true"></el-input>
           </div>
         </el-col>
-      </el-row>
-      <!-- <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划开始</div>
-            <el-date-picker
-              v-model="PlanStartTime"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              type="datetime"
-              placeholder="选择日期"
-              clearable
-            ></el-date-picker>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划结束</div>
-            <el-date-picker
-              v-model="PlanEndTime"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              type="datetime"
-              placeholder="选择日期"
-              clearable
-            ></el-date-picker>
-          </div>
-        </el-col>
-      </el-row>-->
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">客户名称</div>
-            <el-select v-if="showit1" v-model="ClientName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in clientOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input
-              v-else
-              v-model="ClientName"
-              clearable
-              :rows="1"
-              placeholder="请选择"
-              :disabled="true"
-            ></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">品牌</div>
-            <el-select v-if="showit2" v-model="BrandName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in brandOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input
-              v-else
-              v-model="BrandName"
-              clearable
-              :rows="1"
-              placeholder="请选择"
-              :disabled="true"
-            ></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">系列</div>
-            <el-select v-if="showit3" v-model="SeriesName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in seriesOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input v-else v-model="SeriesName" :rows="1" placeholder="请选择" :disabled="true"></el-input>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划类型</div>
-            <el-select v-if="showit4" v-model="PlanType" clearable placeholder="请选择">
-              <el-option
-                v-for="item in PlantypeOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-input v-else v-model="PlanType" :rows="1" placeholder="请选择" :disabled="true"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划对象</div>
-            <el-input v-if="showit5" v-model="objName" :rows="1" placeholder="请选择" ></el-input>
-            <el-input v-else v-model="TopPlan" clearable :rows="1" placeholder="请输入" :disabled="true"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="bar" style="margin-left: 4px">
-            <div class="title">上级计划</div>
-            <el-input  v-model="TopPlan" clearable :rows="1" placeholder="请输入"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <div class="bar">
-            <el-button type="primary" @click="TestConfiemClick()" style="margin-left: 20px">选择</el-button>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">项目类型</div>
-            <el-select v-model="ProjectType" clearable placeholder="请选择">
-              <el-option
-                v-for="item in ProjectTypeOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划款项</div>
-            <el-input v-model="PlanPrice" clearable :rows="1" placeholder="请输入"></el-input>
-          </div>
-        </el-col>
+
         <el-col :span="5">
           <div class="bar" style="margin-left: 0px">
             <div class="title">产品日期</div>
-            <el-select v-model="ProductDateType" clearable placeholder="请选择">
+
+            <el-select v-if="showit1" v-model="ProductDateType" clearable placeholder="请选择">
               <el-option
                 v-for="item in datemodelOpt"
-                :key="item.value"
+                :key="item.label"
                 :label="item.label"
-                :value="item.value"
+                :value="item.label"
               ></el-option>
             </el-select>
+            <el-input
+              v-else
+              v-model="ProductDateType"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
+            ></el-input>
           </div>
         </el-col>
         <el-col :span="3">
-          <el-date-picker v-model="ProductData" type="date" placeholder="选择日期"></el-date-picker>
-          <!-- <el-date-picker
+          <el-date-picker v-if="showit1" v-model="ProductData" type="date" placeholder="选择日期"></el-date-picker>
+          <el-input
+            v-else
             v-model="ProductData"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            type="datetime"
-            placeholder="选择日期"
             clearable
-          ></el-date-picker>-->
+            :rows="1"
+            placeholder="请选择"
+            :disabled="true"
+          ></el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="bar">
-            <div class="title">计划部门</div>
-            <el-input v-model="PlanDepartment" clearable :rows="1" placeholder="请输入"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划人员</div>
-            <el-input v-model="PlanPerson" clearable :rows="1" placeholder="请输入"></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
             <div class="title">计划产品</div>
-            <el-select v-model="PlanProduct" clearable placeholder="请选择">
+            <el-select v-if="showit1" v-model="PlanProduct" clearable placeholder="请选择">
               <el-option
                 v-for="item in PlanProductOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
+            <el-input
+              v-else
+              v-model="PlanProductName"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
+            ></el-input>
           </div>
         </el-col>
       </el-row>
@@ -251,11 +183,20 @@
             <div class="title">计划建议</div>
 
             <el-input
+            v-if="showit1"
               type="textarea"
               :rows="4"
               placeholder="请输入内容"
               v-model="PlanPropose"
               style="margin-left: 26px"
+            ></el-input>
+             <el-input
+              v-else
+              v-model="PlanPropose"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
             ></el-input>
           </div>
         </el-col>
@@ -266,11 +207,20 @@
             <div class="title">计划描述</div>
 
             <el-input
+            v-if="showit1"
               type="textarea"
               :rows="4"
               placeholder="请输入内容"
               v-model="PlanDiscribe"
               style="margin-left: 26px"
+            ></el-input>
+            <el-input
+              v-else
+              v-model="PlanDiscribe"
+              clearable
+              :rows="1"
+              placeholder="请选择"
+              :disabled="true"
             ></el-input>
           </div>
         </el-col>
@@ -281,11 +231,20 @@
             <div class="title">计划备注</div>
 
             <el-input
+            v-if="showit1"
               type="textarea"
               :rows="4"
               placeholder="请输入内容"
               v-model="PlanRemark"
               style="margin-left: 26px"
+            ></el-input>
+                        <el-input
+              v-else
+              v-model="PlanRemark"
+              clearable
+              :rows="1"
+              placeholder=""
+              :disabled="true"
             ></el-input>
           </div>
         </el-col>
@@ -310,7 +269,7 @@
       <el-row :gutter="20">
         <el-col :span="20">
           <div class="Mbutton">
-            <el-col :span="8">
+            <el-col :span="8" v-if="showit1">
               <el-button type="primary" @click="SavePlanForm">保存</el-button>
             </el-col>
             <el-col :span="8">
@@ -327,7 +286,10 @@
 export default {
   data() {
     return {
-       fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+      PlanProductName: "",
+      TopPlanName: "",
+      planObjId: "",
+      fileList: [],
       Date1: "",
       dsa: "",
       flag: 0,
@@ -357,6 +319,7 @@ export default {
       TopPlan: "",
       PlanStartTime: "",
       PlanEndTime: "",
+      id: "",
       planName: "",
       planID: "JH000001",
 
@@ -374,20 +337,7 @@ export default {
           value: 2
         }
       ],
-      PlanProductOpt: [
-        {
-          label: "产品A",
-          value: 0
-        },
-        {
-          label: "产品B",
-          value: 1
-        },
-        {
-          label: "产品C",
-          value: 2
-        }
-      ],
+      PlanProductOpt: [],
       datemodelOpt: [
         {
           label: "出运日期",
@@ -402,7 +352,7 @@ export default {
           value: 2
         }
       ],
-  
+
       PlantypeOpt: [
         {
           label: "系列计划",
@@ -418,43 +368,9 @@ export default {
         }
       ],
 
-      clientOpt: [
-        {
-          label: "客户A",
-          value: 0
-        },
-        {
-          label: "客户B",
-          value: 1
-        },
-        {
-          label: "客户C",
-          value: 2
-        },
-        {
-          label: "客户D",
-          value: 3
-        }
-      ],
+      clientOpt: [],
 
-      brandOpt: [
-        {
-          label: "X品牌",
-          value: 0
-        },
-        {
-          label: "Y品牌",
-          value: 1
-        },
-        {
-          label: "M品牌",
-          value: 2
-        },
-        {
-          label: "N品牌",
-          value: 3
-        }
-      ],
+      brandOpt: [],
       typeOpt: [
         {
           label: "时装",
@@ -470,21 +386,28 @@ export default {
         }
       ],
 
-      seriesOpt: [
-        {
-          label: "系列A",
-          value: 0
-        },
-        {
-          label: "系列B",
-          value: 1
-        },
-        {
-          label: "系列C",
-          value: 2
-        }
-      ]
+      seriesOpt: [],
+      DataStartTime: "",
+      DataEndTime: ""
     };
+  },
+
+  created() {
+    var that = this;
+
+    //获得品牌下拉框
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+        params: {
+          name: undefined
+        }
+      })
+      .then(response => {
+        this.PlanProductOpt = response.data;
+      })
+      .catch(error => {
+        console.log("获取品牌失败");
+      });
   },
   mounted() {
     this.init();
@@ -492,27 +415,52 @@ export default {
   //五个参数控制
   //所有的计划制定的跳转
   methods: {
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-      handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
-      },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    changeDate(date) {
+      console.log(date);
+      if (!date) {
+        return undefined;
+      } else {
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = date.getHours();
+        var minute = date.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = date.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d;
+      }
+    },
     SavePlanForm() {
+      const that = this;
+      this.DataStartTime = that.changeDate(this.Date1[0]);
+      this.DataEndTime = that.changeDate(this.Date1[1]);
+      let time = that.changeDate(this.ProductData);
+
       if (
         this.PlanName === "" ||
         this.Date1 === "" ||
         this.TopPlan === "" ||
         this.ProjectType === "" ||
         this.PlanPrice === "" ||
-        this.PlanDepartment === "" ||
-        this.PlanPerson === "" ||
         this.PlanProduct === "" ||
         this.PlanPropose === "" ||
         this.PlanDiscribe === "" ||
@@ -523,15 +471,77 @@ export default {
           type: "warning"
         });
       } else {
-        this.$message({
-          message: "保存成功！",
-          type: "success"
+        let range;
+        this.seriesOpt.forEach(element => {
+          if (element.name === this.SeriesName) {
+            range = element.id;
+          }
         });
+        let list = {
+          name: this.planName,
+          rangeId: range,
+          type: this.PlanType,
+          isRoot: this.TopPlan === 0 ? true : false,
+          parentId: this.TopPlan,
+          planObjectId: this.id,
+          projectType: this.ProjectType,
+          quantity: parseInt(this.PlanPrice),
+          productId: this.PlanProduct,
+          productDate: time,
+          productDateType: this.ProductDateType,
+          startDate: this.DataStartTime,
+          endDate: this.DataEndTime,
+          proposal: this.PlanPropose,
+          description: this.PlanDiscribe,
+          note: this.PlanRemark
+        };
 
-        this.$router.push({
-          name: this.goback,
-          params: {}
-        });
+        console.log(list);
+        that.$axios
+
+          .post(`${window.$config.HOST}/planManagement/addPlan`, {
+            name: this.planName,
+            rangeId: range,
+            type: this.PlanType,
+            isRoot: this.TopPlan === 0 ? true : false,
+            parentId: this.TopPlan,
+            planObjectId: this.id,
+            projectType: this.ProjectType,
+            quantity: parseInt(this.PlanPrice),
+            productId: this.PlanProduct,
+            productDate: time,
+            productDateType: this.ProductDateType,
+            startDate: this.DataStartTime,
+            endDate: this.DataEndTime,
+            proposal: this.PlanPropose,
+            description: this.PlanDiscribe,
+            note: this.PlanRemark
+          })
+          .then(response => {
+            console.log(response.data);
+            let ok = response.data;
+            if (ok > 0) {
+              this.$message({
+                message: "添加成功",
+                type: "success"
+              });
+              this.$router.push({
+                name: this.goback,
+                params: {}
+              });
+            } else {
+              this.$message({
+                message: "添加失败",
+                type: "error"
+              });
+            }
+          })
+          .catch(error => {
+            this.$message({
+              message: "添加失败！",
+              type: "warning"
+            });
+          });
       }
     },
     CancelPlanForm() {
@@ -546,14 +556,121 @@ export default {
       });
     },
     init() {
+      console.log("开始获取");
+      const that = this;
+      //获得品牌下拉框
+      that.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+          customerId: undefined
+        })
+        .then(response => {
+          this.brandOpt = response.data;
+        })
+        .catch(error => {
+          console.log("获取品牌失败");
+        });
+
+      //获得系列下拉框
+      that.$axios
+        .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
+          brandId: undefined
+        })
+        .then(response => {
+          this.seriesOpt = response.data;
+        })
+        .catch(error => {
+          console.log("获取系列信息失败");
+        });
+
+      //获得客户名称下拉框
+      that.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+        .then(response => {
+          this.clientOpt = response.data;
+        })
+        .catch(error => {
+          console.log("获取客户信息失败");
+        });
+
       // console.log(this.$route.params);
       let data = this.$route.params;
+      console.log(data);
       this.ClientName = data.client;
       this.BrandName = data.brand;
       this.SeriesName = data.series;
       this.objName = data.planobj;
       this.flag = data.flag;
       this.goback = data.goback;
+      this.planObjId = data.planObjId;
+      this.TopPlan = data.TopPlan;
+      this.TopPlanName = data.TopPlanName;
+      this.id = data.id;
+      if (data.flag === 0) {
+        console.log("到达这里了");
+        this.showit1 = false;
+        this.ClientName = data.client;
+        this.BrandName = data.brand;
+        this.SeriesName = data.series;
+        this.id = data.id;
+        // plantype:":??????,",
+        this.objName = data.planobj;
+        this.TopPlan = data.TopPlan;
+        this.TopPlanName = data.TopPlanName;
+        this.planName = data.planName;
+        this.ProjectType = data.projectType;
+        this.PlanPrice = data.number;
+
+        this.ProductData = data.productDate;
+        this.ProductDateType = data.productDateType;
+        this.PlanProduct = data.productId;
+        this.PlanPropose = data.proposal;
+        this.PlanRemark = data.note;
+        this.PlanDiscribe = data.description;
+
+        that.$axios
+          .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+            params: {
+              name: undefined
+            }
+          })
+          .then(response => {
+              response.data.forEach(element => {
+          console.log("到达这ss里111");
+          if (element.id === this.PlanProduct) {
+            console.log("到达ss这里");
+            this.PlanProductName = element.name;
+          }
+        });
+
+          })
+          .catch(error => {
+            console.log("获取品牌失败");
+          });
+
+      }
+
+      // let list={
+      //     showit1:false,
+      //     ClientName:data.client,
+      //     BrandName:data.brand,
+      //     SeriesName:data.series,
+      //     id:data.id,
+
+      //     objName:data.planobj,
+      //     TopPlan:data.TopPlan,
+      //     TopPlanName:data.TopPlanName,
+      //     planName:data.planName,
+      //     ProjectType:data.projectType,
+      //     PlanPrice:data.number,
+
+      //     ProductData:data.productDate,
+      //     ProductDateType:data.productDateType,
+      //     PlanProduct :data.productId,
+      //     PlanPropose:data.proposal ,
+      //     PlanRemark:data.note ,
+      //     PlanDiscribe:data.description
+      // }
+      //
       switch (data.plantype) {
         case 1:
           this.PlanType = "系列计划";
@@ -563,45 +680,6 @@ export default {
           break;
         case 3:
           this.PlanType = "款式计划";
-          break;
-      }
-      switch (data.flag) {
-        case 1: {
-          this.showit1 = false;
-          this.showit2 = false;
-          this.showit3 = false;
-          this.showit4 = false;
-          this.showit5 = false;
-          break;
-        }
-        case 2: {
-          this.showit1 = false;
-          this.showit2 = false;
-          this.showit3 = false;
-          this.showit4 = false;
-          this.showit5 = false;
-          break;
-        }
-        case 3: {
-          this.showit1 = false;
-          this.showit2 = false;
-          this.showit3 = false;
-          this.showit4 = false;
-          this.showit5 = false;
-          break;
-        }
-        case 4: {
-          this.showit1 = false;
-          this.showit2 = false;
-          this.showit3 = false;
-          this.showit4 = true;
-          this.showit5 = false;
-          break;
-        }
-        case 5: {
-          break;
-        }
-        default:
           break;
       }
     }
