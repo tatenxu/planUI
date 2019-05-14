@@ -102,6 +102,9 @@
         <el-col :span="3" v-if="isSelfMadePlan">
           <el-button type="primary" size="small" @click="deletePlan" >删除计划</el-button>
         </el-col>
+        <el-col :span="3" v-if="isSelfMadePlan">
+          <el-button type="primary" size="small" @click="commitPlan" >提交计划</el-button>
+        </el-col>
         <el-col :span="3" v-if="!isSelfMadePlan">
           <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
         </el-col>
@@ -353,7 +356,10 @@ export default {
       } else {
         this.selectedData.forEach(element=>{
             console.log(element.id);
-            this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:element.id})
+            this.$axios
+              .delete(`${window.$config.HOST}/planManagement/deletePlan`,{
+                params:{id:element.id}
+              })
               .then(response=>{
                 if(response.data < 0 ){
                   this.$message.error(element.id + "删除失败!");
@@ -367,6 +373,35 @@ export default {
               })
               .catch(error=>{
                 this.$message.error(element.id + "删除失败!");
+              })
+          });
+      }
+    },
+    commitPlan(){
+      if (that.selectedData.length === 0) {
+        that.$message.error("请选择要提交的计划！");
+      } else {
+        this.selectedData.forEach(element=>{
+            console.log(element.id);
+            this.$axios
+              .get(`${window.$config.HOST}/planManagement/submitPlan`,{
+                params:{id:element.id}
+              })
+              .then(response=>{
+                if(response.data < 0 ){
+                  console.log(element.id + "提交失败!");
+                  this.$message.error(element.id + "提交失败!");
+                }else{
+                  this.$message({
+                    type:"success",
+                    message: element.id+"提交成功!"
+                  });
+                  this.handleSearch()
+                }
+              })
+              .catch(error=>{
+                console.log(element.id + "提交失败!");
+                this.$message.error(element.id + "提交失败!");
               })
           });
       }
