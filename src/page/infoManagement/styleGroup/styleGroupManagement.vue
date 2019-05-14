@@ -638,6 +638,17 @@ export default {
     },
     // 搜索按钮点击
     handleSearch(){
+            let startDate;
+      let endDate;
+      if(this.searchOptions.searchParams.dateRange==null)
+      {
+        startDate="";
+        endDate="";
+      }
+      else{
+                  startDate= this.changeDate(this.searchOptions.searchParams.dateRange[0]),
+          endDate=this.changeDate(this.searchOptions.searchParams.dateRange[1])
+      }
       console.log('搜索'+this.searchOptions.searchParams.customerValue); 
       var param = {
         customerId:(this.searchOptions.searchParams.customerValue==="")?"":this.searchOptions.searchParams.customerValue,
@@ -645,8 +656,8 @@ export default {
         rangeId:(this.searchOptions.searchParams.rangeValue==="")?"":this.searchOptions.searchParams.rangeValue,
         clothingLevelId:(this.searchOptions.searchParams.clothingLevelValue==="")?"":this.searchOptions.searchParams.clothingLevelValue,
         id:(this.searchOptions.searchParams.idValue === "")?"":this.searchOptions.searchParams.idValue,
-        startDate:this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1])
+        startDate:startDate,
+        endDate:endDate
       }
       console.log(param);
       this.$axios

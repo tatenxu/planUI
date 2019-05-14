@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <!-- <el-select v-model="searchOptions.searchParams.customerName" @change="clientSelect"> -->
+      
             <el-select v-model="CustomerValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
@@ -19,7 +19,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <!-- <el-select v-model="searchOptions.searchParams.brandName" @change="brandSelect"> -->
+
             <el-select v-model="BrandValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
@@ -34,8 +34,6 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <!-- <el-input v-model="searchOptions.searchParams.rangeName" placeholder="请输入系列名称"></el-input> -->
-            <!-- <el-select v-model="searchOptions.searchParams.rangeName"> -->
             <el-select v-model="RangeValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.rangeNameOption"
@@ -50,7 +48,6 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <!-- <el-select v-model="searchOptions.searchParams.clothingType"> -->
             <el-select v-model="ClothingLevelValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.clothingTypeOptions"
@@ -174,14 +171,6 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
-              <!-- <el-select v-model="ruleForm.name ">
-                <el-option
-                  v-for="item in ruleForm.options.rangeNameOption"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
-              </el-select>-->
               <el-input v-model="ruleForm.name" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
@@ -199,11 +188,6 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="8">
-            <el-form-item label="系列款数">
-              <el-input v-model="ruleForm.RangeAmount" clearable placeholder="请输入"></el-input>
-            </el-form-item>
-          </el-col>-->
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
@@ -258,14 +242,6 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
-              <!-- <el-select v-model="ruleForm.name ">
-                <el-option
-                  v-for="item in ruleForm.options.rangeNameOption"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
-              </el-select>-->
               <el-input v-model="ruleForm.name" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
@@ -283,11 +259,6 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="8">
-            <el-form-item label="系列款数">
-              <el-input v-model="ruleForm.RangeAmount" clearable placeholder="请输入"></el-input>
-            </el-form-item>
-          </el-col>-->
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
@@ -333,13 +304,6 @@ export default {
       },
 
       searchOptions: {
-        // searchParams: {
-        //   customerName: "",
-        //   brandName: "",
-        //   clothingType: "",
-        //   rangeName: "",
-        //   dateRange: ""
-        // },
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
@@ -394,30 +358,13 @@ export default {
       .then(response => {
         console.log("获得品牌信息成功了");
         this.searchOptions.options.brandNameOptions = response.data;
-        // this.ruleForm.options.brandNameOptions = response;
+
       })
       .catch(error => {
         this.$message({
           message: "获取品牌信息失败",
           type: "error"
         });
-        // console.log("获得品牌信息失败了");
-        // var ClothingList = [
-        //   {
-        //     id: 1,
-        //     name: "时装"
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "精品"
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "时尚"
-        //   }
-        // ];
-        // this.searchOptions.options.brandNameOptions = ClothingList;
-        // // this.ruleForm.options.brandNameOptions = ClothingList;
       });
 
     //获得系列名称
@@ -584,17 +531,6 @@ export default {
           });
         });
     },
-
-    // 搜集搜索条件
-    collectSearchOptions() {
-      const that = this;
-      var dateRange = that.dateRange;
-      var DateStart = that.changeDate(dateRange[0]);
-      var DateEnd = that.changeDate(dateRange[1]);
-
-      this.DateStartTime = DateStart;
-      this.DateEndTime = DateEnd;
-    },
     // 改变日期格式
     changeDate(date) {
       if (!date) {
@@ -626,21 +562,27 @@ export default {
       const that = this;
       that.multipleSelection = val;
     },
-    // 搜索按钮点击
     handleSearch() {
-      //首先把日期改变为Start - end
-      // this.collectSearchOptions();
-      //       var DateStart = that.changeDate(dateRange[0]);
-      // var DateEnd = that.changeDate(dateRange[1]);
+      let startDate;
+      let endDate;
+      if(this.dateRange==undefined)
+      {
+        startDate="";
+        endDate="";
+      }
+      else{
+                  startDate= this.changeDate(this.dateRange[0]),
+          endDate=this.changeDate(this.dateRange[1])
+      }
       let list = {
         customerId: this.CustomerValue === "" ? null : this.CustomerValue,
         brandId: this.BrandValue === "" ? null : this.BrandValue,
         id: this.RangeValue === "" ? null : this.RangeValue,
         clothingLevelId:
           this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
-        startDate: this.changeDate(this.dateRange[0]),
-        endDate: this.changeDate(this.dateRange[1])
+          dataRange:this.dataRange
       };
+    
       console.log(list);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
@@ -649,8 +591,8 @@ export default {
           id: this.RangeValue === "" ? null : this.RangeValue,
           clothingLevelId:
             this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
-          startDate: this.changeDate(this.dateRange[0]),
-          endDate: this.changeDate(this.dateRange[1])
+          startDate:startDate,
+          endDate: endDate
         })
         .then(response => {
           // (this.CustomerValue = ""),

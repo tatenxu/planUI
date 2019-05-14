@@ -656,6 +656,20 @@ export default {
     // 搜索按钮点击
     handleSearch() {
       // this.collectSearchOptions();
+      console.log("ssss")
+
+       let startDate;
+      let endDate;
+      if(this.dateRange==null)
+      {
+        startDate="";
+        endDate="";
+      }
+      else{
+                  startDate= this.changeDate(this.dateRange[0]),
+          endDate=this.changeDate(this.dateRange[1])
+      }
+      console.log(this.dateRange)
       let list = {
         customerId:
           this.searchOptions.searchParams.customerName === ""
@@ -675,10 +689,10 @@ export default {
             ? null
             : this.searchOptions.searchParams.number,
         id: null,
-        startDate: this.changeDate(this.dateRange[0]),
-        endDate: this.changeDate(this.dateRange[1])
+        startDate: startDate,
+        endDate: endDate
       };
-      console.log("searchList" + list.startDate);
+      console.log( list);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
           customerId:
@@ -699,8 +713,8 @@ export default {
               ? null
               : this.searchOptions.searchParams.number,
           id: null,
-          startDate: this.changeDate(this.dateRange[0]),
-          endDate: this.changeDate(this.dateRange[1])
+        startDate: startDate,
+        endDate: endDate
         })
         .then(response => {
           console.log(response.data);
