@@ -129,7 +129,7 @@
           <el-table-column prop="endDate" label="计划结束" align="center"></el-table-column>
           <el-table-column prop="state" label="审核状态" align="center"></el-table-column>
 
-          <el-table-column fixed="right" width="100">
+          <el-table-column fixed="right" width="100" label="操作" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
             </template>
@@ -267,10 +267,10 @@ export default {
       .catch(error => {
         console.log("获取客户信息失败");
       });
-
+      console.log("到达这里了")
     //获得空集搜索列表
     let list = {
-      stage: "review",
+      stage: "manage",
       customerId: undefined,
       brandId: undefined,
       rangeId: undefined,
@@ -285,6 +285,7 @@ export default {
         params: list
       })
       .then(response => {
+        
         console.log("获取空搜索集成功");
         this.tableData = response.data;
         console.log(response.data);

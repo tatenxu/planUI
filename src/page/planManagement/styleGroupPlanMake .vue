@@ -60,15 +60,14 @@
         </el-col>
         <el-col :span="5" class="MinW" style="margin-left:30px">
           <!-- <el-radio v-model="checked" label="1">未制定</el-radio>
-          <el-radio v-model="checked" label="2">已制定</el-radio> -->
-            <el-switch
+          <el-radio v-model="checked" label="2">已制定</el-radio>-->
+          <el-switch
             v-model="checked"
             @change="planTypeSwitchChange"
             inactive-color="#13ce66"
             active-text="未制定"
-            inactive-text="已制定">
-          </el-switch>
-      
+            inactive-text="已制定"
+          ></el-switch>
 
           <el-button type="primary" @click="searchStyleGroup" style="margin-left:50px">搜索</el-button>
         </el-col>
@@ -150,24 +149,23 @@ export default {
         this.series = response.data;
       })
       .catch(error => {
-           this.$message({
+        this.$message({
           message: "获取系列名称失败",
           type: "error"
         });
       });
     //获得品牌名称
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, 
-      {
-        parmas:{
-                  customerId: ""
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+        parmas: {
+          customerId: ""
         }
       })
       .then(response => {
         this.brand = response.data;
       })
       .catch(error => {
-           this.$message({
+        this.$message({
           message: "获取品牌名称失败",
           type: "error"
         });
@@ -176,15 +174,15 @@ export default {
     //获得款式组名称
     that.$axios
       .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`, {
-        params:{
-                rangeId: ""
+        params: {
+          rangeId: ""
         }
       })
       .then(response => {
         this.seriesGroup = response.data;
       })
       .catch(error => {
-           this.$message({
+        this.$message({
           message: "获取款式组名称失败",
           type: "error"
         });
@@ -197,7 +195,7 @@ export default {
         this.client = response.data;
       })
       .catch(error => {
-       this.$message({
+        this.$message({
           message: "获取客户名称失败",
           type: "error"
         });
@@ -209,97 +207,93 @@ export default {
         customerId: null,
         brandId: null,
         rangeId: null,
-        clothingLevelId:null,
+        clothingLevelId: null,
         id: null,
         startDate: null,
         endDate: null
       })
       .then(response => {
-
-          this.tableData = response.data;
-           this.tableData.forEach(element=>{
-    
+        console.log(response.data)
+        this.tableData = response.data;
+        this.tableData.forEach(element => {
           var d = new Date(element.createTime);
 
-
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
+          if (element.state === 1) element.stateName = "已制定";
+          else if (element.state === 2) element.stateName = "已提交";
+          else if (element.state === 3) element.stateName = "被驳回";
+          else if (element.state === 4) element.stateName = "已审核";
+          else if (element.state === 5) element.stateName = "已下发";
+          else if (element.state === 6) element.stateName = "已删除";
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
         });
       })
       .catch(error => {
-         this.$message({
+        this.$message({
           message: "获取搜索结果失败",
           type: "error"
         });
       });
   },
   methods: {
-       planTypeSwitchChange(){
-      console.log("ssssssssss="+this.checked)
+    planTypeSwitchChange() {
+      console.log("ssssssssss=" + this.checked);
       const that = this;
       this.DataStartTime = that.changeDate(this.Date1[0]);
       this.DataEndTime = that.changeDate(this.Date1[1]);
-      let list={
-            id: this.SeriesName===""?"":this.SeriesName,
-            customerId: this.ClientName===""?"":this.ClientName,
-            brandId: this.BrandName===""?"":this.BrandName,
-            clothingLevelId: this.clothingLevelId===""?"":this.clothingLevelId,
-            startDate: this.DataStartTime,
-            endDate: this.DataEndTime
-      }
+      let list = {
+        id: this.SeriesName === "" ? "" : this.SeriesName,
+        customerId: this.ClientName === "" ? "" : this.ClientName,
+        brandId: this.BrandName === "" ? "" : this.BrandName,
+        clothingLevelId:
+          this.clothingLevelId === "" ? "" : this.clothingLevelId,
+        startDate: this.DataStartTime,
+        endDate: this.DataEndTime
+      };
       console.log(list);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-            id: this.SeriesName===""?null:this.SeriesName,
-            customerId: this.ClientName===""?null:this.ClientName,
-            brandId: this.BrandName===""?null:this.BrandName,
-            clothingLevelId: this.clothingLevelId===""?null:this.clothingLevelId,
-            startDate: this.DataStartTime,
-            endDate: this.DataEndTime
+          id: this.SeriesName === "" ? null : this.SeriesName,
+          customerId: this.ClientName === "" ? null : this.ClientName,
+          brandId: this.BrandName === "" ? null : this.BrandName,
+          clothingLevelId:
+            this.clothingLevelId === "" ? null : this.clothingLevelId,
+          startDate: this.DataStartTime,
+          endDate: this.DataEndTime
         })
         .then(response => {
-          console.log("checked=",this.checked);
+          console.log("checked=", this.checked);
           var SearchList = response.data;
           this.tableData = [];
-           SearchList.forEach(element=>{
-             console.log("这次havePlan的值为:"+element.havePlan)
-          var d = new Date(element.createTime);
-        if(element.addingMode===1) element.addingModeName="手动";
-          else element.addingModeName="导入";
+          SearchList.forEach(element => {
+            console.log("这次havePlan的值为:" + element.havePlan);
+            var d = new Date(element.createTime);
+            if (element.addingMode === 1) element.addingModeName = "手动";
+            else element.addingModeName = "导入";
 
+            if (element.havePlan === true) element.PlanState = "已制定";
+            else if (element.havePlan === false) element.PlanState = "未制定";
+            if (element.havePredictPlan === true)
+              element.predictState = "已预测";
+            else if (element.havePredictPlan === false)
+              element.predictState = "未预测";
+            var d = new Date(element.createTime);
+            let time = d.toLocaleString();
+            element.createTime = time;
 
-          if(element.havePlan===true) element.PlanState="已制定";
-          else if(element.havePlan===false) element.PlanState="未制定";
-          if(element.havePredictPlan===true) element.predictState="已预测";
-          else if(element.havePredictPlan===false) element.predictState="未预测";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
-
-   
-            if(this.checked==true&&element.havePlan===false){
+            if (this.checked == true && element.havePlan === false) {
               this.tableData.push(element);
-
-            }
-            else if(this.checked==false&&element.havePlan===true)
-            {
+            } else if (this.checked == false && element.havePlan === true) {
               this.tableData.push(element);
             }
-
-        });
+          });
         })
         .catch(error => {
-                  this.$message({
-          message: "获取搜索结果失败",
-          type: "error"
-        });
+          this.$message({
+            message: "获取搜索结果失败",
+            type: "error"
+          });
         });
     },
     //改变日期格式
@@ -328,48 +322,41 @@ export default {
 
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
-    
-            customerId: this.ClientName === "" ? null : this.ClientName,
-            brandId: this.BrandName === "" ? null : this.BrandName,
-            rangeId: this.SeriesName === "" ?null: this.SeriesName,
-            clothingLevelId: null,
-            id: this.SeriesGroupName === "" ? null : this.SeriesGroupName,
-            startDate: this.DataStartTime,
-            endDate: this.DataEndTime
-          
+          customerId: this.ClientName === "" ? null : this.ClientName,
+          brandId: this.BrandName === "" ? null : this.BrandName,
+          rangeId: this.SeriesName === "" ? null : this.SeriesName,
+          clothingLevelId: null,
+          id: this.SeriesGroupName === "" ? null : this.SeriesGroupName,
+          startDate: this.DataStartTime,
+          endDate: this.DataEndTime
         })
         .then(response => {
-          console.log(response.data)
-        console.log("checked=",this.checked);
+          console.log(response.data);
+          console.log("checked=", this.checked);
           var SearchList = response.data;
           this.tableData = [];
-           SearchList.forEach(element=>{
-             console.log("这次havePlan的值为:"+element.havePlan)
-          var d = new Date(element.createTime);
-  
+          SearchList.forEach(element => {
+            console.log("这次havePlan的值为:" + element.havePlan);
+            var d = new Date(element.createTime);
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
+            if (element.state === 1) element.stateName = "已制定";
+            else if (element.state === 2) element.stateName = "已提交";
+            else if (element.state === 3) element.stateName = "被驳回";
+            else if (element.state === 4) element.stateName = "已审核";
+            else if (element.state === 5) element.stateName = "已下发";
+            else if (element.state === 6) element.stateName = "已删除";
+            var d = new Date(element.createTime);
+            let time = d.toLocaleString();
+            element.createTime = time;
 
-          if(this.checked!=0){
-            if(this.checked==1&&element.havePlan===false){
-              this.tableData.push(element);
-
-            }
-            else if(this.checked==2&&element.havePlan===true)
-            {
-              this.tableData.push(element);
-            }
-          }
-          else this.tableData.push(element);
-        });
+            if (this.checked != 0) {
+              if (this.checked == 1 && element.havePlan === false) {
+                this.tableData.push(element);
+              } else if (this.checked == 2 && element.havePlan === true) {
+                this.tableData.push(element);
+              }
+            } else this.tableData.push(element);
+          });
         })
         .catch(error => {
           var SearchList = [
@@ -419,19 +406,38 @@ export default {
       this.$refs.singleTable.setCurrentRow(row);
     },
     QuoteSeriesPlan(row) {
-      this.$router.push({
-        name: "planMakeIndex",
-        params: {
-          flag: 2,
-          goback: "styleGroupPlanMake",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          plantype: 2,
-          planobj: row.name,
-           id:row.id,
-        }
-      });
+     const that  =  this;
+      //获得品牌下拉框
+      console.log(row.id)
+      let list = {
+        styleGroupId:row.id ,
+         rangeId: row.rangeId
+      }
+      that.$axios
+        .post(`${window.$config.HOST}/planManagement/quoteRangePlan`, list)
+        .then(response => {
+          console.log("repsonse="+response.data)
+          let ok = response.data;
+          if (ok > 0) {
+            this.$message({
+              message: "引用预测成功",
+              type: "success"
+            });
+          } else {
+            this.$message({
+              message: "引用预测失败",
+              type: "warning"
+            });
+          }
+        })
+        .catch(error => {
+            console.log("repsonse=")
+          this.$message({
+            message: "引用预测失败！",
+            type: "error"
+          });
+        });
+     
     },
     ToPlanForm(row) {
       this.$router.push({
@@ -443,8 +449,10 @@ export default {
           brand: row.brandName,
           series: row.rangeName,
           plantype: 2,
-           id:row.id,
-          planobj: row.name
+          id: row.id,
+          planobj: row.name,
+          TopPlan: 0,
+          TopPlanName: "根计划"
         }
       });
     }
