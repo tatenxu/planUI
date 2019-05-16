@@ -110,7 +110,7 @@
           </el-col>
         </el-row>
         <el-table
-          :data="data.tableData"
+          :data="tableDataA"
           max-height="400"
           border
           @selection-change="changeCheckBoxFun"
@@ -144,6 +144,8 @@
         <!-- 分页 -->
         <div class="block">
           <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
             :current-page.sync="pagination.currentPage"
             :page-sizes="pagination.pageSizes"
             :page-size="pagination.pageSize"
@@ -349,6 +351,7 @@ export default {
         //   { required: true, message: "请输入系列款数", trigger: "blur" }
         // ]
       },
+      tableDataA:[],
       dateRange: "",
       dialogFormVisible1: false,
       DateStart: "",
@@ -379,23 +382,7 @@ export default {
         tableData: []
       },
       multipleSelection: [],
-      // rules: {
-      //   customerName: [
-      //     { required: true, message: "请选择客户名称", trigger: "change" }
-      //   ],
-      //   brandName: [
-      //     { required: true, message: "请选择品牌", trigger: "change" }
-      //   ],
-      //   clothingType: [
-      //     { required: true, message: "请选择服装层次", trigger: "change" }
-      //   ],
-      //   rangeName: [
-      //     { required: true, message: "请选择系列名称", trigger: "change" }
-      //   ],
-      //   styleNumber: [
-      //     { required: true, message: "请输入订单款号", trigger: "change" }
-      //   ]
-      // },
+
       ruleForm: {
         rangeId: "",
         rangeNumber: "",
@@ -532,22 +519,7 @@ export default {
           message: "获取客户名称失败",
           type: "error"
         });
-        // var CustomerList = [
-        //   {
-        //     id: 1,
-        //     name: "顾客A"
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "顾客B"
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "顾客C"
-        //   }
-        // ];
-        // this.searchOptions.options.customerNameOptions = CustomerList;
-        // this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
+
       });
 
     //得到搜索信息
@@ -578,6 +550,16 @@ export default {
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
+
+        this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
+        {
+          this.tableDataA.push(this.data.tableData[i]);
+        }
         });
       })
       .catch(error => {
@@ -588,6 +570,17 @@ export default {
       });
   },
   methods: {
+
+          handleSizeChange(val) {
+    
+        this.pagination.pageSize=val;
+        console.log("每页+"+this.pagination.pageSize)
+        this.handleSearch();
+      },
+      handleCurrentChange(val) {
+        this.pagination.currentPage=val;
+         this.handleSearch();
+      },
     dialogCustomerNameSelectionChange() {
       var list = {
         customerId: this.ruleForm.customerName
@@ -655,9 +648,6 @@ export default {
 
     // 搜索按钮点击
     handleSearch() {
-      // this.collectSearchOptions();
-      console.log("ssss")
-
        let startDate;
       let endDate;
       if(this.dateRange==null)
@@ -669,7 +659,6 @@ export default {
                   startDate= this.changeDate(this.dateRange[0]),
           endDate=this.changeDate(this.dateRange[1])
       }
-      console.log(this.dateRange)
       let list = {
         customerId:
           this.searchOptions.searchParams.customerName === ""
@@ -692,7 +681,7 @@ export default {
         startDate: startDate,
         endDate: endDate
       };
-      console.log( list);
+    
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
           customerId:
@@ -717,19 +706,12 @@ export default {
         endDate: endDate
         })
         .then(response => {
-          console.log(response.data);
-
-          // (this.searchOptions.searchParams.customerName = ""),
-          //   (this.searchOptions.searchParams.brandName = ""),
-          //   (this.searchOptions.searchParams.rangeName = ""),
-          //   (this.searchOptions.searchParams.number = ""),
-          //   (this.dateRange = "");
+    
           var SearchList = response.data; 
             this.data.tableData = SearchList;
                     this.data.tableData.forEach(element=>{
-               if(element.addingMode===1) element.addingModeName="手动";
+          if(element.addingMode===1) element.addingModeName="手动";
           else element.addingModeName="导入";
-
           if(element.state===1) element.stateName="已制定";
           else if(element.state===2) element.stateName="已提交";
           else if(element.state===3) element.stateName="被驳回";
@@ -739,7 +721,22 @@ export default {
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
+
+
+          this.pagination.total=response.data.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
+        {
+          this.tableDataA.push(this.data.tableData[i]);
+        }
+
+        console.log(this.tableDataA)
           });
+
+
         })
         .catch(error => {
           this.$message({

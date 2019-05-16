@@ -90,9 +90,10 @@
 
         <hr>
 
-        <el-table :data="tableData" style="width: 100%; margin-top: 20px">
+        <el-table :data="tableDataA" style="width: 100%; margin-top: 20px">
           <el-table-column w idth="50" type="selection" align="center"></el-table-column>
-          <el-table-column prop="id" label="序号" align="center"></el-table-column>
+          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
+        
           <el-table-column prop="number" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -120,7 +121,22 @@
             </template>
           </el-table-column>-->
         </el-table>
+                <!-- 分页 -->
+        <div class="block">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.currentPage"
+            :page-sizes="pagination.pageSizes"
+            :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total"
+          ></el-pagination>
+        </div>
+
       </el-tab-pane>
+
+      
 
       <el-tab-pane label="引用计划模板" name="second" v-if="QuotePlanModel">
         <el-card>
@@ -264,6 +280,12 @@
 export default {
   data() {
     return {
+       pagination: {
+        currentPage: 1,
+        pageSizes: [5, 10, 20, 30, 50],
+        pageSize: 5,
+        total: 400
+      },
       clothingLevelId: "",
       DataStartTime: "",
       DataEndTime: "",
@@ -306,6 +328,7 @@ export default {
           BrandName: "商标A"
         }
       ],
+      tableDataA:[],
       tableData: []
     };
   },
@@ -408,6 +431,16 @@ export default {
             this.tableData.push(element);
           }
         });
+
+                  this.pagination.total=response.data.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
       })
       .catch(error => {
         this.$message({
@@ -417,6 +450,16 @@ export default {
       });
   },
   methods: {
+        handleSizeChange(val) {
+    
+        this.pagination.pageSize=val;
+        console.log("每页+"+this.pagination.pageSize)
+        this.searchSeriesPlan();
+      },
+      handleCurrentChange(val) {
+        this.pagination.currentPage=val;
+         this.searchSeriesPlan();
+      },
     //改变日期格式
     changeDate(date) {
       console.log(date);
@@ -437,7 +480,7 @@ export default {
       }
     },
     planTypeSwitchChange() {
-      console.log("ssssssssss=" + this.checked);
+      this.pagination.currentPage=1;
       const that = this;
       this.DataStartTime = that.changeDate(this.Date1[0]);
       this.DataEndTime = that.changeDate(this.Date1[1]);
@@ -487,6 +530,15 @@ export default {
               this.tableData.push(element);
             }
           });
+                    this.pagination.total=this.tableData.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         })
         .catch(error => {
           this.$message({
@@ -546,6 +598,15 @@ export default {
               this.tableData.push(element);
             }
           });
+                    this.pagination.total=this.tableData.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         })
         .catch(error => {
           this.$message({
@@ -757,6 +818,10 @@ export default {
     }
   }
 }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+  }
 .Mtitle {
   align-content: center;
   margin-left: 45%;

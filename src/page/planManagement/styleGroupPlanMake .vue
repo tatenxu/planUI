@@ -87,8 +87,8 @@
 
     <!-- 搜索结果 -->
     <el-card class="box-card">
-      <el-table :data="tableData" style="width: 100%; margin-top: 20px">
-        <el-table-column prop="id" label="序号" align="center"></el-table-column>
+      <el-table :data="tableDataA" style="width: 100%; margin-top: 20px">
+      <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="number" label="款式组编号" align="center"></el-table-column>
         <el-table-column prop="name" label="款式组名称" align="center" width="100px"></el-table-column>
         <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
@@ -106,6 +106,19 @@
           </template>
         </el-table-column>
       </el-table>
+
+                      <!-- 分页 -->
+        <div class="block">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.currentPage"
+            :page-sizes="pagination.pageSizes"
+            :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total"
+          ></el-pagination>
+        </div>
     </el-card>
   </div>
 </template>
@@ -114,6 +127,14 @@
 export default {
   data() {
     return {
+
+       pagination: {
+        currentPage: 1,
+        pageSizes: [2, 10, 20, 30, 50],
+        pageSize: 2,
+        total: 400
+      },
+      tableDataA:[],
       checked: "0",
       ClientName: "",
       BrandName: "",
@@ -227,7 +248,19 @@ export default {
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
+          
         });
+
+
+                     this.pagination.total=this.tableData.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
       })
       .catch(error => {
         this.$message({
@@ -237,6 +270,17 @@ export default {
       });
   },
   methods: {
+
+        handleSizeChange(val) {
+    
+        this.pagination.pageSize=val;
+        console.log("每页+"+this.pagination.pageSize)
+        this.searchStyleGroup();
+      },
+      handleCurrentChange(val) {
+        this.pagination.currentPage=val;
+         this.searchStyleGroup();
+      },
     planTypeSwitchChange() {
       console.log("ssssssssss=" + this.checked);
       const that = this;
@@ -287,7 +331,19 @@ export default {
             } else if (this.checked == false && element.havePlan === true) {
               this.tableData.push(element);
             }
+
+
           });
+
+                       this.pagination.total=this.tableData.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         })
         .catch(error => {
           this.$message({
@@ -357,6 +413,16 @@ export default {
               }
             } else this.tableData.push(element);
           });
+
+                       this.pagination.total=this.tableData.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         })
         .catch(error => {
           var SearchList = [
@@ -461,6 +527,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+
+
+  .block {
+    padding: 30px 0;
+    text-align: center;
+  }
 .title {
   min-width: 100px;
 }

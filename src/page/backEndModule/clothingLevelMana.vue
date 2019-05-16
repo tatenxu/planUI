@@ -340,8 +340,8 @@
 
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateClothingLevel`,param)
           .then(response=>{
-            if(response.data<0){
-              this.$message.error("编辑失败");
+            if(response.data < 0){
+              this.$message.error(response.data+"编辑失败");
             }else{
               this.$message({
                 message:'编辑成功!',

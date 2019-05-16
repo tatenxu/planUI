@@ -22,10 +22,12 @@ const styleInfo = r => require.ensure([], () => r(require('../page/infoManagemen
 const bindStyleGroup = r => require.ensure([], () => r(require('../page/infoManagement/style/bindStyleGroup.vue')), 'bindStyleGroup');
 const styleImport = r => require.ensure([], () => r(require('../page/infoManagement/style/styleImport.vue')), 'styleImport');
 
+// 计划管理
 const predictPlanToBeMake = r => require.ensure([], () => r(require('../page/planManagement/predictPlanToBeMake.vue')), 'predictPlanToBeMake');
 const predictPlanMaking = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMaking.vue')), 'predictPlanMaking');
 const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMade.vue')), 'predictPlanMade');
 const planManagement = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'planManagement');
+const commitedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/commitedPlanManagement.vue')), 'commitedPlanManagement');
 const planCompletionManage = r => require.ensure([], () => r(require('../page/planManagement/planCompletionManage.vue')), 'planCompletionManage');
 const planMakeIndex = r => require.ensure([], () => r(require('../page/planManagement/planMake.vue')), 'planMakeIndex');
 const seriesPlanMake = r => require.ensure([], () => r(require('../page/planManagement/seriesPlanMake.vue')), 'seriesPlanMake');
@@ -187,7 +189,7 @@ export default [{
         name: 'predictPlanToBeMake',
         component: predictPlanToBeMake,
         meta: {
-          bcrumd: ['未制定计划'],
+          bcrumd: ['预测计划管理','未制定计划'],
         }
       },
       { 
@@ -195,7 +197,7 @@ export default [{
         name: 'predictPlanMaking',
         component: predictPlanMaking,
         meta: {
-          bcrumd: ['计划制定中'],
+          bcrumd: ['预测计划管理','未提交计划'],
         }
       },
       { 
@@ -203,7 +205,7 @@ export default [{
         name: 'predictPlanMade',
         component: predictPlanMade,
         meta: {
-          bcrumd: ['计划已制订'],
+          bcrumd: ['预测计划管理','已提交计划'],
         }
       },
       { 
@@ -211,7 +213,15 @@ export default [{
         name: 'planManagement',
         component: planManagement,
         meta: {
-          bcrumd: ['计划管理'],
+          bcrumd: ['进行中计划管理'],
+        }
+      },
+      { 
+        path: '/commitedPlanManagement',
+        name: 'commitedPlanManagement',
+        component: commitedPlanManagement,
+        meta: {
+          bcrumd: ['已提交计划管理'],
         }
       },
       { 

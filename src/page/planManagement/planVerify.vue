@@ -109,7 +109,7 @@
       <br>
       <div>
         <el-table
-          :data="tableData"
+          :data="tableDataA"
           max-height="400"
           border
           @selection-change="isChanged"
@@ -117,7 +117,9 @@
           :highlight-current-row="true"
           style="width: 100%; margin-top: 20px"
         >
+
           <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
           <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -135,6 +137,19 @@
             </template>
           </el-table-column>
         </el-table>
+
+             <!-- 分页 -->
+        <div class="block">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.currentPage"
+            :page-sizes="pagination.pageSizes"
+            :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total"
+          ></el-pagination>
+        </div>
       </div>
       <!-- <div class="block">
         <el-pagination
@@ -176,6 +191,14 @@ export default {
   name: "warehouseList",
   data() {
     return {
+
+       pagination: {
+        currentPage: 1,
+        pageSizes: [5, 10, 20, 30, 50],
+        pageSize: 5,
+        total: 400
+      },
+      tableDataA:[],
       GoBack: false,
       GoBackReason: "",
       list: [],
@@ -194,12 +217,7 @@ export default {
       dataStartTime: "",
       dataEndTime: "",
 
-      pagination: {
-        currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
-        total: 400
-      },
+
       options1: [],
       options2: [],
       options3: [
@@ -288,6 +306,16 @@ export default {
         
         console.log("获取空搜索集成功");
         this.tableData = response.data;
+
+                          this.pagination.total=response.data.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         console.log(response.data);
       })
       .catch(error => {
@@ -295,6 +323,17 @@ export default {
       });
   },
   methods: {
+
+       handleSizeChange(val) {
+    
+        this.pagination.pageSize=val;
+        console.log("每页+"+this.pagination.pageSize)
+        this.getWareList();
+      },
+      handleCurrentChange(val) {
+        this.pagination.currentPage=val;
+         this.getWareList();
+      },
     //查看详情
     searchDetails(row) {
        this.$router.push({
@@ -352,7 +391,7 @@ export default {
       this.DataStartTime = that.changeDate(this.dataRange[0]);
       this.DataEndTime = that.changeDate(this.dataRange[1]);
       let list={
-          stage: "review",
+          stage: "manage",
           customerId:this.clientId===""?undefined:this.clientId,
           brandId:this.brandId===""?undefined:this.brandId, 
           rangeId:this.rangeId===""?undefined:this.rangeId, 
@@ -380,7 +419,20 @@ export default {
           })
           }
           else this.tableData=response.data;
+
+
+
+                            this.pagination.total=this.tableData.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         })
+
         .catch(error => {
   
         });

@@ -106,7 +106,8 @@
           计划管理
         </template>
 
-        <el-menu-item index="/planManagement"><i class="el-icon-document"></i>计划管理</el-menu-item>
+        <el-menu-item index="/planManagement"><i class="el-icon-document"></i>进行中计划管理</el-menu-item>
+        <el-menu-item index="/commitedPlanManagement"><i class="el-icon-document"></i>已完成计划管理</el-menu-item>
         <el-submenu index="predictPlanManagement">
           <template slot="title">
             <i class="el-icon-document"></i>

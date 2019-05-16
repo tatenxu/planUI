@@ -92,7 +92,7 @@
 
     <el-card class="box-card">
       <div>
-      <el-table :data="tableData" max-height="550" style="width : 100%" :stripe="true">
+      <el-table :data="tableDataA" max-height="550" style="width : 100%" :stripe="true">
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
@@ -117,15 +117,18 @@
 
       </el-table>
       </div>
-      <div class="block">
+     <!-- 分页 -->
+        <div class="block">
           <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
             :current-page.sync="pagination.currentPage"
             :page-sizes="pagination.pageSizes"
             :page-size="pagination.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total">
-          </el-pagination>
-      </div>
+            :total="pagination.total"
+          ></el-pagination>
+        </div>
     </el-card>
   </div>
 </template>
@@ -135,6 +138,7 @@ export default {
   data() {
     return {
       searchOptions: {
+        tableDataA:[],
         searchParams: {
           customerName: "",
           brandName: "",
@@ -156,8 +160,8 @@ export default {
       pages: 0,
       pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
+        pageSizes: [2, 10, 20, 30, 50],
+        pageSize: 2,
         total: 400,
       },
     }
@@ -218,6 +222,15 @@ export default {
             this.tableData.push(element);
           }
         });
+        this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
       })
       .catch(error => {
         console.log("初始化计划列表获取错误");
@@ -295,6 +308,15 @@ export default {
               this.tableData.push(element);
             }
           });
+             this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         })
         .catch(error => {
           console.log("计划列表获取错误");

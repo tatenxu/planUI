@@ -105,7 +105,7 @@
           </el-col>
         </el-row>
         <el-table
-          :data="data.tableData"
+          :data="tableDataA"
           max-height="400"
           border
           @selection-change="changeCheckBoxFun"
@@ -142,8 +142,8 @@
             :page-sizes="pagination.pageSizes"
             :page-size="pagination.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total">
-          </el-pagination>
+            :total="pagination.total"
+          ></el-pagination>
         </div>
       </div>
     </el-card>
@@ -228,10 +228,11 @@ export default {
     return {
       pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
+        pageSizes: [2, 10, 20, 30, 50],
+        pageSize: 2,
         total: 400,
       },
+      tableDataA:[],
       searchOptions:{
         searchParams :{
           customerName: "",
@@ -373,32 +374,21 @@ export default {
           else if(element.state===6) element.stateName="已删除";
           var newDate = new Date(element.createTime);
           element.createTime = newDate.toLocaleString();
+
+
+                  this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
+        {
+          this.tableDataA.push(this.data.tableData[i]);
+        }
         });
       })
       .catch(error => {
         console.log("款式组信息加载错误")
-        /* var SearchList = [
-          {
-            id: "475342343",
-            number: "KSZ20190101001",
-            name: "款式1组",
-            rangeNumber:"XL20190101001" ,
-            rangeId: "48674231",
-            rangeName:"Fall-2019(07/08/09)" ,
-            customerName:"Qi-Collection" ,
-            customerId:"745341",
-            brandName: "Selkie",
-            brandId: "574531423",
-            clothingLevelName:"时装" ,
-            clothingLevelId:"575123",
-            createrName: "刘德华",
-            deptName: "业务1组",
-            createTime: "2019-01-01 10:15:01",
-            state:"已下发",
-            havePlan:"1",
-          },
-        ];
-        this.data.tableData = SearchList;*/
       });
  
     //品牌名称选择获取
@@ -489,6 +479,17 @@ export default {
   },
   methods: {
     //系列选择触发款式组名get
+
+       handleSizeChange(val) {
+    
+        this.pagination.pageSize=val;
+        console.log("每页+"+this.pagination.pageSize)
+        this.handleSearch();
+      },
+      handleCurrentChange(val) {
+        this.pagination.currentPage=val;
+         this.handleSearch();
+      },
     rangeSelectionChange(){
       console.log("系列名称选择触发");
       console.log(this.searchOptions.searchParams.rangeValue);
@@ -599,14 +600,7 @@ export default {
         return y + "-" + m + "-" + d ;
       }
     },
-    // 每页条数改变时触发函数
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
-    // 当前页码改变时触发函数
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    },
+
     // 选择框改变监控
     changeCheckBoxFun(val){
       const that = this;
@@ -673,6 +667,16 @@ export default {
             else if(element.state===6) element.stateName="已删除";
             var newDate = new Date(element.createTime);
             element.createTime = newDate.toLocaleString();
+
+              this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
+        {
+          this.tableDataA.push(this.data.tableData[i]);
+        }
           });
         })
         .catch(error=>{

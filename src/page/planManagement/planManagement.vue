@@ -116,7 +116,7 @@
         </el-col>
       </el-row>
       <el-table
-        :data="tableData"
+        :data="tableDataA"
         max-height="400"
         @selection-change="changeCheckBoxFun"
         :stripe="true"
@@ -171,17 +171,18 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="block">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="pagination.currentPage"
-          :page-sizes="pagination.pageSizes"
-          :page-size="pagination.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
-        ></el-pagination>
-      </div>
+    <!-- 分页 -->
+        <div class="block">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.currentPage"
+            :page-sizes="pagination.pageSizes"
+            :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total"
+          ></el-pagination>
+        </div>
     </el-card>
   </div>
 </template>
@@ -191,6 +192,7 @@ import { error } from 'util';
 export default {
   data() {
     return {
+      tableDataA:[],
       isSelfMadePlan:false,
       searchOptions: {
         searchParams: {
@@ -275,6 +277,16 @@ export default {
       .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
       .then(response => {
         this.tableData = response.data;
+
+            this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
         this.searchOptions.options.planNameOptions = response.data;
       })
       .catch(error => {
@@ -329,6 +341,18 @@ export default {
         }
       });
     },
+
+    
+          handleSizeChange(val) {
+    
+        this.pagination.pageSize=val;
+        console.log("每页+"+this.pagination.pageSize)
+        this.handleSearch();
+      },
+      handleCurrentChange(val) {
+        this.pagination.currentPage=val;
+         this.handleSearch();
+      },
     addPlanChild() {
       const that = this;
       if (that.selectedData.length === 1) {
@@ -541,6 +565,15 @@ export default {
           })
           .then(response=>{
             this.tableData = response.data;
+                     this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -553,6 +586,15 @@ export default {
           })
           .then(response=>{
             this.tableData = response.data;
+                     this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -560,6 +602,7 @@ export default {
       }
     },
     planTypeSwitchChange(){
+      this.pagination.currentPage=1;
       this.tableData = [];
       if(this.isSelfMadePlan){
         this.$axios
@@ -568,6 +611,15 @@ export default {
           })
           .then(response=>{
             this.tableData = response.data;
+                     this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -577,18 +629,22 @@ export default {
           .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
           .then(response=>{
             this.tableData = response.data;
+                     this.pagination.total=response.data.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableDataA=[];
+        
+        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+        {
+          this.tableDataA.push(this.tableData[i]);
+        }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
           });
       }
     },
-    handleSizeChange(){
 
-    },
-    handleCurrentChange(){
-      
-    }
   }
 };
 </script>
