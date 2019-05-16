@@ -475,18 +475,62 @@ export default {
       this.selectedData = val;
     },
     getPlanDetail(row) {
-      const that = this;
-      that.$router.push({
-        name: "planMakeIndex",
-        params: {
-          flag: 4,
+      var param;
+      if(this.isSelfMadePlan){
+        param={
+          flag: 1,
           goback: "planManagement",
           client: row.customerName,
           brand: row.brandName,
           series: row.rangeName,
-          plantype: 2,
-          planobj: row.rangeName
-        }
+          id:row.id,
+          plantype: row.type,
+          planobj: row.planObject,
+          TopPlan: row.parentId,
+          TopPlanName: row.parentName?row.parentName:"根计划",
+          planName:row.name,
+          projectType:row.projectType,
+          number:row.number,
+          dataStart:row.startDate,
+          dataEnd:row.endDate,
+          productDate:row.productDate,
+          productDateType:row.productDateType,
+          productId:row.productId,
+          proposal:row.proposal,
+          note:row.note,
+          description:row.description,
+        };
+      }else{
+        param={
+          flag: 0,
+          goback: "planManagement",
+          client: row.customerName,
+          brand: row.brandName,
+          series: row.rangeName,
+          id:row.id,
+          plantype: row.type,
+          planobj: row.planObject,
+          TopPlan: row.parentId,
+          TopPlanName: row.parentName?row.parentName:"根计划",
+          planName:row.name,
+          projectType:row.projectType,
+          number:row.number,
+          dataStart:row.startDate,
+          dataEnd:row.endDate,
+          productDate:row.productDate,
+          productDateType:row.productDateType,
+          productId:row.productId,
+          proposal:row.proposal,
+          note:row.note,
+          description:row.description,
+        };
+      }
+      console.log(row);
+      console.log(param);
+      const that = this;
+      that.$router.push({
+        name: "planMakeIndex",
+        params: param
       });
     },
     ModifyPlanDetail(row) {

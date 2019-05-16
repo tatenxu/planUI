@@ -166,7 +166,6 @@ import { error } from 'util';
 export default {
   data() {
     return {
-      isSelfMadePlan:false,
       searchOptions: {
         searchParams: {
           customerName: "",
@@ -267,18 +266,32 @@ export default {
       this.selectedData = val;
     },
     getPlanDetail(row) {
-      const that = this;
+      param={
+        flag: 0,
+        goback: "commitedPlanManagement",
+        client: row.customerName,
+        brand: row.brandName,
+        series: row.rangeName,
+        id:row.id,
+        plantype: row.type,
+        planobj: row.planObject,
+        TopPlan: row.parentId,
+        TopPlanName: row.parentName?row.parentName:"根计划",
+        planName:row.name,
+        projectType:row.projectType,
+        number:row.number,
+        dataStart:row.startDate,
+        dataEnd:row.endDate,
+        productDate:row.productDate,
+        productDateType:row.productDateType,
+        productId:row.productId,
+        proposal:row.proposal,
+        note:row.note,
+        description:row.description,
+      };
       that.$router.push({
         name: "planMakeIndex",
-        params: {
-          flag: 4,
-          goback: "planManagement",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          plantype: 2,
-          planobj: row.rangeName
-        }
+        params: param
       });
     },
     

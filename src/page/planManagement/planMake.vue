@@ -115,7 +115,7 @@
                 ></el-input>
                 <el-input
                   v-else
-                  v-model="planName"
+                  v-model="ruleForm.planName"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -200,6 +200,7 @@
                   :rows="1"
                   placeholder="请选择"
                   :disabled="true"
+                  style="min-width:300px"
                 ></el-input>
               </el-form-item>
             </div>
@@ -230,6 +231,7 @@
                   :rows="1"
                   placeholder="请选择"
                   :disabled="true"
+                  style="min-width:120px"
                 ></el-input>
               </el-form-item>
             </div>
@@ -250,6 +252,7 @@
                 :rows="1"
                 placeholder="请选择"
                 :disabled="true"
+                style="min-width:260px"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -301,9 +304,10 @@
                   v-else
                   v-model="ruleForm.PlanPropose"
                   clearable
-                  :rows="1"
+                  :rows="4"
                   placeholder="请选择"
                   :disabled="true"
+                  style="min-width:900px"
                 ></el-input>
               </el-form-item>
             </div>
@@ -328,6 +332,7 @@
                   :rows="1"
                   placeholder="请选择"
                   :disabled="true"
+                  style="min-width:900px"
                 ></el-input>
               </el-form-item>
             </div>
@@ -352,6 +357,7 @@
                   :rows="1"
                   placeholder
                   :disabled="true"
+                  style="min-width:900px"
                 ></el-input>
               </el-form-item>
             </div>
@@ -638,7 +644,6 @@ export default {
       }
     },
     SavePlanForm(formName) {
-
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log("啊啊啊啊啊啊啊");
@@ -674,8 +679,9 @@ export default {
 
           console.log(list);
           that.$axios
-
-            .post(`${window.$config.HOST}/planManagement/addPlan`, list
+            .post(
+              `${window.$config.HOST}/planManagement/addPlan`,
+              list
               // name: this.ruleForm.planName,
               // rangeId: range,
               // type: this.ruleForm.PlanType,
@@ -692,7 +698,7 @@ export default {
               // proposal: this.ruleForm.PlanPropose,
               // description: this.ruleForm.PlanDiscribe,
               // note: this.ruleForm.PlanRemark
-          )
+            )
             .then(response => {
               console.log(response.data);
               let ok = response.data;
@@ -710,7 +716,7 @@ export default {
                   message: "添加失败",
                   type: "error"
                 });
-              }                                                                                                                      
+              }
             })
             .catch(error => {
               this.$message({
@@ -801,6 +807,7 @@ export default {
         this.ruleForm.planName = data.planName;
         this.ruleForm.ProjectType = data.projectType;
         this.ruleForm.PlanPrice = data.number;
+        this.ruleForm.Date1 = data.dataStart + " 至 " + data.dataEnd;
 
         this.ruleForm.ProductData = data.productDate;
         this.ruleForm.ProductDateType = data.productDateType;
@@ -809,7 +816,7 @@ export default {
         this.ruleForm.PlanRemark = data.note;
         this.ruleForm.PlanDiscribe = data.description;
 
-        console.log(this.ruleForm.TopPlanName)
+        console.log(this.ruleForm);
 
         that.$axios
           .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
@@ -838,6 +845,8 @@ export default {
         case 3:
           this.ruleForm.PlanType = "款式计划";
           break;
+        default:
+          this.ruleForm.PlanType = data.plantype;
       }
     }
   }
