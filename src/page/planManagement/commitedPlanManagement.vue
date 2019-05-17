@@ -248,14 +248,17 @@ export default {
       stage: "manage"
     }
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+      .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`,{
         params:param
       })
       .then(response=>{
           response.data.forEach(element=>{
-            if(element.isCompleted){
-              this.totalTableData.push(element);
-            }
+            this.totalTableData = response.data;
+            this.totalTableData.forEach(element=>{
+              if(element.isRoot){
+                element.parentName = "根计划";
+              }
+            });
           });
           this.searchOptions.options.planNameOptions = this.totalTableData;
 
@@ -336,15 +339,18 @@ export default {
       param.stage = "manage";
       console.log(param);
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+        .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`,{
           params:param
         })
         .then(response=>{
-          response.data.forEach(element=>{
-            if(element.isCompleted){
-              this.totalTableData.push(element);
+          this.totalTableData = response.data;
+          this.totalTableData.forEach(element=>{
+            if(element.isRoot){
+              element.parentName = "根计划";
             }
           });
+
+          //分页
           this.pagination.total = this.totalTableData.length;
           this.pagination.currentPage = 1;
           var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;

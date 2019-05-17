@@ -108,9 +108,12 @@
         <!-- <el-table-column prop="state" label="状态" align="center"></el-table-column> -->
         <!-- <el-table-column prop="note" label="操作" align="center"></el-table-column> -->
 
-        <el-table-column  fixed="right" width="150" align="center">
+        <el-table-column  fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
-              <el-button @click="makePredict(scope.row)" type="text" size="small">制定预测</el-button>
+              <el-button v-if="!scope.row.havePredictPlan" @click="makePredict(scope.row)" type="text" size="small">
+                制定预测
+              </el-button>
+              <p v-if="scope.row.havePredictPlan">已制定</p>
           </template>
         </el-table-column>
 
@@ -239,7 +242,7 @@ export default {
       .then(response => {
         this.totalTableData = response.data;
 
-        his.pagination.total = this.totalTableData.length;
+        this.pagination.total = this.totalTableData.length;
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
         var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
         this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
@@ -275,13 +278,16 @@ export default {
       that.$router.push({
         name: "planMakeIndex",
         params: {
+          flag: 1,
           goback: "predictPlanToBeMake",
-          flag: 5,
           client: row.customerName,
           brand: row.brandName,
-          series: row.rangeName,
-          plantype: 1,
-          planobj: row.rangeName
+          series: row.name,
+          id:row.id,
+          plantype: "系列计划",
+          planobj: row.name,
+          TopPlan: 0,
+          TopPlanName: "根计划",
         }
       });
     },

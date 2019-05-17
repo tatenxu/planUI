@@ -91,8 +91,9 @@
     </el-card>
 
     <el-card class="box-card">
+      <div><el-button type="primary" @click="submitPredictPlan">提交预测计划</el-button></div>
       <div>
-        <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true">
+        <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center">></el-table-column>
           <el-table-column v-if="false" prop="id" align="center"></el-table-column>
@@ -111,13 +112,10 @@
           <el-table-column  fixed="right" width="200" align="center">
             <template slot-scope="scope">
               <el-button @click="toPlanDetail(scope.row)" type="text" size="small">查看</el-button>
-              <el-button @click="submitPredictPlan(scope.row)" type="text" size="small">提交</el-button>
               <el-button @click="editPredictPlan(scope.row)" type="text" size="small">修改</el-button>
               <el-button @click="deletePredictPlan(scope.row)" type="text" size="small">删除</el-button>
-
             </template>
           </el-table-column>
-
         </el-table>
       </div>
       <div class="block">
@@ -158,6 +156,7 @@ export default {
       },
       totalTableData:[],
       tableData: [],
+      selectedTableData:[],
       // checked: true,
       pages: 0,
       pagination: {
@@ -236,6 +235,9 @@ export default {
       });
   },
   methods: {
+    handleSelectionChange(val) {
+      this.selectedTableData = val;
+    },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
       // this.pagination: {
@@ -309,46 +311,63 @@ export default {
 
     //查看详情
     toPlanDetail(row){
-      const that = this;
+      param={
+        flag: 0,
+        goback: "predictPlanMaking",
+        client: row.customerName,
+        brand: row.brandName,
+        series: row.rangeName,
+        id:row.id,
+        plantype: row.type,
+        planobj: row.planObject,
+        TopPlan: row.parentId,
+        TopPlanName: row.parentName?row.parentName:"根计划",
+        planName:row.name,
+        projectType:row.projectType,
+        number:row.number,
+        dataStart:row.startDate,
+        dataEnd:row.endDate,
+        productDate:row.productDate,
+        productDateType:row.productDateType,
+        productId:row.productId,
+        proposal:row.proposal,
+        note:row.note,
+        description:row.description,
+      };
       that.$router.push({
         name: "planMakeIndex",
-        params: {
-          goback: "predictPlanMaking",
-          flag: 5,
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          plantype: 1,
-          planobj: row.rangeName
-        }
+        params: param
       });
     },
 
     //提交已制定的预测计划
-    submitPredictPlan(row){
+    submitPredictPlan(){
       // console.log("提交计划"+row.id);
-      this.$confirm("是否确认提交计划"+row.name+"?", "提示", {
+      this.$confirm("是否确认提交计划?", "提示", {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
         .then(()=>{
-          console.log("提交计划"+row.id);
-          this.$axios.post(`${window.$config.HOST}/planManagement/submitPlan`,{id:row.id})
-            .then(response=>{
-              var resData = response.data;
-              if(resData < 0){
-                this.$message.error("提交失败,失败代码:"+(-resData.errcode));
-              }else{
-                this.$message({
-                  message: '成功提交!',
-                  type: 'success'
-                });
-              }
-            })
-            .catch(error=>{
-              this.$message.error("提交失败!");
-            });          
+          console.log("提交计划:");
+          console.log(this.selectedTableData);
+          this.selectedTableData.forEach(element=>{
+            this.$axios.post(`${window.$config.HOST}/planManagement/submitPlan`,{id:element.id})
+              .then(response=>{
+                if(response.data < 0){
+                  this.$message.error("提交失败,失败代码:"+(resData.errcode));
+                }else{
+                  this.$message({
+                    message: '成功提交!',
+                    type: 'success'
+                  });
+                  console.log(element.name+"提交成功");
+                }
+              })
+              .catch(error=>{
+                this.$message.error(element.name+"提交失败!");
+              }); 
+          }); 
         })
         .catch(()=>{
           this.$message({
@@ -360,18 +379,32 @@ export default {
 
     //编辑预测计划
     editPredictPlan(row){
-      const that = this;
+      param={
+        flag: 1,
+        goback: "predictPlanMaking",
+        client: row.customerName,
+        brand: row.brandName,
+        series: row.rangeName,
+        id:row.id,
+        plantype: row.type,
+        planobj: row.planObject,
+        TopPlan: row.parentId,
+        TopPlanName: row.parentName?row.parentName:"根计划",
+        planName:row.name,
+        projectType:row.projectType,
+        number:row.number,
+        dataStart:row.startDate,
+        dataEnd:row.endDate,
+        productDate:row.productDate,
+        productDateType:row.productDateType,
+        productId:row.productId,
+        proposal:row.proposal,
+        note:row.note,
+        description:row.description,
+      };
       that.$router.push({
         name: "planMakeIndex",
-        params: {
-          goback: "predictPlanMaking",
-          flag: 5,
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          plantype: 1,
-          planobj: row.rangeName
-        }
+        params: param
       });
     },
 
@@ -384,10 +417,12 @@ export default {
         })
         .then(()=>{
           console.log("删除计划"+row.id);
-          this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{id:row.id})
+          this.$axios
+            .delete(`${window.$config.HOST}/planManagement/deletePlan`,{
+              params:{id:row.id}
+            })
             .then(response=>{
-              var resData = response.data;
-              if(resData < 0){
+              if(response.data < 0){
                 this.$message.error("删除失败,失败代码:"+(-resData.errcode));
               }else{
                 this.$message({

@@ -87,7 +87,7 @@
           <el-table-column prop="rangeName" label="系列名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="planObject" label="计划对象" width="100px" align="center"></el-table-column>
           <el-table-column prop="cause" label="异常内容" width="100px" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="创建人" width="100px" align="center"></el-table-column>
+          <el-table-column prop="userName" label="创建人" width="100px" align="center"></el-table-column>
           <el-table-column prop="createTime" label="创建时间" width="100px" align="center" show-overflow-tooltip></el-table-column>
             <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
         </el-table>

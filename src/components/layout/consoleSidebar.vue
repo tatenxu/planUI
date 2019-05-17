@@ -114,7 +114,7 @@
             预测计划管理
           </template>
           <el-menu-item index="/predictPlanToBeMake"><i class="el-icon-document"></i>未制定计划</el-menu-item>
-          <el-menu-item index="/predictPlanMaking"><i class="el-icon-document"></i>未提交计划</el-menu-item>
+          <el-menu-item index="/predictPlanMaking"><i class="el-icon-document"></i>已制定计划</el-menu-item>
           <el-menu-item index="/predictPlanMade"><i class="el-icon-document"></i>已提交计划</el-menu-item>
         </el-submenu>
 

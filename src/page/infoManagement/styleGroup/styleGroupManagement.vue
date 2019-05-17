@@ -105,7 +105,7 @@
           </el-col>
         </el-row>
         <el-table
-          :data="tableDataA"
+          :data="totalTableData"
           max-height="400"
           border
           @selection-change="changeCheckBoxFun"
@@ -232,7 +232,7 @@ export default {
         pageSize: 10,
         total: 0,
       },
-      tableDataA:[],
+      totalTableData:[],
       searchOptions:{
         searchParams :{
           customerName: "",
@@ -367,11 +367,11 @@ export default {
         this.pagination.total=response.data.length;
         let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
         let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
+        this.totalTableData=[];
         
         for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
         {
-          this.tableDataA.push(this.data.tableData[i]);
+          this.totalTableData.push(this.data.tableData[i]);
         }
       })
       .catch(error => {
@@ -606,14 +606,21 @@ export default {
             var newDate = new Date(element.createTime);
             element.createTime = newDate.toLocaleString();
           });
+
+          //时间排序
+          this.totalTableData.sort(function(a,b){
+            return Date.parse(a.createTime)-Date.parse(b.createTime);
+          });
+
+          //分页处理
           this.pagination.total=response.data.length;
           let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
           let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
+          this.totalTableData=[];
           
           for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
           {
-            this.tableDataA.push(this.data.tableData[i]);
+            this.totalTableData.push(this.data.tableData[i]);
           }
         })
         .catch(error=>{

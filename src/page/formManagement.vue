@@ -73,7 +73,7 @@
   let tasks = [
     {
       id: 1,
-      label: "发红包了",
+      label: "系列1",
       user:
         '<a href="https://www.google.com/search?q=John+Doe" target="_blank" style="color:#0077c0;">John Doe</a>',
       start: getDate(-24 * 5),
@@ -303,7 +303,7 @@
         },
         {
           id: 2,
-          label: "Description",
+          label: "系列",
           value: "label",
           width: 200,
           expander: true,
@@ -316,14 +316,14 @@
         },
         {
           id: 3,
-          label: "Assigned to",
+          label: "负责人",
           value: "user",
           width: 130,
           html: true
         },
         {
           id: 3,
-          label: "Start",
+          label: "开始日期",
           value: task => dayjs(task.start).format("YYYY-MM-DD"),
           width: 78
         },

@@ -228,12 +228,6 @@ export default {
   methods: {
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
 
@@ -301,23 +295,35 @@ export default {
         });
     },
     inspectDetail(row){
-      const that = this;
+      param={
+        flag: 0,
+        goback: "predictPlanMade",
+        client: row.customerName,
+        brand: row.brandName,
+        series: row.rangeName,
+        id:row.id,
+        plantype: row.type,
+        planobj: row.planObject,
+        TopPlan: row.parentId,
+        TopPlanName: row.parentName?row.parentName:"根计划",
+        planName:row.name,
+        projectType:row.projectType,
+        number:row.number,
+        dataStart:row.startDate,
+        dataEnd:row.endDate,
+        productDate:row.productDate,
+        productDateType:row.productDateType,
+        productId:row.productId,
+        proposal:row.proposal,
+        note:row.note,
+        description:row.description,
+      };
       that.$router.push({
         name: "planMakeIndex",
-        params: {
-          goback: "predictPlanMade",
-          flag: 5,
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          plantype: 1,
-          planobj: row.rangeName
-        }
+        params: param
       });
     },
-   
   },
-  
 }
 </script>
 

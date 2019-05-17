@@ -116,7 +116,7 @@
         </el-col>
       </el-row>
       <el-table
-        :data="tableDataA"
+        :data="tableDataShow"
         max-height="400"
         @selection-change="changeCheckBoxFun"
         :stripe="true"
@@ -184,15 +184,35 @@
           ></el-pagination>
         </div>
     </el-card>
+
+    <el-dialog title="收货地址"  :visible.sync="subPlanOrderModificationDialogVisible" :modal="false">
+      <el-tree
+        :data="subPlanTreeData"
+        node-key="id"
+        default-expand-all
+        @node-drag-start="handleDragStart"
+        @node-drag-enter="handleDragEnter"
+        @node-drag-leave="handleDragLeave"
+        @node-drag-over="handleDragOver"
+        @node-drag-end="handleDragEnd"
+        @node-drop="handleDrop"
+        draggable
+        :allow-drop="allowDrop"
+        :allow-drag="allowDrag">
+      </el-tree>
+      <el-button  type="primary" @click="subPlanOrderClick">确定</el-button>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { error } from 'util';
+import consoleSidebarVue from '../../components/layout/consoleSidebar.vue';
 export default {
   data() {
     return {
-      tableDataA:[],
+      subPlanOrderModificationDialogVisible:false,
+      tableDataShow:[],
       isSelfMadePlan:false,
       searchOptions: {
         searchParams: {
@@ -218,11 +238,12 @@ export default {
         pageSize: 10,
         total: 0
       },
-      selectedData: []
+      selectedData: [],
+      subPlanTreeData: [],
+      
     };
   },
   created: function () {
-    const that = this;
     console.log('进入计划管理页面');
 
     //获取客户名称
@@ -236,7 +257,7 @@ export default {
       });
 
     //获取服装层次
-    that.$axios
+    this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
       .then(response => {
         this.searchOptions.options.clothingLevelOptions = response.data;
@@ -277,52 +298,26 @@ export default {
       .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
       .then(response => {
         this.tableData = response.data;
+        this.tableData.forEach(element=>{
+        if(element.isRoot){
+            element.parentName = "根计划";
+          }
+        });
 
-            this.pagination.total=response.data.length;
+        //分页
+        this.pagination.total=response.data.length;
         let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
         let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
+        this.tableDataShow=[];
         
         for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
         {
-          this.tableDataA.push(this.tableData[i]);
+          this.tableDataShow.push(this.tableData[i]);
         }
         this.searchOptions.options.planNameOptions = response.data;
       })
       .catch(error => {
         console.log("初始化被下发计划列表获取错误");
-        // this.tableData = [
-        //   {
-        //     id: 1,
-        //     number: "00001",
-        //     name: "1",
-        //     rangeNumber: "1",
-        //     customerName: "1",
-        //     brandName: "1",
-        //     rangeName: "1",
-        //     createrName: "1",
-        //     deptName: "1",
-        //     createTime: "2019-4-9",
-        //     parentId: "无",
-        //     havePlan: true,
-        //     haveException: true
-        //   },
-        //   {
-        //     id: 2,
-        //     number: "00002",
-        //     name: "2",
-        //     rangeNumber: "2",
-        //     customerName: "2",
-        //     brandName: "2",
-        //     rangeName: "2",
-        //     createrName: "2",
-        //     deptName: "2",
-        //     createTime: "2019-4-9",
-        //     parentId: "无",
-        //     havePlan: true,
-        //     haveException: true
-        //   },
-        // ];
       });
   },
   methods: {
@@ -351,56 +346,73 @@ export default {
         this.handleSearch();
     },
     addPlanChild() {
-      const that = this;
-      if (that.selectedData.length === 1) {
-        let data = that.selectedData[0];
-        that.$router.push({
+      if (this.selectedData.length === 1) {
+        let data = this.selectedData[0];
+        var param={
+          flag: 1,
+          goback: "planManagement",
+          client: data.customerName,
+          brand: data.brandName,
+          series: data.rangeName,
+          id:data.id,
+          plantype: data.type,
+          planobj: data.planObject,
+          TopPlan: data.parentId,
+          TopPlanName: data.parentName?data.parentName:"根计划",
+          planName:data.name,
+          projectType:data.projectType,
+          number:data.number,
+          dataStart:data.startDate,
+          dataEnd:data.endDate,
+          productDate:data.productDate,
+          productDateType:data.productDateType,
+          productId:data.productId,
+          proposal:data.proposal,
+          note:data.note,
+          description:data.description,
+        };
+        console.log(param);
+        this.$router.push({
           name: "planMakeIndex",
-          params: {
-            client: data.customerName,
-            brand: data.brandName,
-            series: data.rangeName,
-            plantype: 2,
-            planobj: data.rangeName
-          }
+          params: param
         });
-      } else if (that.selectedData.length === 0) {
-        that.$message.error("请选择要添加子计划的计划！");
+      } else if (this.selectedData.length === 0) {
+        this.$message.error("请选择要添加子计划的计划！");
       } else {
-        that.$message.error("仅允许对一条计划添加子计划，请重新选择！");
+        this.$message.error("仅允许对一条计划添加子计划，请重新选择！");
       }
     },
     deletePlan() {
-      const that = this;
-      if (that.selectedData.length === 0) {
-        that.$message.error("请选择要删除的计划！");
+      if (this.selectedData.length === 0) {
+        this.$message.error("请选择要删除的计划！");
       } else {
         this.selectedData.forEach(element=>{
             console.log(element.id);
-            this.$axios
-              .delete(`${window.$config.HOST}/planManagement/deletePlan`,{
-                params:{id:element.id}
-              })
-              .then(response=>{
-                if(response.data < 0 ){
-                  this.$message.error(element.id + "删除失败!");
-                }else{
-                  this.$message({
-                    type:"success",
-                    message: element.id+"删除成功!"
-                  });
-                  this.handleSearch()
-                }
-              })
-              .catch(error=>{
-                this.$message.error(element.id + "删除失败!");
-              })
+            this.deleteOnePlan(element.id);
+            // this.$axios
+            //   .delete(`${window.$config.HOST}/planManagement/deletePlan`,{
+            //     params:{id:element.id}
+            //   })
+            //   .then(response=>{
+            //     if(response.data < 0 ){
+            //       this.$message.error(element.id + "删除失败!");
+            //     }else{
+            //       this.$message({
+            //         type:"success",
+            //         message: element.id+"删除成功!"
+            //       });
+            //       this.handleSearch()
+            //     }
+            //   })
+            //   .catch(error=>{
+            //     this.$message.error(element.id + "删除失败!");
+            //   })
           });
       }
     },
     commitPlan(){
-      if (that.selectedData.length === 0) {
-        that.$message.error("请选择要提交的计划！");
+      if (this.selectedData.length === 0) {
+        this.$message.error("请选择要提交的计划！");
       } else {
         this.selectedData.forEach(element=>{
             console.log(element.id);
@@ -410,7 +422,7 @@ export default {
               })
               .then(response=>{
                 if(response.data < 0 ){
-                  console.log(element.id + "提交失败!");
+                  console.log(element.name + "提交失败(服务器)!");
                   this.$message.error(element.id + "提交失败!");
                 }else{
                   this.$message({
@@ -421,21 +433,58 @@ export default {
                 }
               })
               .catch(error=>{
-                console.log(element.id + "提交失败!");
+                console.log(element.name + "提交失败!");
                 this.$message.error(element.id + "提交失败!");
               })
           });
       }
     },
     changeOrder() {
-      this.$message("此功能对应页面暂时缺失");
+      // this.$message("此功能对应页面暂时缺失");
+      if (this.selectedData.length === 1) {
+        var param = {
+          id: this.selectedData[0].id,
+        };
+        console.log(param);
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/getChildrenPlanList`,{
+            params:param
+          })
+          .then(response=>{
+            // console.log(response.data);
+            this.subPlanTreeData=[];
+            response.data.forEach(element=>{
+              this.subPlanTreeData.push({
+                id:element.id,
+                label:element.name,
+                order:element.order
+              })
+            });
+            this.subPlanTreeData.sort(function(a,b){
+              return a.order-b.order;
+            });
+
+            console.log(this.subPlanTreeData);
+          })
+          .catch(error=>{
+            console.lopg("获取子计划列表失败");
+          });
+        this.subPlanOrderModificationDialogVisible = true;
+      } else if (this.selectedData.length === 0) {
+        this.$message.error("请选择要调整的计划！");
+      } else {
+        this.$message.error("仅允许对一条计划调整，请重新选择！");
+      }
+    },
+    subPlanOrderClick(){
+      console.log("调整后:");
+     
     },
     addException() {
-      const that = this;
-      if (that.selectedData.length === 0) {
-        that.$message.error("请选择要添加异常的计划！");
+      if (this.selectedData.length === 0) {
+        this.$message.error("请选择要添加异常的计划！");
       } else {
-        that
+        this
           .$prompt("请输入计划出现的异常", "异常信息添加", {
             confirmButtonText: "确定",
             cancelButttonText: "取消",
@@ -444,25 +493,25 @@ export default {
           })
           .then(({ value }) => {
             console.log(value);
-            that.selectedData.forEach(element=>{
+            this.selectedData.forEach(element=>{
               var params = {
                 planId : element.id,
                 cause : (value==="")?"":value,
               };
               // console.log(params);
-              that.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
+              this.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
                 .then(response=>{
                   if(response.data < 0){
-                    that.$message.error(element.name + "添加异常失败");
+                    this.$message.error(element.name + "添加异常失败");
                   }else{
-                    that.$message({
+                    this.$message({
                       type:"success",
                       message:element.name+"异常添加成功"
                     })
                   }
                 })
                 .catch(error=>{
-                  that.$message.error(element.name + "添加异常失败");
+                  this.$message.error(element.name + "添加异常失败");
                 })
             });
           });
@@ -472,90 +521,78 @@ export default {
       this.selectedData = val;
     },
     getPlanDetail(row) {
-      var param;
-      if(this.isSelfMadePlan){
-        param={
-          flag: 1,
-          goback: "planManagement",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          id:row.id,
-          plantype: row.type,
-          planobj: row.planObject,
-          TopPlan: row.parentId,
-          TopPlanName: row.parentName?row.parentName:"根计划",
-          planName:row.name,
-          projectType:row.projectType,
-          number:row.number,
-          dataStart:row.startDate,
-          dataEnd:row.endDate,
-          productDate:row.productDate,
-          productDateType:row.productDateType,
-          productId:row.productId,
-          proposal:row.proposal,
-          note:row.note,
-          description:row.description,
-        };
-      }else{
-        param={
-          flag: 0,
-          goback: "planManagement",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          id:row.id,
-          plantype: row.type,
-          planobj: row.planObject,
-          TopPlan: row.parentId,
-          TopPlanName: row.parentName?row.parentName:"根计划",
-          planName:row.name,
-          projectType:row.projectType,
-          number:row.number,
-          dataStart:row.startDate,
-          dataEnd:row.endDate,
-          productDate:row.productDate,
-          productDateType:row.productDateType,
-          productId:row.productId,
-          proposal:row.proposal,
-          note:row.note,
-          description:row.description,
-        };
-      }
-      console.log(row);
+      var param={
+        flag: 0,
+        goback: "planManagement",
+        client: row.customerName,
+        brand: row.brandName,
+        series: row.rangeName,
+        id:row.id,
+        plantype: row.type,
+        planobj: row.planObject,
+        TopPlan: row.parentId,
+        TopPlanName: row.parentName?row.parentName:"根计划",
+        planName:row.name,
+        projectType:row.projectType,
+        number:row.number,
+        dataStart:row.startDate,
+        dataEnd:row.endDate,
+        productDate:row.productDate,
+        productDateType:row.productDateType,
+        productId:row.productId,
+        proposal:row.proposal,
+        note:row.note,
+        description:row.description,
+      };
       console.log(param);
-      const that = this;
-      that.$router.push({
+      this.$router.push({
         name: "planMakeIndex",
         params: param
       });
     },
     ModifyPlanDetail(row) {
-      const that = this;
-      that.$router.push({
+      var param={
+        flag: 1,
+        goback: "planManagement",
+        client: row.customerName,
+        brand: row.brandName,
+        series: row.rangeName,
+        id:row.id,
+        plantype: row.type,
+        planobj: row.planObject,
+        TopPlan: row.parentId,
+        TopPlanName: row.parentName?row.parentName:"根计划",
+        planName:row.name,
+        projectType:row.projectType,
+        number:row.number,
+        dataStart:row.startDate,
+        dataEnd:row.endDate,
+        productDate:row.productDate,
+        productDateType:row.productDateType,
+        productId:row.productId,
+        proposal:row.proposal,
+        note:row.note,
+        description:row.description,
+      };
+      console.log(param);
+      this.$router.push({
         name: "planMakeIndex",
-        params: {
-          goback: "planManagement",
-          flag: 5,
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          plantype: 2,
-          planobj: row.rangeName
-        }
+        params: param
       });
     },
     deleteOnePlan(planid) {
       console.log("删除 "+planid);
-      this.$axios.post(`${window.$config.HOST}/planManagement/deletePlan`,{
-        params:{id:planid}
-      })
+      this.$axios
+        .delete(`${window.$config.HOST}/planManagement/deletePlan`,{
+          params:{id:planid}
+        })
         .then(response=>{
           if(response.data < 0){
             this.$message.error(planid+"删除失败");
-            return;
+            console.log("删除失败");
           }else{
             this.handleSearch();
+            console.log("删除成功");
             this.$message({
               type:"success",
               message:planid+"删除成功"
@@ -606,15 +643,22 @@ export default {
           })
           .then(response=>{
             this.tableData = response.data;
-                     this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+            this.tableData.forEach(element=>{
+              if(element.isRoot){
+                element.parentName = "根计划";
+              }
+            });
+
+            //分页
+            this.pagination.total=response.data.length;
+            let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            this.tableDataShow=[];
+            
+            for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+            {
+              this.tableDataShow.push(this.tableData[i]);
+            }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -627,15 +671,22 @@ export default {
           })
           .then(response=>{
             this.tableData = response.data;
-                     this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
+            this.tableData.forEach(element=>{
+              if(element.isRoot){
+                element.parentName = "根计划";
+              }
+            });
+
+            //分页
+            this.pagination.total=response.data.length;
+            let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            this.tableDataShow=[];
         
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+            for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+            {
+              this.tableDataShow.push(this.tableData[i]);
+            }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -652,15 +703,21 @@ export default {
           })
           .then(response=>{
             this.tableData = response.data;
-                     this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+            this.tableData.forEach(element=>{
+              if(element.isRoot){
+                element.parentName = "根计划";
+              }
+            });
+
+            //分页
+            this.pagination.total=response.data.length;
+            let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            this.tableDataShow=[];
+            for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+            {
+              this.tableDataShow.push(this.tableData[i]);
+            }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -670,15 +727,22 @@ export default {
           .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
           .then(response=>{
             this.tableData = response.data;
-                     this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+            this.tableData.forEach(element=>{
+              if(element.isRoot){
+                element.parentName = "根计划";
+              }
+            });
+
+            //分页
+            this.pagination.total=response.data.length;
+            let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+            this.tableDataShow=[];
+            
+            for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+            {
+              this.tableDataShow.push(this.tableData[i]);
+            }
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
@@ -686,48 +750,76 @@ export default {
       }
     },
 
+    //子计划树形控制函数
+    handleDragStart(node, ev) {
+      // console.log('drag start', node);
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+      // console.log('tree drag enter: ', dropNode.label);
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+      // console.log('tree drag leave: ', dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      // console.log('tree drag over: ', dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      // console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      // console.log('tree drop: ', dropNode.label, dropType);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if(type==="inner"){
+        return false;
+      }
+      return true;
+    },
+    allowDrag(draggingNode) {
+      return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
+    }
   }
 };
 </script>
 
 <style lang="less" scoped>
-.Mtitle {
-  font-size: 3ch;
-  margin-left: 47%;
-}
-.box-card {
-  margin: 20px 50px;
-  padding: 0 20px;
-  .el-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 20px;
-    .bar {
+  .Mtitle {
+    font-size: 3ch;
+    margin-left: 47%;
+  }
+  .box-card {
+    margin: 20px 50px;
+    padding: 0 20px;
+    .el-row {
       display: flex;
       flex-direction: row;
       align-items: center;
-      .title {
-        font-size: 14px;
-        width: 90px;
-        min-width: 50px;
-        text-align: center;
-      }
-      .el-input {
-        width: 70%;
-        min-width: 80px;
-        margin-left: 20px;
-      }
-      .el-select {
-        width: 70%;
-        min-width: 80px;
-        margin-left: 20px;
+      margin-bottom: 20px;
+      .bar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .title {
+          font-size: 14px;
+          width: 90px;
+          min-width: 50px;
+          text-align: center;
+        }
+        .el-input {
+          width: 70%;
+          min-width: 80px;
+          margin-left: 20px;
+        }
+        .el-select {
+          width: 70%;
+          min-width: 80px;
+          margin-left: 20px;
+        }
       }
     }
+    .block {
+      padding: 30px 0;
+      text-align: center;
+    }
   }
-  .block {
-    padding: 30px 0;
-    text-align: center;
-  }
-}
 </style>
