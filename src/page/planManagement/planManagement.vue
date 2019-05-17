@@ -340,19 +340,16 @@ export default {
           rangeName: row.rangeName,
         }
       });
+    },    
+    handleSizeChange(val) {
+      this.pagination.pageSize=val;
+      console.log("每页+"+this.pagination.pageSize)
+      this.handleSearch();
     },
-
-    
-          handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
+    handleCurrentChange(val) {
+      this.pagination.currentPage=val;
         this.handleSearch();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.handleSearch();
-      },
+    },
     addPlanChild() {
       const that = this;
       if (that.selectedData.length === 1) {

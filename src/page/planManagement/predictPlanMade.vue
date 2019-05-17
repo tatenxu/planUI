@@ -75,7 +75,7 @@
         </el-col>
         <el-col :span="1">
           <div class="bar">
-            <el-button type="primary" @click="handleSearchClick">搜索</el-button>
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -92,7 +92,7 @@
 
     <el-card class="box-card">
       <div>
-      <el-table :data="tableDataA" max-height="550" style="width : 100%" :stripe="true">
+      <el-table :data="tableData" max-height="550" style="width : 100%" :stripe="true">
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
@@ -138,7 +138,6 @@ export default {
   data() {
     return {
       searchOptions: {
-        tableDataA:[],
         searchParams: {
           customerName: "",
           brandName: "",
@@ -155,14 +154,15 @@ export default {
           planNameOptions:[],
         }
       },
+      totalTableData:[],
       tableData: [],
       // checked: true,
       pages: 0,
       pagination: {
         currentPage: 1,
-        pageSizes: [2, 10, 20, 30, 50],
+        pageSizes: [5, 10, 20, 30, 50],
         pageSize: 2,
-        total: 400,
+        total: 0,
       },
     }
   },
@@ -201,15 +201,6 @@ export default {
       });
 
     //默认获取计划列表
-    var param ={
-      customerId : null,
-      brandId : null,
-      rangeId: null,
-      id : null,
-      clothingLevelId : null,
-      startDate : null,
-      endDate : null,
-    };
     this.$axios
       .get(`${window.$config.HOST}/planManagement/getPlanList`,{
         params: {
@@ -219,52 +210,42 @@ export default {
       .then(response => {
         response.data.forEach(element=>{
           if(element.type === 1 && element.state === 2){
-            this.tableData.push(element);
+            this.totalTableData.push(element);
           }
         });
-        this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
+
+        this.pagination.total = this.totalTableData.length;
+        // this.pagination.currentPage = 1;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
       })
       .catch(error => {
         console.log("初始化计划列表获取错误");
-        // this.tableData = [
-        //   {
-        //     id:"7946",
-        //     number:"JH001",
-        //     name:"系列A计划",
-        //     rangeNumber:"XL20190101001",
-        //     customerName:"Qi-Collection",
-        //     brandName:"Selikie",
-        //     clothingLevelName:"时装",
-        //     rangeName:"Fall-2019(01/08/09)",
-        //     createrName:"刘德华",
-        //     deptName:"业务一组",
-        //     state:"未制定"
-        //   },
-        //   {
-        //     id:"4545",
-        //     number:"JH002",
-        //     name:"系列B计划",
-        //     rangeNumber:"XL20190101001",
-        //     customerName:"Qi-Collection",
-        //     brandName:"Selikie",
-        //     clothingLevelName:"时装",
-        //     rangeName:"Fall-2019(01/08/09)",
-        //     createrName:"刘德华",
-        //     deptName:"业务二组",
-        //     state:"未制定"
-        //   }
-        // ];
       });
   },
   methods: {
+    // 每页条数改变时触发函数
+    handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
+      console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
+    },
+    // 当前页码改变时触发函数
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     // 改变日期格式
     changeDate(date) {
       if(!date){
@@ -284,7 +265,7 @@ export default {
         return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
       }
     },
-    handleSearchClick(){
+    handleSearch(){
       var params = {
         customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
@@ -305,36 +286,18 @@ export default {
           }
           response.data.forEach(element=>{
             if(element.type === 1 && element.state === 2){
-              this.tableData.push(element);
+              this.totalTableData.push(element);
             }
+
+            this.pagination.total = this.totalTableData.length;
+            this.pagination.currentPage = 1;
+            var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+            var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+            this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
           });
-             this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
         })
         .catch(error => {
           console.log("计划列表获取错误");
-          this.tableData = [
-            {
-              id:"7946",
-              number:"JH001",
-              name:"系列A计划",
-              rangeNumber:"XL20190101001",
-              customerName:"Qi-Collection",
-              brandName:"Selikie",
-              clothingLevelName:"时装",
-              rangeName:"Fall-2019(01/08/09)",
-              createrName:"刘德华",
-              deptName:"业务一组",
-              state:"未制定"
-            },
-          ];
         });
     },
     inspectDetail(row){

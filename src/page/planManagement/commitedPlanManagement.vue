@@ -146,6 +146,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
       <div class="block">
         <el-pagination
           @size-change="handleSizeChange"
@@ -183,12 +184,13 @@ export default {
           planNameOptions:[],
         }
       },
+      totalTableData:[],
       tableData: [],
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400
+        total: 0
       },
       selectedData: []
     };
@@ -252,10 +254,15 @@ export default {
       .then(response=>{
           response.data.forEach(element=>{
             if(element.isCompleted){
-              this.tableData.push(element);
+              this.totalTableData.push(element);
             }
           });
-          this.searchOptions.options.planNameOptions = this.tableData;
+          this.searchOptions.options.planNameOptions = this.totalTableData;
+
+          this.pagination.total = this.totalTableData.length;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
       .catch(error => {
         console.log("初始化被下发计划列表获取错误");
@@ -335,21 +342,29 @@ export default {
         .then(response=>{
           response.data.forEach(element=>{
             if(element.isCompleted){
-              this.tableData.push(element);
+              this.totalTableData.push(element);
             }
           });
+          this.pagination.total = this.totalTableData.length;
+          this.pagination.currentPage = 1;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error=>{
           this.$message.error("搜索失败!");
         });
     },
    
-    handleSizeChange(){
-
+    handleSizeChange(val) {
+      this.pagination.pageSize=val;
+      console.log("每页+"+this.pagination.pageSize)
+      this.handleSearch();
     },
-    handleCurrentChange(){
-      
-    }
+    handleCurrentChange(val) {
+      this.pagination.currentPage=val;
+      this.handleSearch();
+    },
   }
 };
 </script>

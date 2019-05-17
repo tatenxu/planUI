@@ -296,11 +296,12 @@ export default {
       dialogFormVisible: false,
       dialogFormVisible1: false,
       tableData: [],
+      totalTableData : [],
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400
+        total: 0
       },
 
       searchOptions: {
@@ -483,9 +484,9 @@ export default {
       })
       .then(response => {
         console.log("获得搜索列表成功了");
-        var SearchList = response.data;
-        this.tableData = SearchList;
-        this.tableData.forEach(element => {
+        this.totalTableData = response.data;
+        // this.tableData = SearchList;
+        this.totalTableData.forEach(element => {
           if(element.addingMode===1) element.addingModeName="手动";
           else element.addingModeName="导入";
 
@@ -499,6 +500,11 @@ export default {
           let time = d.toLocaleString();
           element.createTime = time;
         });
+
+        this.pagination.total = this.totalTableData.length;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = pageEleStart+this.pagination.pageSize > this.pagination.total-1?-1:pageEleStart+this.pagination.pageSize;
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd)
       })
       .catch(error => {
         this.$message({
@@ -551,11 +557,23 @@ export default {
     },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
     },
     // 当前页码改变时触发函数
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
     },
     // 选择框改变监控
     changeCheckBoxFun(val) {
@@ -600,21 +618,27 @@ export default {
           // (this.RangeValue = ""),
           // (this.ClothingLevelValue = ""),
           // (this.dateRange = ""),
-          this.tableData = response.data;
-          this.tableData.forEach(element => {
-              if(element.addingMode===1) element.addingModeName="手动";
-          else element.addingModeName="导入";
+          this.totalTableData = response.data;
+          this.totalTableData.forEach(element => {
+            if(element.addingMode===1) element.addingModeName="手动";
+            else element.addingModeName="导入";
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
+            if(element.state===1) element.stateName="已制定";
+            else if(element.state===2) element.stateName="已提交";
+            else if(element.state===3) element.stateName="被驳回";
+            else if(element.state===4) element.stateName="已审核";
+            else if(element.state===5) element.stateName="已下发";
+            else if(element.state===6) element.stateName="已删除";
+            var d = new Date(element.createTime);
+            let time = d.toLocaleString();
+            element.createTime = time;
           });
+
+          this.pagination.total = this.totalTableData.length;
+          // this.pagination.currentPage = 1;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error => {
           this.$message({
@@ -666,10 +690,6 @@ export default {
           }
         )
           .then(() => {
-            //      this.AnyChanged.forEach(element => {
-            //   var j = this.tableData.indexOf(element);
-            //   this.$set(this.tableData[j], "deletePeople", "已完成");
-            // });
             this.multipleSelection.forEach(element => {
               console.log(element.id);
               let list = {

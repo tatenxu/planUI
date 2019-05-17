@@ -74,7 +74,7 @@
 
         <el-col :offset="0" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="handleSearchClick">查询</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="handleSearch">查询</el-button>
           </div>
         </el-col>
       </el-row>
@@ -114,6 +114,8 @@
       </div>
       <div class="block">
         <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
           :current-page.sync="pagination.currentPage"
           :page-sizes="pagination.pageSizes"
           :page-size="pagination.pageSize"
@@ -129,6 +131,7 @@
 export default {
   data() {
     return {
+      totalTableData:[],
       tableData: [ ],
       searchOptions:{
         searchParams :{
@@ -148,7 +151,7 @@ export default {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400
+        total: 0
       },
       pages: 0,
       tableSelectionData: []
@@ -186,7 +189,7 @@ export default {
       .catch(error => {
         console.log("初始化系列名称加载错误");
       });
-    //加载删除的计划
+    //初始化加载删除的计划
     this.$axios
       .get(`${window.$config.HOST}/planManagement/getPlanList`,{
         params:{stage:"delete"}
@@ -194,83 +197,40 @@ export default {
       .then(response => {
         response.data.forEach(element=>{
           if(element.state === '6'){
-            this.tableData.push(element);
+            this.totalTableData.push(element);
           }
         });
+
+        this.pagination.total = this.totalTableData.length;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
       .catch(error => {
         console.log("初始化删除计划加载错误");
-        // var SearchList = [
-        //   {
-        //     id:"4234234",
-        //     number: "JH190401001",
-        //     customerName: "AFL",
-        //     brandName: "CX",
-        //     name: "2001系列计划",
-        //     rangeName: "",
-        //     planObject: "",
-        //     type: "销样",
-        //     createrName: "XX",
-        //     createrName: "XX",
-        //     deleteTime: "2019-3-28"
-        //   },
-        //   {
-        //     id:"57657",
-        //     number: "JH1904010012",
-        //     customerName: "AFL",
-        //     brandName: "CX",
-        //     name: "2001系列计划",
-        //     rangeName: "",
-        //     planObject: "",
-        //     type: "销样",
-        //     createrName: "XX",
-        //     createrName: "XX",
-        //     deleteTime: "2019-3-28"
-        //   },
-        //   {
-        //     id:"657567",
-        //     number: "JH1904010013",
-        //     customerName: "AFL",
-        //     brandName: "CX",
-        //     name: "2001系列计划",
-        //     rangeName: "",
-        //     planObject: "",
-        //     type: "销样",
-        //     createrName: "XX",
-        //     createrName: "XX",
-        //     deleteTime: "2019-3-28"
-        //   },
-        //   {
-        //     id:"2345",
-        //     number: "JH1904010014",
-        //     customerName: "AFL",
-        //     brandName: "CX",
-        //     name: "2001系列计划",
-        //     rangeName: "",
-        //     planObject: "",
-        //     type: "销样",
-        //     createrName: "XX",
-        //     createrName: "XX",
-        //     deleteTime: "2019-3-28"
-        //   },
-        //   {
-        //     id:"34626",
-        //     number: "JH1904010015",
-        //     customerName: "AFL",
-        //     brandName: "CX",
-        //     name: "2001系列计划",
-        //     rangeName: "",
-        //     planObject: "",
-        //     type: "销样",
-        //     createrName: "XX",
-        //     createrName: "XX",
-        //     deleteTime: "2019-3-28"
-        //   }
-        // ];
-        // this.tableData = SearchList;
       });
   },
   methods: {
+    // 每页条数改变时触发函数
+    handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,s
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
+      console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
+    },
+    // 当前页码改变时触发函数
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     //恢复所有选择的按钮
     ReCoverAll() {
       if(this.tableSelectionData.length === 0){
@@ -300,12 +260,13 @@ export default {
               type: 'success',
               message: "恢复成功！"
             });
-            this.tableData.forEach(element=>{
-              if(element.number === row.number){
-                var idx = this.tableData.indexOf(element);
-                this.tableData.splice(idx,1);
-              }
-            });
+            // this.tableData.forEach(element=>{
+            //   if(element.number === row.number){
+            //     var idx = this.tableData.indexOf(element);
+            //     this.tableData.splice(idx,1);
+            //   }
+            // });
+            this,handleSearch();
           }
         })
         .catch(error=>{
@@ -334,7 +295,7 @@ export default {
       }
     },
     //搜索按钮
-    handleSearchClick(){
+    handleSearch(){
       var param;
       param = {
         customerId : (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName,
@@ -353,12 +314,17 @@ export default {
           params:param
         })
         .then(response => {
-          this.tableData = [];
+          this.totalTableData = [];
           response.data.forEach(element=>{
             if(element.state === '6'){
-              this.tableData.push(element);
+              this.totalTableData.push(element);
             }
           })
+
+          this.pagination.total = this.totalTableData.length;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error => {
           console.log("搜索失败");

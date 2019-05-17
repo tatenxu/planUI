@@ -450,16 +450,15 @@ export default {
       });
   },
   methods: {
-        handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
-        this.searchSeriesPlan();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.searchSeriesPlan();
-      },
+    handleSizeChange(val) {
+      this.pagination.pageSize=val;
+      console.log("每页+"+this.pagination.pageSize)
+      this.searchSeriesPlan();
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage=val;
+      this.searchSeriesPlan();
+    },
     //改变日期格式
     changeDate(date) {
       console.log(date);

@@ -230,7 +230,7 @@ export default {
         currentPage: 1,
         pageSizes: [2, 10, 20, 30, 50],
         pageSize: 2,
-        total: 400,
+        total: 0,
       },
       tableDataA:[],
       searchOptions:{
@@ -640,7 +640,7 @@ export default {
         endDate="";
       }
       else{
-                  startDate= this.changeDate(this.searchOptions.searchParams.dateRange[0]),
+          startDate= this.changeDate(this.searchOptions.searchParams.dateRange[0]),
           endDate=this.changeDate(this.searchOptions.searchParams.dateRange[1])
       }
       console.log('搜索'+this.searchOptions.searchParams.customerValue); 

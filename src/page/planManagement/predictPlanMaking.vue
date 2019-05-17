@@ -75,7 +75,7 @@
         </el-col>
         <el-col :span="1">
           <div class="bar">
-            <el-button type="primary" @click="getMakingPredictPlanList()">搜索</el-button>
+            <el-button type="primary" @click="handleSearch()">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -122,6 +122,8 @@
       </div>
       <div class="block">
           <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
             :current-page.sync="pagination.currentPage"
             :page-sizes="pagination.pageSizes"
             :page-size="pagination.pageSize"
@@ -154,6 +156,7 @@ export default {
           planNameOptions:[],
         }
       },
+      totalTableData:[],
       tableData: [],
       // checked: true,
       pages: 0,
@@ -161,7 +164,7 @@ export default {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400,
+        total: 0,
       },
     }
   },
@@ -218,43 +221,41 @@ export default {
       .then(response => {
         response.data.forEach(element=>{
           if(element.type === 1 && element.state === 1){
-            this.tableData.push(element);
+            this.totalTableData.push(element);
           }
+
+          this.pagination.total = this.totalTableData.length;
+          // this.pagination.currentPage = 1;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         });
       })
       .catch(error => {
         console.log("初始化计划列表获取错误");
-        // this.tableData = [
-        //   {
-        //     id:"7946",
-        //     number:"JH001",
-        //     name:"系列A计划",
-        //     rangeNumber:"XL20190101001",
-        //     customerName:"Qi-Collection",
-        //     brandName:"Selikie",
-        //     clothingLevelName:"时装",
-        //     rangeName:"Fall-2019(01/08/09)",
-        //     createrName:"刘德华",
-        //     deptName:"业务一组",
-        //     state:"未制定"
-        //   },
-        //   {
-        //     id:"4545",
-        //     number:"JH002",
-        //     name:"系列B计划",
-        //     rangeNumber:"XL20190101001",
-        //     customerName:"Qi-Collection",
-        //     brandName:"Selikie",
-        //     clothingLevelName:"时装",
-        //     rangeName:"Fall-2019(01/08/09)",
-        //     createrName:"刘德华",
-        //     deptName:"业务二组",
-        //     state:"未制定"
-        //   }
-        // ];
       });
   },
   methods: {
+    // 每页条数改变时触发函数
+    handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
+      console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
+    },
+    // 当前页码改变时触发函数
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     // 改变日期格式
     changeDate(date) {
       console.log(date);
@@ -275,7 +276,7 @@ export default {
       }
     },
     //获取预测计划列表
-    getMakingPredictPlanList(){
+    handleSearch(){
       var params = {
         customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
@@ -291,26 +292,17 @@ export default {
           var resData = response.data;
           resData.forEach(element=>{
             if(element.type === 1 && element.state === 1){
-              this.tableData.push(element);
+              this.totalTableData.push(element);
             }
+
+            this.pagination.total = this.totalTableData.length;
+            // this.pagination.currentPage = 1;
+            var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+            var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+            this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
           });
         })
         .catch(error=>{
-          this.tableData = [
-            {
-              id:"4545",
-              number:"JH002",
-              name:"系列B计划",
-              rangeNumber:"XL20190101001",
-              customerName:"Qi-Collection",
-              brandName:"Selikie",
-              clothingLevelName:"时装",
-              rangeName:"Fall-2019(01/08/09)",
-              createrName:"刘德华",
-              deptName:"业务二组",
-              state:"未制定"
-            },
-          ];
           this.$message.error("搜索失败!");
         });
     },

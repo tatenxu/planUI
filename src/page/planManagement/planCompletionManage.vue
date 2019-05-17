@@ -34,6 +34,8 @@
       </div>
       <div class="block">
         <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
           :current-page.sync="pagination.currentPage"
           :page-sizes="pagination.pageSizes"
           :page-size="pagination.pageSize"
@@ -50,13 +52,14 @@
 export default {
   data() {
     return {
+      totalTableData:[],
       tableData: [ ],
       
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400
+        total: 0
       },
       pages: 0,
       tableSelectionData: []
@@ -66,17 +69,7 @@ export default {
     const that = this;
     console.log('进入计划完成页面');
 
-    //加载未完成的计划
-    // var param ={
-    //   customerId : null,
-    //   brandId : null,
-    //   rangeId: null,
-    //   id : null,
-    //   clothingLevelId : null,
-    //   startDate : null,
-    //   endDate : null,
-    // };
-    
+    //加载默认所有系列
     this.$axios
       .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
         customerId: "",
@@ -87,13 +80,8 @@ export default {
         endDate: ""
       })
       .then(response => {
-        // response.data.forEach(element=>{
-        //   if(element.state === 5){
-        //     this.tableData.push(element);
-        //   }
-        // });
-        this.tableData = response.data;
-        this.tableData.forEach(element => {
+        this.totalTableData = response.data;
+        this.totalTableData.forEach(element => {
           if(element.addingMode===1) element.addingModeName="手动";
           else element.addingModeName="导入";
 
@@ -107,12 +95,73 @@ export default {
           let time = d.toLocaleString();
           element.createTime = time;
         });
+
+        this.pagination.total = this.totalTableData.length;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
       .catch(error => {
         console.log("初始化加载系列失败");
       });
   },
   methods: {
+    // 每页条数改变时触发函数
+    handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
+      console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
+    },
+    // 当前页码改变时触发函数
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
+    handleSearch(){
+      this.$axios
+        .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+          customerId: "",
+          brandId: "",
+          id: "",
+          clothingLevelId: "",
+          startDate: "",
+          endDate: ""
+        })
+        .then(response => {
+          this.totalTableData = response.data;
+          this.totalTableData.forEach(element => {
+            if(element.addingMode===1) element.addingModeName="手动";
+            else element.addingModeName="导入";
+
+            if(element.state===1) element.stateName="已制定";
+            else if(element.state===2) element.stateName="已提交";
+            else if(element.state===3) element.stateName="被驳回";
+            else if(element.state===4) element.stateName="已审核";
+            else if(element.state===5) element.stateName="已下发";
+            else if(element.state===6) element.stateName="已删除";
+            var d = new Date(element.createTime);
+            let time = d.toLocaleString();
+            element.createTime = time;
+          });
+
+          this.pagination.total = this.totalTableData.length;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+        })
+        .catch(error => {
+          console.log("加载系列失败");
+        });
+    },
     //计划完成按钮点击
     handleCompletionClick() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
@@ -131,40 +180,7 @@ export default {
                 this.$message.error(element.name+"添加完成失败");
               }else{
                 console.log("完成"+element.name);
-                this.$axios
-                  .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-                    customerId: "",
-                    brandId: "",
-                    id: "",
-                    clothingLevelId: "",
-                    startDate: "",
-                    endDate: ""
-                  })
-                  .then(response => {
-                    // response.data.forEach(element=>{
-                    //   if(element.state === 5){
-                    //     this.tableData.push(element);
-                    //   }
-                    // });
-                    this.tableData = response.data;
-                    this.tableData.forEach(element => {
-                      if(element.addingMode===1) element.addingModeName="手动";
-                      else element.addingModeName="导入";
-
-                      if(element.state===1) element.stateName="已制定";
-                      else if(element.state===2) element.stateName="已提交";
-                      else if(element.state===3) element.stateName="被驳回";
-                      else if(element.state===4) element.stateName="已审核";
-                      else if(element.state===5) element.stateName="已下发";
-                      else if(element.state===6) element.stateName="已删除";
-                      var d = new Date(element.createTime);
-                      let time = d.toLocaleString();
-                      element.createTime = time;
-                    });
-                  })
-                  .catch(error => {
-                    console.log("加载系列失败");
-                  });
+                this.handleSearch();
               }
             })
             .catch(error=>{

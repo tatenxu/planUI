@@ -75,7 +75,7 @@
         </el-col>
         <el-col :span="1">
           <div class="bar">
-            <el-button type="primary" @click="getUnmadedPlanList()">搜索</el-button>
+            <el-button type="primary" @click="handleSearch()">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -118,7 +118,8 @@
       </div>
       <div class="block">
           <el-pagination
-            
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
             :current-page.sync="pagination.currentPage"
             :page-sizes="pagination.pageSizes"
             :page-size="pagination.pageSize"
@@ -152,13 +153,13 @@ export default {
         }
       },
       tableData: [],
+      totalTableData:[],
       // checked: true,
-      pages: 0,
       pagination: {
         currentPage: 1,
         pageSizes: [5, 10, 20, 30, 50],
         pageSize: 5,
-        total: 400,
+        total: 0,
       },
     }
   },
@@ -236,7 +237,12 @@ export default {
         endDate: ""
       })
       .then(response => {
-        this.tableData = response.data;
+        this.totalTableData = response.data;
+
+        his.pagination.total = this.totalTableData.length;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
       .catch(error => {
         console.log("初始化计划列表获取错误");
@@ -244,6 +250,26 @@ export default {
   },
 
   methods: {
+    // 每页条数改变时触发函数
+    handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
+      console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
+    },
+    // 当前页码改变时触发函数
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     makePredict(row){
       const that = this;
       that.$router.push({
@@ -278,7 +304,7 @@ export default {
       }
     },
     //获取预测计划列表
-    getUnmadedPlanList(){
+    handleSearch(){
       var params = {
         customerId: (this.searchOptions.searchParams.customerName==="")?"":this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?"":this.searchOptions.searchParams.brandName,
@@ -292,7 +318,13 @@ export default {
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, params)
         .then(response => {
-          this.tableData = response.data;
+          this.totalTableData = response.data;
+
+          this.pagination.total = this.totalTableData.length;
+          // this.pagination.currentPage = 1;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error => {
           console.log("搜索失败");

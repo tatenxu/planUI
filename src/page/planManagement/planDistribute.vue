@@ -52,6 +52,8 @@
       </div>
       <div class="block">
         <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
           :current-page.sync="pagination.currentPage"
           :page-sizes="pagination.pageSizes"
           :page-size="pagination.pageSize"
@@ -76,15 +78,15 @@ export default {
         }
       },
       
+      totalTableData:[],
       tableData: [],
       tableMultpleSelection:[],
 
-      pages: 0,
       pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
-        total: 400,
+        pageSizes: [2, 10, 20, 30, 50],
+        pageSize: 2,
+        total: 0,
       },
     };
   },
@@ -104,29 +106,20 @@ export default {
         this.searchOptions.options.userNameOptions =[
             {
               id:"4243",
-              name:"小王"
+              name:"无效小王"
             },
             {
               id:"574523",
-              name:"小徐"
+              name:"无效小徐"
             },
             {
               id:"57531",
-              name:"小刘"
+              name:"无效小刘"
             },
           ];
       });
 
     //获取所有未下发计划
-    // var param ={
-    //   customerId : null,
-    //   brandId : null,
-    //   rangeId: null,
-    //   id : null,
-    //   clothingLevelId : null,
-    //   startDate : null,
-    //   endDate : null,
-    // };
     var param = {
       stage:"distribute"
     };
@@ -136,79 +129,60 @@ export default {
       })
       .then(response => {
         console.log("初始化加载下发计划成功");
+        this.totalTableData = response.data;
+
+        this.pagination.total = this.totalTableData.length;
+        this.pagination.currentPage = 1;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
       .catch(error => {
-        console.log("计划列表获取错误");
-        this.tableData = [
-          {
-            id:"45312",
-            number: "JH190401001",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "aaaaaaaa",
-            planObject: "rwqerqwer",
-            type: "销样",
-            createrName: "XX",
-            state: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:"451",
-            number: "JH1904010012",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "bbbbb",
-            planObject: "qwerqwe",
-            type: "销样",
-            createrName: "XX",
-            state: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:"878351",
-            number: "JH1904010013",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "vvvvvvv",
-            planObject: "weqrqwer",
-            type: "销样",
-            createrName: "XX",
-            state: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:"87563",
-            number: "JH1904010014",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "ffffffff",
-            planObject: "ewqrqwerqwer",
-            type: "销样",
-            createrName: "XX",
-            state: "XX",
-            createTime: "2019-3-28"
-          },
-          {
-            id:"875",
-            number: "JH1904010015",
-            customerName: "AFL",
-            brandName: "CX",
-            name: "2001系列计划",
-            rangeName: "fasdfasdf",
-            planObject: "zcxzv",
-            type: "销样",
-            createrName: "XX",
-            state: "XX",
-            createTime: "2019-3-28"
-          }
-        ];
+        console.log("初始化加载计划列表获取错误");
       });
   },
   methods: {
+    handleSearch(){
+      var param = {
+        stage:"distribute"
+      };
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+          params:param
+        })
+        .then(response => {
+          console.log("初始化加载下发计划成功");
+          this.totalTableData = response.data;
+
+          this.pagination.total = this.totalTableData.length;
+          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+        })
+        .catch(error => {
+          console.log("初始化加载计划列表获取错误");
+        });
+    },
+    // 每页条数改变时触发函数
+    handleSizeChange(val) {
+      // this.pagination: {
+      //   currentPage: 1,
+      //   pageSizes: [5, 10, 20, 30, 50],
+      //   pageSize: 5,
+      //   total: 400
+      // },
+      this.pagination.pageSize = val;
+      console.log(`每页 ${val} 条`);
+
+      this.pagination.currentPage = 1;
+      this.handleSearch();
+    },
+    // 当前页码改变时触发函数
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     distributePlanClick() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       let that = this;
@@ -229,8 +203,9 @@ export default {
                 console.log(element.name+"下发失败!");
               }else{
                 console.log(element.name+"下发成功!");
-                var j = this.tableData.indexOf(element);
-                this.$set(this.tableData[j], "state","已下发");
+                this.handleSearch();
+                // var j = this.tableData.indexOf(element);
+                // this.$set(this.tableData[j], "state","已下发");
               }
             })
             .catch(error=>{
