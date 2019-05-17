@@ -57,8 +57,8 @@ export default {
       
       pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
         total: 0
       },
       pages: 0,
@@ -127,6 +127,7 @@ export default {
       this.handleSearch();
     },
     handleSearch(){
+      console.log("开始搜索");
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
           customerId: "",
@@ -170,16 +171,19 @@ export default {
         that.$message.error("请选择要删除的计划！");
       } else {
         this.tableSelectionData.forEach(element => {
-          console.log("删除"+element.name);
           this.$axios
             .get(`${window.$config.HOST}/infoManagement/completeRange`,{
               params:{id:element.id}
             })
             .then(response=>{
               if(response.data < 0){
-                this.$message.error(element.name+"添加完成失败");
+                this.$message.error(element.name+"添加完成失败"+":"+response.data);
               }else{
                 console.log("完成"+element.name);
+                this.$message({
+                  message: element.name+"已完成",
+                  type: "success"
+                });
                 this.handleSearch();
               }
             })

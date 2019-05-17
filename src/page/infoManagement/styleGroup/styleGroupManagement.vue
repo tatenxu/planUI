@@ -123,7 +123,7 @@
           <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="stateName" width="70" label="状态" align="center"></el-table-column>
+          <el-table-column prop="state" width="70" label="状态" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
@@ -228,8 +228,8 @@ export default {
     return {
       pagination: {
         currentPage: 1,
-        pageSizes: [2, 10, 20, 30, 50],
-        pageSize: 2,
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
         total: 0,
       },
       tableDataA:[],
@@ -328,17 +328,6 @@ export default {
       })
       .catch(error => {
         console.log("getCustomer error!");
-        this.searchOptions.options.customerNameOptions = [
-          {
-            id: 42453,
-            name: "A客户"
-          },
-          {
-            id: 41526,
-            name: "B客户"
-          },
-        ];
-        this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       });
 
     //获取服装层次
@@ -366,17 +355,16 @@ export default {
       .then(response => {
         this.data.tableData = response.data;
         this.data.tableData.forEach(element=>{
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
+          // if(element.state===1) element.stateName="已制定";
+          // else if(element.state===2) element.stateName="已提交";
+          // else if(element.state===3) element.stateName="被驳回";
+          // else if(element.state===4) element.stateName="已审核";
+          // else if(element.state===5) element.stateName="已下发";
+          // else if(element.state===6) element.stateName="已删除";
           var newDate = new Date(element.createTime);
           element.createTime = newDate.toLocaleString();
-
-
-                  this.pagination.total=response.data.length;
+        });
+        this.pagination.total=response.data.length;
         let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
         let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
         this.tableDataA=[];
@@ -385,7 +373,6 @@ export default {
         {
           this.tableDataA.push(this.data.tableData[i]);
         }
-        });
       })
       .catch(error => {
         console.log("款式组信息加载错误")
@@ -402,16 +389,6 @@ export default {
       })
       .catch(error => {
         console.log("品牌名称加载错误");
-        this.searchOptions.options.brandNameOptions = [
-          {
-            id: 1,
-            name: "X品牌"
-          },
-          {
-            id: 2,
-            name: "Y品牌"
-          },
-        ];
         // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
       });
 
@@ -425,21 +402,6 @@ export default {
       })
       .catch(error => {
         console.log("系列名称加载错误");
-        /* this.searchOptions.options.rangeNameOptions = [
-          {
-            id: 1,
-            name: "Fall-2019(07/08/09)"
-          },
-          {
-            id: 2,
-            name: "Spring-2019(01/02/03)"
-          },
-          {
-            id: 3,
-            name: "Winter-2019(10/11/12)"
-          },
-        ]; */
-        // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
       });
     
     //获取款式组名
@@ -461,20 +423,6 @@ export default {
       })
       .catch(error => {
         console.log("款式组获取错误");
-        this.searchOptions.options.styleGroupNameOptions = [
-          {
-            id: 5451,
-            name: "款式组1"
-          },
-          {
-            id: 27452,
-            name: "款式组2"
-          },
-          {
-            id: 356,
-            name: "款式组3"
-          },
-        ];
       });
   },
   methods: {
@@ -566,16 +514,6 @@ export default {
         })
         .catch(error => {
           console.log("对话框品牌名称加载错误");
-          this.options.brandNameOptions = [
-            {
-              id: 1,
-              name: "X品牌"
-            },
-            {
-              id: 2,
-              name: "Y品牌"
-            },
-          ];
         });
 
     },
@@ -659,25 +597,24 @@ export default {
         .then(response=>{
           this.data.tableData = response.data;
           this.data.tableData.forEach(element=>{
-            if(element.state===1) element.stateName="已制定";
-            else if(element.state===2) element.stateName="已提交";
-            else if(element.state===3) element.stateName="被驳回";
-            else if(element.state===4) element.stateName="已审核";
-            else if(element.state===5) element.stateName="已下发";
-            else if(element.state===6) element.stateName="已删除";
+            // if(element.state===1) element.stateName="已制定";
+            // else if(element.state===2) element.stateName="已提交";
+            // else if(element.state===3) element.stateName="被驳回";
+            // else if(element.state===4) element.stateName="已审核";
+            // else if(element.state===5) element.stateName="已下发";
+            // else if(element.state===6) element.stateName="已删除";
             var newDate = new Date(element.createTime);
             element.createTime = newDate.toLocaleString();
-
-              this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
-        {
-          this.tableDataA.push(this.data.tableData[i]);
-        }
           });
+          this.pagination.total=response.data.length;
+          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+          this.tableDataA=[];
+          
+          for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
+          {
+            this.tableDataA.push(this.data.tableData[i]);
+          }
         })
         .catch(error=>{
           console.log("款式组列表搜索错误");
@@ -776,7 +713,7 @@ export default {
                 }else{
                   this.$message({
                     type: 'success',
-                    message: element.styleGroupName + '解绑成功!'
+                    message: element.name + '解绑成功!'
                   });
                 }
               })

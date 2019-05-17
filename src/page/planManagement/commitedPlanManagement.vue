@@ -188,8 +188,8 @@ export default {
       tableData: [],
       pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
         total: 0
       },
       selectedData: []

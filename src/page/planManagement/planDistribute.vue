@@ -84,8 +84,8 @@ export default {
 
       pagination: {
         currentPage: 1,
-        pageSizes: [2, 10, 20, 30, 50],
-        pageSize: 2,
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
         total: 0,
       },
     };
