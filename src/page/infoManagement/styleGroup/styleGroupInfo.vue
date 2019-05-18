@@ -193,7 +193,7 @@ export default {
         }
       });
       that.$router.push({
-        path: `/styleGroup/styleGroupManagement`,
+        name: `styleGroupManagement`,
       });
     },
     // 取消按钮点击
@@ -201,7 +201,7 @@ export default {
       const that = this;
       console.log("取消按钮点击");
       that.$router.push({
-        path: `/styleGroup/styleGroupManagement`,
+        name: `styleGroupManagement`,
       });
     }
   }

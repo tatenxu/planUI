@@ -525,14 +525,7 @@ export default {
     //得到搜索信息
     this.$axios
       .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
-        customerId: "",
-        brandId: "",
-        rangeId: "",
-        number: null,
-        clothingLevelId: "",
-        id: "",
-        startDate: null,
-        endDate: null
+
       })
       .then(response => {
         console.log(response.data)
@@ -626,7 +619,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if (!date) {
-        return null;
+        return undefined;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -644,12 +637,13 @@ export default {
 
     // 搜索按钮点击
     handleSearch() {
+    
        let startDate;
       let endDate;
       if(this.dateRange==null)
       {
-        startDate="";
-        endDate="";
+        startDate=undefined;
+        endDate=undefined;
       }
       else{
                   startDate= this.changeDate(this.dateRange[0]),
@@ -658,54 +652,53 @@ export default {
       let list = {
         customerId:
           this.searchOptions.searchParams.customerName === ""
-            ? null
+            ? undefined
             : this.searchOptions.searchParams.customerName,
         brandId:
           this.searchOptions.searchParams.brandName === ""
-            ? null
+            ? undefined
             : this.searchOptions.searchParams.brandName,
         rangeId:
           this.searchOptions.searchParams.rangeName === ""
-            ? null
+            ? undefined
             : this.searchOptions.searchParams.rangeName,
-        clothingType: null,
+        clothingType: undefined,
         number:
           this.searchOptions.searchParams.number === ""
-            ? null
+            ? undefined
             : this.searchOptions.searchParams.number,
-        id: null,
+        id: undefined,
         startDate: startDate,
         endDate: endDate
       };
+      console.log(list)
     
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
           customerId:
             this.searchOptions.searchParams.customerName === ""
-              ? null
+              ? undefined
               : this.searchOptions.searchParams.customerName,
           brandId:
             this.searchOptions.searchParams.brandName === ""
-              ? null
+              ? undefined
               : this.searchOptions.searchParams.brandName,
           rangeId:
             this.searchOptions.searchParams.rangeName === ""
-              ? null
+              ? undefined
               : this.searchOptions.searchParams.rangeName,
-          clothingLevelId: null,
+          clothingLevelId: undefined,
           number:
             this.searchOptions.searchParams.number === ""
-              ? null
+              ? undefined
               : this.searchOptions.searchParams.number,
-          id: null,
+          id: undefined,
         startDate: startDate,
         endDate: endDate
         })
         .then(response => {
-    
-          var SearchList = response.data; 
-            this.data.tableData = SearchList;
-                                    this.data.tableData.sort(function(b,a){
+          this.data.tableData=response.data;
+          this.data.tableData.sort(function(b,a){
     return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
 });
                     this.data.tableData.forEach(element=>{
@@ -715,6 +708,9 @@ export default {
           element.createTime = time;
 
 
+        console.log(this.tableDataA)
+          });
+          
           this.pagination.total=response.data.length;
           let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
           let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
@@ -725,8 +721,6 @@ export default {
           this.tableDataA.push(this.data.tableData[i]);
         }
 
-        console.log(this.tableDataA)
-          });
 
 
         })
@@ -767,7 +761,7 @@ export default {
       const that = this;
       console.log("批量导入按钮点击");
       that.$router.push({
-        path: `/style/styleImport`
+        name: `styleImport`
       });
     },
     // 删除款号
@@ -844,7 +838,7 @@ export default {
         });
       } else if (that.multipleSelection.length >= 1) {
         that.$router.push({
-          path: `/style/bindStyleGroup`,
+          name: `bindStyleGroup`,
           query: {
             bindData: that.multipleSelection
           }

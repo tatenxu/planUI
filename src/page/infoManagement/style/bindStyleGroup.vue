@@ -130,7 +130,7 @@ export default {
               type: "success"
             });
                   that.$router.push({
-        path: `/style/styleManagement`
+        name: `styleManagement`
       });
             }
             else{
@@ -161,7 +161,7 @@ export default {
       const that = this;
       console.log("取消按钮点击");
       that.$router.push({
-        path: `/style/styleManagement`
+        name: `styleManagement`
       });
     }
   }

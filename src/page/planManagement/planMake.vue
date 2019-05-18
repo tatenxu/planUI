@@ -183,6 +183,7 @@
             <div class="bar">
               <el-form-item label="起止时间" prop="Date1" placeholder="请选择起止时间">
                 <el-date-picker
+                   v-if="showit1"
                   :picker-options="pickerOptions0"
                   style="margin-left:20px"
                   v-model="ruleForm.Date1"
@@ -190,9 +191,25 @@
                   align="right"
                   unlink-panels
                   range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
+                  :start-placeholder="startStr"
+                  :end-placeholder="endStr"
                 ></el-date-picker>
+
+                                <el-date-picker
+                   v-else
+                   :disabled="true"
+                  :picker-options="pickerOptions0"
+                  style="margin-left:20px"
+                  v-model="ruleForm.Date1"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  range-separator="至"
+                  :start-placeholder="startStr"
+                  :end-placeholder="endStr"
+                ></el-date-picker>
+
+                
                 <!-- <el-input
                   v-else
                   v-model="ruleForm.Date1"
@@ -402,7 +419,11 @@
 <script>
 export default {
   data() {
+
     return {
+      endStr:"结束时间",
+      startStr:"开始时间",
+      
       pickerOptions0: {
         disabledDate: time => {
           var date = new Date();
@@ -858,7 +879,10 @@ export default {
         this.ruleForm.PlanPrice = data.number;
 
         if (data.dataStart != "") {
-          this.ruleForm.Date1 = data.dataStart + " 至 " + data.dataEnd;
+
+          this.ruleForm.Date1=[data.dataStart,data.dataEnd];
+          this.startStr = data.dataStart;
+          this.endStr= data.dataEnd;
         }
         this.ruleForm.ProductData = data.productDate;
         this.ruleForm.ProductDateType = data.productDateType;

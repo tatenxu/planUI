@@ -441,14 +441,7 @@ export default {
 
     //获得空搜索集
     this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-        customerId: "",
-        brandId: "",
-        id: "",
-        clothingLevelId: "",
-        startDate: "",
-        endDate: ""
-      })
+      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {})
       .then(response => {
         console.log("获得搜索列表成功了");
         this.totalTableData = response.data;
@@ -521,7 +514,7 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if (!date) {
-        return "";
+        return undefined;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -565,29 +558,30 @@ export default {
       let startDate;
       let endDate;
       if (this.dateRange == undefined) {
-        startDate = "";
-        endDate = "";
+        startDate = undefined;
+        endDate = undefined;
       } else {
         (startDate = this.changeDate(this.dateRange[0])),
           (endDate = this.changeDate(this.dateRange[1]));
       }
       let list = {
-        customerId: this.CustomerValue === "" ? null : this.CustomerValue,
-        brandId: this.BrandValue === "" ? null : this.BrandValue,
-        id: this.RangeValue === "" ? null : this.RangeValue,
+        customerId: this.CustomerValue === "" ? undefined : this.CustomerValue,
+        brandId: this.BrandValue === "" ? undefined : this.BrandValue,
+        id: this.RangeValue === "" ? undefined : this.RangeValue,
         clothingLevelId:
-          this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
+          this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
         dataRange: this.dataRange
       };
 
       console.log(list);
+      console.log(startDate)
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-          customerId: this.CustomerValue === "" ? null : this.CustomerValue,
-          brandId: this.BrandValue === "" ? null : this.BrandValue,
-          id: this.RangeValue === "" ? null : this.RangeValue,
+          customerId: this.CustomerValue === "" ? undefined : this.CustomerValue,
+          brandId: this.BrandValue === "" ? undefined : this.BrandValue,
+          id: this.RangeValue === "" ? undefined : this.RangeValue,
           clothingLevelId:
-            this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
+            this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
           startDate: startDate,
           endDate: endDate
         })
@@ -652,7 +646,7 @@ export default {
       const that = this;
       console.log("批量导入按钮点击");
       that.$router.push({
-        path: `/range/rangeImport`
+        name: `rangeImport`
       });
     },
     // 删除系列
@@ -828,18 +822,18 @@ export default {
         if (valid) {
           this.$axios
             .post(`${window.$config.HOST}/infoManagement/addRange`, {
-              name: this.ruleForm.name === "" ? null : this.ruleForm.name,
+              name: this.ruleForm.name === "" ? undefined : this.ruleForm.name,
               customerId:
                 this.ruleForm.customerName === ""
-                  ? null
+                  ? undefined
                   : this.ruleForm.customerName,
               brandId:
-                this.ruleForm.brandName === "" ? null : this.ruleForm.brandName,
+                this.ruleForm.brandName === "" ? undefined : this.ruleForm.brandName,
               clothingLevelId:
                 this.ruleForm.clothingLevelName === ""
-                  ? null
+                  ? undefined
                   : this.ruleForm.clothingLevelName,
-              note: this.ruleForm.note === "" ? null : this.ruleForm.note
+              note: this.ruleForm.note === "" ? undefined : this.ruleForm.note
             })
             .then(response => {
               var ok = response.data;

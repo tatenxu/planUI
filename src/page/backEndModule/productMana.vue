@@ -70,9 +70,9 @@
             <el-cascader
               expand-trigger="hover"
               :options="selectionData"
-              v-model="addInfoDepartTreeList"
+              v-model="addInfoDepart"
               :props="deptToCascaderProps"
-              @change="handleChange1"
+
              >
             </el-cascader>
               
@@ -109,9 +109,9 @@
             <el-cascader
               expand-trigger="hover"
               :options="selectionData"
-              v-model="editInfoDepartTreeList"
+              v-model="editInfoDepart"
               :props="deptToCascaderProps"
-              @change="handleChange2"
+            
              >
             </el-cascader>
             <!-- <el-input  class="input"  placeholder="请输入产品部门"  v-model="editInfoDepart"></el-input> -->
@@ -143,24 +143,23 @@
     padding: 0 20px;
   }
   
-    // background: black;
-    .containerHeaderDiv2{
-      // margin-right: 100px;
-      // background: white;
-      display: flex;
-      flex-direction: row-reverse;
-      min-width: 500px;
-      .nameInput{
-        min-width: 100px;
-        max-width: 200px;
-      }
-      .inputTag{
-        font-size: 18px;
-        line-height: 40px;
-        min-width: 90px;
-      }
+  // background: black;
+  .containerHeaderDiv2{
+    // margin-right: 100px;
+    // background: white;
+    display: flex;
+    flex-direction: row-reverse;
+    min-width: 500px;
+    .nameInput{
+      min-width: 100px;
+      max-width: 200px;
     }
-
+    .inputTag{
+      font-size: 18px;
+      line-height: 40px;
+      min-width: 90px;
+    }
+  }
 
   .inputCombine{
     margin-top: 10px;
@@ -206,7 +205,7 @@
         editInfoName:'',
         editInfoCode:'',
         editInfoDepart:'',
-        editInfoDepartTreeList:'',
+        // editInfoDepartTreeList:'',
         editInfoDepartId:'',
         tmpeditInfoDepartName:'',
 
@@ -214,7 +213,7 @@
         addInfoName:'',
         addInfoCode:'',
         addInfoDepart:'',
-        addInfoDepartTreeList:'',
+        // addInfoDepartTreeList:'',
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -244,14 +243,14 @@
         });
     },
     methods: {
-      handleChange1(){
-        this.addInfoDepart = this.addInfoDepartTreeList[this.addInfoDepartTreeList.length-1];
-        console.log(this.addInfoDepart);
-      },
-      handleChange2(){
-        this.editInfoDepart = this.editInfoDepartTreeList[this.editInfoDepartTreeList.length-1];
-        console.log(this.editInfoDepart);
-      },
+      // handleChange1(){
+      //   this.addInfoDepart = this.addInfoDepartTreeList[this.addInfoDepartTreeList.length-1];
+      //   console.log(this.addInfoDepart);
+      // },
+      // handleChange2(){
+      //   this.editInfoDepart = this.editInfoDepartTreeList[this.editInfoDepartTreeList.length-1];
+      //   console.log(this.editInfoDepart);
+      // },
       handleTabClick(tab, event) {
         console.log(tab, event);
       },
@@ -297,6 +296,10 @@
         this.viewname = 'second';
         console.log(this.viewname);
       },
+      transferDepartNameToCasadeForm(deptName){
+        var resultList = [];
+        
+      },
       handleEditInfoClick(){
         if(this.multipleSelection.length === 0){
           this.$message({
@@ -318,10 +321,10 @@
         this.editInfoCode = this.multipleSelection[0].number;
 
         // this.editInfoDepartTreeList = this.multipleSelection[0].deptName;
-
-        this.editInfoDepart = this.multipleSelection[0].deptName;
+        this.tmpeditInfoDepartName = [this.multipleSelection[0].deptName,];
+        this.editInfoDepart = [this.multipleSelection[0].deptName,];
         this.editInfoDepartId = this.multipleSelection[0].departmentId;
-        this.tmpeditInfoDepartName = this.multipleSelection[0].deptName;
+        
         this.editInfoDescription = this.multipleSelection[0].description;
         this.editInfoId = this.multipleSelection[0].id;
         this.viewname = 'third';
@@ -357,7 +360,7 @@
           number : (this.addInfoCode==="")?null:this.addInfoCode,
           name : (this.addInfoName==="")?null:this.addInfoName,
           description : (this.addInfoDescription==="")?null:this.addInfoDescription,
-          deptName : (this.addInfoDepart==="")?null:this.addInfoDepart,
+          deptName : (this.addInfoDepart==="")?null:this.addInfoDepart[this.addInfoDepart.length-1],
         };
         console.log(param);
         
@@ -405,7 +408,7 @@
           number : (this.editInfoCode==="")?null:this.editInfoCode,
           name : (this.editInfoName==="")?null:this.editInfoName,
           description : (this.editInfoDescription==="")?null:this.editInfoDescription,
-          deptName : (departInfoTmp === "")?null:departInfoTmp,
+          deptName : (departInfoTmp === "")?null:departInfoTmp[departInfoTmp.length-1],
         };
         console.log(param);
         

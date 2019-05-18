@@ -169,7 +169,7 @@ export default {
           cookies.token = (new Date()).getTime();
         }
         $sto.set($conf.constant.cookie, cookies);
-        that.$router.push({path: '/quick'});
+        that.$router.push({name: 'Layout'});
       } else {
         that.$message.error('用户名或密码错误！');
       }

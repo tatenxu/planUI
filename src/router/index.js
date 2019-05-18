@@ -52,6 +52,8 @@ const productMana = r => require.ensure([], () => r(require('../page/backEndModu
 const clothingLevelMana = r => require.ensure([], () => r(require('../page/backEndModule/clothingLevelMana.vue')), 'clothingLevelMana');
 const dictionaryCateMana = r => require.ensure([], () => r(require('../page/backEndModule/dictionaryCateMana.vue')), 'dictionaryCateMana');
 
+
+var servicePath = "/planservice";
 // -------------------------------------------- 路由配置部分 --------------------------------------------
 export default [{
     path: Config.route.login,
@@ -60,12 +62,12 @@ export default [{
   },
   
   {
-    path: '/',
+    path: servicePath+'/',
     name: 'Layout',
     component: Layout,
     children: [
       { // 快速入门
-        path: '/quick',
+        path: servicePath+'/quick',
         name: 'Quick',
         component: Quick,
         meta: {
@@ -73,7 +75,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/dictionary/brandMana',
+        path: servicePath+'/backEndModule/dictionary/brandMana',
         name: 'brandMana',
         component: brandMana,
         meta: {
@@ -81,7 +83,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/dictionary/customerMana',
+        path: servicePath+'/backEndModule/dictionary/customerMana',
         name: 'customerMana',
         component: customerMana,
         meta: {
@@ -89,7 +91,7 @@ export default [{
         }
       },
       {
-        path: '/backEndModule/dictionary/productMana',
+        path: servicePath+'/backEndModule/dictionary/productMana',
         name: 'productMana',
         component: productMana,
         meta: {
@@ -97,7 +99,7 @@ export default [{
         }
       },
       {
-        path: '/backEndModule/dictionary/clothingLevelMana',
+        path: servicePath+'/backEndModule/dictionary/clothingLevelMana',
         name: 'clothingLevelMana',
         component: clothingLevelMana,
         meta: {
@@ -105,7 +107,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/dictionary/dictionaryCateMana',
+        path: servicePath+'/backEndModule/dictionary/dictionaryCateMana',
         name: 'dictionaryCateMana',
         component: dictionaryCateMana,
         meta: {
@@ -113,7 +115,7 @@ export default [{
         }
       },
       { 
-        path: '/range/rangeManagement',
+        path: servicePath+'/range/rangeManagement',
         name: 'rangeManagement',
         component: rangeManagement,
         meta: {
@@ -121,7 +123,7 @@ export default [{
         }
       },
       { 
-        path: '/range/rangeInfo',
+        path: servicePath+'/range/rangeInfo',
         name: 'rangeInfo',
         component: rangeInfo,
         meta: {
@@ -129,7 +131,7 @@ export default [{
         }
       },
       { 
-        path: '/range/rangeImport',
+        path: servicePath+'/range/rangeImport',
         name: 'rangeImport',
         component: rangeImport,
         meta: {
@@ -137,7 +139,7 @@ export default [{
         }
       },
       { 
-        path: '/styleGroup/styleGroupManagement',
+        path: servicePath+'/styleGroup/styleGroupManagement',
         name: 'styleGroupManagement',
         component: styleGroupManagement,
         meta: {
@@ -145,7 +147,7 @@ export default [{
         }
       },
       { 
-        path: '/styleGroup/styleGroupInfo',
+        path: servicePath+'/styleGroup/styleGroupInfo',
         name: 'styleGroupInfo',
         component: styleGroupInfo,
         meta: {
@@ -153,7 +155,7 @@ export default [{
         }
       },
       { 
-        path: '/style/styleManagement',
+        path: servicePath+'/style/styleManagement',
         name: 'styleIstyleManagementndex',
         component: styleManagement,
         meta: {
@@ -161,7 +163,7 @@ export default [{
         }
       },
       { 
-        path: '/style/styleInfo',
+        path: servicePath+'/style/styleInfo',
         name: 'styleInfo',
         component: styleInfo,
         meta: {
@@ -169,7 +171,7 @@ export default [{
         }
       },
       { 
-        path: '/style/bindStyleGroup',
+        path: servicePath+'/style/bindStyleGroup',
         name: 'bindStyleGroup',
         component: bindStyleGroup,
         meta: {
@@ -177,7 +179,7 @@ export default [{
         }
       },
       { 
-        path: '/style/styleImport',
+        path: servicePath+'/style/styleImport',
         name: 'styleImport',
         component: styleImport,
         meta: {
@@ -185,7 +187,7 @@ export default [{
         }
       },
       { 
-        path: '/predictPlanToBeMake',
+        path: servicePath+'/predictPlanToBeMake',
         name: 'predictPlanToBeMake',
         component: predictPlanToBeMake,
         meta: {
@@ -193,7 +195,7 @@ export default [{
         }
       },
       { 
-        path: '/predictPlanMaking',
+        path: servicePath+'/predictPlanMaking',
         name: 'predictPlanMaking',
         component: predictPlanMaking,
         meta: {
@@ -201,7 +203,7 @@ export default [{
         }
       },
       { 
-        path: '/predictPlanMade',
+        path: servicePath+'/predictPlanMade',
         name: 'predictPlanMade',
         component: predictPlanMade,
         meta: {
@@ -209,7 +211,7 @@ export default [{
         }
       },
       { 
-        path: '/planManagement',
+        path: servicePath+'/planManagement',
         name: 'planManagement',
         component: planManagement,
         meta: {
@@ -217,7 +219,7 @@ export default [{
         }
       },
       { 
-        path: '/commitedPlanManagement',
+        path: servicePath+'/commitedPlanManagement',
         name: 'commitedPlanManagement',
         component: commitedPlanManagement,
         meta: {
@@ -225,7 +227,7 @@ export default [{
         }
       },
       { 
-        path: '/planCompletionManage',
+        path: servicePath+'/planCompletionManage',
         name: 'planCompletionManage',
         component: planCompletionManage,
         meta: {
@@ -233,7 +235,7 @@ export default [{
         }
       },
       { 
-        path: '/planMake/planMakeIndex',
+        path: servicePath+'/planMake/planMakeIndex',
         name: 'planMakeIndex',
         component: planMakeIndex,
         meta: {
@@ -241,7 +243,7 @@ export default [{
         }
       },
       { 
-        path: '/planMake/seriesPlanMake',
+        path: servicePath+'/planMake/seriesPlanMake',
         name: 'seriesPlanMake',
         component: seriesPlanMake,
         meta: {
@@ -249,7 +251,7 @@ export default [{
         }
       },
       { 
-        path: '/planMake/styleGroupPlanMake',
+        path: servicePath+'/planMake/styleGroupPlanMake',
         name: 'styleGroupPlanMake',
         component: styleGroupPlanMake,
         meta: {
@@ -257,7 +259,7 @@ export default [{
         }
       },
       { 
-        path: '/planMake/stylePlanMake',
+        path: servicePath+'/planMake/stylePlanMake',
         name: 'stylePlanMake',
         component: stylePlanMake,
         meta: {
@@ -265,7 +267,7 @@ export default [{
         }
       },
       { 
-        path: '/planVerify',
+        path: servicePath+'/planVerify',
         name: 'planVerify',
         component: planVerify,
         meta: {
@@ -273,7 +275,7 @@ export default [{
         }
       },
       { 
-        path: '/planDistribute',
+        path: servicePath+'/planDistribute',
         name: 'planDistribute',
         component: planDistribute,
         meta: {
@@ -281,7 +283,7 @@ export default [{
         }
       },
       { 
-        path: '/planRecover',
+        path: servicePath+'/planRecover',
         name: 'planRecover',
         component: planRecover,
         meta: {
@@ -289,7 +291,7 @@ export default [{
         }
       },
       { 
-        path: '/messageManagement',
+        path: servicePath+'/messageManagement',
         name: 'messageManagement',
         component: messageManagement,
         meta: {
@@ -297,7 +299,7 @@ export default [{
         }
       },
       { 
-        path: '/exceptionManagement',
+        path: servicePath+'/exceptionManagement',
         name: 'exceptionManagement',
         component: exceptionManagement,
         meta: {
@@ -305,7 +307,7 @@ export default [{
         }
       },
       { 
-        path: '/queryStatistic',
+        path: servicePath+'/queryStatistic',
         name: 'queryStatistic',
         component: queryStatistic,
         meta: {
@@ -313,7 +315,7 @@ export default [{
         }
       },
       { 
-        path: '/formManagement',
+        path:servicePath+ '/formManagement',
         name: 'formManagement',
         component: formManagement,
         meta: {
@@ -321,7 +323,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/planModelEdit',
+        path: servicePath+'/backEndModule/planModelEdit',
         name: 'bePlanModelEdit',
         component: bePlanModelEdit,
         meta: {
@@ -329,7 +331,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/planModelManagement',
+        path: servicePath+'/backEndModule/planModelManagement',
         name: 'bePlanModelManagement',
         component: bePlanModelManagement,
         meta: {
@@ -337,7 +339,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/privilegeManagement',
+        path: servicePath+'/backEndModule/privilegeManagement',
         name: 'bePrivilegeManagement',
         component: bePrivilegeManagement,
         meta: {
@@ -345,7 +347,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/userManagement',
+        path: servicePath+'/backEndModule/userManagement',
         name: 'beUserManagement',
         component: beUserManagement,
         meta: {
@@ -353,7 +355,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/groupManagement',
+        path: servicePath+'/backEndModule/groupManagement',
         name: 'beGroupManagement',
         component: beGroupManagement,
         meta: {
@@ -361,7 +363,7 @@ export default [{
         }
       },
       { 
-        path: '/backEndModule/roleManagement',
+        path: servicePath+'/backEndModule/roleManagement',
         name: 'beRoleManagement',
         component: beRoleManagement,
         meta: {
@@ -370,7 +372,7 @@ export default [{
       },
       { // 默认路由
         path: '*',
-        redirect: '/quick',
+        redirect: servicePath+'/quick',
         name: 'Quick',
         component: Quick,
         meta: {

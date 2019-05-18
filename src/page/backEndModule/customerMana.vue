@@ -70,9 +70,9 @@
               <el-cascader
                 expand-trigger="hover"
                 :options="selectionData"
-                v-model="addInfoDepartTreeList"
+                v-model="addInfoDepart"
                 :props="deptToCascaderProps"
-                @change="handleChange1"
+                
               >
               </el-cascader>
           </div>
@@ -108,9 +108,9 @@
             <el-cascader
                 expand-trigger="hover"
                 :options="selectionData"
-                v-model="editInfoGroupTreeList"
+                v-model="editInfoGroup"
                 :props="deptToCascaderProps"
-                @change="handleChange2"
+              
               >
             </el-cascader>
           </div>
@@ -207,7 +207,7 @@ import { error } from 'util';
         editInfoName:'',
         editInfoAbbr:'',
         editInfoGroup:'',
-        editInfoGroupTreeList:[],
+        // editInfoGroupTreeList:[],
         editIndoInitGroupId:'',
         tmpeditInfoGroupName:'',
 
@@ -215,7 +215,7 @@ import { error } from 'util';
         addInfoName:'',
         addInfoAbbr:'',
         addInfoGroup:'',
-        addInfoGroupTreeList:[],
+        // addInfoGroupTreeList:[],
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -244,17 +244,17 @@ import { error } from 'util';
         });
     },
     methods: {
-      handleChange1(){
-        this.addInfoGroup = this.addInfoGroupTreeList[this.addInfoDepartTreeList.length-1];
-        console.log(this.addInfoGroup);
-      },
-      handleChange2(){
-        this.editInfoGroup = this.editInfoGroupTreeList[this.editInfoGroupTreeList.length-1];
-        console.log(this.editInfoGroup);
-      },
-      handleTabClick(tab, event) {
-        console.log(tab, event);
-      },
+      // handleChange1(){
+      //   this.addInfoGroup = this.addInfoGroupTreeList[this.addInfoDepartTreeList.length-1];
+      //   console.log(this.addInfoGroup);
+      // },
+      // handleChange2(){
+      //   this.editInfoGroup = this.editInfoGroupTreeList[this.editInfoGroupTreeList.length-1];
+      //   console.log(this.editInfoGroup);
+      // },
+      // handleTabClick(tab, event) {
+      //   console.log(tab, event);
+      // },
       toggleSelection(rows) {
         if (rows) {
           rows.forEach(row => {
@@ -315,9 +315,10 @@ import { error } from 'util';
         this.editInfoId = this.multipleSelection[0].id;
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoAbbr = this.multipleSelection[0].abbr;
-        this.editInfoGroup = this.multipleSelection[0].groupName;
+
+        this.tmpeditInfoGroupName = [this.multipleSelection[0].groupName];
+        this.editInfoGroup = [this.multipleSelection[0].groupName];
         this.editIndoInitGroupId = this.multipleSelection[0].groupId;
-        this.tmpeditInfoGroupName = this.multipleSelection[0].groupName;
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';
       },
@@ -362,7 +363,7 @@ import { error } from 'util';
           name : (this.addInfoName==="")?null:this.addInfoName,
           abbr : (this.addInfoAbbr==="")?null:this.addInfoAbbr,
           description : (this.addInfoDescription==="")?null:this.addInfoDescription,
-          groupName : (this.addInfoGroup==="")?null:this.addInfoGroup,
+          groupName : (this.addInfoGroup===[])?null:this.addInfoGroup[this.addInfoGroup.length-1],
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
@@ -410,7 +411,7 @@ import { error } from 'util';
           abbr : (this.editInfoAbbr==="")?null:this.editInfoAbbr,
           description : (this.editInfoDescription==="")?null:this.editInfoDescription,
           // groupName : (groupidTmp==="")?null:groupidTmp,
-          groupName : (this.editInfoGroup==="")?null:this.editInfoGroup,
+          groupName : (this.editInfoGroup===[])?null:this.editInfoGroup[this.editInfoGroup.length-1],
         };
         console.log(param);
         

@@ -275,22 +275,7 @@ export default {
           this.tableData = response.data;
         })
         .catch(error => {
-          var SearchList = [
-            {
-              id:"7458756415",
-              number: "7878787",
-              planNumber: "45345",
-              customerName: "nike",
-              brandName: "耐克",
-              planName: "计划1",
-              rangeName: "系列1",
-              planObject: "大明",
-              cause: "死机",
-              createrName: "王小虎",
-              createTime: "2016-10-16"
-            },
-          ];
-          this.tableData = SearchList;
+          console.log("获取异常错误");
         });
     }
 

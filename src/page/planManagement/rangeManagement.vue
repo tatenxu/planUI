@@ -653,7 +653,7 @@ export default {
       const that = this;
       console.log("批量导入按钮点击");
       that.$router.push({
-        path: `/range/rangeImport`
+        name: `rangeImport`
       });
     },
     // 删除系列

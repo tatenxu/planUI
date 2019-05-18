@@ -106,7 +106,7 @@
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px">查看总计划</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
           </div>
         </el-col>
       </el-row>
@@ -186,6 +186,12 @@
           </el-row>
         </div>
       </el-dialog>
+
+      <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+        <div class="body">
+          <el-tree :data="allPlans" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -196,7 +202,13 @@ export default {
   name: "warehouseList",
   data() {
     return {
+      lookAllPlans: false,
       checked: 1,
+
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
 
       pagination: {
         currentPage: 1,
@@ -204,6 +216,7 @@ export default {
         pageSize: 10,
         total: 0
       },
+      allPlans: [],
       tableDataA: [],
       GoBack: false,
       GoBackReason: "",
@@ -310,13 +323,11 @@ export default {
       .then(response => {
         console.log("获取空搜索集成功");
 
-
-
-          this.tableData=[],
-          response.data.forEach(element=>{
-            console.log("dsadsa")
-            if(element.state==="已提交") this.tableData.push(element)
-          })
+        (this.tableData = []),
+          response.data.forEach(element => {
+            console.log("dsadsa");
+            if (element.state === "已提交") this.tableData.push(element);
+          });
 
         this.pagination.total = response.data.length;
         let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
@@ -337,7 +348,39 @@ export default {
       });
   },
   methods: {
-    changeState(){
+    lookAllPlan() {
+      if (this.AnyChanged.length != 1) {
+        this.$message({
+          message: "请选择一项！",
+          type: "warning"
+        });
+        return;
+      }
+      let list={
+        id:   this.AnyChanged[0].id
+      }
+
+
+    this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
+          params: list
+        })
+        .then(response => {
+
+         this.allPlans.push(response.data)
+          console.log(this.allPlans)
+          
+      this.lookAllPlans = true;
+        })
+        .catch(error => {
+          this.$message({
+          message: "获取总计划失败",
+          type: "warning"
+        });
+        });
+
+    },
+    changeState() {
       getWareList();
     },
     handleSizeChange(val) {
@@ -396,7 +439,7 @@ export default {
         var second = date.getSeconds();
         second = minute < 10 ? "0" + second : second;
         return y + "-" + m + "-" + d;
-      } 
+      }
     },
     getWareList() {
       const that = this;
@@ -419,26 +462,21 @@ export default {
           params: list
         })
         .then(response => {
-          console.log(response.data)
+          console.log(response.data);
           let stateName;
-          if(this.checked===1)
-          {
-            stateName="已提交";
-          }
-          else if(this.checked===2)
-          {
-            stateName="已审核";
-          }
-          else if(this.checked===3)
-          {
-            stateName="已下发"
+          if (this.checked === 1) {
+            stateName = "已提交";
+          } else if (this.checked === 2) {
+            stateName = "已审核";
+          } else if (this.checked === 3) {
+            stateName = "已下发";
           }
 
-          this.tableData=[],
-          response.data.forEach(element=>{
-            console.log("dsadsa")
-            if(element.state===stateName) this.tableData.push(element)
-          })
+          (this.tableData = []),
+            response.data.forEach(element => {
+              console.log("dsadsa");
+              if (element.state === stateName) this.tableData.push(element);
+            });
 
           this.pagination.total = this.tableData.length;
           let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;

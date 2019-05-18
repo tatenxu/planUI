@@ -373,8 +373,8 @@ export default {
         )
         .then(response => {
         this.$router.push({
-        path: `/range/rangeManagement`
-      });
+          name: `rangeManagement`
+        });
           var ok = response.data;
           if (ok >= 0) {
             if(ok===RangeListAdd.length)
@@ -412,7 +412,7 @@ this.$message({
       const that = this;
       console.log("取消按钮点击");
       that.$router.push({
-        path: `/range/rangeManagement`
+        name: `rangeManagement`
       });
     },
     // 浏览按钮点击
