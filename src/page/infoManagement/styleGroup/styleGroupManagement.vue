@@ -364,6 +364,13 @@ export default {
           var newDate = new Date(element.createTime);
           element.createTime = newDate.toLocaleString();
         });
+
+        //时间排序
+        this.data.tableData.sort(function(b,a){
+          return Date.parse(a.createTime) - Date.parse(b.createTime);
+        });
+
+        //分页
         this.pagination.total=response.data.length;
         let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
         let k = (this.pagination.currentPage-1) * this.pagination.pageSize;

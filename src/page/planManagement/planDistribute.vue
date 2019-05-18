@@ -1,74 +1,76 @@
 <template>
-  <div class="body">
-    <el-card class="box-card">
-      <div>
-        <el-row :gutter="20">
-          <el-col :span="8">
+  <el-card class="box-card">
+    <div>
+      <el-row :gutter="20">
+        <el-col :span="5">
+          <el-switch
+            class="el-switch"
+            v-model="isVerifiedPlan"
+            @change="planTypeSwitchChange"
+            inactive-color="#13ce66"
+            active-text="已审核计划"
+            inactive-text="已下发计划">
+          </el-switch>
+        </el-col>
+        <el-col :span="8" v-if="isVerifiedPlan">
           <div class="bar">
             <div class="title">下发对象</div>
             <el-select v-model="searchOptions.searchParams.userName" clearable>
               <el-option
                 v-for="item in searchOptions.options.userNameOptions"
                 :key="item.id"
-                :label="item.name"
+                :label="item.realName"
                 :value="item.id"
               ></el-option>
             </el-select> 
           </div>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="3" v-if="isVerifiedPlan">
           <div class="bar">
             <el-button type="primary" style="margin-right:20px" @click="distributePlanClick">下发计划</el-button>
           </div>
         </el-col>
-          
-        </el-row>
-        <el-table
-          :data="tableData"
-          style="width: 100%; margin-top: 20px"
-          @selection-change="tableSelectionChange"
-          :stripe="true"
-        >
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" align="center"></el-table-column>
-          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
-          <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
-          <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
-
-          <!-- <el-table-column fixed="right" label="操作" width="50">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="ReCover(scope.$index, scope.row)">恢复</el-button>
-            </template>
-          </el-table-column>-->
-        </el-table>
-      </div>
-      <div class="block">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="pagination.currentPage"
-          :page-sizes="pagination.pageSizes"
-          :page-size="pagination.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
-        ></el-pagination>
-      </div>
-    </el-card>
-  </div>
+      </el-row>
+      <el-table
+        :data="tableData"
+        style="width: 100%; margin-top: 20px"
+        @selection-change="tableSelectionChange"
+        :stripe="true"
+      >
+        <el-table-column type="selection" width="50" align="center"></el-table-column>
+        <el-table-column type="index" label="序号" align="center"></el-table-column>
+        <el-table-column v-if="false" prop="id" align="center"></el-table-column>
+        <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
+        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+        <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
+        <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
+        <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
+        <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
+        <el-table-column prop="state" label="状态" align="center"></el-table-column>
+        <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+      </el-table>
+    </div>
+    <div class="block">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="pagination.currentPage"
+        :page-sizes="pagination.pageSizes"
+        :page-size="pagination.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pagination.total"
+      ></el-pagination>
+    </div>
+  </el-card>
 </template>
 
 <script>
 export default {
   data() {
     return {
+      isVerifiedPlan:true,
       searchOptions: {
         searchParams: {
           userName:""
@@ -94,7 +96,7 @@ export default {
     let that = this;
     //获取用户信息
     that.$axios
-      .get(`${window.$config.HOST}/infoManagement/getUsers`)
+      .get(`${window.$config.HOST2}/getAllUserName`)
       .then(response=>{
         if(response.data.errcode < 0){
           that.$message.error("下发对象加载失败!");
@@ -103,20 +105,6 @@ export default {
       })
       .catch(error=>{
         that.$message.error("下发对象加载失败!");
-        this.searchOptions.options.userNameOptions =[
-            {
-              id:"4243",
-              name:"无效小王"
-            },
-            {
-              id:"574523",
-              name:"无效小徐"
-            },
-            {
-              id:"57531",
-              name:"无效小刘"
-            },
-          ];
       });
 
     //获取所有未下发计划
@@ -129,8 +117,13 @@ export default {
       })
       .then(response => {
         console.log("初始化加载下发计划成功");
-        this.totalTableData = response.data;
+        response.data.forEach(element=>{
+          if(element.state === "已审核"){
+            this.totalTableData.push(element);
+          }
+        });
 
+        //分页
         this.pagination.total = this.totalTableData.length;
         this.pagination.currentPage = 1;
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
@@ -142,6 +135,10 @@ export default {
       });
   },
   methods: {
+    //switch 处理函数
+    planTypeSwitchChange(){
+      this.handleSearch();
+    },
     handleSearch(){
       var param = {
         stage:"distribute"
@@ -152,7 +149,18 @@ export default {
         })
         .then(response => {
           console.log("初始化加载下发计划成功");
-          this.totalTableData = response.data;
+          this.totalTableData = [];
+          response.data.forEach(element=>{
+            if(this.isVerifiedPlan){
+              if(element.state === "已审核"){
+                this.totalTableData.push(element);
+              }
+            }else{
+              if(element.state === "已下发"){
+                this.totalTableData.push(element);
+              }
+            }
+          });
 
           this.pagination.total = this.totalTableData.length;
           var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
@@ -246,6 +254,10 @@ export default {
       min-width: 75px;
       // margin: 5px 10px;
     }
+    
+  }
+  .el-switch{
+    height: 40px;
   }
   .block {
     padding: 30px 0;

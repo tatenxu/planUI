@@ -99,17 +99,17 @@
     </el-card>
     <el-card class="box-card">
       <el-row :gutter="20">
-        <el-col :span="3" v-if="isSelfMadePlan">
+        <!-- <el-col :span="3" v-if="isSelfMadePlan">
           <el-button type="primary" size="small" @click="deletePlan" >删除计划</el-button>
-        </el-col>
-        <el-col :span="3" v-if="isSelfMadePlan">
-          <el-button type="primary" size="small" @click="commitPlan" >提交计划</el-button>
-        </el-col>
+        </el-col> -->
+        <!-- <el-col :span="3" v-if="isSelfMadePlan">
+          <el-button type="primary" size="small" @click="submitPlan" >提交计划</el-button>
+        </el-col> -->
         <el-col :span="3" v-if="!isSelfMadePlan">
           <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
         </el-col>
         <el-col :span="4" v-if="!isSelfMadePlan">
-          <el-button type="primary" size="small" @click="changeOrder">下级计划顺序调整</el-button>
+          <el-button type="primary" size="small" @click="changeSubPlanOrder">下级计划顺序调整</el-button>
         </el-col>
         <el-col :span="3" v-if="!isSelfMadePlan">
           <el-button type="primary" size="small" @click="addException">添加异常</el-button>
@@ -136,12 +136,13 @@
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
-        <el-table-column prop="havePlan" label="状态" align="center">
+        <el-table-column prop="state" label="状态" align="center"></el-table-column>
+        <!-- <el-table-column prop="havePlan" label="状态" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.havePlan">已制定</p>
             <p v-else>未制定</p>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="异常状态" width="150" align="center">
           <template slot-scope="scope">
             <el-button
@@ -157,13 +158,19 @@
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button
-              v-if="isSelfMadePlan"
+              v-if="isSelfMadePlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
               @click.native.prevent="ModifyPlanDetail(scope.row)"
               type="text"
               size="small"
             >修改</el-button>
             <el-button
-              v-if="isSelfMadePlan"
+              v-if="isSelfMadePlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              @click.native.prevent="submitPlan(scope.row)"
+              type="text"
+              size="small"
+            >提交</el-button>
+            <el-button
+              v-if="isSelfMadePlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
               @click.native.prevent="deleteOnePlan(scope.row.id)"
               type="text"
               size="small"
@@ -185,22 +192,34 @@
         </div>
     </el-card>
 
-    <el-dialog title="收货地址"  :visible.sync="subPlanOrderModificationDialogVisible" :modal="false">
-      <el-tree
-        :data="subPlanTreeData"
-        node-key="id"
-        default-expand-all
-        @node-drag-start="handleDragStart"
-        @node-drag-enter="handleDragEnter"
-        @node-drag-leave="handleDragLeave"
-        @node-drag-over="handleDragOver"
-        @node-drag-end="handleDragEnd"
-        @node-drop="handleDrop"
-        draggable
-        :allow-drop="allowDrop"
-        :allow-drag="allowDrag">
-      </el-tree>
-      <el-button  type="primary" @click="subPlanOrderClick">确定</el-button>
+    <el-dialog title="子计划顺序调整"  :visible.sync="subPlanOrderModificationDialogVisible" :modal="false">
+      <el-table
+        :data="subPlanTableData"
+        highlight-current-row
+        style="width: 100%"  >
+          <!-- <el-table-column  type="selection"  width="55px"></el-table-column> -->
+          <el-table-column  type="index"  label="新顺序" width="70px"></el-table-column>
+          <el-table-column  prop="order"  label="原顺序" width="70"></el-table-column>
+          <el-table-column  prop="name"  label="计划名称"  width="100px"></el-table-column>
+          <el-table-column  prop="number"  label="款号"  width="100px"></el-table-column>
+          <el-table-column  prop="startDate"  label="开始日期"  width="100px"></el-table-column>
+          <el-table-column  prop="endDate"  label="结束日期"  width="100px"></el-table-column>
+          <el-table-column  prop="createrName"  label="创建人"  width="100px"></el-table-column>
+          <el-table-column  prop="deptName"  label="部门名称"  width="100px"></el-table-column>
+          <el-table-column  prop="createTime"  label="创建日期"  width="100px"></el-table-column>
+          <el-table-column label="操作" width="150px" fixed="right">
+            <template slot-scope="scope">
+              <el-button  size="mini"  :disabled="scope.$index===0"  @click="moveUp(scope.$index,scope.row)">
+                <i class="el-icon-arrow-up"></i>
+              </el-button>
+              <el-button  size="mini"  :disabled="scope.$index===(subPlanTableData.length-1)"  @click="moveDown(scope.$index,scope.row)">
+                <i class="el-icon-arrow-down"></i>
+              </el-button>
+              <!-- <el-button type="info" size="mini" round v-if="scope.$index===0">默认</el-button> -->
+            </template>
+          </el-table-column>
+        </el-table>
+      <el-button  type="primary" @click="subPlanOrderConfirm">确定</el-button>
     </el-dialog>
   </div>
 </template>
@@ -239,8 +258,8 @@ export default {
         total: 0
       },
       selectedData: [],
-      subPlanTreeData: [],
-      
+
+      subPlanTableData: [],
     };
   },
   created: function () {
@@ -410,36 +429,61 @@ export default {
           });
       }
     },
-    commitPlan(){
-      if (this.selectedData.length === 0) {
-        this.$message.error("请选择要提交的计划！");
-      } else {
-        this.selectedData.forEach(element=>{
-            console.log(element.id);
-            this.$axios
-              .get(`${window.$config.HOST}/planManagement/submitPlan`,{
-                params:{id:element.id}
-              })
-              .then(response=>{
-                if(response.data < 0 ){
-                  console.log(element.name + "提交失败(服务器)!");
-                  this.$message.error(element.id + "提交失败!");
-                }else{
-                  this.$message({
-                    type:"success",
-                    message: element.id+"提交成功!"
-                  });
-                  this.handleSearch()
-                }
-              })
-              .catch(error=>{
-                console.log(element.name + "提交失败!");
-                this.$message.error(element.id + "提交失败!");
-              })
-          });
-      }
+    //提交计划
+    submitPlan(row){
+      // 注释的是批量提交的函数
+      // if (this.selectedData.length === 0) {
+      //   this.$message.error("请选择要提交的计划！");
+      // } else {
+      //   this.selectedData.forEach(element=>{
+      //       console.log(element.id);
+      //       this.$axios
+      //         .get(`${window.$config.HOST}/planManagement/submitPlan`,{
+      //           params:{id:element.id}
+      //         })
+      //         .then(response=>{
+      //           if(response.data < 0 ){
+      //             console.log(element.name + "提交失败(服务器)!");
+      //             this.$message.error(element.id + "提交失败!");
+      //           }else{
+      //             this.$message({
+      //               type:"success",
+      //               message: element.id+"提交成功!"
+      //             });
+      //             this.handleSearch()
+      //           }
+      //         })
+      //         .catch(error=>{
+      //           console.log(element.name + "提交失败!");
+      //           this.$message.error(element.id + "提交失败!");
+      //         })
+      //     });
+      // }
+
+      //行提交
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/submitPlan`,{
+          params:{id:row.id}
+        })
+        .then(response=>{
+          if(response.data < 0 ){
+            console.log(row.name + "提交失败(服务器)!");
+            this.$message.error(row.id + "提交失败!");
+          }else{
+            this.$message({
+              type:"success",
+              message: row.id+"提交成功!"
+            });
+            this.handleSearch();
+          }
+        })
+        .catch(error=>{
+          console.log(row.name + "提交失败!");
+          this.$message.error(row.id + "提交失败!");
+        })
     },
-    changeOrder() {
+    //子计划顺序跳转按钮
+    changeSubPlanOrder() {
       // this.$message("此功能对应页面暂时缺失");
       if (this.selectedData.length === 1) {
         var param = {
@@ -452,19 +496,10 @@ export default {
           })
           .then(response=>{
             // console.log(response.data);
-            this.subPlanTreeData=[];
-            response.data.forEach(element=>{
-              this.subPlanTreeData.push({
-                id:element.id,
-                label:element.name,
-                order:element.order
-              })
-            });
-            this.subPlanTreeData.sort(function(a,b){
+            this.subPlanTableData=response.data;
+            this.subPlanTableData.sort(function(a,b){
               return a.order-b.order;
             });
-
-            console.log(this.subPlanTreeData);
           })
           .catch(error=>{
             console.lopg("获取子计划列表失败");
@@ -476,9 +511,35 @@ export default {
         this.$message.error("仅允许对一条计划调整，请重新选择！");
       }
     },
-    subPlanOrderClick(){
-      console.log("调整后:");
-     
+    subPlanOrderConfirm(){
+      var param = [];
+      var len = this.subPlanTableData.length;
+      for(var i = 0; i < len; i++){
+        param.push({
+          id:this.subPlanTableData[i].id,
+          order: i,
+        });
+      }
+      console.log(param);
+      this.$axios
+        .post(`${window.$config.HOST}/planManagement/adjustPlanOrder`,param)
+        .then(response=>{
+          if(response.data < 0){
+            console.log("顺序调整失败");
+            this.$message.error("顺序调整失败");
+          }else{
+            console.log("顺序调整成功");
+            this.$message({
+              type:"success",
+              message:"调整成功!"
+            });
+          }
+        })
+        .catch(error=>{
+          console.log("顺序调整请求失败");
+          this.$message.error("顺序调整失败");
+        })
+      this.subPlanOrderModificationDialogVisible = false;
     },
     addException() {
       if (this.selectedData.length === 0) {
@@ -649,6 +710,7 @@ export default {
               }
             });
 
+            console.log(this.tableDataShow);
             //分页
             this.pagination.total=response.data.length;
             let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
@@ -696,88 +758,89 @@ export default {
     planTypeSwitchChange(){
       this.pagination.currentPage=1;
       this.tableData = [];
-      if(this.isSelfMadePlan){
-        this.$axios
-          .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-            params:{stage:"manage"}
-          })
-          .then(response=>{
-            this.tableData = response.data;
-            this.tableData.forEach(element=>{
-              if(element.isRoot){
-                element.parentName = "根计划";
-              }
-            });
+      this.handleSearch();
+      // if(this.isSelfMadePlan){
+      //   this.$axios
+      //     .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+      //       params:{stage:"manage"}
+      //     })
+      //     .then(response=>{
+      //       this.tableData = response.data;
+      //       this.tableData.forEach(element=>{
+      //         if(element.isRoot){
+      //           element.parentName = "根计划";
+      //         }
+      //       });
 
-            //分页
-            this.pagination.total=response.data.length;
-            let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-            let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-            this.tableDataShow=[];
-            for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-            {
-              this.tableDataShow.push(this.tableData[i]);
-            }
-          })
-          .catch(error=>{
-            this.$message.error("搜索失败!");
-          });
-      }else{
-        this.$axios
-          .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
-          .then(response=>{
-            this.tableData = response.data;
-            this.tableData.forEach(element=>{
-              if(element.isRoot){
-                element.parentName = "根计划";
-              }
-            });
+      //       //分页
+      //       this.pagination.total=response.data.length;
+      //       let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+      //       let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+      //       this.tableDataShow=[];
+      //       for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+      //       {
+      //         this.tableDataShow.push(this.tableData[i]);
+      //       }
+      //     })
+      //     .catch(error=>{
+      //       this.$message.error("搜索失败!");
+      //     });
+      // }else{
+      //   this.$axios
+      //     .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
+      //     .then(response=>{
+      //       this.tableData = response.data;
+      //       this.tableData.forEach(element=>{
+      //         if(element.isRoot){
+      //           element.parentName = "根计划";
+      //         }
+      //       });
 
-            //分页
-            this.pagination.total=response.data.length;
-            let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-            let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-            this.tableDataShow=[];
+      //       //分页
+      //       this.pagination.total=response.data.length;
+      //       let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+      //       let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+      //       this.tableDataShow=[];
             
-            for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-            {
-              this.tableDataShow.push(this.tableData[i]);
-            }
-          })
-          .catch(error=>{
-            this.$message.error("搜索失败!");
-          });
-      }
+      //       for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
+      //       {
+      //         this.tableDataShow.push(this.tableData[i]);
+      //       }
+      //     })
+      //     .catch(error=>{
+      //       this.$message.error("搜索失败!");
+      //     });
+      // }
     },
+    //子计划顺序控制函数
+    //上移
+    moveUp(index,row){
+      var that = this;
+      // console.log('上移',index,row);
+      // console.log(that.subPlanTableData[index]);
+      if (index > 0) {
+        let upDate = that.subPlanTableData[index - 1];
+        that.subPlanTableData.splice(index - 1, 1);
+        that.subPlanTableData.splice(index,0, upDate);
+      } else {
+        alert('已经是第一条，不可上移');
+      }
+      // console.log(that.subPlanTableData);
+      },
 
-    //子计划树形控制函数
-    handleDragStart(node, ev) {
-      // console.log('drag start', node);
-    },
-    handleDragEnter(draggingNode, dropNode, ev) {
-      // console.log('tree drag enter: ', dropNode.label);
-    },
-    handleDragLeave(draggingNode, dropNode, ev) {
-      // console.log('tree drag leave: ', dropNode.label);
-    },
-    handleDragOver(draggingNode, dropNode, ev) {
-      // console.log('tree drag over: ', dropNode.label);
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      // console.log('tree drag end: ', dropNode && dropNode.label, dropType);
-    },
-    handleDrop(draggingNode, dropNode, dropType, ev) {
-      // console.log('tree drop: ', dropNode.label, dropType);
-    },
-    allowDrop(draggingNode, dropNode, type) {
-      if(type==="inner"){
-        return false;
+    //下移
+    moveDown(index,row){
+      var that = this;
+      // console.log('下移',index,row);
+      if ((index + 1) === that.subPlanTableData.length){
+        alert('已经是最后一条，不可下移');
+      } else {
+        console.log(index);
+        let downDate = that.subPlanTableData[index + 1];
+        that.subPlanTableData.splice(index + 1, 1);
+        that.subPlanTableData.splice(index,0, downDate);
       }
-      return true;
     },
-    allowDrag(draggingNode) {
-      return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
-    }
   }
 };
 </script>

@@ -67,15 +67,14 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属业务组:</span>
-              <el-input v-model="addInfoGroup" class="input" placeholder="请输入所属业务组"></el-input>
-              <!-- <el-select v-model="addInfoGroup" placeholder="请选择" class="inputSelector">
-                <el-option
-                  v-for="item in selectionData"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select> -->
+              <el-cascader
+                expand-trigger="hover"
+                :options="selectionData"
+                v-model="addInfoDepartTreeList"
+                :props="deptToCascaderProps"
+                @change="handleChange1"
+              >
+              </el-cascader>
           </div>
           <div class="inputCombine">
             <span class="inputTag">客户描述:</span>
@@ -106,15 +105,14 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属业务组:</span>
-            <el-input v-model="editInfoGroup" class="input" placeholder="请输入所属业务组"></el-input>
-            <!-- <el-select v-model="editInfoGroup" placeholder="请选择" class="inputSelector">
-              <el-option
-                v-for="item in selectionData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select> -->
+            <el-cascader
+                expand-trigger="hover"
+                :options="selectionData"
+                v-model="editInfoGroupTreeList"
+                :props="deptToCascaderProps"
+                @change="handleChange2"
+              >
+            </el-cascader>
           </div>
           <div class="inputCombine">
             <span class="inputTag">客户描述:</span>
@@ -193,6 +191,11 @@ import { error } from 'util';
   export default {
     data() {
       return {
+        deptToCascaderProps:{
+          value:'name',
+          label:'name',
+          children:'children'
+        },
         viewname: 'first',
         searchInput: '',
         tableData: [],
@@ -204,6 +207,7 @@ import { error } from 'util';
         editInfoName:'',
         editInfoAbbr:'',
         editInfoGroup:'',
+        editInfoGroupTreeList:[],
         editIndoInitGroupId:'',
         tmpeditInfoGroupName:'',
 
@@ -211,13 +215,22 @@ import { error } from 'util';
         addInfoName:'',
         addInfoAbbr:'',
         addInfoGroup:'',
-
+        addInfoGroupTreeList:[],
 
         newCardShowFlag:false,
         editCardShowFlag: false,
       };
     },
     created:function(){
+      //获取部门信息
+      this.$axios.get(`${window.$config.HOST2}/getDeptTree`)
+        .then(response=>{
+          this.selectionData = response.data;
+        })
+        .catch(error=>{
+          this.$message.error("部门信息加载失败!");
+          console.log("部门信息加载失败!");
+        });
       //加载默认客户信息
       this.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,{
@@ -225,54 +238,20 @@ import { error } from 'util';
         })
         .then(response=>{
           this.tableData = response.data;
-          this.tableData.forEach(element=>{
-            this.selectionData.push({
-              id:element.groupId,
-              name:element.groupName
-            });
-          });
         })
         .catch(error=>{
           this.$message.error("加载失败");
-          this.tableData = [
-          {
-            id:"453142312",
-            name: 'nike',
-            abbr: 'nk',
-            description: '知名客户',
-            groupName:'业务组1',
-            groupId : "52753425",
-          },{
-            id:"2534",
-            name: 'addidas',
-            abbr: 'ad',
-            description: '次级客户',
-            groupName:'业务组2',
-            groupId : "2565464",
-          },{
-            id:"32452345",
-            name: 'newbalance',
-            abbr: 'nb',
-            description: '国际客户',
-            groupName:'业务组3',
-            groupId : "5677",
-          },{
-            id:"56456",
-            name: '阿赛克斯',
-            abbr: 'asics',
-            description: '日本客户',
-            groupName:'业务组4',
-            groupId : "26246",
-          },];
-          this.tableData.forEach(element=>{
-            this.selectionData.push({
-              id:element.groupId,
-              name:element.groupName
-            });
-          });
         });
     },
     methods: {
+      handleChange1(){
+        this.addInfoGroup = this.addInfoGroupTreeList[this.addInfoDepartTreeList.length-1];
+        console.log(this.addInfoGroup);
+      },
+      handleChange2(){
+        this.editInfoGroup = this.editInfoGroupTreeList[this.editInfoGroupTreeList.length-1];
+        console.log(this.editInfoGroup);
+      },
       handleTabClick(tab, event) {
         console.log(tab, event);
       },
@@ -306,46 +285,9 @@ import { error } from 'util';
           .then(response=>{
             console.log(response.data);
             this.tableData = response.data;
-            this.selectionData = [];
-            this.tableData.forEach(element=>{
-              this.selectionData.push({
-                id:element.groupId,
-                name:element.groupName
-              });
-            });
           })
           .catch(error=>{
             this.$message.error("加载失败");
-            this.tableData = [
-            {
-              id:"2534",
-              name: 'addidas',
-              abbr: 'ad',
-              description: '次级客户',
-              groupName:'业务组2',
-              groupId : "2565464",
-            },{
-              id:"32452345",
-              name: 'newbalance',
-              abbr: 'nb',
-              description: '国际客户',
-              groupName:'业务组3',
-              groupId : "5677",
-            },{
-              id:"56456",
-              name: '阿赛克斯',
-              abbr: 'asics',
-              description: '日本客户',
-              groupName:'业务组4',
-              groupId : "26246",
-            },];
-            this.selectionData = [];
-            this.tableData.forEach(element=>{
-              this.selectionData.push({
-                id:element.groupId,
-                name:element.groupName
-              });
-            });
           });
       },
       handleNewInfoClick(){

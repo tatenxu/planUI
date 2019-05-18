@@ -67,15 +67,15 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品部门:</span>
-              <!-- <el-select v-model="addInfoDepart" placeholder="请选择" class="inputSelector">
-                <el-option
-                  v-for="item in selectionData"
-                  :key="item.id"
-                  :label="item.name"  
-                  :value="item.id">
-                </el-option>
-              </el-select> -->
-              <el-input  class="input"  placeholder="请输入产品部门"  v-model="addInfoDepart"></el-input>
+            <el-cascader
+              expand-trigger="hover"
+              :options="selectionData"
+              v-model="addInfoDepartTreeList"
+              :props="deptToCascaderProps"
+              @change="handleChange1"
+             >
+            </el-cascader>
+              
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品描述:</span>
@@ -106,15 +106,15 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品部门:</span>
-            <!-- <el-select v-model="editInfoDepart" placeholder="请选择" class="inputSelector">
-              <el-option
-                v-for="item in selectionData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select> -->
-            <el-input  class="input"  placeholder="请输入产品部门"  v-model="editInfoDepart"></el-input>
+            <el-cascader
+              expand-trigger="hover"
+              :options="selectionData"
+              v-model="editInfoDepartTreeList"
+              :props="deptToCascaderProps"
+              @change="handleChange2"
+             >
+            </el-cascader>
+            <!-- <el-input  class="input"  placeholder="请输入产品部门"  v-model="editInfoDepart"></el-input> -->
           </div>
           <div class="inputCombine">
             <span class="inputTag">产品描述:</span>
@@ -186,11 +186,15 @@
   }
 </style>
 
-
 <script>
   export default {
     data() {
       return {
+        deptToCascaderProps:{
+          value:'name',
+          label:'name',
+          children:'children'
+        },
         viewname: 'first',
         searchInput: '',
         tableData: [],
@@ -202,6 +206,7 @@
         editInfoName:'',
         editInfoCode:'',
         editInfoDepart:'',
+        editInfoDepartTreeList:'',
         editInfoDepartId:'',
         tmpeditInfoDepartName:'',
 
@@ -209,66 +214,44 @@
         addInfoName:'',
         addInfoCode:'',
         addInfoDepart:'',
+        addInfoDepartTreeList:'',
 
         newCardShowFlag:false,
         editCardShowFlag: false,
       };
     },
     created:function(){
+      //获取所有信息
       let that = this;
       that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`,{
         params:{ name:null },
       })
         .then(response=>{
           this.tableData = response.data;
-          this.tableData.forEach(element=>{
-            this.selectionData.push({
-              id:element.deptName,
-              name: element.deptName,
-            });
-          });
         })
         .catch(error=>{
           this.$message.error("产品信息搜索失败!");
-          this.tableData = [
-            {
-              id:453453,
-              name: 'nike',
-              number: 'nk',
-              description: '知名产品',
-              departmentId:"47853453",
-              deptName:'部门1'
-            },{
-              id:875343,
-              name: 'addidas',
-              number: 'ad',
-              description: '次级产品',
-              departmentId:"7531436",
-              deptName:'部门2'
-            },{
-              id:68143,
-              name: 'newbalance',
-              number: 'nb',
-              description: '国际产品',
-              departmentId:"986312",
-              deptName:'部门3'
-            },{
-              id:984531,
-              name: '阿赛克斯',
-              number: 'asics',
-              description: '日本产品',
-              departmentId:"89753413",
-              deptName:'部门4'
-            },];
-          this.tableData.forEach(element=>{
-            this.selectionData.push({
-              id:element.deptName,
-              name: element.deptName,
-            });
-          });
+        });
+      
+      //获取部门信息
+      that.$axios.get(`${window.$config.HOST2}/getDeptTree`)
+        .then(response=>{
+          this.selectionData = response.data;
+        })
+        .catch(error=>{
+          this.$message.error("部门信息加载失败!");
+          console.log("部门信息加载失败!");
         });
     },
     methods: {
+      handleChange1(){
+        this.addInfoDepart = this.addInfoDepartTreeList[this.addInfoDepartTreeList.length-1];
+        console.log(this.addInfoDepart);
+      },
+      handleChange2(){
+        this.editInfoDepart = this.editInfoDepartTreeList[this.editInfoDepartTreeList.length-1];
+        console.log(this.editInfoDepart);
+      },
       handleTabClick(tab, event) {
         console.log(tab, event);
       },
@@ -307,29 +290,6 @@
           })
           .catch(error=>{
             this.$message.error("产品信息搜索失败!");
-            this.tableData = [
-              {
-                id:875343,
-                name: 'addidas',
-                number: 'ad',
-                description: '次级产品',
-                departmentId:"7531436",
-                deptName:'部门2'
-              },{
-                id:68143,
-                name: 'newbalance',
-                number: 'nb',
-                description: '国际产品',
-                departmentId:"986312",
-                deptName:'部门3'
-              },{
-                id:984531,
-                name: '阿赛克斯',
-                number: 'asics',
-                description: '日本产品',
-                departmentId:"89753413",
-                deptName:'部门4'
-              },];
           });
       },
       handleNewInfoClick(){
@@ -356,6 +316,9 @@
         console.log(this.multipleSelection[0]);
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoCode = this.multipleSelection[0].number;
+
+        // this.editInfoDepartTreeList = this.multipleSelection[0].deptName;
+
         this.editInfoDepart = this.multipleSelection[0].deptName;
         this.editInfoDepartId = this.multipleSelection[0].departmentId;
         this.tmpeditInfoDepartName = this.multipleSelection[0].deptName;
