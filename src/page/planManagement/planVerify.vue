@@ -30,8 +30,8 @@
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="bar">
-            <div class="title">审核状态</div>
+          <div class="bar" style="margin-top:10px">
+            <!-- <div class="title">审核状态</div>
             <el-select v-model="stateId" clearable>
               <el-option
                 v-for="item in options3"
@@ -39,7 +39,13 @@
                 :label="item.name"
                 :value="item.id"
               ></el-option>
-            </el-select>
+            </el-select>-->
+
+            <el-radio-group v-model="checked" @change="changeState">
+              <el-radio :label="1">已提交</el-radio>
+              <el-radio :label="2">已审核</el-radio>
+              <el-radio :label="3">已下发</el-radio>
+            </el-radio-group>
           </div>
         </el-col>
       </el-row>
@@ -117,7 +123,6 @@
           :highlight-current-row="true"
           style="width: 100%; margin-top: 20px"
         >
-
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
           <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
@@ -138,7 +143,7 @@
           </el-table-column>
         </el-table>
 
-             <!-- 分页 -->
+        <!-- 分页 -->
         <div class="block">
           <el-pagination
             @size-change="handleSizeChange"
@@ -191,14 +196,15 @@ export default {
   name: "warehouseList",
   data() {
     return {
+      checked: 1,
 
-       pagination: {
+      pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
-        total: 400
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
+        total: 0
       },
-      tableDataA:[],
+      tableDataA: [],
       GoBack: false,
       GoBackReason: "",
       list: [],
@@ -216,7 +222,6 @@ export default {
       dataRange: "",
       dataStartTime: "",
       dataEndTime: "",
-
 
       options1: [],
       options2: [],
@@ -285,7 +290,7 @@ export default {
       .catch(error => {
         console.log("获取客户信息失败");
       });
-      console.log("到达这里了")
+    console.log("到达这里了");
     //获得空集搜索列表
     let list = {
       stage: "manage",
@@ -303,17 +308,26 @@ export default {
         params: list
       })
       .then(response => {
-        
         console.log("获取空搜索集成功");
-        this.tableData = response.data;
 
-                          this.pagination.total=response.data.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
+
+
+          this.tableData=[],
+          response.data.forEach(element=>{
+            console.log("dsadsa")
+            if(element.state==="已提交") this.tableData.push(element)
+          })
+
+        this.pagination.total = response.data.length;
+        let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        this.tableDataA = [];
+
+        for (
+          ;
+          i - k < this.pagination.pageSize && i < this.tableData.length;
+          i++
+        ) {
           this.tableDataA.push(this.tableData[i]);
         }
         console.log(response.data);
@@ -323,20 +337,22 @@ export default {
       });
   },
   methods: {
-
-       handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
-        this.getWareList();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.getWareList();
-      },
+    changeState(){
+      getWareList();
+    },
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
+      this.getWareList();
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.getWareList();
+    },
     //查看详情
     searchDetails(row) {
-       this.$router.push({
+      console.log(row);
+      this.$router.push({
         name: "planMakeIndex",
         params: {
           flag: 0,
@@ -344,26 +360,22 @@ export default {
           client: row.customerName,
           brand: row.brandName,
           series: row.rangeName,
-          id:row.planObjectId ,
-          plantype:0,
-          planobj: row.planObject ,
-          TopPlan:0,
-          TopPlanName:"根计划",
-          planName:row.name,
-          projectType: row.projectType ,
-          number:row.number,
-          dataStart:row.startDate,
-          dataEnd:row.dataEnd,
-          productDate:row.productDate ,
-          productDateType:row.productDateType ,
-          productId :row.productId,
-          proposal :row.proposal ,
-          note:row.note ,
-          description :row.description
-
-
-
-
+          id: row.planObjectId,
+          plantype: row.type,
+          planobj: row.planObject,
+          TopPlan: row.isRoot === true ? 0 : row.parentId,
+          TopPlanName: row.isRoot === true ? "根计划" : row.parentName,
+          planName: row.name,
+          projectType: row.projectType,
+          number: row.number,
+          dataStart: row.startDate,
+          dataEnd: row.endDate,
+          productDate: row.productDate,
+          productDateType: row.productDateType,
+          productId: row.productId,
+          proposal: row.proposal,
+          note: row.note,
+          description: row.description
         }
       });
     },
@@ -383,78 +395,83 @@ export default {
         minute = minute < 10 ? "0" + minute : minute;
         var second = date.getSeconds();
         second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d ;
-      }
+        return y + "-" + m + "-" + d;
+      } 
     },
     getWareList() {
       const that = this;
       this.DataStartTime = that.changeDate(this.dataRange[0]);
       this.DataEndTime = that.changeDate(this.dataRange[1]);
-      let list={
-          stage: "manage",
-          customerId:this.clientId===""?undefined:this.clientId,
-          brandId:this.brandId===""?undefined:this.brandId, 
-          rangeId:this.rangeId===""?undefined:this.rangeId, 
-          name:undefined, 
-          clothingLevelId:undefined, 
-          startDate:this.DataStartTime, 
-          endDate:this.DataEndTime
-      }
-      console.log(list)
+      let list = {
+        stage: "manage",
+        customerId: this.clientId === "" ? undefined : this.clientId,
+        brandId: this.brandId === "" ? undefined : this.brandId,
+        rangeId: this.rangeId === "" ? undefined : this.rangeId,
+        name: undefined,
+        clothingLevelId: undefined,
+        startDate: this.DataStartTime,
+        endDate: this.DataEndTime
+      };
+      console.log(list);
       that.$axios
 
-        .get(`${window.$config.HOST}/planManagement/getPlanList`, 
-        {
-          params:list
+        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+          params: list
         })
         .then(response => {
-          if(this.stateId!="")
+          console.log(response.data)
+          let stateName;
+          if(this.checked===1)
           {
-            this.tableData=[],
-                      response.data.forEach(element=>{
-            if(element.state===this.stateId)
-            {
-              this.tableData.push(element)
-            }
-          })
+            stateName="已提交";
           }
-          else this.tableData=response.data;
+          else if(this.checked===2)
+          {
+            stateName="已审核";
+          }
+          else if(this.checked===3)
+          {
+            stateName="已下发"
+          }
 
+          this.tableData=[],
+          response.data.forEach(element=>{
+            console.log("dsadsa")
+            if(element.state===stateName) this.tableData.push(element)
+          })
 
+          this.pagination.total = this.tableData.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
 
-                            this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.tableData[i]);
+          }
         })
 
-        .catch(error => {
-  
-        });
+        .catch(error => {});
     },
     isChanged(val) {
       this.AnyChanged = val;
     },
     GoBackCancel() {
       this.GoBack = false;
-    
     },
     GoBackConfirm() {
-    
-        //this.$set(this.iptDatas[index], `showAlert`, true)
-        this.AnyChanged.forEach(element => {
-          console.log(element)
-          let list={
-                          id:  element.id,
-              reason:this.GoBackReason
-          }
-          console.log(list)
-          this.$axios
+      //this.$set(this.iptDatas[index], `showAlert`, true)
+      this.AnyChanged.forEach(element => {
+        console.log(element);
+        let list = {
+          id: element.id,
+          reason: this.GoBackReason
+        };
+        console.log(list);
+        this.$axios
           .get(`${window.$config.HOST}/planManagement/failPlan`, {
             params: list
           })
@@ -473,12 +490,12 @@ export default {
             }
           })
           .catch(error => {
-              this.$message({
-                message: "操作失败!",
-                type: "error"
-              });
+            this.$message({
+              message: "操作失败!",
+              type: "error"
+            });
           });
-        });
+      });
       this.GoBack = false;
     },
     VerifyPass() {
@@ -497,7 +514,7 @@ export default {
             }
           })
           .then(response => {
-            console.log(response.data)
+            console.log(response.data);
             var ok = response.data;
             if (ok >= 0) {
               this.$message({
@@ -512,10 +529,10 @@ export default {
             }
           })
           .catch(error => {
-             this.$message({
-                message: "操作失败!",
-                type: "error"
-              });
+            this.$message({
+              message: "操作失败!",
+              type: "error"
+            });
           });
       }
     },
@@ -527,8 +544,7 @@ export default {
         });
         return;
       }
-        this.GoBack = true;
-  
+      this.GoBack = true;
     },
     CancelVerify() {
       if (this.AnyChanged.length === 0) {
@@ -538,10 +554,10 @@ export default {
         });
         return;
       }
-    
-        //this.$set(this.iptDatas[index], `showAlert`, true)
-        for (var i = 0; i < this.AnyChanged.length; i++) {
-          this.$axios
+
+      //this.$set(this.iptDatas[index], `showAlert`, true)
+      for (var i = 0; i < this.AnyChanged.length; i++) {
+        this.$axios
           .get(`${window.$config.HOST}/planManagement/cancelPassPlan`, {
             params: {
               id: this.AnyChanged[i].id
@@ -562,12 +578,12 @@ export default {
             }
           })
           .catch(error => {
-             this.$message({
-                message: "操作失败!",
-                type: "error"
-              });
+            this.$message({
+              message: "操作失败!",
+              type: "error"
+            });
           });
-        }
+      }
     },
     handleCheckAllChange(val) {
       this.checkedCities = val ? cityOptions : [];

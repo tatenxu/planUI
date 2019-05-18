@@ -19,7 +19,7 @@
             </el-select>
           </div>
         </el-col>
-         <el-col :span="8">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
             <el-select v-model="SeriesName" clearable placeholder="请选择">
@@ -27,10 +27,9 @@
             </el-select>
           </div>
         </el-col>
-
       </el-row>
       <el-row :gutter="20">
-                <el-col :span="8">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
@@ -46,7 +45,7 @@
             ></el-date-picker>
           </div>
         </el-col>
-       
+
         <el-col :span="8">
           <div class="bar">
             <div class="title">订单款号</div>
@@ -57,15 +56,14 @@
                 :key="item.id"
                 :label="item.number"
                 :value="item.number"
-                
               ></el-option>
             </el-select>
           </div>
         </el-col>
         <el-col :span="5" class="MinW" style="margin-left:30px">
           <!-- <el-radio v-model="checked" label="1">未制定</el-radio>
-          <el-radio v-model="checked" label="2">已制定</el-radio> -->
-           <el-switch
+          <el-radio v-model="checked" label="2">已制定</el-radio>-->
+          <el-switch
             v-model="checked"
             @change="planTypeSwitchChange"
             inactive-color="#13ce66"
@@ -82,7 +80,7 @@
     <!-- 搜索结果 -->
     <el-card class="box-card">
       <el-table :data="tableDataA" style="width: 100%; margin-top: 20px">
-    <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
+        <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="styleGroupNumber" label="款式组编号" align="center" width="100px"></el-table-column>
         <el-table-column prop="styleGroupName" label="款式组名称" align="center" width="100px"></el-table-column>
         <el-table-column prop="number" label="订单款号" align="center"></el-table-column>
@@ -93,26 +91,26 @@
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="250" align="center">
+        <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="250" align="center" v-if="checked===false">
           <template slot-scope="scope">
-             <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button>
+            <!-- <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button> -->
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
           </template>
         </el-table-column>
       </el-table>
-                   <!-- 分页 -->
-        <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
-        </div>
+      <!-- 分页 -->
+      <div class="block">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="pagination.currentPage"
+          :page-sizes="pagination.pageSizes"
+          :page-size="pagination.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total"
+        ></el-pagination>
+      </div>
     </el-card>
   </div>
 </template>
@@ -121,14 +119,14 @@
 export default {
   data() {
     return {
-      tableDataA:[],
-             pagination: {
+      tableDataA: [],
+      pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
-        total: 400
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
+        total: 0
       },
-      checked: true,
+      checked: false,
 
       DataStartTime: "",
       DataEndTime: "",
@@ -186,7 +184,7 @@ export default {
         this.orderOption = response.data;
       })
       .catch(error => {
-          this.$message({
+        this.$message({
           message: "获取订单款号失败",
           type: "error"
         });
@@ -250,39 +248,30 @@ export default {
       })
       .then(response => {
         //  this.tableData = response.data;
-          response.data.forEach(element=>{
-    
-          var d = new Date(element.createTime);
-
-
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
+        response.data.forEach(element => {
+          if (element.havePlan === true) element.stateName = "已制定";
+          else if (element.havePlan === false) element.stateName = "未制定";
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
 
+          if (this.checked == false && element.havePlan === false) {
+            this.tableData.push(element);
+          } else if (this.checked == true && element.havePlan === true) {
+            this.tableData.push(element);
+          }
+        });
 
-              if(this.checked==true&&element.havePlan===false){
-              this.tableData.push(element);
+        this.pagination.total = this.tableData.length;
+        let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        this.tableDataA = [];
 
-            }
-            else if(this.checked==false&&element.havePlan===true)
-            {
-              this.tableData.push(element);
-            }
-           });
-
-                              this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
+        for (
+          ;
+          i - k < this.pagination.pageSize && i < this.tableData.length;
+          i++
+        ) {
           this.tableDataA.push(this.tableData[i]);
         }
       })
@@ -294,80 +283,69 @@ export default {
       });
   },
   methods: {
-
-        handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
-        this.SearchIt();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.SearchIt();
-      },
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
+      this.SearchIt();
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.SearchIt();
+    },
 
     planTypeSwitchChange() {
-      this.pagination.currentPage=1;
-      console.log(this.checked)
+      this.pagination.currentPage = 1;
+      console.log(this.checked);
       const that = this;
       this.DataStartTime = that.changeDate(this.Date1[0]);
       this.DataEndTime = that.changeDate(this.Date1[1]);
-    this.$axios
+      this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
-         
-            customerId: this.ClientName === "" ? null : this.ClientName,
-            brandId: this.BrandName === "" ? null : this.BrandName,
-            rangeId: this.SeriesName === "" ? null : this.SeriesName,
-            number: this.OrderId === "" ? null : this.OrderId,
-            clothingLevelId: null,
-            startDate: this.DataStartTime,
-            endDate: this.DataEndTime
-          
+          customerId: this.ClientName === "" ? null : this.ClientName,
+          brandId: this.BrandName === "" ? null : this.BrandName,
+          rangeId: this.SeriesName === "" ? null : this.SeriesName,
+          number: this.OrderId === "" ? null : this.OrderId,
+          clothingLevelId: null,
+          startDate: this.DataStartTime,
+          endDate: this.DataEndTime
         })
         .then(response => {
-          console.log(response.data)
+          console.log(response.data);
           var SearchList = response.data;
           this.tableData = [];
-           SearchList.forEach(element=>{
-          var d = new Date(element.createTime);
-  
+          SearchList.forEach(element => {
+            var d = new Date(element.createTime);
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
+            if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
+            let time = d.toLocaleString();
+            element.createTime = time;
 
-            if(this.checked==true&&element.havePlan===false){
+            if (this.checked == false && element.havePlan === false) {
               this.tableData.push(element);
-
-            }
-            else if(this.checked==false&&element.havePlan===true)
-            {
+            } else if (this.checked == true && element.havePlan === true) {
               this.tableData.push(element);
             }
-      
-        });
+          });
 
-                           this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+          this.pagination.total = this.tableData.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
+
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.tableData[i]);
+          }
         })
         .catch(error => {
           this.$message({
-          message: "获取搜索结果失败",
-          type: "error"
-        });
+            message: "获取搜索结果失败",
+            type: "error"
+          });
         });
     },
     //改变日期格式
@@ -395,67 +373,66 @@ export default {
       this.DataEndTime = that.changeDate(this.Date1[1]);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
-         
-            customerId: this.ClientName === "" ? null : this.ClientName,
-            brandId: this.BrandName === "" ? null : this.BrandName,
-            rangeId: this.SeriesName === "" ? null : this.SeriesName,
-            number: this.OrderId === "" ? null : this.OrderId,
-            clothingLevelId: null,
-            startDate: this.DataStartTime,
-            endDate: this.DataEndTime
-          
+          customerId: this.ClientName === "" ? null : this.ClientName,
+          brandId: this.BrandName === "" ? null : this.BrandName,
+          rangeId: this.SeriesName === "" ? null : this.SeriesName,
+          number: this.OrderId === "" ? null : this.OrderId,
+          clothingLevelId: null,
+          startDate: this.DataStartTime,
+          endDate: this.DataEndTime
         })
         .then(response => {
-                  console.log(response.data)
-        console.log("checked=",this.checked);
+          console.log(response.data);
+          console.log("checked=", this.checked);
           var SearchList = response.data;
           this.tableData = [];
-           SearchList.forEach(element=>{
-             console.log("这次havePlan的值为:"+element.havePlan)
-          var d = new Date(element.createTime);
-  
+          SearchList.forEach(element => {
+            console.log("这次havePlan的值为:" + element.havePlan);
+            var d = new Date(element.createTime);
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
+            if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
+            let time = d.toLocaleString();
+            element.createTime = time;
 
-          if(this.checked!=0){
-            if(this.checked==1&&element.havePlan===false){
-              this.tableData.push(element);
+            if (this.checked != 0) {
+              if (this.checked == false && element.havePlan === false) {
+                this.tableData.push(element);
+              } else if (this.checked == true && element.havePlan === true) {
+                this.tableData.push(element);
+              }
+            } else this.tableData.push(element);
+          });
 
-            }
-            else if(this.checked==2&&element.havePlan===true)
-            {
-              this.tableData.push(element);
-            }
+          this.pagination.total = this.tableData.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
+
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.tableData[i]);
           }
-          else this.tableData.push(element);
-        });
-
-                           this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
         })
         .catch(error => {
           this.$message({
-          message: "获取搜索结果失败",
-          type: "error"
-        });
+            message: "获取搜索结果失败",
+            type: "error"
+          });
         });
     },
     ToPlanForm(row) {
+      if (row.havePlan === true) {
+        this.$message({
+          message: "该计划已经被制定",
+          type: "warning"
+        });
+        return;
+      }
+      console.log(row);
       this.$router.push({
         name: "planMakeIndex",
         params: {
@@ -464,36 +441,50 @@ export default {
           client: row.customerName,
           brand: row.brandName,
           series: row.rangeName,
-           id:row.id,
+          id: row.id,
           plantype: 3,
-          planobj: row.number
+          planobj: row.number,
+          // planobjId:
+          TopPlan: 0,
+          TopPlanName: "根计划",
+          planName: "",
+          projectType: "",
+          number: "",
+          dataStart: "",
+          dataEnd: "",
+          productDate: "",
+          productDateType: "",
+          productId: "",
+          proposal: "",
+          note: "",
+          description: ""
         }
       });
-    },
-    QuoteSeriesPlan(row) {
-      this.$router.push({
-        name: "planMakeIndex",
-        params: {
-          flag: 2,
-          goback: "stylePlanMake",
-          client: row.customerName,
-          brand: row.brandName,
-           id:row.id,
-          series: row.rangeName,
-          plantype: 2,
-          planobj: row.number
-        }
-      });
-    },
+    }
+    // QuoteSeriesPlan(row) {
+    //   this.$router.push({
+    //     name: "planMakeIndex",
+    //     params: {
+    //       flag: 2,
+    //       goback: "stylePlanMake",
+    //       client: row.customerName,
+    //       brand: row.brandName,
+    //        id:row.id,
+    //       series: row.rangeName,
+    //       plantype: 2,
+    //       planobj: row.number
+    //     }
+    //   });
+    // },
   }
 };
 </script>
 
 <style lang="less" scoped>
-  .block {
-    padding: 30px 0;
-    text-align: center;
-  }
+.block {
+  padding: 30px 0;
+  text-align: center;
+}
 .Mtitle {
   align-content: center;
   margin-left: 43%;

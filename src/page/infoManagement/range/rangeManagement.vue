@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-      
+
             <el-select v-model="CustomerValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
@@ -108,11 +108,12 @@
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothingLevelName" label="服装类型" align="center"></el-table-column>
           <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" label="款数" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addingModeName" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
+          <el-table-column prop="addingModeStr" label="添加方式" align="center"></el-table-column>
+          <el-table-column prop="stateStr" label="状态" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
@@ -296,11 +297,11 @@ export default {
       dialogFormVisible: false,
       dialogFormVisible1: false,
       tableData: [],
-      totalTableData : [],
+      totalTableData: [],
       pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
+        pageSizes: [10, 20, 30, 40,50],
+        pageSize: 10,
         total: 0
       },
 
@@ -359,7 +360,6 @@ export default {
       .then(response => {
         console.log("获得品牌信息成功了");
         this.searchOptions.options.brandNameOptions = response.data;
-
       })
       .catch(error => {
         this.$message({
@@ -386,23 +386,7 @@ export default {
           message: "获取系列信息失败",
           type: "error"
         });
-        // console.log("获得系列失败了");
-        // var ClothingList = [
-        //   {
-        //     id: 1,
-        //     name: "时装"
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "精品"
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "时尚"
-        //   }
-        // ];
-        // this.searchOptions.options.rangeNameOption = ClothingList;
-        // // this.ruleForm.options.rangeNameOption = ClothingList;
+ 
       });
 
     //获得顾客名称
@@ -420,23 +404,6 @@ export default {
           message: "获取顾客信息失败",
           type: "error"
         });
-        // console.log("获得顾客信息失败了");
-        // var CustomerList = [
-        //   {
-        //     id: 1,
-        //     name: "顾客A"
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "顾客B"
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "顾客C"
-        //   }
-        // ];
-        // this.searchOptions.options.customerNameOptions = CustomerList;
-        // this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
       });
 
     //获得服装层次
@@ -485,26 +452,40 @@ export default {
       .then(response => {
         console.log("获得搜索列表成功了");
         this.totalTableData = response.data;
+        console.log(response.data)
+        
+                this.totalTableData.sort(function(b,a){
+    return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
+});
         // this.tableData = SearchList;
-        this.totalTableData.forEach(element => {
-          if(element.addingMode===1) element.addingModeName="手动";
-          else element.addingModeName="导入";
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
+        this.totalTableData.forEach(element => {
+          if (element.addingMode === 1) element.addingModeName = "手动";
+          else element.addingModeName = "导入";
+
+          if (element.state === 1) element.stateName = "已制定";
+          else if (element.state === 2) element.stateName = "已提交";
+          else if (element.state === 3) element.stateName = "被驳回";
+          else if (element.state === 4) element.stateName = "已审核";
+          else if (element.state === 5) element.stateName = "已下发";
+          else if (element.state === 6) element.stateName = "已删除";
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
         });
 
         this.pagination.total = this.totalTableData.length;
-        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-        var pageEleEnd = pageEleStart+this.pagination.pageSize > this.pagination.total-1?-1:pageEleStart+this.pagination.pageSize;
-        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd)
+        var pageEleStart =
+          (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        var pageEleEnd =
+          pageEleStart + this.pagination.pageSize > this.pagination.total - 1
+            ? -1
+            : pageEleStart + this.pagination.pageSize;
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+
+
+
+        
       })
       .catch(error => {
         this.$message({
@@ -583,14 +564,12 @@ export default {
     handleSearch() {
       let startDate;
       let endDate;
-      if(this.dateRange==undefined)
-      {
-        startDate="";
-        endDate="";
-      }
-      else{
-                  startDate= this.changeDate(this.dateRange[0]),
-          endDate=this.changeDate(this.dateRange[1])
+      if (this.dateRange == undefined) {
+        startDate = "";
+        endDate = "";
+      } else {
+        (startDate = this.changeDate(this.dateRange[0])),
+          (endDate = this.changeDate(this.dateRange[1]));
       }
       let list = {
         customerId: this.CustomerValue === "" ? null : this.CustomerValue,
@@ -598,9 +577,9 @@ export default {
         id: this.RangeValue === "" ? null : this.RangeValue,
         clothingLevelId:
           this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
-          dataRange:this.dataRange
+        dataRange: this.dataRange
       };
-    
+
       console.log(list);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
@@ -609,7 +588,7 @@ export default {
           id: this.RangeValue === "" ? null : this.RangeValue,
           clothingLevelId:
             this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
-          startDate:startDate,
+          startDate: startDate,
           endDate: endDate
         })
         .then(response => {
@@ -619,16 +598,20 @@ export default {
           // (this.ClothingLevelValue = ""),
           // (this.dateRange = ""),
           this.totalTableData = response.data;
+          
+                this.totalTableData.sort(function(b,a){
+    return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
+});
           this.totalTableData.forEach(element => {
-            if(element.addingMode===1) element.addingModeName="手动";
-            else element.addingModeName="导入";
+            if (element.addingMode === 1) element.addingModeName = "手动";
+            else element.addingModeName = "导入";
 
-            if(element.state===1) element.stateName="已制定";
-            else if(element.state===2) element.stateName="已提交";
-            else if(element.state===3) element.stateName="被驳回";
-            else if(element.state===4) element.stateName="已审核";
-            else if(element.state===5) element.stateName="已下发";
-            else if(element.state===6) element.stateName="已删除";
+            // if (element.state === 1) element.stateName = "已制定";
+            // else if (element.state === 2) element.stateName = "已提交";
+            // else if (element.state === 3) element.stateName = "被驳回";
+            // else if (element.state === 4) element.stateName = "已审核";
+            // else if (element.state === 5) element.stateName = "已下发";
+            // else if (element.state === 6) element.stateName = "已删除";
             var d = new Date(element.createTime);
             let time = d.toLocaleString();
             element.createTime = time;
@@ -636,8 +619,12 @@ export default {
 
           this.pagination.total = this.totalTableData.length;
           // this.pagination.currentPage = 1;
-          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          var pageEleStart =
+            (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          var pageEleEnd =
+            pageEleStart + this.pagination.pageSize > this.pagination.total
+              ? this.pagination.total
+              : pageEleStart + this.pagination.pageSize;
           this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error => {
@@ -862,6 +849,25 @@ export default {
                   type: "warning"
                 });
               } else {
+                //获得系列名称
+                that.$axios
+                  .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
+                    params: {
+                      brandId: ""
+                    }
+                  })
+                  .then(response => {
+                    console.log("获得系列信息成功了");
+                    this.searchOptions.options.rangeNameOption = response.data;
+                    // this.ruleForm.options.rangeNameOption = response;
+                  })
+                  .catch(error => {
+                    console.log("失败了");
+                    this.$message({
+                      message: "获取系列信息失败",
+                      type: "error"
+                    });
+                  });
                 this.handleSearch();
                 (this.ruleForm.id = ""),
                   (this.ruleForm.number = ""),
@@ -902,27 +908,12 @@ export default {
           });
         }
       });
-      // let nname;
-      // this.ruleForm.rangeNameOption.forEach(element=>{
-      //   if(element.id===this.ruleForm.name)  nname=element.name;
-      // })
-      // let list = {
-      //   name: this.ruleForm.name === "" ? null : this.ruleForm.name,
-      //   customerId:
-      //     this.ruleForm.customerName === "" ? null : this.ruleForm.customerName,
-      //   brandId:
-      //     this.ruleForm.brandName === "" ? null : this.ruleForm.brandName,
-      //   clothingLevelId:
-      //     this.ruleForm.clothingLevelName === ""
-      //       ? null
-      //       : this.ruleForm.clothingLevelName,
-      //   note: this.ruleForm.note === "" ? null : this.ruleForm.note
-      // };
-      // console.log(list);
     },
+    
 
     //修改系列信息
     submitForm1(formName) {
+      
       this.$refs[formName].validate(valid => {
         if (valid) {
           //第一步，将NAME转换为ID

@@ -78,7 +78,7 @@
             :highlight-current-row="true"
           >
             <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-            <el-table-column prop="rangeAmount" label="系列款数" align="center"></el-table-column>
+            <!-- <el-table-column prop="rangeAmount" label="系列款数" align="center"></el-table-column> -->
             <el-table-column prop="rangeNote" label="系列备注" align="center"></el-table-column>
           </el-table>
         </el-row>

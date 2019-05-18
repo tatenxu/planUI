@@ -65,8 +65,8 @@
             v-model="checked"
             @change="planTypeSwitchChange"
             inactive-color="#13ce66"
-            active-text="未制定"
-            inactive-text="已制定"
+            inactive-text="未制定"
+            active-text="已制定"
           ></el-switch>
 
           <el-button type="primary" @click="searchStyleGroup" style="margin-left:50px">搜索</el-button>
@@ -98,8 +98,8 @@
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="250" align="center">
+        <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="250" align="center" v-if="checked===false">
           <template slot-scope="scope">
             <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button>
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
@@ -127,15 +127,14 @@
 export default {
   data() {
     return {
-
-       pagination: {
+      pagination: {
         currentPage: 1,
-        pageSizes: [2, 10, 20, 30, 50],
-        pageSize: 2,
-        total: 400
+        pageSizes: [10, 20, 30, 40,50],
+        pageSize: 10,
+        total: 0
       },
       tableDataA:[],
-      checked: "0",
+      checked: 0,
       ClientName: "",
       BrandName: "",
       ClothesType: "",
@@ -235,24 +234,26 @@ export default {
       })
       .then(response => {
         console.log(response.data)
-        this.tableData = response.data;
-        this.tableData.forEach(element => {
-          var d = new Date(element.createTime);
+       
+        response.data.forEach(element => {
+  if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
+            if (element.havePredictPlan === true)
+              element.predictState = "已预测";
+            else if (element.havePredictPlan === false)
+              element.predictState = "未预测";
 
-          if (element.state === 1) element.stateName = "已制定";
-          else if (element.state === 2) element.stateName = "已提交";
-          else if (element.state === 3) element.stateName = "被驳回";
-          else if (element.state === 4) element.stateName = "已审核";
-          else if (element.state === 5) element.stateName = "已下发";
-          else if (element.state === 6) element.stateName = "已删除";
+
+
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
-          
+          if(element.state==="未制定") this.tableData.push(element);
         });
 
 
-                     this.pagination.total=this.tableData.length;
+
+          this.pagination.total=this.tableData.length;
           let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
           let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
           this.tableDataA=[];
@@ -297,27 +298,23 @@ export default {
       };
       console.log(list);
       this.$axios
-        .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
+        .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
           id: this.SeriesName === "" ? null : this.SeriesName,
           customerId: this.ClientName === "" ? null : this.ClientName,
           brandId: this.BrandName === "" ? null : this.BrandName,
-          clothingLevelId:
-            this.clothingLevelId === "" ? null : this.clothingLevelId,
+          clothingLevelId:this.clothingLevelId === "" ? null : this.clothingLevelId,
           startDate: this.DataStartTime,
           endDate: this.DataEndTime
         })
         .then(response => {
-          console.log("checked=", this.checked);
+          console.log(response.data)
           var SearchList = response.data;
           this.tableData = [];
           SearchList.forEach(element => {
             console.log("这次havePlan的值为:" + element.havePlan);
             var d = new Date(element.createTime);
-            if (element.addingMode === 1) element.addingModeName = "手动";
-            else element.addingModeName = "导入";
-
-            if (element.havePlan === true) element.PlanState = "已制定";
-            else if (element.havePlan === false) element.PlanState = "未制定";
+            if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
             if (element.havePredictPlan === true)
               element.predictState = "已预测";
             else if (element.havePredictPlan === false)
@@ -394,14 +391,13 @@ export default {
           SearchList.forEach(element => {
             console.log("这次havePlan的值为:" + element.havePlan);
             var d = new Date(element.createTime);
-
-            if (element.state === 1) element.stateName = "已制定";
-            else if (element.state === 2) element.stateName = "已提交";
-            else if (element.state === 3) element.stateName = "被驳回";
-            else if (element.state === 4) element.stateName = "已审核";
-            else if (element.state === 5) element.stateName = "已下发";
-            else if (element.state === 6) element.stateName = "已删除";
-            var d = new Date(element.createTime);
+             if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
+            if (element.havePredictPlan === true)
+              element.predictState = "已预测";
+            else if (element.havePredictPlan === false)
+              element.predictState = "未预测";
+    
             let time = d.toLocaleString();
             element.createTime = time;
 
@@ -506,6 +502,14 @@ export default {
      
     },
     ToPlanForm(row) {
+
+            if (row.havePlan === true) {
+        this.$message({
+          message: "该计划已经被制定",
+          type: "warning"
+        });
+        return;
+      }
       this.$router.push({
         name: "planMakeIndex",
         params: {
@@ -518,7 +522,18 @@ export default {
           id: row.id,
           planobj: row.name,
           TopPlan: 0,
-          TopPlanName: "根计划"
+          TopPlanName: "根计划",
+                    planName: "",
+          projectType: "",
+          number: "",
+          dataStart: "",
+          dataEnd: "",
+          productDate: "",
+          productDateType: "",
+          productId: "",
+          proposal: "",
+          note: "",
+          description: ""
         }
       });
     }

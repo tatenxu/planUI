@@ -69,8 +69,8 @@
               v-model="checked"
               @change="planTypeSwitchChange"
               inactive-color="#13ce66"
-              active-text="未制定"
-              inactive-text="已制定"
+              inactive-text="未制定"
+              active-text="已制定"
             ></el-switch>
           </el-col>
         </el-row>
@@ -93,17 +93,19 @@
         <el-table :data="tableDataA" style="width: 100%; margin-top: 20px">
           <el-table-column w idth="50" type="selection" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        
+
           <el-table-column prop="number" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="name" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" label="款数" align="center"></el-table-column>
+          <el-table-column prop="note" label="备注" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="predictState" label="预测计划" align="center"></el-table-column>
-          <el-table-column prop="PlanState" label="状态" align="center"></el-table-column>
-          <el-table-column label="操作" fixed="right" align="center" width="200px">
+          <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
+          <el-table-column label="操作" fixed="right" align="center" width="200px" v-if="checked===false">
             <template slot-scope="scope">
               <!-- <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button> -->
               <el-dialog title="系列详情" :visible.sync="ViewDetails" :modal="false">
@@ -121,7 +123,7 @@
             </template>
           </el-table-column>-->
         </el-table>
-                <!-- 分页 -->
+        <!-- 分页 -->
         <div class="block">
           <el-pagination
             @size-change="handleSizeChange"
@@ -133,10 +135,7 @@
             :total="pagination.total"
           ></el-pagination>
         </div>
-
       </el-tab-pane>
-
-      
 
       <el-tab-pane label="引用计划模板" name="second" v-if="QuotePlanModel">
         <el-card>
@@ -280,11 +279,11 @@
 export default {
   data() {
     return {
-       pagination: {
+      pagination: {
         currentPage: 1,
-        pageSizes: [5, 10, 20, 30, 50],
-        pageSize: 5,
-        total: 400
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
+        total: 0
       },
       clothingLevelId: "",
       DataStartTime: "",
@@ -328,7 +327,7 @@ export default {
           BrandName: "商标A"
         }
       ],
-      tableDataA:[],
+      tableDataA: [],
       tableData: []
     };
   },
@@ -407,7 +406,7 @@ export default {
         endDate: null
       })
       .then(response => {
-        console.log(response.data)
+        console.log(response.data);
         var SearchList = response.data;
         this.tableData = [];
         SearchList.forEach(element => {
@@ -416,29 +415,31 @@ export default {
           if (element.addingMode === 1) element.addingModeName = "手动";
           else element.addingModeName = "导入";
 
-          if (element.havePlan === true) element.PlanState = "已制定";
-          else if (element.havePlan === false) element.PlanState = "未制定";
+          if (element.havePlan === true) element.stateName = "已制定";
+          else if (element.havePlan === false) element.stateName = "未制定";
           if (element.havePredictPlan === true) element.predictState = "已预测";
           else if (element.havePredictPlan === false)
             element.predictState = "未预测";
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
-
-          if (this.checked == true && element.havePlan === false) {
+          if (this.checked == false && element.havePlan === false) {
             this.tableData.push(element);
-          } else if (this.checked == false && element.havePlan === true) {
+          } else if (this.checked == true && element.havePlan === true) {
             this.tableData.push(element);
           }
         });
 
-                  this.pagination.total=response.data.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
+        this.pagination.total = this.tableData.length;
+        let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        this.tableDataA = [];
+
+        for (
+          ;
+          i - k < this.pagination.pageSize && i < this.tableData.length;
+          i++
+        ) {
           this.tableDataA.push(this.tableData[i]);
         }
       })
@@ -451,12 +452,12 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      this.pagination.pageSize=val;
-      console.log("每页+"+this.pagination.pageSize)
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
       this.searchSeriesPlan();
     },
     handleCurrentChange(val) {
-      this.pagination.currentPage=val;
+      this.pagination.currentPage = val;
       this.searchSeriesPlan();
     },
     //改变日期格式
@@ -479,7 +480,7 @@ export default {
       }
     },
     planTypeSwitchChange() {
-      this.pagination.currentPage=1;
+      this.pagination.currentPage = 1;
       const that = this;
       this.DataStartTime = that.changeDate(this.Date1[0]);
       this.DataEndTime = that.changeDate(this.Date1[1]);
@@ -513,8 +514,8 @@ export default {
             if (element.addingMode === 1) element.addingModeName = "手动";
             else element.addingModeName = "导入";
 
-            if (element.havePlan === true) element.PlanState = "已制定";
-            else if (element.havePlan === false) element.PlanState = "未制定";
+            if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
             if (element.havePredictPlan === true)
               element.predictState = "已预测";
             else if (element.havePredictPlan === false)
@@ -523,21 +524,24 @@ export default {
             let time = d.toLocaleString();
             element.createTime = time;
 
-            if (this.checked == true && element.havePlan === false) {
+            if (this.checked == false && element.havePlan === false) {
               this.tableData.push(element);
-            } else if (this.checked == false && element.havePlan === true) {
+            } else if (this.checked == true && element.havePlan === true) {
               this.tableData.push(element);
             }
           });
-                    this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+          this.pagination.total = this.tableData.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
+
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.tableData[i]);
+          }
         })
         .catch(error => {
           this.$message({
@@ -581,8 +585,8 @@ export default {
             if (element.addingMode === 1) element.addingModeName = "手动";
             else element.addingModeName = "导入";
 
-            if (element.havePlan === true) element.PlanState = "已制定";
-            else if (element.havePlan === false) element.PlanState = "未制定";
+            if (element.havePlan === true) element.stateName = "已制定";
+            else if (element.havePlan === false) element.stateName = "未制定";
             if (element.havePredictPlan === true)
               element.predictState = "已预测";
             else if (element.havePredictPlan === false)
@@ -591,21 +595,24 @@ export default {
             let time = d.toLocaleString();
             element.createTime = time;
 
-            if (this.checked == true && element.havePlan === false) {
+            if (this.checked == false && element.havePlan === false) {
               this.tableData.push(element);
-            } else if (this.checked == false && element.havePlan === true) {
+            } else if (this.checked == true && element.havePlan === true) {
               this.tableData.push(element);
             }
           });
-                    this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
+          this.pagination.total = this.tableData.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
+
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.tableData[i]);
+          }
         })
         .catch(error => {
           this.$message({
@@ -656,7 +663,19 @@ export default {
           plantype: 1,
           planobj: row.name,
           TopPlan: 0,
-          TopPlanName: "根计划"
+          TopPlanName: "根计划",
+
+          planName: "",
+          projectType: "",
+          number: "",
+          dataStart: "",
+          dataEnd: "",
+          productDate: "",
+          productDateType: "",
+          productId: "",
+          proposal: "",
+          note: "",
+          description: ""
         }
       });
     },
@@ -701,16 +720,15 @@ export default {
       return;
     },
     QuotePre(row) {
-      const that  =  this;
+      const that = this;
       //获得品牌下拉框
-      console.log(row.id)
+      console.log(row.id);
       that.$axios
-        .post(`${window.$config.HOST}/planManagement/quotePredictPlan`, 
-        {
+        .post(`${window.$config.HOST}/planManagement/quotePredictPlan`, {
           rangeId: row.id
         })
         .then(response => {
-          console.log("repsonse="+response.data)
+          console.log("repsonse=" + response.data);
           let ok = response.data;
           if (ok > 0) {
             this.$message({
@@ -725,7 +743,7 @@ export default {
           }
         })
         .catch(error => {
-            console.log("repsonse=")
+          console.log("repsonse=");
           this.$message({
             message: "引用预测失败！",
             type: "error"
@@ -817,10 +835,10 @@ export default {
     }
   }
 }
-  .block {
-    padding: 30px 0;
-    text-align: center;
-  }
+.block {
+  padding: 30px 0;
+  text-align: center;
+}
 .Mtitle {
   align-content: center;
   margin-left: 45%;

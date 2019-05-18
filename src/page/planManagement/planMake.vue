@@ -137,9 +137,9 @@
                 >
                   <el-option
                     v-for="item in ProjectTypeOpt"
-                    :key="item.label"
-                    :label="item.label"
-                    :value="item.label"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
                   ></el-option>
                 </el-select>
                 <el-input
@@ -183,7 +183,7 @@
             <div class="bar">
               <el-form-item label="起止时间" prop="Date1" placeholder="请选择起止时间">
                 <el-date-picker
-                  v-if="showit1"
+                  :picker-options="pickerOptions0"
                   style="margin-left:20px"
                   v-model="ruleForm.Date1"
                   type="daterange"
@@ -193,7 +193,7 @@
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                 ></el-date-picker>
-                <el-input
+                <!-- <el-input
                   v-else
                   v-model="ruleForm.Date1"
                   clearable
@@ -201,7 +201,7 @@
                   placeholder="请选择"
                   :disabled="true"
                   style="min-width:300px"
-                ></el-input>
+                ></el-input>-->
               </el-form-item>
             </div>
           </el-col>
@@ -217,10 +217,11 @@
                   style="min-width:120px"
                 >
                   <el-option
+          
                     v-for="item in datemodelOpt"
-                    :key="item.label"
-                    :label="item.label"
-                    :value="item.label"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
                   ></el-option>
                 </el-select>
 
@@ -239,6 +240,7 @@
           <el-col :span="4">
             <el-form-item label prop="ProductData" placeholder="请选择日期">
               <el-date-picker
+                :picker-options="pickerOptions1"
                 v-if="showit1"
                 v-model="ruleForm.ProductData"
                 type="date"
@@ -401,6 +403,21 @@
 export default {
   data() {
     return {
+      pickerOptions0: {
+        disabledDate: time => {
+          var date = new Date();
+          console.log(date.toLocaleDateString());
+          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
+      },
+
+      pickerOptions1: {
+        disabledDate: time => {
+          var date = new Date();
+          console.log(date.toLocaleDateString());
+          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
+      },
       // PlanProductName: "",
       // TopPlanName: "",
       // planObjId: "",
@@ -413,29 +430,7 @@ export default {
       showit3: true,
       showit4: true,
       showit5: true,
-      // ProductDateType: "",
-      // ProductData: "",
-      // ClientName: "",
-      // BrandName: "",
-      // SeriesName: "",
-      // objName: "",
-      // PlanRemark: "",
-      // PlanType: "",
-      // PlanDiscribe: "",
-      // PlanPropose: "",
-      // ProjectType: "",
-      // PlanProduct: "",
-      // PlanPerson: "",
-      // PlanDepartment: "",
-      // Plandate: "",
-      // datemodel: "",
-      // PlanPrice: "",
-      // TopPlan: "",
-      // PlanStartTime: "",
-      // PlanEndTime: "",
-      // id: "",
-      // planName: "",
-      // planID: "JH000001",
+
       rules: {
         ClientName: [
           { required: true, message: "请输入客户名称", trigger: "blur" }
@@ -488,7 +483,7 @@ export default {
       },
       ruleForm: {
         planName: "",
-        PlanProductName: "",
+        PlanProduchtName: "",
         TopPlanName: "",
         planObjId: "",
         Date1: "",
@@ -504,8 +499,7 @@ export default {
         PlanPropose: "",
         ProjectType: "",
         PlanProduct: "",
-        PlanPerson: "",
-        PlanDepartment: "",
+
         Plandate: "",
         datemodel: "",
         PlanPrice: "",
@@ -588,7 +582,65 @@ export default {
 
   created() {
     var that = this;
+        //获得项目类型下拉框
+        let CategoryId;
+    that.$axios
+      .get(`${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`, {
+        params: {
+          name: "项目类型"
+        }
+      })
+      .then(response => {
+        CategoryId = response.data;
+      })
+      .catch(error => {
+        console.log("项目类型字典ID获取失败");
+      });
 
+          that.$axios
+      .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`, {
+        params: {
+          categoryId: categoryId
+        }
+      })
+      .then(response => {
+        this.ProjectTypeOpt = response.data;
+      })
+      .catch(error => {
+        console.log("项目类型下拉框获取失败");
+      });
+
+
+      //获取日期类型
+          that.$axios
+      .get(`${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`, {
+        params: {
+          name: "日期类型"
+        }
+      })
+      .then(response => {
+        CategoryId = response.data;
+      })
+      .catch(error => {
+        console.log("日期类型字典ID获取失败");
+      });
+
+          that.$axios
+      .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`, {
+        params: {
+          categoryId: categoryId
+        }
+      })
+      .then(response => {
+        this.ProjectTypeOpt = response.data;
+      })
+      .catch(error => {
+        console.log("项目类型下拉框获取失败");
+      });
+
+
+
+    
     //获得品牌下拉框
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
@@ -608,7 +660,12 @@ export default {
   },
   //五个参数控制
   //所有的计划制定的跳转
+
   methods: {
+    //       this.totalTableData.sort(function(b,a){
+    // return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
+    // });
+
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -644,6 +701,8 @@ export default {
       }
     },
     SavePlanForm(formName) {
+      console.log(this.ruleForm.data1);
+      console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log("啊啊啊啊啊啊啊");
@@ -782,33 +841,25 @@ export default {
 
       // console.log(this.$route.params);
       let data = this.$route.params;
-      console.log(data);
-      this.ruleForm.ClientName = data.client;
-      this.ruleForm.BrandName = data.brand;
-      this.ruleForm.SeriesName = data.series;
-      this.ruleForm.objName = data.planobj;
-      this.flag = data.flag;
-      this.goback = data.goback;
-      this.ruleForm.planObjId = data.planObjId;
-      this.ruleForm.TopPlan = data.TopPlan;
-      this.ruleForm.TopPlanName = data.TopPlanName;
-      this.ruleForm.id = data.id;
-      if (data.flag === 0) {
-        console.log("到达这里了");
-        this.showit1 = false;
+      if (data.goback) {
+        this.dataOk = false;
+        console.log(data);
         this.ruleForm.ClientName = data.client;
         this.ruleForm.BrandName = data.brand;
         this.ruleForm.SeriesName = data.series;
-        this.ruleForm.id = data.id;
-        // plantype:":??????,",
         this.ruleForm.objName = data.planobj;
+        this.flag = data.flag;
+        this.goback = data.goback;
         this.ruleForm.TopPlan = data.TopPlan;
         this.ruleForm.TopPlanName = data.TopPlanName;
+        this.ruleForm.id = data.id;
         this.ruleForm.planName = data.planName;
         this.ruleForm.ProjectType = data.projectType;
         this.ruleForm.PlanPrice = data.number;
-        this.ruleForm.Date1 = data.dataStart + " 至 " + data.dataEnd;
 
+        if (data.dataStart != "") {
+          this.ruleForm.Date1 = data.dataStart + " 至 " + data.dataEnd;
+        }
         this.ruleForm.ProductData = data.productDate;
         this.ruleForm.ProductDateType = data.productDateType;
         this.ruleForm.PlanProduct = data.productId;
@@ -817,36 +868,60 @@ export default {
         this.ruleForm.PlanDiscribe = data.description;
 
         console.log(this.ruleForm);
+        if (data.flag === 0) {
+          this.showit1 = false;
+          // this.ruleForm.ClientName = data.client;
+          // this.ruleForm.BrandName = data.brand;
+          // this.ruleForm.SeriesName = data.series;
+          // this.ruleForm.id = data.id;
+          // // plantype:":??????,",
+          // this.ruleForm.objName = data.planobj;
+          // this.ruleForm.TopPlan = data.TopPlan;
+          // this.ruleForm.TopPlanName = data.TopPlanName;
+          // this.ruleForm.planName = data.planName;
+          // this.ruleForm.ProjectType = data.projectType;
+          // this.ruleForm.PlanPrice = data.number;
+          // this.ruleForm.Date1 = data.dataStart + " 至 " + data.dataEnd;
 
-        that.$axios
-          .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
-            params: {
-              name: undefined
-            }
-          })
-          .then(response => {
-            response.data.forEach(element => {
-              if (element.id === this.ruleForm.PlanProduct) {
-                this.ruleForm.PlanProductName = element.name;
+          // this.ruleForm.ProductData = data.productDate;
+          // this.ruleForm.ProductDateType = data.productDateType;
+          // this.ruleForm.PlanProduct = data.productId;
+          // this.ruleForm.PlanPropose = data.proposal;
+          // this.ruleForm.PlanRemark = data.note;
+          // this.ruleForm.PlanDiscribe = data.description;
+
+          console.log(this.ruleForm);
+
+          that.$axios
+            .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+              params: {
+                name: undefined
               }
+            })
+            .then(response => {
+              response.data.forEach(element => {
+                if (element.id === this.ruleForm.PlanProduct) {
+                  this.ruleForm.PlanProductName = element.name;
+                }
+              });
+            })
+            .catch(error => {
+              console.log("获取品牌失败");
             });
-          })
-          .catch(error => {
-            console.log("获取品牌失败");
-          });
-      }
-      switch (data.plantype) {
-        case 1:
-          this.ruleForm.PlanType = "系列计划";
-          break;
-        case 2:
-          this.ruleForm.PlanType = "款式组计划";
-          break;
-        case 3:
-          this.ruleForm.PlanType = "款式计划";
-          break;
-        default:
-          this.ruleForm.PlanType = data.plantype;
+        }
+        switch (data.plantype) {
+          case 1:
+            this.ruleForm.PlanType = "系列计划";
+            break;
+          case 2:
+            this.ruleForm.PlanType = "款式组计划";
+            break;
+          case 3:
+            this.ruleForm.PlanType = "款式计划";
+            break;
+          default:
+            this.ruleForm.PlanType = data.plantype;
+        }
       }
     }
   }
