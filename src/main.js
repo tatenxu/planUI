@@ -61,7 +61,8 @@ router.beforeEach((to, from, next) => {
 
 window.$config = {};
 
-window.$config.HOST = 'http://202.120.1.66:8080';
+window.$config.HOST = 'http://127.0.0.1:8040/planservice';
+// window.$config.HOST = 'http://202.120.1.66:8080';
 window.$config.HOST2 = 'http://202.120.1.66:8001/service-authorization/uaa';
 
 /* eslint-disable no-new */

@@ -7,7 +7,7 @@ module.exports = {
     index: path.resolve(__dirname, '../velement/index.html'),
     assetsRoot: path.resolve(__dirname, '../velement'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/planservice/',
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
