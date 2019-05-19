@@ -659,7 +659,7 @@ export default {
             }
           )
           .then(response => {
-            this.ruleForm.ProductDateType = response.data;
+            this.datemodelOpt = response.data;
           })
           .catch(error => {
             console.log("项目类型下拉框获取失败");
