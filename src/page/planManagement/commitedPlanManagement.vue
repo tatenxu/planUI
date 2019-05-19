@@ -332,8 +332,8 @@ export default {
         rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,  
         name: (this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
         clothingLevelId :(this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };
       
       param.stage = "manage";

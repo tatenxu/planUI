@@ -192,7 +192,7 @@ export default {
 
     //品牌名称选择获取
     this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:null})
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{customerId:undefined})
       .then(response => {
          this.searchOptions.options.brandNameOptions = response.data;
       })
@@ -243,7 +243,7 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return "";
+        return undefined;
       }else{
         console.log(date);
         var y = date.getFullYear();
@@ -261,12 +261,12 @@ export default {
     },
     handleSearch(){
       var params = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
-        id: (this.searchOptions.searchParams.predictPlanName==="")?null:this.searchOptions.searchParams.predictPlanName, 
-        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?null:this.searchOptions.searchParams.clothingLevelName, 
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+        customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName, 
+        id: (this.searchOptions.searchParams.predictPlanName==="")?undefined:this.searchOptions.searchParams.predictPlanName, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?undefined:this.searchOptions.searchParams.clothingLevelName, 
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };
       console.log(params);
 

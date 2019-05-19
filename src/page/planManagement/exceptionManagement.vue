@@ -207,48 +207,6 @@ export default {
       })
       .catch(error => {
         console.log("初始化系列异常加载失败");
-        // var SearchList = [
-        //   {
-        //     id :5674,
-        //     number: "7878787",
-        //     planNumber: "45345",
-        //     customerName: "nike",
-        //     brandName: "耐克",
-        //     planName: "计划1",
-        //     rangeName: "系列1",
-        //     planObject: "大明",
-        //     cause: "死机",
-        //     createrName: "王小虎",
-        //     createTime: "2016-10-16"
-        //   },
-        //   {
-        //     id :56754,
-        //     number: "312",
-        //     planNumber: "5335",
-        //     customerName: "add",
-        //     brandName: "阿迪",
-        //     planName: "计划2",
-        //     rangeName: "系列1",
-        //     planObject: "大明",
-        //     cause: "死机",
-        //     createrName: "王小虎",
-        //     createTime: "2016-10-16"
-        //   },
-        //   {
-        //     id :564514,
-        //     number: "8678",
-        //     planNumber: "45343",
-        //     customerName: "nb",
-        //     brandName: "nb",
-        //     planName: "计划6",
-        //     rangeName: "系列5",
-        //     planObject: "大明",
-        //     cause: "死机",
-        //     createrName: "王小虎",
-        //     createTime: "2016-10-16"
-        //   }
-        // ];
-        // this.tableData = SearchList;
       });
   },
   mounted(){
@@ -277,9 +235,7 @@ export default {
         .catch(error => {
           console.log("获取异常错误");
         });
-    }
-
-    
+    }    
   },
   methods: {
     // 改变日期格式
@@ -307,8 +263,8 @@ export default {
         customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName,
         rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,  
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),  
-        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]), 
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       }
       console.log(param);
 

@@ -303,8 +303,8 @@ export default {
         rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,
         name : undefined,
         clothingLevelId : undefined,
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),  
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),  
         stage: "delete",    
       };
       console.log(param);

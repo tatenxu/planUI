@@ -322,6 +322,8 @@ export default {
             element.parentName = "根计划";
           }
         });
+        //复制计划名称
+        this.searchOptions.options.planNameOptions = response.data;
 
         //分页
         this.pagination.total=response.data.length;
@@ -333,7 +335,7 @@ export default {
         {
           this.tableDataShow.push(this.tableData[i]);
         }
-        this.searchOptions.options.planNameOptions = response.data;
+        
       })
       .catch(error => {
         console.log("初始化被下发计划列表获取错误");
@@ -685,16 +687,16 @@ export default {
     },
     //搜索按钮
     handleSearch(){
+      console.log(this.searchOptions.searchParams.dateRange);
       var param = {
         customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
         brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName, 
         rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,  
         name: (this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate:this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevel==="")?undefined:this.searchOptions.searchParams.clothingLevel, 
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
       };
-
       if(this.isSelfMadePlan){
         param.stage = "manage";
         console.log(param);
@@ -709,14 +711,13 @@ export default {
                 element.parentName = "根计划";
               }
             });
-
-            console.log(this.tableDataShow);
+            //赋值计划名称
+            this.searchOptions.options.planNameOptions = response.data;
             //分页
             this.pagination.total=response.data.length;
             let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
             let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
             this.tableDataShow=[];
-            
             for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
             {
               this.tableDataShow.push(this.tableData[i]);
@@ -738,6 +739,8 @@ export default {
                 element.parentName = "根计划";
               }
             });
+            //赋值计划名称
+            this.searchOptions.options.planNameOptions = response.data;
 
             //分页
             this.pagination.total=response.data.length;
@@ -759,58 +762,6 @@ export default {
       this.pagination.currentPage=1;
       this.tableData = [];
       this.handleSearch();
-      // if(this.isSelfMadePlan){
-      //   this.$axios
-      //     .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-      //       params:{stage:"manage"}
-      //     })
-      //     .then(response=>{
-      //       this.tableData = response.data;
-      //       this.tableData.forEach(element=>{
-      //         if(element.isRoot){
-      //           element.parentName = "根计划";
-      //         }
-      //       });
-
-      //       //分页
-      //       this.pagination.total=response.data.length;
-      //       let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-      //       let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-      //       this.tableDataShow=[];
-      //       for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-      //       {
-      //         this.tableDataShow.push(this.tableData[i]);
-      //       }
-      //     })
-      //     .catch(error=>{
-      //       this.$message.error("搜索失败!");
-      //     });
-      // }else{
-      //   this.$axios
-      //     .get(`${window.$config.HOST}/planManagement/getDistributedPlanList`)
-      //     .then(response=>{
-      //       this.tableData = response.data;
-      //       this.tableData.forEach(element=>{
-      //         if(element.isRoot){
-      //           element.parentName = "根计划";
-      //         }
-      //       });
-
-      //       //分页
-      //       this.pagination.total=response.data.length;
-      //       let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-      //       let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-      //       this.tableDataShow=[];
-            
-      //       for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-      //       {
-      //         this.tableDataShow.push(this.tableData[i]);
-      //       }
-      //     })
-      //     .catch(error=>{
-      //       this.$message.error("搜索失败!");
-      //     });
-      // }
     },
     //子计划顺序控制函数
     //上移

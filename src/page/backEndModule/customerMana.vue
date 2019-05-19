@@ -110,7 +110,8 @@
                 :options="selectionData"
                 v-model="editInfoGroup"
                 :props="deptToCascaderProps"
-              
+                change-on-select="true"
+                :placeholder="editInfoGroupPlaceHolder"
               >
             </el-cascader>
           </div>
@@ -186,8 +187,6 @@
 
 <script>
 import { error } from 'util';
-// import { truncate } from 'fs';
-// import { constants } from 'fs';
   export default {
     data() {
       return {
@@ -206,16 +205,15 @@ import { error } from 'util';
         editInfoDescription:'',
         editInfoName:'',
         editInfoAbbr:'',
-        editInfoGroup:'',
-        // editInfoGroupTreeList:[],
+        editInfoGroup:[],
+        editInfoGroupPlaceHolder:'',
         editIndoInitGroupId:'',
         tmpeditInfoGroupName:'',
 
         addInfoDescription:'',
         addInfoName:'',
         addInfoAbbr:'',
-        addInfoGroup:'',
-        // addInfoGroupTreeList:[],
+        addInfoGroup:[],
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -234,7 +232,7 @@ import { error } from 'util';
       //加载默认客户信息
       this.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`,{
-          params:{name:null},
+          params:{name:undefined},
         })
         .then(response=>{
           this.tableData = response.data;
@@ -244,17 +242,6 @@ import { error } from 'util';
         });
     },
     methods: {
-      // handleChange1(){
-      //   this.addInfoGroup = this.addInfoGroupTreeList[this.addInfoDepartTreeList.length-1];
-      //   console.log(this.addInfoGroup);
-      // },
-      // handleChange2(){
-      //   this.editInfoGroup = this.editInfoGroupTreeList[this.editInfoGroupTreeList.length-1];
-      //   console.log(this.editInfoGroup);
-      // },
-      // handleTabClick(tab, event) {
-      //   console.log(tab, event);
-      // },
       toggleSelection(rows) {
         if (rows) {
           rows.forEach(row => {
@@ -268,13 +255,13 @@ import { error } from 'util';
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {name:null};
+        var param = {name:undefined};
         if(!allFlag){
           /* if(this.searchInput === ""){
             this.$message.error("请输入客户名称");
             return;
           } */
-          param = {name: (this.searchInput==="")?null:this.searchInput};
+          param = {name: (this.searchInput==="")?undefined:this.searchInput};
         }
         console.log("搜索参数"+ allFlag);
         console.log(param);
@@ -316,7 +303,9 @@ import { error } from 'util';
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoAbbr = this.multipleSelection[0].abbr;
 
-        this.tmpeditInfoGroupName = [this.multipleSelection[0].groupName];
+        this.editInfoGroupPlaceHolder = this.multipleSelection[0].groupName;
+        this.tmpeditInfoGroupName = this.multipleSelection[0].groupName;
+
         this.editInfoGroup = [this.multipleSelection[0].groupName];
         this.editIndoInitGroupId = this.multipleSelection[0].groupId;
         this.editInfoDescription = this.multipleSelection[0].description;
@@ -360,10 +349,10 @@ import { error } from 'util';
       },
       handleNewSaveClick(){
         var param = {
-          name : (this.addInfoName==="")?null:this.addInfoName,
-          abbr : (this.addInfoAbbr==="")?null:this.addInfoAbbr,
-          description : (this.addInfoDescription==="")?null:this.addInfoDescription,
-          groupName : (this.addInfoGroup===[])?null:this.addInfoGroup[this.addInfoGroup.length-1],
+          name : (this.addInfoName==="")?undefined:this.addInfoName,
+          abbr : (this.addInfoAbbr==="")?undefined:this.addInfoAbbr,
+          description : (this.addInfoDescription==="")?undefined:this.addInfoDescription,
+          groupName : (this.addInfoGroup.length===0)?undefined:this.addInfoGroup[this.addInfoGroup.length-1],
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
@@ -404,14 +393,14 @@ import { error } from 'util';
         return;
       },
       handleEditSaveClick(){
-        // var groupidTmp = (this.editInfoGroup === this.tmpeditInfoGroupName)?this.editIndoInitGroupId:this.editInfoGroup;
+        var tmpGroupName = (this.editInfoGroup ===[this.tmpeditInfoGroupName,])?
+                          this.tmpeditInfoGroupName : this.editInfoGroup[this.editInfoGroup.length-1];
         var param = {
-          id : (this.editInfoId==="")?null:this.editInfoId,
-          name : (this.editInfoName==="")?null:this.editInfoName,
-          abbr : (this.editInfoAbbr==="")?null:this.editInfoAbbr,
-          description : (this.editInfoDescription==="")?null:this.editInfoDescription,
-          // groupName : (groupidTmp==="")?null:groupidTmp,
-          groupName : (this.editInfoGroup===[])?null:this.editInfoGroup[this.editInfoGroup.length-1],
+          id : (this.editInfoId==="")?undefined:this.editInfoId,
+          name : (this.editInfoName==="")?undefined:this.editInfoName,
+          abbr : (this.editInfoAbbr==="")?undefined:this.editInfoAbbr,
+          description : (this.editInfoDescription==="")?undefined:this.editInfoDescription,
+          groupName : (tmpGroupName==="")?undefined:tmpGroupName,
         };
         console.log(param);
         

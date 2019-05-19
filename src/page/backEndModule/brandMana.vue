@@ -236,37 +236,6 @@
         })
         .catch(error=>{
           this.$message.error("信息加载失败");
-          this.tableData = [
-            {
-              id:'536543',
-              customerId:"453142312",
-              name: 'nike',
-              abbr: 'nk',
-              description: '知名品牌',
-              customerName:'中国耐克公司'
-            },{
-              id:'52346',
-              customerId:"8478",
-              name: 'addidas',
-              abbr: 'ad',
-              description: '次级品牌',
-              customerName:'中国阿迪公司'
-            },{
-              id:'234513452',
-              customerId:"578",
-              name: 'newbalance',
-              abbr: 'nb',
-              description: '国际品牌',
-              customerName:'中国新百伦公司'
-            },{
-              id:'2562',
-              customerId:"678468",
-              name: '阿赛克斯',
-              abbr: 'asics',
-              description: '日本品牌',
-              customerName:'日本阿赛克斯公司'
-            },];
-          
         });
     },
     methods: {
@@ -305,30 +274,6 @@
           })
           .catch(error=>{
             this.$message.error("搜索失败");
-            this.selectionData = [];
-            this.tableData = [
-              {
-                id:'52346',
-                customerId:"8478",
-                name: 'addidas',
-                abbr: 'ad',
-                description: '次级品牌',
-                customerName:'中国阿迪公司'
-              },{
-                id:'234513452',
-                customerId:"578",
-                name: 'newbalance',
-                abbr: 'nb',
-                description: '国际品牌',
-                customerName:'中国新百伦公司'
-              },{
-                id:'2562',
-                customerId:"678468",
-                name: '阿赛克斯',
-                abbr: 'asics',
-                description: '日本品牌',
-                customerName:'日本阿赛克斯公司'
-              },];
           });
       },
       handleNewInfoClick(){

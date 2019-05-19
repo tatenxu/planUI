@@ -179,16 +179,6 @@ export default {
       })
       .catch(error => {
         console.log("初始化获取客户失败!");
-        this.searchOptions.options.customerNameOptions = [
-          {
-            id: 42453,
-            name: "A客户"
-          },
-          {
-            id: 41526,
-            name: "B客户"
-          },
-        ];
       });
 
     //获取服装层次
@@ -255,12 +245,6 @@ export default {
   methods: {
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
 
@@ -294,7 +278,7 @@ export default {
     // 改变日期格式
     changeDate(date) {
       if(!date){
-        return "";
+        return undefined;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -316,8 +300,8 @@ export default {
         brandId: (this.searchOptions.searchParams.brandName==="")?"":this.searchOptions.searchParams.brandName,
         id: (this.searchOptions.searchParams.planName==="")?"":this.searchOptions.searchParams.planName,
         clothingLevelId :(this.searchOptions.searchParams.name==="")?"":this.searchOptions.searchParams.name, 
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };
       console.log(params);
 

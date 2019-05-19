@@ -70,6 +70,7 @@
     ).getTime();
     return new Date(timeStamp + hours * 60 * 60 * 1000).getTime();
   }
+  //数据
   let tasks = [
     {
       id: 1,
@@ -264,6 +265,7 @@
       type: "task"
     }
   ];
+  //表格属性
   let options = {
     taskMapping: {
       progress: "percent"
@@ -316,7 +318,7 @@
         },
         {
           id: 3,
-          label: "负责人",
+          label: "创建人",
           value: "user",
           width: 130,
           html: true
@@ -329,26 +331,32 @@
         },
         {
           id: 4,
-          label: "Type",
-          value: "type",
-          width: 68
+          label: "结束日期",
+          value: task => dayjs(task.start).format("YYYY-MM-DD"),
+          width: 78
         },
         {
           id: 5,
-          label: "%",
-          value: "progress",
-          width: 35,
-          style: {
-            "task-list-header-label": {
-              "text-align": "center",
-              width: "100%"
-            },
-            "task-list-item-value-container": {
-              "text-align": "center",
-              width: "100%"
-            }
-          }
-        }
+          label: "数量",
+          value: "quantity",
+          width: 68
+        },
+        // {
+        //   id: 5,
+        //   label: "%",
+        //   value: "progress",
+        //   width: 35,
+        //   style: {
+        //     "task-list-header-label": {
+        //       "text-align": "center",
+        //       width: "100%"
+        //     },
+        //     "task-list-item-value-container": {
+        //       "text-align": "center",
+        //       width: "100%"
+        //     }
+        //   }
+        // }
       ]
     },
     locale: {

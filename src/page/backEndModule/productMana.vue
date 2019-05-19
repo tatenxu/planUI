@@ -111,7 +111,8 @@
               :options="selectionData"
               v-model="editInfoDepart"
               :props="deptToCascaderProps"
-            
+              change-on-select="true"
+              :placeholder="editInfoDepartPlaceHolder"
              >
             </el-cascader>
             <!-- <el-input  class="input"  placeholder="请输入产品部门"  v-model="editInfoDepart"></el-input> -->
@@ -204,16 +205,15 @@
         editInfoDescription:'',
         editInfoName:'',
         editInfoCode:'',
-        editInfoDepart:'',
-        // editInfoDepartTreeList:'',
+        editInfoDepart:[],
+        editInfoDepartPlaceHolder:'',
         editInfoDepartId:'',
         tmpeditInfoDepartName:'',
 
         addInfoDescription:'',
         addInfoName:'',
         addInfoCode:'',
-        addInfoDepart:'',
-        // addInfoDepartTreeList:'',
+        addInfoDepart:[],
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -223,7 +223,7 @@
       //获取所有信息
       let that = this;
       that.$axios.get(`${window.$config.HOST}/baseInfoManagement/getProduct`,{
-        params:{ name:null },
+        params:{ name:undefined },
       })
         .then(response=>{
           this.tableData = response.data;
@@ -243,14 +243,7 @@
         });
     },
     methods: {
-      // handleChange1(){
-      //   this.addInfoDepart = this.addInfoDepartTreeList[this.addInfoDepartTreeList.length-1];
-      //   console.log(this.addInfoDepart);
-      // },
-      // handleChange2(){
-      //   this.editInfoDepart = this.editInfoDepartTreeList[this.editInfoDepartTreeList.length-1];
-      //   console.log(this.editInfoDepart);
-      // },
+      
       handleTabClick(tab, event) {
         console.log(tab, event);
       },
@@ -267,14 +260,14 @@
         this.multipleSelection = val;
       },
       handleSearchClick(allFlag){
-        var param = {name:null};
+        var param = {name:undefined};
         if(!allFlag){
           /* if(this.searchInput === ""){
             this.$message.error("请输入产品名称");
             return;
           } */
           param = {
-            name: (this.searchInput==="")?null:this.searchInput,
+            name: (this.searchInput==="")?undefined:this.searchInput,
           };
         }
         
@@ -320,11 +313,11 @@
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoCode = this.multipleSelection[0].number;
 
-        // this.editInfoDepartTreeList = this.multipleSelection[0].deptName;
-        this.tmpeditInfoDepartName = [this.multipleSelection[0].deptName,];
+        this.tmpeditInfoDepartName = this.multipleSelection[0].deptName;
+        this.editInfoDepartPlaceHolder = this.multipleSelection[0].deptName;
+
         this.editInfoDepart = [this.multipleSelection[0].deptName,];
         this.editInfoDepartId = this.multipleSelection[0].departmentId;
-        
         this.editInfoDescription = this.multipleSelection[0].description;
         this.editInfoId = this.multipleSelection[0].id;
         this.viewname = 'third';
@@ -357,10 +350,10 @@
       },
       handleNewSaveClick(){
         var param = {
-          number : (this.addInfoCode==="")?null:this.addInfoCode,
-          name : (this.addInfoName==="")?null:this.addInfoName,
-          description : (this.addInfoDescription==="")?null:this.addInfoDescription,
-          deptName : (this.addInfoDepart==="")?null:this.addInfoDepart[this.addInfoDepart.length-1],
+          number : (this.addInfoCode==="")?undefined:this.addInfoCode,
+          name : (this.addInfoName==="")?undefined:this.addInfoName,
+          description : (this.addInfoDescription==="")?undefined:this.addInfoDescription,
+          deptName : (this.addInfoDepart.length===0)?undefined:this.addInfoDepart[this.addInfoDepart.length-1],
         };
         console.log(param);
         
@@ -401,14 +394,14 @@
         return;
       },
       handleEditSaveClick(){
-        // var departInfoTmp = (this.editInfoDepart===this.tmpeditInfoDepartName)?this.editInfoDepartId:this.editInfoDepart;
-        var departInfoTmp = this.editInfoDepart;
+        var departInfoTmp = (this.editInfoDepart===[this.tmpeditInfoDepartName,])?
+                          this.tmpeditInfoDepartName:this.editInfoDepart[this.editInfoDepart.length-1];
         var param = {
           id: this.editInfoId,
-          number : (this.editInfoCode==="")?null:this.editInfoCode,
-          name : (this.editInfoName==="")?null:this.editInfoName,
-          description : (this.editInfoDescription==="")?null:this.editInfoDescription,
-          deptName : (departInfoTmp === "")?null:departInfoTmp[departInfoTmp.length-1],
+          number : (this.editInfoCode==="")?undefined:this.editInfoCode,
+          name : (this.editInfoName==="")?undefined:this.editInfoName,
+          description : (this.editInfoDescription==="")?undefined:this.editInfoDescription,
+          deptName : (departInfoTmp === "")?undefined:departInfoTmp,
         };
         console.log(param);
         

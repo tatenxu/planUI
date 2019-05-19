@@ -202,15 +202,6 @@ export default {
       });
 
     //默认获取计划列表
-    var param ={
-      customerId : null,
-      brandId : null,
-      rangeId: null,
-      id : null,
-      clothingLevelId : null,
-      startDate : null,
-      endDate : null,
-    };
     this.$axios
       .get(`${window.$config.HOST}/planManagement/getPlanList`,{
         params:{
@@ -262,7 +253,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return null;
+        return undefined;
       }else{
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -280,12 +271,12 @@ export default {
     //获取预测计划列表
     handleSearch(){
       var params = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?null:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?null:this.searchOptions.searchParams.brandName, 
-        id: (this.searchOptions.searchParams.name==="")?null:this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?null:this.searchOptions.searchParams.clothingLevelName, 
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange[0]),
-        endDate: this.changeDate(this.searchOptions.searchParams.dateRange[1]),
+        customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName, 
+        id: (this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
+        clothingLevelId :(this.searchOptions.searchParams.clothingLevelName==="")?undefined:this.searchOptions.searchParams.clothingLevelName, 
+        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
+        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };
       console.log(params);
 
