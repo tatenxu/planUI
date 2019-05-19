@@ -366,7 +366,7 @@ export default {
           params: list
         })
         .then(response => {
-
+         this.allPlans=[];
          this.allPlans.push(response.data)
           console.log(this.allPlans)
           
@@ -514,6 +514,7 @@ export default {
             params: list
           })
           .then(response => {
+            this.getWareList();
             var ok = response.data;
             if (ok >= 0) {
               this.$message({
@@ -552,6 +553,7 @@ export default {
             }
           })
           .then(response => {
+            this.getWareList();
             console.log(response.data);
             var ok = response.data;
             if (ok >= 0) {
@@ -602,6 +604,7 @@ export default {
             }
           })
           .then(response => {
+            this.getWareList();
             var ok = response.data;
             if (ok >= 0) {
               this.$message({

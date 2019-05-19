@@ -183,7 +183,7 @@
             <div class="bar">
               <el-form-item label="起止时间" prop="Date1" placeholder="请选择起止时间">
                 <el-date-picker
-                   v-if="showit1"
+                  v-if="showit1"
                   :picker-options="pickerOptions0"
                   style="margin-left:20px"
                   v-model="ruleForm.Date1"
@@ -195,9 +195,9 @@
                   :end-placeholder="endStr"
                 ></el-date-picker>
 
-                                <el-date-picker
-                   v-else
-                   :disabled="true"
+                <el-date-picker
+                  v-else
+                  :disabled="true"
                   :picker-options="pickerOptions0"
                   style="margin-left:20px"
                   v-model="ruleForm.Date1"
@@ -209,7 +209,6 @@
                   :end-placeholder="endStr"
                 ></el-date-picker>
 
-                
                 <!-- <el-input
                   v-else
                   v-model="ruleForm.Date1"
@@ -234,7 +233,6 @@
                   style="min-width:120px"
                 >
                   <el-option
-          
                     v-for="item in datemodelOpt"
                     :key="item.name"
                     :label="item.name"
@@ -419,11 +417,10 @@
 <script>
 export default {
   data() {
-
     return {
-      endStr:"结束时间",
-      startStr:"开始时间",
-      
+      endStr: "结束时间",
+      startStr: "开始时间",
+
       pickerOptions0: {
         disabledDate: time => {
           var date = new Date();
@@ -603,25 +600,59 @@ export default {
 
   created() {
     var that = this;
-        //获得项目类型下拉框
-        let CategoryId;
+    //获得项目类型下拉框
+    let CategoryId;
     that.$axios
-      .get(`${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`, {
-        params: {
-          name: "项目类型"
+      .get(
+        `${
+          window.$config.HOST
+        }/dictionaryManagement/getDictionaryCategoryIdByName`,
+        {
+          params: {
+            name: "项目类型"
+          }
         }
-      })
+      )
       .then(response => {
-        CategoryId = response.data;
+        let isId = response.data;
+        that.$axios
+          .get(
+            `${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,
+            {
+              params: {
+                categoryId: isId
+              }
+            }
+          )
+          .then(response => {
+            this.ProjectTypeOpt = response.data;
+          })
+          .catch(error => {
+            console.log("项目类型下拉框获取失败");
+          });
       })
       .catch(error => {
         console.log("项目类型字典ID获取失败");
       });
 
-          that.$axios
+    //获取日期类型
+    that.$axios
+      .get(
+        `${
+          window.$config.HOST
+        }/dictionaryManagement/getDictionaryCategoryIdByName`,
+        {
+          params: {
+            name: "日期类型"
+          }
+        }
+      )
+      .then(response => {
+        let dataID = response.data;
+        that.$axios
       .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`, {
         params: {
-          categoryId: categoryId
+          categoryId: dataID
         }
       })
       .then(response => {
@@ -630,38 +661,13 @@ export default {
       .catch(error => {
         console.log("项目类型下拉框获取失败");
       });
-
-
-      //获取日期类型
-          that.$axios
-      .get(`${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`, {
-        params: {
-          name: "日期类型"
-        }
-      })
-      .then(response => {
-        CategoryId = response.data;
       })
       .catch(error => {
         console.log("日期类型字典ID获取失败");
       });
 
-          that.$axios
-      .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`, {
-        params: {
-          categoryId: categoryId
-        }
-      })
-      .then(response => {
-        this.ProjectTypeOpt = response.data;
-      })
-      .catch(error => {
-        console.log("项目类型下拉框获取失败");
-      });
-
-
-
     
+
     //获得品牌下拉框
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
@@ -677,6 +683,22 @@ export default {
       });
   },
   mounted() {
+    that.$axios
+            .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+              params: {
+                name: undefined
+              }
+            })
+            .then(response => {
+              response.data.forEach(element => {
+                if (element.id === this.ruleForm.PlanProduct) {
+                  this.ruleForm.PlanProductName = element.name;
+                }
+              });
+            })
+            .catch(error => {
+              console.log("获取品牌失败");
+            });
     this.init();
   },
   //五个参数控制
@@ -879,10 +901,9 @@ export default {
         this.ruleForm.PlanPrice = data.number;
 
         if (data.dataStart != "") {
-
-          this.ruleForm.Date1=[data.dataStart,data.dataEnd];
+          this.ruleForm.Date1 = [data.dataStart, data.dataEnd];
           this.startStr = data.dataStart;
-          this.endStr= data.dataEnd;
+          this.endStr = data.dataEnd;
         }
         this.ruleForm.ProductData = data.productDate;
         this.ruleForm.ProductDateType = data.productDateType;
