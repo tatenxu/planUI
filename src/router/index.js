@@ -156,7 +156,7 @@ export default [{
       },
       { 
         path: servicePath+'/style/styleManagement',
-        name: 'styleIstyleManagementndex',
+        name: 'styleManagementIndex',
         component: styleManagement,
         meta: {
           bcrumd: ['款式管理'],

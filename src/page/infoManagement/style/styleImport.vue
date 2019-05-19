@@ -389,7 +389,7 @@ export default {
         });
 
       that.$router.push({
-        name: `styleManagement`
+        name: `styleManagementIndex`
       });
     },
     // 取消按钮点击
@@ -397,7 +397,7 @@ export default {
       const that = this;
       console.log("取消按钮点击");
       that.$router.push({
-        name: `styleManagement`
+        name: `styleManagementIndex`
       });
     },
     // 浏览按钮点击

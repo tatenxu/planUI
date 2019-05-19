@@ -683,6 +683,7 @@ export default {
       });
   },
   mounted() {
+    const that=this;
     that.$axios
             .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
               params: {

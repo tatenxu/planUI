@@ -136,13 +136,25 @@
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center"></el-table-column>
-        <!-- <el-table-column prop="havePlan" label="状态" align="center">
+        <el-table-column prop="state" label="状态" align="center">
           <template slot-scope="scope">
-            <p v-if="scope.row.havePlan">已制定</p>
-            <p v-else>未制定</p>
+            <el-popover
+              v-if="scope.row.state==='被驳回'"
+              placement="top-start"
+              title="驳回理由"
+              width="200"
+              trigger="hover"
+              :content="scope.row.rejectReason">
+              <p slot="reference">被驳回</p>
+            </el-popover>
+            <p v-else-if="scope.row.state==='已制定'">已制定</p>
+            <p v-else-if="scope.row.state==='已审核'">已审核</p>
+            <p v-else-if="scope.row.state==='已下发'">已下发</p>
+            <p v-else-if="scope.row.state==='已提交'">已提交</p>
+            <p v-else-if="scope.row.state==='已删除'">已删除</p>
+            <p v-else>其他</p>
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column label="异常状态" width="150" align="center">
           <template slot-scope="scope">
             <el-button
@@ -711,8 +723,7 @@ export default {
                 element.parentName = "根计划";
               }
             });
-            //赋值计划名称
-            this.searchOptions.options.planNameOptions = response.data;
+            
             //分页
             this.pagination.total=response.data.length;
             let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
@@ -725,6 +736,85 @@ export default {
           })
           .catch(error=>{
             this.$message.error("搜索失败!");
+            // this.tableDataShow=[
+            //   {
+            //     brandId: 1,
+            //     brandName: "AAA品牌",
+            //     clothingLevelId: 2,
+            //     clothingLevelName: "时装",
+            //     createTime: "2019-05-14 10:49:40",
+            //     createrName: "张三",
+            //     customerId: 1,
+            //     customerName: "江苏A客户",
+            //     deleteTime: null,
+            //     deleterName: null,
+            //     deptName: "设计管理部",
+            //     description: "系列A1的子计划",
+            //     endDate: "2020-06-01",
+            //     haveException: false,
+            //     id: 5,
+            //     isCompleted: false,
+            //     isRoot: false,
+            //     name: "系列AA2计划",
+            //     note: "",
+            //     number: "JX20190514002",
+            //     parentId: 2,
+            //     parentName: "系列A1计划",
+            //     planObject: "Fall-2019(07/08/09)",
+            //     planObjectId: 1,
+            //     productDate: "2020-04-30",
+            //     productDateType: "交货日期",
+            //     productId: 1,
+            //     projectType: "头样",
+            //     proposal: "系列AA2",
+            //     quantity: 5,
+            //     rangeId: 1,
+            //     rangeName: "Fall-2019(07/08/09)",
+            //     rangeNumber: "XL20190101001",
+            //     rejectReason: null,
+            //     startDate: "2019-05-11",
+            //     state: "已提交",
+            //     type: "系列计划",
+            //   },{
+            //     brandId: 1,
+            //     brandName: "AAA品牌",
+            //     clothingLevelId: 2,
+            //     clothingLevelName: "时装",
+            //     createTime: "2019-05-14 10:49:15",
+            //     createrName: "张三",
+            //     customerId: 1,
+            //     customerName: "江苏A客户",
+            //     deleteTime: null,
+            //     deleterName: null,
+            //     deptName: "设计管理部",
+            //     description: "系列A1的子计划",
+            //     endDate: "2020-06-01",
+            //     haveException: false,
+            //     id: 4,
+            //     isCompleted: false,
+            //     isRoot: false,
+            //     name: "系列AA1计划",
+            //     note: "",
+            //     number: "JX20190514001",
+            //     parentId: 2,
+            //     parentName: "系列A1计划",
+            //     planObject: "Fall-2019(07/08/09)",
+            //     planObjectId: 1,
+            //     productDate: "2020-04-30",
+            //     productDateType: "交货日期",
+            //     productId: 1,
+            //     projectType: "头样",
+            //     proposal: "系列AA1",
+            //     quantity: 10,
+            //     rangeId: 1,
+            //     rangeName: "Fall-2019(07/08/09)",
+            //     rangeNumber: "XL20190101001",
+            //     rejectReason: "驳回呀",
+            //     startDate: "2019-05-11",
+            //     state: "被驳回",
+            //     type: "系列计划",
+            //   }
+            // ];
           });
       }else{
         console.log(param);
@@ -762,6 +852,8 @@ export default {
       this.pagination.currentPage=1;
       this.tableData = [];
       this.handleSearch();
+      //赋值计划名称
+      this.searchOptions.options.planNameOptions = response.data;
     },
     //子计划顺序控制函数
     //上移
