@@ -248,7 +248,7 @@ export default {
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
-          if(element.state==="未制定") this.tableData.push(element);
+          if(element.havePlan===false) this.tableData.push(element);
         });
 
 
@@ -323,9 +323,9 @@ export default {
             let time = d.toLocaleString();
             element.createTime = time;
 
-            if (this.checked == true && element.havePlan === false) {
+            if (this.checked == false && element.havePlan === false) {
               this.tableData.push(element);
-            } else if (this.checked == false && element.havePlan === true) {
+            } else if (this.checked == true && element.havePlan === true) {
               this.tableData.push(element);
             }
 
@@ -402,9 +402,9 @@ export default {
             element.createTime = time;
 
             if (this.checked != 0) {
-              if (this.checked == 1 && element.havePlan === false) {
+              if (this.checked == false && element.havePlan === false) {
                 this.tableData.push(element);
-              } else if (this.checked == 2 && element.havePlan === true) {
+              } else if (this.checked == true && element.havePlan === true) {
                 this.tableData.push(element);
               }
             } else this.tableData.push(element);

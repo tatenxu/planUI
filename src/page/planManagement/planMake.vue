@@ -650,23 +650,24 @@ export default {
       .then(response => {
         let dataID = response.data;
         that.$axios
-      .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`, {
-        params: {
-          categoryId: dataID
-        }
-      })
-      .then(response => {
-        this.ProductDateType = response.data;
-      })
-      .catch(error => {
-        console.log("项目类型下拉框获取失败");
-      });
+          .get(
+            `${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,
+            {
+              params: {
+                categoryId: dataID
+              }
+            }
+          )
+          .then(response => {
+            this.ruleForm.ProductDateType = response.data;
+          })
+          .catch(error => {
+            console.log("项目类型下拉框获取失败");
+          });
       })
       .catch(error => {
         console.log("日期类型字典ID获取失败");
       });
-
-    
 
     //获得品牌下拉框
     that.$axios
@@ -683,23 +684,23 @@ export default {
       });
   },
   mounted() {
-    const that=this;
+    const that = this;
     that.$axios
-            .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
-              params: {
-                name: undefined
-              }
-            })
-            .then(response => {
-              response.data.forEach(element => {
-                if (element.id === this.ruleForm.PlanProduct) {
-                  this.ruleForm.PlanProductName = element.name;
-                }
-              });
-            })
-            .catch(error => {
-              console.log("获取品牌失败");
-            });
+      .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+        params: {
+          name: undefined
+        }
+      })
+      .then(response => {
+        response.data.forEach(element => {
+          if (element.id === this.ruleForm.PlanProduct) {
+            this.ruleForm.PlanProductName = element.name;
+          }
+        });
+      })
+      .catch(error => {
+        console.log("获取品牌失败");
+      });
     this.init();
   },
   //五个参数控制
@@ -726,11 +727,13 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
-    changeDate(date) {
+    changeDate(date1) {
+      var date = new Date(date1);
       console.log(date);
       if (!date) {
         return undefined;
       } else {
+        
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
