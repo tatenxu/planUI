@@ -9,7 +9,7 @@
               <el-option
                 v-for="item in searchOptions.options.userNameOptions"
                 :key="item.id"
-                :label="item.name"
+                :label="item.realName"
                 :value="item.id"
               ></el-option>
             </el-select>
@@ -80,7 +80,7 @@
           </el-table-column>
         </el-table>
         <!-- 分页 -->
-        <div class="block">
+        <!-- <div class="block">
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -90,7 +90,7 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="pagination.total"
           ></el-pagination>
-        </div>
+        </div> -->
       </div>
     </el-card>
 
@@ -109,7 +109,7 @@
                 <el-option
                   v-for="item in ruleForm.options.userNameOptions"
                   :key="item.id"
-                  :label="item.name"
+                  :label="item.realName"
                   :value="item.id"
                 ></el-option>
               </el-select>
@@ -155,6 +155,7 @@
 </template>
 
 <script>
+import { POINT_CONVERSION_COMPRESSED } from 'constants';
 export default {
   data() {
     return {
@@ -200,22 +201,12 @@ export default {
         id: "",
         options: {
           customerNameOptions: [
-            {
-              id: 0,
-              name: "*"
-            }
+
           ],
           brandNameOptions: [
-            {
-              id: 0,
-              name: "*"
-            }
           ],
           userNameOptions: [
-            {
-              id: 0,
-              name: "*"
-            }
+ 
           ]
         }
       }
@@ -226,16 +217,16 @@ export default {
     var that = this;
     //获得品牌名字
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName `, {
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
         customerId: ""
       })
       .then(response => {
         // this.searchOptions.options.brandNameOptions = response.data;
         response.data.forEach(element => {
           this.searchOptions.options.brandNameOptions.push(element);
-          // this.ruleForm.options.brandNameOptions.push(element);
+   
         });
-        // this.ruleForm.options.brandNameOptions = response;
+      
       })
       .catch(error => {
         this.$message({
@@ -259,72 +250,47 @@ export default {
           type: "error"
         });
       });
-    //获得空搜索
+
+
+    //获得用户名称
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getUserList`)
+      .get(`${window.$config.HOST2}/getAllUserName`)
+      .then(response => {
+        response.data.forEach(element => {
+           this.ruleForm.options.userNameOptions.push(element)
+           this.searchOptions.options.userNameOptions.push(element)
+        });
+      })
+      .catch(error => {
+        console.log(error)
+      });
+    //获得空搜索
+    this.$axios
+      .get(`${window.$config.HOST}/authorityManagement/getUserDataAuthority`)
       .then(response => {
         console.log("获得品牌信息成功了");
+        console.log(response.data)
         this.tableData = response.data;
       })
       .catch(error => {
-        this.tableData = [
-          {
-            userName: "张三",
-            customerName: "客户A",
-            brandName: "品牌A"
-          },
-          {
-            userName: "张三",
-            customerName: "客户2",
-            brandName: "品牌2"
-          },
-          {
-            userName: "张三",
-            customerName: "客户A",
-            brandName: "品牌3"
-          },
-          {
-            userName: "张三",
-            customerName: "客户A",
-            brandName: "品牌4"
-          }
-        ];
       });
-    //获得用户名称
-    this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getUserName`, {})
-      .then(response => {
-        // var SearchList = response.data;
-        // this.searchOptions.options.userNameOptions = SearchList;
-        // this.ruleForm.options.userNameOptions = SearchList;
-        response.data.forEach(element => {
-          this.searchOptions.options.userNameOptions.push(element);
-          this.ruleForm.options.userNameOptions.push(element);
-        });
-      })
-      .catch(error => {
-        var listlist = [
-          {
-            id: 1,
-            name: "李四"
-          },
-          {
-            id: 2,
-            name: "王二"
-          },
-          {
-            id: 3,
-            name: "张三"
-          }
-        ];
-        listlist.forEach(element => {
-          this.searchOptions.options.userNameOptions.push(element);
-          this.ruleForm.options.userNameOptions.push(element);
-        });
-      });
+
   },
 
   methods: {
+    handleSearch(){
+      this.$axios
+        .get(`${window.$config.HOST}/authorityManagement/getUserDataAuthority`, {params:{
+          userId:this.userName === "" ? undefined : this.userName,
+          customerId:this.CustomerValue === "" ? undefined : this.CustomerValue,
+          brandId:this.BrandValue === "" ? undefined : this.BrandValue,
+        }})
+        .then(response => {
+          this.tableData = response.data;
+        })
+        .catch(error => {
+        });
+    },
     // 表格中的删除
     deleteRangeData(row, index) {
       const that = this;
@@ -341,7 +307,11 @@ export default {
 
         .then(() => {
           this.$axios
-            .delete(`${window.$config.HOST}/infoManagement/deleteRange`)
+            .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,{
+              params:{
+                id:row.id
+              }
+            })
             .then(response => {
               this.handleSearch();
               var ok = response.data;
@@ -399,13 +369,18 @@ export default {
           }
         )
           .then(() => {
+            console.log(this.multipleSelection)
             this.multipleSelection.forEach(element => {
               console.log(element.id);
-              //   let list = {
-              //     id: element.id
-              //   };
+                let list = {
+                  id: element.id
+                };
+                console.log(list)
               this.$axios
-                .delete(`${window.$config.HOST}/infoManagement/deleteUser`)
+                .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,
+                {
+                  params:list
+                })
                 .then(response => {
                   this.handleSearch();
                   var ok = response.data;
@@ -446,9 +421,15 @@ export default {
     },
     //当弹出框的客户名称改变的时候GET弹出框的品牌信息
     clientSelect2() {
+      console.log(this.ruleForm.customerName)
       this.ruleForm.brandName = "";
+      // if(this.ruleForm.customerName===0)
+      // {
+      //   this.ruleForm.brandNameOptions=this.searchOptions.options.brandNameOptions;
+      //   return ;
+      // }
       let list = {
-        customerId: this.ruleForm.customerName
+        customerId: this.ruleForm.customerName===0?"":this.ruleForm.customerName
       };
       console.log(list);
       this.$axios
@@ -457,7 +438,15 @@ export default {
         })
         .then(response => {
           console.log(response.data);
-          this.ruleForm.options.brandNameOptions = response.data;
+          
+          
+          this.ruleForm.options.brandNameOptions =[            {
+              id: 0,
+              name: "*"
+            }];
+            response.data.forEach(element=>{
+               this.ruleForm.options.brandNameOptions.push(element)
+            })
         })
         .catch(error => {
           this.$message({
@@ -476,13 +465,30 @@ export default {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let userName;
+          this.ruleForm.options.userNameOptions.forEach(element=>{
+            if(element.id===this.ruleForm.userName)
+            {
+              userName=element.realName;
+            }
+          })
+          let list={
+                          		userId :this.ruleForm.userName ,
+		              userName : userName,
+	              	customerId :this.ruleForm.customerName ,
+	              	brandId : this.ruleForm.brandName,
+          }
+          console.log(list)
+          
           this.$axios
-            .post(`${window.$config.HOST}/infoManagement/addUser`,{
-              userId:this.ruleForm.userName,
-              brandId:this.ruleForm.brandName,
-              customerId:this.ruleForm.customerName
+            .post(`${window.$config.HOST}/authorityManagement/addUserDataAuthority`,{
+              		userId :this.ruleForm.userName ,
+		              userName : userName,
+	              	customerId :this.ruleForm.customerName ,
+	              	brandId : this.ruleForm.brandName,
             })
             .then(response => {
+              console.log(reponse.data)
               var ok = response.data;
               if (ok < 0) {
                 this.$message({
@@ -491,10 +497,10 @@ export default {
                 });
               } else {
                 this.handleSearch();
-                  (this.ruleForm.customerName = ""),
-                  (this.ruleForm.brandName = ""),
-                  (this.ruleForm.userName = ""),
-                  (this.dialogFormVisible = false);
+                this.ruleForm.customerName = "",
+                this.ruleForm.brandName = "",
+                this.ruleForm.userName = "",
+                this.dialogFormVisible = false;
                 this.$message({
                   message: "添加成功",
                   type: "success"

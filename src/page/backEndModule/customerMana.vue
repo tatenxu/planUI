@@ -72,7 +72,7 @@
                 :options="selectionData"
                 v-model="addInfoDepart"
                 :props="deptToCascaderProps"
-                
+                change-on-select="true"
               >
               </el-cascader>
           </div>
@@ -110,7 +110,7 @@
                 :options="selectionData"
                 v-model="editInfoGroup"
                 :props="deptToCascaderProps"
-                :placeholder="editInfoGroupPlaceHolder"
+              
               >
             </el-cascader>
           </div>
@@ -207,7 +207,6 @@ import { error } from 'util';
         editInfoName:'',
         editInfoAbbr:'',
         editInfoGroup:'',
-        editInfoGroupPlaceHolder:'',
         // editInfoGroupTreeList:[],
         editIndoInitGroupId:'',
         tmpeditInfoGroupName:'',
@@ -319,8 +318,6 @@ import { error } from 'util';
 
         this.tmpeditInfoGroupName = [this.multipleSelection[0].groupName];
         this.editInfoGroup = [this.multipleSelection[0].groupName];
-        this.editInfoGroupPlaceHolder = this.multipleSelection[0].groupName;
-
         this.editIndoInitGroupId = this.multipleSelection[0].groupId;
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';

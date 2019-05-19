@@ -72,7 +72,7 @@
               :options="selectionData"
               v-model="addInfoDepart"
               :props="deptToCascaderProps"
-
+              change-on-select="true"
              >
             </el-cascader>
               
@@ -111,7 +111,7 @@
               :options="selectionData"
               v-model="editInfoDepart"
               :props="deptToCascaderProps"
-              :placeholder="editInfoDepartPlaceHolder"
+            
              >
             </el-cascader>
             <!-- <el-input  class="input"  placeholder="请输入产品部门"  v-model="editInfoDepart"></el-input> -->
@@ -205,7 +205,6 @@
         editInfoName:'',
         editInfoCode:'',
         editInfoDepart:'',
-        editInfoDepartPlaceHolder: '',
         // editInfoDepartTreeList:'',
         editInfoDepartId:'',
         tmpeditInfoDepartName:'',
@@ -321,10 +320,10 @@
         this.editInfoName = this.multipleSelection[0].name;
         this.editInfoCode = this.multipleSelection[0].number;
 
+        // this.editInfoDepartTreeList = this.multipleSelection[0].deptName;
         this.tmpeditInfoDepartName = [this.multipleSelection[0].deptName,];
         this.editInfoDepart = [this.multipleSelection[0].deptName,];
         this.editInfoDepartId = this.multipleSelection[0].departmentId;
-        this.editInfoDepartPlaceHolder = this.multipleSelection[0].deptName;
         
         this.editInfoDescription = this.multipleSelection[0].description;
         this.editInfoId = this.multipleSelection[0].id;
