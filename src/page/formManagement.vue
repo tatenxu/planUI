@@ -74,140 +74,132 @@
   let tasks = [
     {
       id: 1,
-      label: "系列1",
-      user:
-        '<a href="https://www.google.com/search?q=John+Doe" target="_blank" style="color:#0077c0;">John Doe</a>',
+      label: "系列A",
+      user: "小王",
       start: getDate(-24 * 5),
       duration: 15 * 24 * 60 * 60 * 1000,
       percent: 85,
       type: "project"
       //collapsed: true,
     },
-    {
-      id: 2,
-      label: "With great power comes great responsibility",
-      user:
-        '<a href="https://www.google.com/search?q=Peter+Parker" target="_blank" style="color:#0077c0;">Peter Parker</a>',
-      parentId: 1,
-      start: getDate(-24 * 4),
-      duration: 4 * 24 * 60 * 60 * 1000,
-      percent: 50,
-      type: "milestone",
-      collapsed: true,
-      style: {
-        base: {
-          fill: "#1EBC61",
-          stroke: "#0EAC51"
+      {
+        id: 2,
+        label: "系列A-1",
+        user: "小虎",
+        parentId: 1,
+        start: getDate(-24 * 4),
+        duration: 4 * 24 * 60 * 60 * 1000,
+        percent: 50,
+        type: "milestone",
+        collapsed: true,
+        style: {
+          base: {
+            fill: "#1EBC61",
+            stroke: "#0EAC51"
+          }
         }
-      }
-    },
-    {
-      id: 3,
-      label: "Courage is being scared to death, but saddling up anyway.",
-      user:
-        '<a href="https://www.google.com/search?q=John+Wayne" target="_blank" style="color:#0077c0;">John Wayne</a>',
-      parentId: 2,
-      start: getDate(-24 * 3),
-      duration: 2 * 24 * 60 * 60 * 1000,
-      percent: 100,
-      type: "task"
-    },
+      },
+        {
+          id: 3,
+          label: "系列A-1-1",
+          user: "小鹏",
+          parentId: 2,
+          start: getDate(-24 * 3),
+          duration: 2 * 24 * 60 * 60 * 1000,
+          percent: 100,
+          type: "task"
+        },
     {
       id: 4,
-      label: "Put that toy AWAY!",
-      user:
-        '<a href="https://www.google.com/search?q=Clark+Kent" target="_blank" style="color:#0077c0;">Clark Kent</a>',
+      label: "系列B",
+      user: '小宇',
       start: getDate(-24 * 2),
       duration: 2 * 24 * 60 * 60 * 1000,
       percent: 50,
       type: "task",
       dependentOn: [3]
     },
-    {
-      id: 5,
-      label:
-        "One billion, gajillion, fafillion... shabadylu...mil...shabady......uh, Yen.",
-      user:
-        '<a href="https://www.google.com/search?q=Austin+Powers" target="_blank" style="color:#0077c0;">Austin Powers</a>',
-      parentId: 4,
-      start: getDate(0),
-      duration: 2 * 24 * 60 * 60 * 1000,
-      percent: 10,
-      type: "milestone",
-      style: {
-        base: {
-          fill: "#0287D0",
-          stroke: "#0077C0"
+      {
+        id: 5,
+        label:"系列B-1",
+        user: "小路",
+        parentId: 4,
+        start: getDate(0),
+        duration: 2 * 24 * 60 * 60 * 1000,
+        percent: 10,
+        type: "milestone",
+        style: {
+          base: {
+            fill: "#0287D0",
+            stroke: "#0077C0"
+          }
         }
-      }
-    },
-    {
-      id: 6,
-      label: "Butch Mario and the Luigi Kid",
-      user:
-        '<a href="https://www.google.com/search?q=Mario+Bros" target="_blank" style="color:#0077c0;">Mario Bros</a>',
-      parentId: 5,
-      start: getDate(24),
-      duration: 1 * 24 * 60 * 60 * 1000,
-      percent: 50,
-      type: "task",
-      collapsed: true,
-      style: {
-        base: {
-          fill: "#8E44AD",
-          stroke: "#7E349D"
-        }
-      }
-    },
-    {
-      id: 7,
-      label: "Devon, the old man wanted me, it was his dying request",
-      user:
-        '<a href="https://www.google.com/search?q=Knight+Rider" target="_blank" style="color:#0077c0;">Knight Rider</a>',
-      parentId: 2,
-      dependentOn: [6],
-      start: getDate(24 * 2),
-      duration: 4 * 60 * 60 * 1000,
-      percent: 20,
-      type: "task",
-      collapsed: true
-    },
-    {
-      id: 8,
-      label: "Hey, Baby! Anybody ever tell you I have beautiful eyes?",
-      user:
-        '<a href="https://www.google.com/search?q=Johhny+Bravo" target="_blank" style="color:#0077c0;">Johhny Bravo</a>',
-      parentId: 7,
-      dependentOn: [7],
-      start: getDate(24 * 3),
-      duration: 1 * 24 * 60 * 60 * 1000,
-      percent: 0,
-      type: "task"
-    },
-    {
-      id: 9,
-      label:
-        "This better be important, woman. You are interrupting my very delicate calculations.",
-      user:
-        '<a href="https://www.google.com/search?q=Dexter\'s+Laboratory" target="_blank" style="color:#0077c0;">Dexter\'s Laboratory</a>',
-      parentId: 8,
-      dependentOn: [8, 7],
-      start: getDate(24 * 4),
-      duration: 4 * 60 * 60 * 1000,
-      percent: 20,
-      type: "task",
-      style: {
-        base: {
-          fill: "#8E44AD",
-          stroke: "#7E349D"
-        }
-      }
-    },
+      },
+        {
+          id: 6,
+          label: "系列B-1-1",
+          user: '小茹',
+          parentId: 5,
+          start: getDate(24),
+          duration: 1 * 24 * 60 * 60 * 1000,
+          percent: 50,
+          type: "task",
+          collapsed: true,
+          style: {
+            base: {
+              fill: "#8E44AD",
+              stroke: "#7E349D"
+            }
+          }
+        },
+          {
+            id: 7,
+            label: "系列A-1-2",
+            user:
+              '<a href="https://www.google.com/search?q=Knight+Rider" target="_blank" style="color:#0077c0;">Knight Rider</a>',
+            parentId: 2,
+            dependentOn: [6],
+            start: getDate(24 * 2),
+            duration: 4 * 60 * 60 * 1000,
+            percent: 20,
+            type: "task",
+            collapsed: true
+          },
+            {
+              id: 8,
+              label: "系列A-1-2-1",
+              user:
+                '<a href="https://www.google.com/search?q=Johhny+Bravo" target="_blank" style="color:#0077c0;">Johhny Bravo</a>',
+              parentId: 7,
+              dependentOn: [7],
+              start: getDate(24 * 3),
+              duration: 1 * 24 * 60 * 60 * 1000,
+              percent: 0,
+              type: "task"
+            },
+              {
+                id: 9,
+                label:"系列A-1-2-1-1",
+                user:
+                  '<a href="https://www.google.com/search?q=Dexter\'s+Laboratory" target="_blank" style="color:#0077c0;">Dexter\'s Laboratory</a>',
+                parentId: 8,
+                dependentOn: [8, 7],
+                start: getDate(24 * 4),
+                duration: 4 * 60 * 60 * 1000,
+                percent: 20,
+                type: "task",
+                style: {
+                  base: {
+                    fill: "#8E44AD",
+                    stroke: "#7E349D"
+                  }
+                }
+              },
     {
       id: 10,
-      label: "current task",
+      label: "系列C",
       user:
-        '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        "小刘",
       start: getDate(24 * 5),
       duration: 24 * 60 * 60 * 1000,
       percent: 0,
@@ -215,30 +207,30 @@
     },
     {
       id: 11,
-      label: "test task",
+      label: "系列D",
       user:
-        '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        "小刘",
       start: getDate(24 * 6),
       duration: 24 * 60 * 60 * 1000,
       percent: 0,
       type: "task"
     },
-    {
-      id: 12,
-      label: "test task",
-      user:
-        '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
-      start: getDate(24 * 7),
-      duration: 24 * 60 * 60 * 1000,
-      percent: 0,
-      type: "task",
-      parentId: 11
-    },
+      {
+        id: 12,
+        label: "系列D-1",
+        user:
+          "小刘",
+        start: getDate(24 * 7),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task",
+        parentId: 11
+      },
     {
       id: 13,
-      label: "test task",
+      label: "系列E",
       user:
-        '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        "小刘",
       start: getDate(24 * 8),
       duration: 24 * 60 * 60 * 1000,
       percent: 0,
@@ -246,9 +238,9 @@
     },
     {
       id: 14,
-      label: "test task",
+      label: "系列F",
       user:
-        '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        "小刘",
       start: getDate(24 * 9),
       duration: 24 * 60 * 60 * 1000,
       percent: 0,
@@ -256,9 +248,9 @@
     },
     {
       id: 15,
-      label: "test task",
+      label: "系列",
       user:
-        '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        "小刘",
       start: getDate(24 * 16),
       duration: 24 * 60 * 60 * 1000,
       percent: 0,
@@ -273,7 +265,7 @@
     maxRows: 100,
     maxHeight: 500,
     title: {
-      label: "Your project title as html (link or whatever...)",
+      label: "系列计划时间表",
       html: false
     },
     row: {
@@ -362,11 +354,11 @@
     locale: {
       name: "en",
       Now: "Now",
-      "X-Scale": "Zoom-X",
-      "Y-Scale": "Zoom-Y",
-      "Task list width": "Task list",
-      "Before/After": "Expand",
-      "Display task list": "Task list"
+      "X-Scale": "X-放大",
+      "Y-Scale": "Y-放大",
+      "Task list width": "侧边栏缩放",
+      "Before/After": "放大",
+      "Display task list": "侧边栏"
     }
   };
 </script>
