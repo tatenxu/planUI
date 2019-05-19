@@ -625,6 +625,7 @@ export default {
             }
           )
           .then(response => {
+            console.log("项目类型下拉框:"+response.data)
             this.ProjectTypeOpt = response.data;
           })
           .catch(error => {
@@ -819,14 +820,14 @@ export default {
                 });
               } else {
                 this.$message({
-                  message: "添加失败",
+                  message: "父计划未下发",
                   type: "error"
                 });
               }
             })
             .catch(error => {
               this.$message({
-                message: "添加失败！",
+                message: "访问数据库失败！",
                 type: "warning"
               });
             });
