@@ -260,6 +260,8 @@ export default {
           clothingLevelOptions: [],
           rangeNameOptions:[],
           planNameOptions:[],
+          selfPlanNameOptions:[],
+          distributedPlanNameOptions:[],
         }
       },
       tableData: [],
@@ -336,6 +338,7 @@ export default {
         });
         //复制计划名称
         this.searchOptions.options.planNameOptions = response.data;
+        this.searchOptions.options.distributedPlanNameOptions = response.data;
 
         //分页
         this.pagination.total=response.data.length;
@@ -347,6 +350,17 @@ export default {
         {
           this.tableDataShow.push(this.tableData[i]);
         }
+
+        this.$axios
+          .get(`${window.$config.HOST}/planManagement/getPlanList`,{
+            params:{stage : "manage"}
+          })
+          .then(response=>{
+            this.searchOptions.options.selfPlanNameOptions = response.data;
+          })
+          .catch(error=>{
+            this.$message.error("搜索失败!");
+          });
         
       })
       .catch(error => {
@@ -829,8 +843,6 @@ export default {
                 element.parentName = "根计划";
               }
             });
-            //赋值计划名称
-            this.searchOptions.options.planNameOptions = response.data;
 
             //分页
             this.pagination.total=response.data.length;
@@ -852,8 +864,13 @@ export default {
       this.pagination.currentPage=1;
       this.tableData = [];
       this.handleSearch();
-      //赋值计划名称
-      this.searchOptions.options.planNameOptions = response.data;
+
+      if(this.isSelfMadePlan){
+        this.searchOptions.options.planNameOptions = this.searchOptions.options.selfPlanNameOptions;
+      }else{
+        this.searchOptions.options.planNameOptions = this.searchOptions.options.distributedPlanNameOptions;
+      }
+      
     },
     //子计划顺序控制函数
     //上移
