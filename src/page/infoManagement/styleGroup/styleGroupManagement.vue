@@ -340,18 +340,27 @@ export default {
         console.log("服装层次加载错误");
       });
 
+    var param = {
+        customerId:undefined,
+        brandId:undefined,
+        rangeId:undefined,
+        clothingLevelId:undefined,
+        id:undefined,
+        startDate:undefined,
+        endDate:undefined,
+      }
     //默认获取所有款式组
     this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`)
-      .then(response => {
+      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`,param)
+      .then(response=>{
         this.data.tableData = response.data;
-        
+
         //时间排序
-        this.data.tableData.sort(function(a,b){
-          return Date.parse(b.createTime) - Date.parse(a.createTime);
+        this.totalTableData.sort(function(a,b){
+          return Date.parse(b.createTime)-Date.parse(a.createTime);
         });
 
-        //分页
+        //分页处理
         this.pagination.total=response.data.length;
         let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
         let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
@@ -362,8 +371,8 @@ export default {
           this.totalTableData.push(this.data.tableData[i]);
         }
       })
-      .catch(error => {
-        console.log("款式组信息加载错误")
+      .catch(error=>{
+        console.log("初始化款式组列表搜索错误");
       });
  
     //品牌名称选择获取
