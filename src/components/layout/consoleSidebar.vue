@@ -118,7 +118,7 @@
           <el-menu-item index="/planservice/predictPlanMade"><i class="el-icon-document"></i>已提交计划</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="/planservice/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item>
+        <!-- <el-menu-item index="/planservice/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item> -->
         <el-menu-item index="/planservice/planMake/seriesPlanMake"><i class="el-icon-document"></i>系列计划制定</el-menu-item>
         <el-menu-item index="/planservice/planMake/styleGroupPlanMake"><i class="el-icon-document"></i>款式组计划制定</el-menu-item>
         <el-menu-item index="/planservice/planMake/stylePlanMake"><i class="el-icon-document"></i>款式计划制定</el-menu-item>

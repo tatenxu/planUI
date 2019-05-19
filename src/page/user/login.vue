@@ -130,6 +130,8 @@ export default {
     let $conf = that.$conf;
     let cookies = $sto.get($conf.constant.cookie);
     that.formLogin.username = (cookies && cookies.username) || '';
+    
+    that.goLogin();
   },
   mounted () {
     const that = this;

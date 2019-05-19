@@ -354,16 +354,7 @@ export default {
       .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`,param)
       .then(response => {
         this.data.tableData = response.data;
-        this.data.tableData.forEach(element=>{
-          // if(element.state===1) element.stateName="已制定";
-          // else if(element.state===2) element.stateName="已提交";
-          // else if(element.state===3) element.stateName="被驳回";
-          // else if(element.state===4) element.stateName="已审核";
-          // else if(element.state===5) element.stateName="已下发";
-          // else if(element.state===6) element.stateName="已删除";
-          var newDate = new Date(element.createTime);
-          element.createTime = newDate.toLocaleString();
-        });
+        
 
         //时间排序
         this.data.tableData.sort(function(b,a){
@@ -388,7 +379,7 @@ export default {
     //品牌名称选择获取
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
-        params:{customerId:""}
+        params:{customerId:undefined}
       })
       .then(response => {
           this.searchOptions.options.brandNameOptions = response.data;
@@ -402,7 +393,7 @@ export default {
     //获取系列
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getRangeName`,{
-        params:{brandId:""}
+        params:{brandId:undefined}
       })
       .then(response => {
         this.searchOptions.options.rangeNameOptions = response.data;
@@ -414,7 +405,7 @@ export default {
     //获取款式组名
     this.$axios
       .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`,{
-        params:{rangeId:""}
+        params:{rangeId:undefined}
       })
       .then(response => {
         if(response.data.errcode < 0){
@@ -528,7 +519,7 @@ export default {
     changeDate(date) {
       console.log(date);
       if(!date){
-        return "";
+        return undefined;
       }else{
         // var date = new Date(date);
         var y = date.getFullYear();
@@ -579,7 +570,7 @@ export default {
     handleSearch(){
             let startDate;
       let endDate;
-      if(this.searchOptions.searchParams.dateRange==null)
+      if(this.searchOptions.searchParams.dateRange==undefined)
       {
         startDate="";
         endDate="";
@@ -590,11 +581,11 @@ export default {
       }
       console.log('搜索'+this.searchOptions.searchParams.customerValue); 
       var param = {
-        customerId:(this.searchOptions.searchParams.customerValue==="")?"":this.searchOptions.searchParams.customerValue,
-        brandId:(this.searchOptions.searchParams.brandValue==="")?"":this.searchOptions.searchParams.brandValue,
-        rangeId:(this.searchOptions.searchParams.rangeValue==="")?"":this.searchOptions.searchParams.rangeValue,
-        clothingLevelId:(this.searchOptions.searchParams.clothingLevelValue==="")?"":this.searchOptions.searchParams.clothingLevelValue,
-        id:(this.searchOptions.searchParams.idValue === "")?"":this.searchOptions.searchParams.idValue,
+        customerId:(this.searchOptions.searchParams.customerValue==="")?undefined:this.searchOptions.searchParams.customerValue,
+        brandId:(this.searchOptions.searchParams.brandValue==="")?undefined:this.searchOptions.searchParams.brandValue,
+        rangeId:(this.searchOptions.searchParams.rangeValue==="")?undefined:this.searchOptions.searchParams.rangeValue,
+        clothingLevelId:(this.searchOptions.searchParams.clothingLevelValue==="")?undefined:this.searchOptions.searchParams.clothingLevelValue,
+        id:(this.searchOptions.searchParams.idValue === "")?undefined:this.searchOptions.searchParams.idValue,
         startDate:startDate,
         endDate:endDate
       }
@@ -603,16 +594,6 @@ export default {
         .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`,param)
         .then(response=>{
           this.data.tableData = response.data;
-          this.data.tableData.forEach(element=>{
-            // if(element.state===1) element.stateName="已制定";
-            // else if(element.state===2) element.stateName="已提交";
-            // else if(element.state===3) element.stateName="被驳回";
-            // else if(element.state===4) element.stateName="已审核";
-            // else if(element.state===5) element.stateName="已下发";
-            // else if(element.state===6) element.stateName="已删除";
-            var newDate = new Date(element.createTime);
-            element.createTime = newDate.toLocaleString();
-          });
 
           //时间排序
           this.totalTableData.sort(function(a,b){
@@ -860,10 +841,10 @@ export default {
       if(this.controlData.ifStyleGroupAdd){
         this.controlData.ifStyleGroupAdd = false;
         var param = {
-          customerId : (this.ruleForm.tmpCustomer === "")? null:this.ruleForm.tmpCustomer,
-          brandId : (this.ruleForm.tmpBrand === "")? null:this.ruleForm.tmpBrand,
-          rangeId : (this.ruleForm.tmpRange === "")? null:this.ruleForm.tmpRange, 
-          name : (this.ruleForm.tmpStyleGroup === "")? null:this.ruleForm.tmpStyleGroup,
+          customerId : (this.ruleForm.tmpCustomer === "")? undefined:this.ruleForm.tmpCustomer,
+          brandId : (this.ruleForm.tmpBrand === "")? undefined:this.ruleForm.tmpBrand,
+          rangeId : (this.ruleForm.tmpRange === "")? undefined:this.ruleForm.tmpRange, 
+          name : (this.ruleForm.tmpStyleGroup === "")? undefined:this.ruleForm.tmpStyleGroup,
         };
         console.log(param)
         this.$axios
@@ -892,7 +873,7 @@ export default {
         this.controlData.ifStyleGroupChange = false;
         var param = {
           id : this.ruleForm.id,
-          name : (this.ruleForm.tmpStyleGroup==="")?null:this.ruleForm.tmpStyleGroup,
+          name : (this.ruleForm.tmpStyleGroup==="")?undefined:this.ruleForm.tmpStyleGroup,
           // customerId : ((this.ruleForm.tmpCustomer === this.ruleForm.customerName)? this.ruleForm.customerId:this.ruleForm.tmpCustomer),
           // brandId : ((this.ruleForm.tmpBrand === this.ruleForm.brandName)? this.ruleForm.brandId:this.ruleForm.tmpBrand),
           rangeId :  ((this.ruleForm.tmpRange === this.ruleForm.rangeName)? this.ruleForm.rangeId:this.ruleForm.tmpRange),
