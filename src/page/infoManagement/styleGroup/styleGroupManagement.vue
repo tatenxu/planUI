@@ -341,24 +341,14 @@ export default {
       });
 
     //默认获取所有款式组
-    var param = {
-      customerId:"",
-      brandId:"",
-      rangeId:"",
-      clothingLevelId:"",
-      id:"",
-      startDate:"",
-      endDate:""
-    };
     this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`,param)
+      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`)
       .then(response => {
         this.data.tableData = response.data;
         
-
         //时间排序
-        this.data.tableData.sort(function(b,a){
-          return Date.parse(a.createTime) - Date.parse(b.createTime);
+        this.data.tableData.sort(function(a,b){
+          return Date.parse(b.createTime) - Date.parse(a.createTime);
         });
 
         //分页
@@ -586,7 +576,7 @@ export default {
 
           //时间排序
           this.totalTableData.sort(function(a,b){
-            return Date.parse(a.createTime)-Date.parse(b.createTime);
+            return Date.parse(b.createTime)-Date.parse(a.createTime);
           });
 
           //分页处理

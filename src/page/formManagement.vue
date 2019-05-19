@@ -46,7 +46,7 @@
             '<a href="https://images.pexels.com/photos/423364/pexels-photo-423364.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" target="_blank" style="color:#0077c0;">Awesome!</a>',
           start: getDate(24 * 3),
           duration: 1 * 24 * 60 * 60 * 1000,
-          percent: 50,
+          quantity: 50,
           type: "project"
         });
       },
@@ -78,7 +78,7 @@
       user: "小王",
       start: getDate(-24 * 5),
       duration: 15 * 24 * 60 * 60 * 1000,
-      percent: 85,
+      quantity: 85,
       type: "project"
       //collapsed: true,
     },
@@ -89,7 +89,7 @@
         parentId: 1,
         start: getDate(-24 * 4),
         duration: 4 * 24 * 60 * 60 * 1000,
-        percent: 50,
+        quantity: 50,
         type: "milestone",
         collapsed: true,
         style: {
@@ -106,7 +106,7 @@
           parentId: 2,
           start: getDate(-24 * 3),
           duration: 2 * 24 * 60 * 60 * 1000,
-          percent: 100,
+          quantity: 100,
           type: "task"
         },
     {
@@ -115,7 +115,7 @@
       user: '小宇',
       start: getDate(-24 * 2),
       duration: 2 * 24 * 60 * 60 * 1000,
-      percent: 50,
+      quantity: 50,
       type: "task",
       dependentOn: [3]
     },
@@ -126,7 +126,7 @@
         parentId: 4,
         start: getDate(0),
         duration: 2 * 24 * 60 * 60 * 1000,
-        percent: 10,
+        quantity: 10,
         type: "milestone",
         style: {
           base: {
@@ -142,7 +142,7 @@
           parentId: 5,
           start: getDate(24),
           duration: 1 * 24 * 60 * 60 * 1000,
-          percent: 50,
+          quantity: 50,
           type: "task",
           collapsed: true,
           style: {
@@ -161,7 +161,7 @@
             dependentOn: [6],
             start: getDate(24 * 2),
             duration: 4 * 60 * 60 * 1000,
-            percent: 20,
+            quantity: 20,
             type: "task",
             collapsed: true
           },
@@ -174,7 +174,7 @@
               dependentOn: [7],
               start: getDate(24 * 3),
               duration: 1 * 24 * 60 * 60 * 1000,
-              percent: 0,
+              quantity: 0,
               type: "task"
             },
               {
@@ -186,7 +186,7 @@
                 dependentOn: [8, 7],
                 start: getDate(24 * 4),
                 duration: 4 * 60 * 60 * 1000,
-                percent: 20,
+                quantity: 20,
                 type: "task",
                 style: {
                   base: {
@@ -202,7 +202,7 @@
         "小刘",
       start: getDate(24 * 5),
       duration: 24 * 60 * 60 * 1000,
-      percent: 0,
+      quantity: 0,
       type: "task"
     },
     {
@@ -212,7 +212,7 @@
         "小刘",
       start: getDate(24 * 6),
       duration: 24 * 60 * 60 * 1000,
-      percent: 0,
+      quantity: 0,
       type: "task"
     },
       {
@@ -222,7 +222,7 @@
           "小刘",
         start: getDate(24 * 7),
         duration: 24 * 60 * 60 * 1000,
-        percent: 0,
+        quantity: 0,
         type: "task",
         parentId: 11
       },
@@ -233,7 +233,7 @@
         "小刘",
       start: getDate(24 * 8),
       duration: 24 * 60 * 60 * 1000,
-      percent: 0,
+      quantity: 0,
       type: "task"
     },
     {
@@ -243,7 +243,7 @@
         "小刘",
       start: getDate(24 * 9),
       duration: 24 * 60 * 60 * 1000,
-      percent: 0,
+      quantity: 0,
       type: "task"
     },
     {
@@ -253,14 +253,14 @@
         "小刘",
       start: getDate(24 * 16),
       duration: 24 * 60 * 60 * 1000,
-      percent: 0,
+      quantity: 0,
       type: "task"
     }
   ];
   //表格属性
   let options = {
     taskMapping: {
-      progress: "percent"
+      progress: "quantity"
     },
     maxRows: 100,
     maxHeight: 500,
