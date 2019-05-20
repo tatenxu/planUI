@@ -357,7 +357,7 @@
         };
         console.log(param);
         
-        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,param)
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addPaddProduct`,param)
           .then(response=>{
             if(response.data<0){
               console.log("后台添加失败");
@@ -380,7 +380,7 @@
 
         this.addInfoName = "";
         this.addInfoDescription = "";
-        this.addInfoDepart = "";
+        this.addInfoDepart = [];
         return;
       },
       handleNewCancelClick(){

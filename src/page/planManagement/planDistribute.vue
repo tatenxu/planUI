@@ -12,17 +12,13 @@
             inactive-text="已下发计划">
           </el-switch>
         </el-col>
-        <el-col :span="8" v-if="isVerifiedPlan">
+        <el-col :span="3" v-if="isVerifiedPlan">
           <div class="bar">
-            <div class="title">下发对象</div>
-            <el-select v-model="searchOptions.searchParams.userName" clearable>
-              <el-option
-                v-for="item in searchOptions.options.userNameOptions"
-                :key="item.id"
-                :label="item.realName"
-                :value="item.id"
-              ></el-option>
-            </el-select> 
+            <el-button type="primary" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
+          </div>
+        </el-col>
+        <el-col :span="12" >
+          <div class="bar" id="userChosenList">
           </div>
         </el-col>
         <el-col :span="3" v-if="isVerifiedPlan">
@@ -34,7 +30,8 @@
       <el-table
         :data="tableData"
         style="width: 100%; margin-top: 20px"
-        @selection-change="tableSelectionChange"
+        highlight-current-row
+        @current-change="handlePlanChosenChange"
         :stripe="true"
       >
         <el-table-column type="selection" width="50" align="center"></el-table-column>
@@ -63,6 +60,17 @@
         :total="pagination.total"
       ></el-pagination>
     </div>
+
+    <el-dialog title="选择下发对象" :visible.sync="userChoseTableDialogShow" :modal="false">
+      <el-table 
+        @selection-change="tableSelectionChange"
+        :stripe="true"
+        :data="searchOptions.options.userNameOptions">
+        <el-table-column type="selection" width="50" align="center"></el-table-column>
+        <el-table-column type="index" label="序号" align="center"></el-table-column>
+        <el-table-column property="realName" label="下发对象" width="150"></el-table-column>
+      </el-table>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -70,6 +78,7 @@
 export default {
   data() {
     return {
+      userChoseTableDialogShow:false,
       isVerifiedPlan:true,
       searchOptions: {
         searchParams: {
@@ -82,7 +91,8 @@ export default {
       
       totalTableData:[],
       tableData: [],
-      tableMultpleSelection:[],
+      userTableMultpleSelection:[],
+      chosenPlanRow:{},
 
       pagination: {
         currentPage: 1,
@@ -105,6 +115,16 @@ export default {
       })
       .catch(error=>{
         that.$message.error("下发对象加载失败!");
+        this.searchOptions.options.userNameOptions = [
+          {
+            id:425,
+            realName:"sdfasd"
+          },
+          {
+            id:123,
+            realName:"dsaf"
+          }
+        ];
       });
 
     //获取所有未下发计划
@@ -135,6 +155,13 @@ export default {
       });
   },
   methods: {
+    chooseUserClick(){
+      this.userChoseTableDialogShow = true;
+    },
+    //计划表格单选
+    handlePlanChosenChange(){
+      this.chosenPlanRow = val;
+    },
     //switch 处理函数
     planTypeSwitchChange(){
       this.handleSearch();
@@ -173,12 +200,6 @@ export default {
     },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
 
@@ -194,37 +215,52 @@ export default {
     distributePlanClick() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       let that = this;
-      if (that.tableMultpleSelection.length === 0) {
-        that.$message.error("请选择要删除的计划！");
-      } else if (!that.searchOptions.searchParams.userName){
+      if (that.userTableMultpleSelection.length === 0) {
         that.$message.error("请选择下发对象！");
-      }else {
-        this.tableMultpleSelection.forEach(element => {
-          this.$axios
-            .post(`${window.$config.HOST}/planManagement/distributePlan`,{
-              planId:element.id,
-              executerIdList: (this.searchOptions.searchParams.userName==="") ? null : this.searchOptions.searchParams.userName,
-            })
-            .then(response=>{
-              if(response.data < 0){
-                that.$message.error(element.name+"下发失败!");
-                console.log(element.name+"下发失败!");
-              }else{
-                console.log(element.name+"下发成功!");
-                this.handleSearch();
-                // var j = this.tableData.indexOf(element);
-                // this.$set(this.tableData[j], "state","已下发");
-              }
-            })
-            .catch(error=>{
+      } else {
+        var paramUserList = [];
+        this.userTableMultpleSelection.forEach(element=>{
+          paramUserList.push(element.id);
+        });
+        this.$axios
+          .post(`${window.$config.HOST}/planManagement/distributePlan`,{
+            planId:this.chosenPlanRow.id,
+            executerIdList: paramUserList,
+          })
+          .then(response=>{
+            console.log({
+              planId:this.chosenPlanRow.id,
+              executerIdList: paramUserList,
+            });
+            if(response.data < 0){
               that.$message.error(element.name+"下发失败!");
               console.log(element.name+"下发失败!");
+            }else{
+              console.log(element.name+"下发成功!");
+              this.handleSearch();
+            }
+          })
+          .catch(error=>{
+            console.log({
+              planId:this.chosenPlanRow.id,
+              executerIdList: paramUserList,
             });
-        });
+            that.$message.error(element.name+"下发失败!");
+            console.log(element.name+"下发失败!");
+          });
       }
     },
     tableSelectionChange(val){
-      this.tableMultpleSelection = val;
+      this.userTableMultpleSelection = val;
+      if(this.userTableMultpleSelection.length !== 0){
+        var showStr = "已选择:";
+        this.userTableMultpleSelection.forEach(element=>{
+          showStr = showStr + element.realName + ","
+        });
+        document.getElementById("userChosenList").innerHTML = showStr;
+      } else {
+        document.getElementById("userChosenList").innerHTML = '';
+      }
     }
   }
 };
@@ -239,11 +275,14 @@ export default {
     flex-direction: row;
     align-items: center;
     width: 100%;
-    .title {
-      font-size: 14px;
+    font-size: 14px;
       min-width: 75px;
       text-align: center;
-    }
+      line-height: 40px;
+    // .title {
+      
+    //   // background: black;
+    // }
     .el-input {
       width: 300px;
       min-width: 75px;

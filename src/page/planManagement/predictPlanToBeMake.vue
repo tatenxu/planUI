@@ -213,22 +213,15 @@ export default {
 
     //默认获取计划列表
     var param = {
-      customerId : null,
-      brandId : null,
-      id : null,
-      clothingLevelId : null,
-      startDate : null,
-      endDate : null,
+      customerId : undefined,
+      brandId : undefined,
+      id : undefined,
+      clothingLevelId : undefined,
+      startDate : undefined,
+      endDate : undefined,
     };
     this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-        customerId: "",
-        brandId: "",
-        id: "",
-        clothingLevelId: "",
-        startDate: "",
-        endDate: ""
-      })
+      .post(`${window.$config.HOST}/infoManagement/getRangeList`,param)
       .then(response => {
         this.totalTableData = response.data;
 
@@ -296,10 +289,10 @@ export default {
     //获取预测计划列表
     handleSearch(){
       var params = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?"":this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?"":this.searchOptions.searchParams.brandName,
-        id: (this.searchOptions.searchParams.planName==="")?"":this.searchOptions.searchParams.planName,
-        clothingLevelId :(this.searchOptions.searchParams.name==="")?"":this.searchOptions.searchParams.name, 
+        customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
+        brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName,
+        id: (this.searchOptions.searchParams.planName==="")?undefined:this.searchOptions.searchParams.planName,
+        clothingLevelId :(this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };

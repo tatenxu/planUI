@@ -70,7 +70,7 @@
               <el-cascader
                 expand-trigger="hover"
                 :options="selectionData"
-                v-model="addInfoDepart"
+                v-model="addInfoGroup"
                 :props="deptToCascaderProps"
                 change-on-select="true"
               >
@@ -375,7 +375,7 @@ import { error } from 'util';
         this.addInfoName = "";
         this.addInfoAbbr = "";
         this.addInfoDescription = "";
-        this.addInfoGroup = "";
+        this.addInfoGroup = [];
 
         this.newCardShowFlag = false;
         this.viewname = "first";
