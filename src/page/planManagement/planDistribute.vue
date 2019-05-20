@@ -28,13 +28,14 @@
         </el-col>
       </el-row>
       <el-table
+        ref="singleTable"
         :data="tableData"
         style="width: 100%; margin-top: 20px"
         highlight-current-row
         @current-change="handlePlanChosenChange"
         :stripe="true"
       >
-        <el-table-column type="selection" width="50" align="center"></el-table-column>
+        <!-- <el-table-column type="selection" width="50" align="center"></el-table-column> -->
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
         <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
@@ -115,16 +116,16 @@ export default {
       })
       .catch(error=>{
         that.$message.error("下发对象加载失败!");
-        this.searchOptions.options.userNameOptions = [
-          {
-            id:425,
-            realName:"sdfasd"
-          },
-          {
-            id:123,
-            realName:"dsaf"
-          }
-        ];
+        // this.searchOptions.options.userNameOptions = [
+        //   {
+        //     id:425,
+        //     realName:"sdfasd"
+        //   },
+        //   {
+        //     id:123,
+        //     realName:"dsaf"
+        //   }
+        // ];
       });
 
     //获取所有未下发计划
@@ -143,6 +144,7 @@ export default {
           }
         });
 
+        
         //分页
         this.pagination.total = this.totalTableData.length;
         this.pagination.currentPage = 1;
@@ -152,15 +154,29 @@ export default {
       })
       .catch(error => {
         console.log("初始化加载计划列表获取错误");
+
+        // this.tableData = [{id:1,number:"JX20190520001",
+        // name:"系列计划制定测试计划001",rangeId:14,type:"系列计划",
+        // isRoot:true,parentId:0,parentName:null,planObjectId:14,
+        // planObject:"系列款号1",projectType:"品样",quantity:12,productId:2,
+        // productDate:"2019-05-29",productDateType:"出运日期",startDate:"2019-06-11",
+        // endDate:"2019-06-20",proposal:"系列计划制定测试计划001",description:"系列计划制定测试计划001",
+        // state:"已审核",createrName:"孙博士",deptName:"设计管理部",createTime:"2019-05-20 18:13:07",
+        // rejectReason:"3213213",deleterName:null,deleteTime:null,haveException:false,note:"系列计划制定测试计划001",
+        // rangeNumber:"XL20190520005",rangeName:"系列款号1",brandId:5,brandName:"单独测试品牌",customerId:4,
+        // customerName:"单独测试客户",isCompleted:false,clothingLevelId:3,clothingLevelName:"精品"}];
+        // console.log(this.totalTableData);
       });
+      
   },
   methods: {
     chooseUserClick(){
       this.userChoseTableDialogShow = true;
     },
     //计划表格单选
-    handlePlanChosenChange(){
+    handlePlanChosenChange(val){
       this.chosenPlanRow = val;
+      console.log(val);
     },
     //switch 处理函数
     planTypeSwitchChange(){
@@ -233,10 +249,10 @@ export default {
               executerIdList: paramUserList,
             });
             if(response.data < 0){
-              that.$message.error(element.name+"下发失败!");
-              console.log(element.name+"下发失败!");
+              that.$message.error(this.chosenPlanRow+"下发失败!");
+              console.log(this.chosenPlanRow+"下发失败!");
             }else{
-              console.log(element.name+"下发成功!");
+              console.log(this.chosenPlanRow+"下发成功!");
               this.handleSearch();
             }
           })
@@ -245,8 +261,8 @@ export default {
               planId:this.chosenPlanRow.id,
               executerIdList: paramUserList,
             });
-            that.$message.error(element.name+"下发失败!");
-            console.log(element.name+"下发失败!");
+            that.$message.error(this.chosenPlanRow+"下发失败!");
+            console.log(this.chosenPlanRow+"下发失败!");
           });
       }
     },
