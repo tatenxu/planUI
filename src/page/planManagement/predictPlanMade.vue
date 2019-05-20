@@ -309,7 +309,7 @@ export default {
         topPlanName: row.parentName?row.parentName:"根计划",
         planName:row.name,
         projectType:row.projectType,
-        number:row.number,
+        number:row.quantity,
         dataStart:row.startDate,
         dataEnd:row.endDate,
         productDate:row.productDate,
