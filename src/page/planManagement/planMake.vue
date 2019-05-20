@@ -846,7 +846,7 @@ export default {
 
 
 
-      SavePlanForm(formName) {
+      SavePlanForm1(formName) {
       console.log(this.ruleForm.data1);
       console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
