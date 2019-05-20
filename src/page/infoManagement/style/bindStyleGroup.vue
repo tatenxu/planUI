@@ -75,7 +75,7 @@ export default {
       .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
         customerId: null,
         brandId: null,
-        rangeId: null,
+        rangeId: that.data.tableData[0].id,
         clothingLevelId: null,
         id: null,
         startDate: null,
