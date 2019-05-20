@@ -256,15 +256,16 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 1,
+          isModify:false,
           goback: "predictPlanToBeMake",
           client: row.customerName,
           brand: row.brandName,
           series: row.name,
           id:row.id,
-          plantype: "系列计划",
-          planobj: row.name,
-          TopPlan: 0,
-          TopPlanName: "根计划",
+          planType: "系列计划",
+          planObj: row.name,
+          topPlan: 0,
+          topPlanName: "根计划",
         }
       });
     },
