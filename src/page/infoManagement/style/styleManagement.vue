@@ -840,6 +840,7 @@ export default {
         that.$router.push({
           name: `bindStyleGroup`,
           query: {
+
             bindData: that.multipleSelection
           }
         });
@@ -909,7 +910,7 @@ export default {
           });
         });
 
-      (this.ruleForm.firstCustomerName = row.customerName),
+        (this.ruleForm.firstCustomerName = row.customerName),
         (this.ruleForm.firstBrandName = row.brandName),
         (this.ruleForm.firstRangeName = row.rangeName),
         (this.ruleForm.firstNumber = row.number),
@@ -1044,9 +1045,20 @@ export default {
     submitForm1(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+
+          if(this.ruleForm.firstRangeName===this.ruleForm.rangeName)
+          {
+            this.options.rangeNameTypeOptions.forEach(element=>{
+              if(element.name === this.ruleForm.rangeName)
+              {
+                this.ruleForm.rangeName = element.id;
+              }
+            })
+            
+          }
           var list = {
             id: this.ruleForm.id,
-            name: this.ruleForm.number,
+            number: this.ruleForm.number,
             rangeId: this.ruleForm.rangeName
           };
           this.$axios

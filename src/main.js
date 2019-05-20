@@ -64,6 +64,7 @@ window.$config = {};
 window.$config.HOST = 'http://202.120.1.66:8080/planservice'
 // window.$config.HOST = 'http://localhost:8080'
 window.$config.HOST2 = 'http://202.120.1.66:8080/service-authorization/uaa';
+// window.$config.HOST='http://192.168.1.159:8080'
 
 /* eslint-disable no-new */
 new Vue({
