@@ -403,6 +403,9 @@
               <el-col :span="8" v-if="showit1">
                 <el-button type="primary" @click="SavePlanForm('ruleForm')">保存</el-button>
               </el-col>
+                <el-col :span="8" v-if="isModify">
+                <el-button type="primary" @click="SavePlanForm1('ruleForm')">修改</el-button>
+              </el-col>
               <el-col :span="8">
                 <el-button type="primary" @click="CancelPlanForm()">取消</el-button>
               </el-col>
@@ -442,6 +445,7 @@ export default {
       fileList: [],
       // Date1: "",
       flag: 0,
+      isModify:false,
       goback: "",
       showit1: true,
       showit2: true,
@@ -499,7 +503,9 @@ export default {
           { required: false, message: "请输入计划建议", trigger: "blur" }
         ]
       },
+
       ruleForm: {
+
         planName: "",
         PlanProduchtName: "",
         TopPlanName: "",
@@ -517,7 +523,6 @@ export default {
         PlanPropose: "",
         ProjectType: "",
         PlanProduct: "",
-
         Plandate: "",
         datemodel: "",
         PlanPrice: "",
@@ -625,7 +630,7 @@ export default {
             }
           )
           .then(response => {
-            console.log("项目类型下拉框:"+response.data)
+            console.log("项目类型下拉框:" + response.data);
             this.ProjectTypeOpt = response.data;
           })
           .catch(error => {
@@ -734,7 +739,6 @@ export default {
       if (!date) {
         return undefined;
       } else {
-        
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
@@ -839,6 +843,78 @@ export default {
         }
       });
     },
+
+
+
+      SavePlanForm(formName) {
+      console.log(this.ruleForm.data1);
+      console.log(this.ruleForm);
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          console.log("啊啊啊啊啊啊啊");
+          const that = this;
+          this.ruleForm.DataStartTime = that.changeDate(this.ruleForm.Date1[0]);
+          this.ruleForm.DataEndTime = that.changeDate(this.ruleForm.Date1[1]);
+          let time = that.changeDate(this.ruleForm.ProductData);
+
+          let range;
+          this.seriesOpt.forEach(element => {
+            if (element.name === this.ruleForm.SeriesName) {
+              range = element.id;
+            }
+          });
+          let list = {
+            id: this.ruleForm.id,
+            name: this.ruleForm.planName,
+            projectType: this.ruleForm.ProjectType,
+            quantity: parseInt(this.ruleForm.PlanPrice),
+            productDateType: this.ruleForm.ProductDateType,
+             startDate: this.ruleForm.DataStartTime,
+             endDate: this.ruleForm.DataEndTime,
+             proposal: this.ruleForm.PlanPropose,
+             description: this.ruleForm.PlanDiscribe,
+             note: this.ruleForm.PlanRemark
+          };
+
+          console.log(list);
+          that.$axios
+            .post(
+              `${window.$config.HOST}/planManagement/updatePlan`,
+              list
+            )
+            .then(response => {
+              console.log(response.data);
+              let ok = response.data;
+              if (ok > 0) {
+                this.$message({
+                  message: "修改成功",
+                  type: "success"
+                });
+                this.$router.push({
+                  name: this.goback,
+                  params: {}
+                });
+              } else {
+                this.$message({
+                  message: "父计划未下发",
+                  type: "error"
+                });
+              }
+            })
+            .catch(error => {
+              this.$message({
+                message: "访问数据库失败！",
+                type: "warning"
+              });
+            });
+        } else {
+          this.$message({
+            message: "制定计划失败!",
+            type: "error"
+          });
+        }
+      });
+    },
     CancelPlanForm() {
       this.$message({
         message: "取消制定！",
@@ -890,16 +966,17 @@ export default {
       // console.log(this.$route.params);
       let data = this.$route.params;
       if (data.goback) {
+        this.isModify=data.isModify;
         this.dataOk = false;
         console.log(data);
         this.ruleForm.ClientName = data.client;
         this.ruleForm.BrandName = data.brand;
         this.ruleForm.SeriesName = data.series;
-        this.ruleForm.objName = data.planobj;
+        this.ruleForm.objName = data.planObj;
         this.flag = data.flag;
         this.goback = data.goback;
-        this.ruleForm.TopPlan = data.TopPlan;
-        this.ruleForm.TopPlanName = data.TopPlanName;
+        this.ruleForm.TopPlan = data.topPlan;
+        this.ruleForm.TopPlanName = data.topPlanName;
         this.ruleForm.id = data.id;
         this.ruleForm.planName = data.planName;
         this.ruleForm.ProjectType = data.projectType;
@@ -920,25 +997,6 @@ export default {
         console.log(this.ruleForm);
         if (data.flag === 0) {
           this.showit1 = false;
-          // this.ruleForm.ClientName = data.client;
-          // this.ruleForm.BrandName = data.brand;
-          // this.ruleForm.SeriesName = data.series;
-          // this.ruleForm.id = data.id;
-          // // plantype:":??????,",
-          // this.ruleForm.objName = data.planobj;
-          // this.ruleForm.TopPlan = data.TopPlan;
-          // this.ruleForm.TopPlanName = data.TopPlanName;
-          // this.ruleForm.planName = data.planName;
-          // this.ruleForm.ProjectType = data.projectType;
-          // this.ruleForm.PlanPrice = data.number;
-          // this.ruleForm.Date1 = data.dataStart + " 至 " + data.dataEnd;
-
-          // this.ruleForm.ProductData = data.productDate;
-          // this.ruleForm.ProductDateType = data.productDateType;
-          // this.ruleForm.PlanProduct = data.productId;
-          // this.ruleForm.PlanPropose = data.proposal;
-          // this.ruleForm.PlanRemark = data.note;
-          // this.ruleForm.PlanDiscribe = data.description;
 
           console.log(this.ruleForm);
 
@@ -959,7 +1017,7 @@ export default {
               console.log("获取品牌失败");
             });
         }
-        switch (data.plantype) {
+        switch (data.planType) {
           case 1:
             this.ruleForm.PlanType = "系列计划";
             break;
@@ -970,7 +1028,7 @@ export default {
             this.ruleForm.PlanType = "款式计划";
             break;
           default:
-            this.ruleForm.PlanType = data.plantype;
+            this.ruleForm.PlanType = data.planType;
         }
       }
     }
