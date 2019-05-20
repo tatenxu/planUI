@@ -300,7 +300,7 @@ export default {
       totalTableData: [],
       pagination: {
         currentPage: 1,
-        pageSizes: [10, 20, 30, 40,50],
+        pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
       },
@@ -386,7 +386,6 @@ export default {
           message: "获取系列信息失败",
           type: "error"
         });
- 
       });
 
     //获得顾客名称
@@ -445,11 +444,11 @@ export default {
       .then(response => {
         console.log("获得搜索列表成功了");
         this.totalTableData = response.data;
-        console.log(response.data)
-        
-                this.totalTableData.sort(function(b,a){
-    return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
-});
+        console.log(response.data);
+
+        this.totalTableData.sort(function(b, a) {
+          return Date.parse(a.createTime) - Date.parse(b.createTime); //时间正序
+        });
         // this.tableData = SearchList;
 
         this.totalTableData.forEach(element => {
@@ -468,17 +467,14 @@ export default {
         });
 
         this.pagination.total = this.totalTableData.length;
-        var pageEleStart =
-          (this.pagination.currentPage - 1) * this.pagination.pageSize;
-        var pageEleEnd =
-          pageEleStart + this.pagination.pageSize > this.pagination.total - 1
-            ? -1
-            : pageEleStart + this.pagination.pageSize;
-        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
-
-
-
-        
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableData=[];
+        for(;i-k<this.pagination.pageSize && i < this.pagination.total;i++)
+        {
+          this.tableData.push(this.totalTableData[i])
+        }
+        // this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
       .catch(error => {
         this.$message({
@@ -574,14 +570,17 @@ export default {
       };
 
       console.log(list);
-      console.log(startDate)
+      console.log(startDate);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-          customerId: this.CustomerValue === "" ? undefined : this.CustomerValue,
+          customerId:
+            this.CustomerValue === "" ? undefined : this.CustomerValue,
           brandId: this.BrandValue === "" ? undefined : this.BrandValue,
           id: this.RangeValue === "" ? undefined : this.RangeValue,
           clothingLevelId:
-            this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
+            this.ClothingLevelValue === ""
+              ? undefined
+              : this.ClothingLevelValue,
           startDate: startDate,
           endDate: endDate
         })
@@ -592,10 +591,10 @@ export default {
           // (this.ClothingLevelValue = ""),
           // (this.dateRange = ""),
           this.totalTableData = response.data;
-          
-                this.totalTableData.sort(function(b,a){
-    return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
-});
+
+          this.totalTableData.sort(function(b, a) {
+            return Date.parse(a.createTime) - Date.parse(b.createTime); //时间正序
+          });
           this.totalTableData.forEach(element => {
             if (element.addingMode === 1) element.addingModeName = "手动";
             else element.addingModeName = "导入";
@@ -611,15 +610,23 @@ export default {
             element.createTime = time;
           });
 
-          this.pagination.total = this.totalTableData.length;
           // this.pagination.currentPage = 1;
-          var pageEleStart =
-            (this.pagination.currentPage - 1) * this.pagination.pageSize;
-          var pageEleEnd =
-            pageEleStart + this.pagination.pageSize > this.pagination.total
-              ? this.pagination.total
-              : pageEleStart + this.pagination.pageSize;
-          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+          // var pageEleStart =
+          //   (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          // var pageEleEnd =
+          //   pageEleStart + this.pagination.pageSize > this.pagination.total
+          //     ? this.pagination.total
+          //     : pageEleStart + this.pagination.pageSize;
+          // this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+
+                  this.pagination.total = this.totalTableData.length;
+        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
+        this.tableData=[];
+        for(;i-k<this.pagination.pageSize && i < this.pagination.total;i++)
+        {
+          this.tableData.push(this.totalTableData[i])
+        }
         })
         .catch(error => {
           this.$message({
@@ -828,7 +835,9 @@ export default {
                   ? undefined
                   : this.ruleForm.customerName,
               brandId:
-                this.ruleForm.brandName === "" ? undefined : this.ruleForm.brandName,
+                this.ruleForm.brandName === ""
+                  ? undefined
+                  : this.ruleForm.brandName,
               clothingLevelId:
                 this.ruleForm.clothingLevelName === ""
                   ? undefined
@@ -903,11 +912,9 @@ export default {
         }
       });
     },
-    
 
     //修改系列信息
     submitForm1(formName) {
-      
       this.$refs[formName].validate(valid => {
         if (valid) {
           //第一步，将NAME转换为ID
