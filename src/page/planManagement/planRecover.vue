@@ -195,11 +195,13 @@ export default {
         params:{stage:"delete"}
       })
       .then(response => {
-        response.data.forEach(element=>{
-          if(element.state === '6'){
-            this.totalTableData.push(element);
-          }
-        });
+        // response.data.forEach(element=>{
+        //   if(element.state === '6'){
+        //     this.totalTableData.push(element);
+        //   }
+        // });
+        this.totalTableData = response.data;
+
 
         this.pagination.total = this.totalTableData.length;
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
@@ -208,6 +210,21 @@ export default {
       })
       .catch(error => {
         console.log("初始化删除计划加载错误");
+        this.totalTableData = [{id:3,number:"JX20190520003",name:"系列计划制定测试计划001的子计划",
+          rangeId:14,type:"系列计划",isRoot:false,parentId:1,parentName:"系列计划制定测试计划001",
+          planObjectId:1,planObject:"新增的系列5-20-1",projectType:"品样",quantity:12,productId:2,
+          productDate:"2019-05-29",productDateType:"出运日期",startDate:"2019-06-11",endDate:"2019-06-20",
+          proposal:"系列计划制定测试计划001",description:"系列计划制定测试计划001",state:"已删除",
+          createrName:"孙博士",deptName:"设计管理部",createTime:"2019-05-20 22:52:05",rejectReason:"款数过多",
+          deleterName:"孙博士",deleteTime:"2019-05-21 09:40:41",haveException:false,note:"系列计划制定测试计划001",
+          rangeNumber:"XL20190520005",rangeName:"系列款号1",brandId:5,brandName:"单独测试品牌",customerId:4,
+          customerName:"单独测试客户",isCompleted:false,clothingLevelId:3,clothingLevelName:"精品"}]
+
+          console.log(this.totalTableData);
+        this.pagination.total = this.totalTableData.length;
+        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
+        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       });
   },
   methods: {
@@ -244,9 +261,8 @@ export default {
     },
     // 恢复单个的按钮
     ReCover(row) {
-      console.log("行恢复");
       var param = {id: row.id};
-      console.log(row);
+      console.log("行恢复:"+row.name);
        this.$axios
         .get(`${window.$config.HOST}/planManagement/restorePlan`,{
           params:param
@@ -314,12 +330,13 @@ export default {
           params:param
         })
         .then(response => {
-          this.totalTableData = [];
-          response.data.forEach(element=>{
-            if(element.state === '6'){
-              this.totalTableData.push(element);
-            }
-          })
+          // this.totalTableData = [];
+          // response.data.forEach(element=>{
+          //   if(element.state === '6'){
+          //     this.totalTableData.push(element);
+          //   }
+          // })
+          this.totalTableData = response.data;
 
           this.pagination.total = this.totalTableData.length;
           var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;

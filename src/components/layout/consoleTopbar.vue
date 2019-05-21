@@ -127,11 +127,14 @@
           let $sto = that.$sto;
           let $conf = that.$conf;
           let cookies = $sto.get($conf.constant.cookie);
-          if(cookies && cookies.token) {
-            delete cookies.token;
+          // if(cookies && cookies.token) {
+          if(cookies && cookies.jsessionid) {
+            // delete cookies.token;
+            delete cookies.jsessionid;
           }
-          $sto.set($conf.constant.cookie, cookies);
-          that.$router.push({path: $conf.route.login});
+          // $sto.set($conf.constant.cookie, cookies);
+          // that.$router.push({path: $conf.route.login});
+          window.location.href = `${window.$config.HOST}`
         }
       }
     }

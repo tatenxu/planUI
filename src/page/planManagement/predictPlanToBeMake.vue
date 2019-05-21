@@ -255,17 +255,17 @@ export default {
       that.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 1,
-          isModify:false,
+          flag:1,
           goback: "predictPlanToBeMake",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.name,
-          id:row.id,
-          planType: "系列计划",
-          planObj: row.name,
-          topPlan: 0,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          rangeId:"", 
+          rangeName: row.name,
+          planType: "预测计划",
+          planObjectName: row.name,
+          planObjectId:"",
           topPlanName: "根计划",
+          topPlanId:0
         }
       });
     },
