@@ -407,7 +407,7 @@ export default {
           planType: row.type,
           planObjectName: row.planObject,
           planObjectId: row.planObjectId,
-          topPlanName: isRoot === true ? row.name : row.parentName,
+          topPlanName: row.isRoot === true ? row.name : row.parentName,
           topPlanId: row.parentId,
           projectType: row.projectType,
           quantity: row.quantity,

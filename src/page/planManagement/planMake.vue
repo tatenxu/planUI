@@ -502,7 +502,7 @@ export default {
       },
       flag: 0, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
       isModify: false, //是否是修改
-      goBack: "", //goBack 为返回的 name
+      goback: "", //goback 为返回的 name
       ruleForm: {
         planId: "",
         customerName: "",
@@ -746,7 +746,7 @@ export default {
                   type: "success"
                 });
                 this.$router.push({
-                  name: this.goBack,
+                  name: this.goback,
                   params: {}
                 });
               } else {
@@ -822,7 +822,7 @@ export default {
                   type: "success"
                 });
                 this.$router.push({
-                  name: this.goBack,
+                  name: this.goback,
                   params: {}
                 });
               } else {
@@ -853,7 +853,7 @@ export default {
       });
 
       this.$router.push({
-        name: this.goBack,
+        name: this.goback,
         params: {}
       });
     },
@@ -909,8 +909,8 @@ export default {
       // console.log(this.$route.params);
       let data = this.$route.params;
 
-      if (data.goBack) {
-        (this.goBack = data.goBack), //goBack 为返回的 name
+      if (data.goback) {
+        (this.goback = data.goback), //goback 为返回的 name
           (this.flag = data.flag); //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
 
         if (this.flag === 1) {
