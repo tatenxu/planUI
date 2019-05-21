@@ -840,7 +840,6 @@ export default {
         that.$router.push({
           name: `bindStyleGroup`,
           query: {
-
             bindData: that.multipleSelection
           }
         });
