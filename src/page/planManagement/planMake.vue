@@ -500,7 +500,7 @@ export default {
         ],
         note: [{ required: false, message: "请输入计划建议", trigger: "blur" }]
       },
-      flag: 0, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
+      flag: 1, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
       isModify: false, //是否是修改
       goback: "", //goback 为返回的 name
       ruleForm: {
@@ -571,6 +571,8 @@ export default {
 
   created() {
     var that = this;
+
+       
     //获得项目类型下拉框
     let CategoryId;
     that.$axios
@@ -656,6 +658,24 @@ export default {
       });
   },
   mounted() {
+    const that = this;
+       that.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+          params: {
+            name: undefined
+          }
+        })
+        .then(response => {
+          this.PlanProductOpt = response.data;
+          console.log("计划产品下拉框",this.PlanProductOpt)
+            this.PlanProductOpt.forEach(element => {
+            if (element.id === this.ruleForm.planProductId)
+              this.ruleForm.planProductName = element.name;
+          })
+        })
+        .catch(error => {
+          console.log("获取品牌失败");
+        });
     this.init();
   },
   //五个参数控制
@@ -738,7 +758,7 @@ export default {
           that.$axios
             .post(`${window.$config.HOST}/planManagement/addPlan`, list)
             .then(response => {
-              console.log(response.data); 
+              console.log(response.data);
               let ok = response.data;
               if (ok > 0) {
                 this.$message({
@@ -860,18 +880,7 @@ export default {
     init() {
       console.log("开始获取");
       const that = this;
-      that.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
-          params: {
-            name: undefined
-          }
-        })
-        .then(response => {
-          this.PlanProductOpt = response.data;
-        })
-        .catch(error => {
-          console.log("获取品牌失败");
-        });
+
       //获得品牌下拉框
       that.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
@@ -906,89 +915,82 @@ export default {
           console.log("获取客户信息失败");
         });
 
-      // console.log(this.$route.params);
+      console.log(this.$route.params);
       let data = this.$route.params;
+      // console.log(data.dateStart)
 
-      if (data.goback) {
-        (this.goback = data.goback), //goback 为返回的 name
-          (this.flag = data.flag); //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
 
-        if (this.flag === 1) {
-          //1的时候，为添加之类
+      (this.goback = data.goback), //goback 为返回的 name
+        (this.flag = data.flag); //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
+
+      if (this.flag === 1) {
+        //1的时候，为添加之类
+        (this.ruleForm.customerName = data.customerName),
+          (this.ruleForm.brandName = data.brandName),
+          (this.ruleForm.rangeId = data.rangeId),
+          (this.ruleForm.rangeName = data.rangeName),
+          (this.ruleForm.planType = data.planType),
+          (this.ruleForm.planObjectName = data.planObjectName),
+          (this.ruleForm.planObjectId = data.planObjectId),
+          (this.ruleForm.topPlanName = data.topPlanName),
+          (this.ruleForm.topPlanId = data.topPlanId);
+      } else if (this.flag === 2) {
+        //2的时候，为修改之类
+        (this.ruleForm.planId = data.planId),
           (this.ruleForm.customerName = data.customerName),
-            (this.ruleForm.brandName = data.brandName),
-            (this.ruleForm.rangeId = data.rangeId),
-            (this.ruleForm.rangeName = data.rangeName),
-            (this.ruleForm.planType = data.planType),
-            (this.ruleForm.planObjectName = data.planObjectName),
-            (this.ruleForm.planObjectId = data.planObjectId),
-            (this.ruleForm.topPlanName = data.topPlanName),
-            (this.ruleForm.topPlanId = data.topPlanId);
-        } else if (this.flag === 2) {
-          //2的时候，为修改之类
+          (this.ruleForm.brandName = data.brandName),
+          (this.ruleForm.rangeId = data.rangeId),
+          (this.ruleForm.rangeName = data.rangeName),
+          (this.ruleForm.planType = data.planType),
+          (this.ruleForm.planObjectName = data.planObjectName),
+          (this.ruleForm.planObjectId = data.planObjectId),
+          (this.ruleForm.topPlanName = data.topPlanName),
+          (this.ruleForm.topPlanId = data.topPlanId),
+          (this.ruleForm.planName = data.planName),
+          (this.ruleForm.projectType = data.projectType),
+          (this.ruleForm.quantity = data.quantity),
+          // (this.ruleForm.date = data.date),
+          // (this.ruleForm.dateStart = data.dateStart),
+          // (this.ruleForm.dateEnd = data.dateEnd),
+
+          (this.ruleForm.date = [data.dateStart, data.dateEnd]);
+          this.startStr = data.dateStart;
+          this.endStr = data.dateEnd;
+
+          (this.ruleForm.productDateType = data.productDateType),
+          (this.ruleForm.productDate = data.productDate),
+          (this.ruleForm.planProductId = data.planProductId),
+          (this.ruleForm.planPropose = data.planPropose),
+          (this.ruleForm.planDescribe = data.planDescribe),
+          (this.ruleForm.note = data.note);
+      } else if (this.flag === 3) {
+        (this.showit1 = false),
           (this.ruleForm.planId = data.planId),
-            (this.ruleForm.customerName = data.customerName),
-            (this.ruleForm.brandName = data.brandName),
-            (this.ruleForm.rangeId = data.rangeId),
-            (this.ruleForm.rangeName = data.rangeName),
-            (this.ruleForm.planType = data.planType),
-            (this.ruleForm.planObjectName = data.planObjectName),
-            (this.ruleForm.planObjectId = data.planObjectId),
-            (this.ruleForm.topPlanName = data.topPlanName),
-            (this.ruleForm.topPlanId = data.topPlanId),
-            (this.ruleForm.planName = data.planName),
-            (this.ruleForm.projectType = data.projectType),
-            (this.ruleForm.quantity = data.quantity),
-            // (this.ruleForm.date = data.date),
-            (this.ruleForm.dateStart = data.dateStart),
-            (this.ruleForm.dateEnd = data.dateEnd),
-            (this.ruleForm.date = [data.dataStart, data.dataEnd]);
-          this.startStr = data.dataStart;
-          this.endStr = data.dataEnd;
+          (this.ruleForm.customerName = data.customerName),
+          (this.ruleForm.brandName = data.brandName),
+          (this.ruleForm.rangeId = data.rangeId),
+          (this.ruleForm.rangeName = data.rangeName),
+          (this.ruleForm.planType = data.planType),
+          (this.ruleForm.planObjectName = data.planObjectName),
+          (this.ruleForm.planObjectId = data.planObjectId),
+          (this.ruleForm.topPlanName = data.topPlanName),
+          (this.ruleForm.topPlanId = data.topPlanId),
+          (this.ruleForm.planName = data.planName),
+          (this.ruleForm.projectType = data.projectType),
+          (this.ruleForm.quantity = data.quantity),
 
-          (this.ruleForm.productDateType = data.productDateType),
-            (this.ruleForm.productDate = data.productDate),
-            // (this.ruleForm.planProductName = data.planProductName),
-            this.PlanProductOpt.forEach(element => {
-              if (element.id === data.planProductId)
-                this.ruleForm.planProductName = element.name;
-            })((this.ruleForm.planProductId = data.planProductId)),
-            (this.ruleForm.planPropose = data.planPropose),
-            (this.ruleForm.planDescribe = data.planDescribe),
-            (this.ruleForm.note = data.note);
-        } else if (flag === 3) {
-          (this.showit1 = false),
-            (this.ruleForm.planId = data.planId),
-            (this.ruleForm.customerName = data.customerName),
-            (this.ruleForm.brandName = data.brandName),
-            (this.ruleForm.rangeId = data.rangeId),
-            (this.ruleForm.rangeName = data.rangeName),
-            (this.ruleForm.planType = data.planType),
-            (this.ruleForm.planObjectName = data.planObjectName),
-            (this.ruleForm.planObjectId = data.planObjectId),
-            (this.ruleForm.topPlanName = data.topPlanName),
-            (this.ruleForm.topPlanId = data.topPlanId),
-            (this.ruleForm.planName = data.planName),
-            (this.ruleForm.projectType = data.projectType),
-            (this.ruleForm.quantity = data.quantity),
-            // (this.ruleForm.date = data.date),
-            (this.ruleForm.dateStart = data.dateStart),
-            (this.ruleForm.dateEnd = data.dateEnd),
-            (this.ruleForm.date = [data.dataStart, data.dataEnd]);
-          this.startStr = data.dataStart;
-          this.endStr = data.dataEnd;
+          // (this.ruleForm.dateStart = data.dateStart),
+          // (this.ruleForm.dateEnd = data.dateEnd),
 
-          (this.ruleForm.productDateType = data.productDateType),
-            (this.ruleForm.productDate = data.productDate),
-            // (this.ruleForm.planProductName = data.planProductName),
-            (this.ruleForm.planProductId = data.planProductId),
-            this.PlanProductOpt.forEach(element => {
-              if (element.id === data.planProductId)
-                this.ruleForm.planProductName = element.name;
-            })((this.ruleForm.planPropose = data.planPropose)),
-            (this.ruleForm.planDescribe = data.planDescribe),
-            (this.ruleForm.note = data.note);
-        }
+        this.startStr = data.dateStart;
+        this.endStr = data.dateEnd;
+        (this.ruleForm.productDateType = data.productDateType),
+          (this.ruleForm.productDate = data.productDate),
+          // (this.ruleForm.planProductName = data.planProductName),
+          (this.ruleForm.planProductId = data.planProductId),
+          ((this.ruleForm.planPropose = data.planPropose)),
+          (this.ruleForm.planDescribe = data.planDescribe),
+          (this.ruleForm.note = data.note);
       }
     }
   }
