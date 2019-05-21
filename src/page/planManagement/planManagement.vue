@@ -397,7 +397,7 @@ export default {
         let data = this.selectedData[0];
         var param={
           flag:1,
-          goBack:"planManagement",
+          goback:"planManagement",
           customerName: data.customerName,
           brandName: data.brandName,
           rangeId:data.rangeId,
