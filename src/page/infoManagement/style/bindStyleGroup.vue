@@ -73,13 +73,13 @@ export default {
     this.$axios
       //此处的接口为GET订单款号
       .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
-        customerId: null,
-        brandId: null,
+        customerId: undefined,
+        brandId: undefined,
         rangeId: that.data.tableData[0].id,
-        clothingLevelId: null,
-        id: null,
-        startDate: null,
-        endDate: null
+        clothingLevelId: undefined,
+        id: undefined,
+        startDate: undefined,
+        endDate: undefined
       })
       .then(response => {
         console.log(response.data);
