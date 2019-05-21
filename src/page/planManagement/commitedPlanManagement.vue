@@ -298,7 +298,7 @@ export default {
         planDescribe:row.description,
       };
       console.log(param);
-      that.$router.push({
+      this.$router.push({
         name: "planMakeIndex",
         params: param
       });
