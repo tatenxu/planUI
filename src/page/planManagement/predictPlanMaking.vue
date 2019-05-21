@@ -278,6 +278,7 @@ export default {
         startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };
+      param.stage = "predict";
       console.log(params);
 
       this.$axios.get(`${window.$config.HOST}/planManagement/getPlanList`,params)
