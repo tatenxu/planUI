@@ -272,7 +272,7 @@ export default {
       this.selectedData = val;
     },
     getPlanDetail(row) {
-      param={
+      var param={
         flag: 3,
         goback: "commitedPlanManagement",
         customerName: row.customerName,
