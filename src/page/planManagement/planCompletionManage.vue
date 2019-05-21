@@ -23,7 +23,7 @@
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column prop="addingModeStr" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
+          <el-table-column prop="completionState" label="状态" align="center"></el-table-column>
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -82,6 +82,12 @@ export default {
       .then(response => {
         this.totalTableData = response.data;
         this.totalTableData.forEach(element => {
+          if(element.completed){
+            element.completionState = "已完成";
+          }else{
+            element.completionState = "未完成";
+          }
+
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
@@ -131,6 +137,12 @@ export default {
         .then(response => {
           this.totalTableData = response.data;
           this.totalTableData.forEach(element => {
+            if(element.completed){
+              element.completionState = "已完成";
+            }else{
+              element.completionState = "未完成";
+            }
+
             var d = new Date(element.createTime);
             let time = d.toLocaleString();
             element.createTime = time;

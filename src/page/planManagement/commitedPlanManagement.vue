@@ -244,13 +244,9 @@ export default {
       });
 
     //默认获取已完成计划列表
-    var param = {
-      stage: "manage"
-    }
+   
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`,{
-        params:param
-      })
+      .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`)
       .then(response=>{
           response.data.forEach(element=>{
             this.totalTableData = response.data;
@@ -301,6 +297,7 @@ export default {
         note:row.note,
         planDescribe:row.description,
       };
+      console.log(param);
       that.$router.push({
         name: "planMakeIndex",
         params: param
@@ -338,7 +335,6 @@ export default {
         endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
       };
       
-      param.stage = "manage";
       console.log(param);
       this.$axios
         .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`,{
