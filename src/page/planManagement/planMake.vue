@@ -294,7 +294,7 @@
                 </el-select>
                 <el-input
                   v-else
-                  v-model="ruleForm.PlanProductName"
+                  v-model="ruleForm.PlanProduct"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -403,7 +403,7 @@
               <el-col :span="8" v-if="showit1">
                 <el-button type="primary" @click="SavePlanForm('ruleForm')">保存</el-button>
               </el-col>
-                <el-col :span="8" v-if="isModify">
+                <el-col :span="8" v-if="showig1===true && isModify===true">
                 <el-button type="primary" @click="SavePlanForm1('ruleForm')">修改</el-button>
               </el-col>
               <el-col :span="8">
