@@ -189,7 +189,7 @@
 
       <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
         <div class="body">
-          <el-tree :data="allPlans" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+          <el-tree :data="allPlans" :props="defaultProps"></el-tree>
         </div>
       </el-dialog>
     </el-card>
@@ -397,7 +397,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 3,
-          goBack: "planVerify",
+          goback: "planVerify",
           planId: row.id,
           planName: row.name,
           customerName: row.customerName,

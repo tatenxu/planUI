@@ -644,7 +644,7 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 1, 
-          goBack: "seriesPlanMake", //goBack 为返回的 name
+          goback: "seriesPlanMake", //goback 为返回的 name
           customerName: row.customerName,
           brandName: row.brandName,
           rangeId: row.id,

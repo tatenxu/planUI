@@ -248,6 +248,7 @@ export default {
       })
       .then(response => {
         //  this.tableData = response.data;
+        console.log(response.data)
         response.data.forEach(element => {
           if (element.havePlan === true) element.stateName = "已制定";
           else if (element.havePlan === false) element.stateName = "未制定";
@@ -437,13 +438,13 @@ export default {
         name: "planMakeIndex",
         params: {
           flag: 1, //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
-          goBack: "stylePlanMake", //goBack 为返回的 name
+          goback: "stylePlanMake", //goback 为返回的 name
           customerName: row.customerName,
           brandName: row.brandName,
-          rangeId: row.id,
-          rangeName: row.name,
+          rangeId: row.rangeId,
+          rangeName: row.rangeName,
           planType: "系列计划",
-          planObjectName: row.name,
+          planObjectName: row.number,
           planObjectId:row.id,
           topPlanName: "根计划",
           topPlanId: 0,
