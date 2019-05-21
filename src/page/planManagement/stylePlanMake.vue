@@ -443,7 +443,7 @@ export default {
           brandName: row.brandName,
           rangeId: row.rangeId,
           rangeName: row.rangeName,
-          planType: "系列计划",
+          planType: "款式计划",
           planObjectName: row.number,
           planObjectId:row.id,
           topPlanName: "根计划",

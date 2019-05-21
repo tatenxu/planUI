@@ -515,7 +515,7 @@ export default {
         params: {
 
           flag: 1, //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
-          goBack: "styleGroupPlanMake", //goBack 为返回的 name
+          goback: "styleGroupPlanMake", //goback 为返回的 name
           customerName: row.customerName,
           brandName: row.brandName,
           rangeId: row.rangeId,
