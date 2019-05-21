@@ -734,11 +734,11 @@ export default {
             note: this.ruleForm.note
           };
 
-          console.log(list);
+          console.log("添加plan的list: ", list);
           that.$axios
             .post(`${window.$config.HOST}/planManagement/addPlan`, list)
             .then(response => {
-              console.log(response.data);
+              console.log(response.data); 
               let ok = response.data;
               if (ok > 0) {
                 this.$message({
