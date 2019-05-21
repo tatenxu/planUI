@@ -268,21 +268,14 @@ export default {
           params:param
         })
         .then(response=>{
-          var resData = response.data;
-          if(resData < 0 ){
+          if(response.data < 0 ){
             this.$message.error(row.number+"恢复失败！");
           }else{
             this.$message({
               type: 'success',
               message: "恢复成功！"
             });
-            // this.tableData.forEach(element=>{
-            //   if(element.number === row.number){
-            //     var idx = this.tableData.indexOf(element);
-            //     this.tableData.splice(idx,1);
-            //   }
-            // });
-            this,handleSearch();
+            this.handleSearch();
           }
         })
         .catch(error=>{

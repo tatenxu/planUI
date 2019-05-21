@@ -22,8 +22,8 @@
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addingModeName" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="stateName" label="状态" align="center"></el-table-column>
+          <el-table-column prop="addingModeStr" label="添加方式" align="center"></el-table-column>
+          <el-table-column prop="state" label="状态" align="center"></el-table-column>
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -72,25 +72,16 @@ export default {
     //加载默认所有系列
     this.$axios
       .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-        customerId: "",
-        brandId: "",
-        id: "",
-        clothingLevelId: "",
-        startDate: "",
-        endDate: ""
+        customerId: undefined,
+        brandId: undefined,
+        id: undefined,
+        clothingLevelId: undefined,
+        startDate: undefined,
+        endDate: undefined
       })
       .then(response => {
         this.totalTableData = response.data;
         this.totalTableData.forEach(element => {
-          if(element.addingMode===1) element.addingModeName="手动";
-          else element.addingModeName="导入";
-
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
@@ -130,25 +121,16 @@ export default {
       console.log("开始搜索");
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-          customerId: "",
-          brandId: "",
-          id: "",
-          clothingLevelId: "",
-          startDate: "",
-          endDate: ""
+          customerId: undefined,
+          brandId: undefined,
+          id: undefined,
+          clothingLevelId: undefined,
+          startDate: undefined,
+          endDate: undefined
         })
         .then(response => {
           this.totalTableData = response.data;
           this.totalTableData.forEach(element => {
-            if(element.addingMode===1) element.addingModeName="手动";
-            else element.addingModeName="导入";
-
-            if(element.state===1) element.stateName="已制定";
-            else if(element.state===2) element.stateName="已提交";
-            else if(element.state===3) element.stateName="被驳回";
-            else if(element.state===4) element.stateName="已审核";
-            else if(element.state===5) element.stateName="已下发";
-            else if(element.state===6) element.stateName="已删除";
             var d = new Date(element.createTime);
             let time = d.toLocaleString();
             element.createTime = time;

@@ -259,11 +259,11 @@ export default {
           goback: "predictPlanToBeMake",
           customerName: row.customerName,
           brandName: row.brandName,
-          rangeId:"", 
+          rangeId:row.id, 
           rangeName: row.name,
           planType: "预测计划",
           planObjectName: row.name,
-          planObjectId:"",
+          planObjectId:row.id,
           topPlanName: "根计划",
           topPlanId:0
         }
