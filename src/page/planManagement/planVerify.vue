@@ -206,8 +206,8 @@ export default {
       checked: 1,
 
       defaultProps: {
-        children: 'children',
-        label: 'name'
+        children: "children",
+        label: "name"
       },
 
       pagination: {
@@ -306,7 +306,7 @@ export default {
     console.log("到达这里了");
     //获得空集搜索列表
     let list = {
-      stage: "manage",
+      stage: "review",
       customerId: undefined,
       brandId: undefined,
       rangeId: undefined,
@@ -356,29 +356,27 @@ export default {
         });
         return;
       }
-      let list={
-        id:   this.AnyChanged[0].id
-      }
+      let list = {
+        id: this.AnyChanged[0].id
+      };
 
-
-    this.$axios
+      this.$axios
         .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
           params: list
         })
         .then(response => {
-         this.allPlans=[];
-         this.allPlans.push(response.data)
-          console.log(this.allPlans)
-          
-      this.lookAllPlans = true;
+          this.allPlans = [];
+          this.allPlans.push(response.data);
+          console.log(this.allPlans);
+
+          this.lookAllPlans = true;
         })
         .catch(error => {
           this.$message({
-          message: "获取总计划失败",
-          type: "warning"
+            message: "获取总计划失败",
+            type: "warning"
+          });
         });
-        });
-
     },
     changeState() {
       getWareList();
@@ -398,27 +396,29 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 0,
-          goback: "seriesPlanMake",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          id: row.planObjectId,
-          planType: row.type,
-          planObj: row.planObject,
-          topPlan: row.isRoot === true ? 0 : row.parentId,
-          topPlanName: row.isRoot === true ? "根计划" : row.parentName,
+          flag: 3,
+          goBack: "planVerify",
+          planId: row.id,
           planName: row.name,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          rangeName: row.rangeName,
+          rangeId: row.rangeId,
+          planType: row.type,
+          planObjectName: row.planObject,
+          planObjectId: row.planObjectId,
+          topPlanName: isRoot === true ? row.name : row.parentName,
+          topPlanId: row.parentId,
           projectType: row.projectType,
-          number: row.number,
-          dataStart: row.startDate,
-          dataEnd: row.endDate,
-          productDate: row.productDate,
+          quantity: row.quantity,
+          dateStart: row.startDate,
+          dateEnd: row.endDate,
           productDateType: row.productDateType,
-          productId: row.productId,
-          proposal: row.proposal,
-          note: row.note,
-          description: row.description
+          productDate: row.productDate,
+          planProductId: row.productId,
+          planPropose: row.proposal,
+          planDescribe: row.description,
+          note: row.note
         }
       });
     },
@@ -446,7 +446,7 @@ export default {
       this.DataStartTime = that.changeDate(this.dataRange[0]);
       this.DataEndTime = that.changeDate(this.dataRange[1]);
       let list = {
-        stage: "manage",
+        stage: "review",
         customerId: this.clientId === "" ? undefined : this.clientId,
         brandId: this.brandId === "" ? undefined : this.brandId,
         rangeId: this.rangeId === "" ? undefined : this.rangeId,

@@ -105,7 +105,13 @@
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="predictState" label="预测计划" align="center"></el-table-column>
           <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
-          <el-table-column label="操作" fixed="right" align="center" width="200px" v-if="checked===false">
+          <el-table-column
+            label="操作"
+            fixed="right"
+            align="center"
+            width="200px"
+            v-if="checked===false"
+          >
             <template slot-scope="scope">
               <!-- <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button> -->
               <el-dialog title="系列详情" :visible.sync="ViewDetails" :modal="false">
@@ -625,23 +631,6 @@ export default {
     IsChanged(val) {
       this.AnyChanged = val;
     },
-    // QuotePre(row) {
-    //   this.$router.push({
-    //     name: "planMakeIndex",
-    //     params: {
-    //       flag: 1,
-    //       goback: "seriesPlanMake",
-    //       client: row.customerName,
-    //       brand: row.brandName,
-    //       series: row.name,
-    //       id: row.id,
-    //       plantype: 1,
-    //       planobj: row.name,
-    //       TopPlan: 0,
-    //       TopPlanName: "根计划"
-    //     }
-    //   });
-    // },
     ToPlanForm(row) {
       if (row.havePlan === true) {
         this.$message({
@@ -654,28 +643,17 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 1,
-          goback: "seriesPlanMake",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.name,
-          id: row.id,
-          planType: 1,
-          planObj: row.name,
-          topPlan: 0,
+          flag: 1, 
+          goBack: "seriesPlanMake", //goBack 为返回的 name
+          customerName: row.customerName,
+          brandName: row.brandName,
+          rangeId: row.id,
+          rangeName: row.name,
+          planType: "系列计划",
+          planObjectName: row.name,
+          planObjectId:row.id,
           topPlanName: "根计划",
-
-          planName: "",
-          projectType: "",
-          number: "",
-          dataStart: "",
-          dataEnd: "",
-          productDate: "",
-          productDateType: "",
-          productId: "",
-          proposal: "",
-          note: "",
-          description: ""
+          topPlanId: 0,
         }
       });
     },

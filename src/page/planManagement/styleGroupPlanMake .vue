@@ -513,27 +513,18 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 2,
-          goback: "styleGroupPlanMake",
-          client: row.customerName,
-          brand: row.brandName,
-          series: row.rangeName,
-          planType: 2,
-          id: row.id,
-          planObj: row.name,
-          topPlan: 0,
+
+          flag: 1, //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
+          goBack: "styleGroupPlanMake", //goBack 为返回的 name
+          customerName: row.customerName,
+          brandName: row.brandName,
+          rangeId: row.rangeId,
+          rangeName: row.rangeName,
+          planType: "款式组计划",
+          planObjectName: row.name,
+          planObjectId:row.id,
           topPlanName: "根计划",
-                    planName: "",
-          projectType: "",
-          number: "",
-          dataStart: "",
-          dataEnd: "",
-          productDate: "",
-          productDateType: "",
-          productId: "",
-          proposal: "",
-          note: "",
-          description: ""
+          topPlanId: 0,
         }
       });
     }
