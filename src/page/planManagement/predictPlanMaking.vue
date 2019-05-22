@@ -348,7 +348,10 @@ export default {
           console.log(this.selectedTableData);
           this.selectedTableData.forEach(element=>{
             this.$axios
-            .post(`${window.$config.HOST}/planManagement/submitPlan`,{id:element.id})
+            .get(`${window.$config.HOST}/planManagement/submitPlan`,{
+            params:
+            {id:element.id}
+          })
               .then(response=>{
                 if(response.data < 0){
                   this.$message.error("提交失败,失败代码:"+(resData.errcode));
