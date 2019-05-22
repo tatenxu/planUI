@@ -64,6 +64,7 @@ export default {
     console.log("进入绑定款式组页面");
     var result = {};
     result = that.$route.query;
+    console.log(result)
     if (result.hasOwnProperty("bindData")) {
       console.log("传过来的 绑定数据为" + result["bindData"]);
       that.data.tableData = result["bindData"];
@@ -75,7 +76,7 @@ export default {
       .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
         customerId: undefined,
         brandId: undefined,
-        rangeId: that.data.tableData[0].id,
+        rangeId: that.data.tableData[0].rangeId,
         clothingLevelId: undefined,
         id: undefined,
         startDate: undefined,
