@@ -357,7 +357,7 @@
         };
         console.log(param);
         
-        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addPaddProduct`,param)
+        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,param)
           .then(response=>{
             if(response.data<0){
               console.log("后台添加失败");
