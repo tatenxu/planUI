@@ -210,7 +210,7 @@ export default {
       })
       .then(response => {
         response.data.forEach(element=>{
-          if(element.type === 1 && element.state === 1){
+          if( element.state === "已制定"){
             this.totalTableData.push(element);
           }
 
@@ -285,7 +285,7 @@ export default {
         .then(response=>{
           var resData = response.data;
           resData.forEach(element=>{
-            if(element.type === 1 && element.state === 1){
+            if( element.state === "已制定"){
               this.totalTableData.push(element);
             }
 

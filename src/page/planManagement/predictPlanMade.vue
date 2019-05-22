@@ -209,7 +209,7 @@ export default {
       })
       .then(response => {
         response.data.forEach(element=>{
-          if(element.type === 1 && element.state === 2){
+          if( element.state === "已提交"){
             this.totalTableData.push(element);
           }
         });
@@ -280,7 +280,7 @@ export default {
             return ;
           }
           response.data.forEach(element=>{
-            if(element.type === 1 && element.state === 2){
+            if(element.state === "已提交"){
               this.totalTableData.push(element);
             }
 
