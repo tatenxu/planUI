@@ -376,7 +376,7 @@ export default {
     //编辑预测计划
     editPredictPlan(row){
       const that = this;
-      param={
+      let param={
         flag: 2,
         goback: "predictPlanMaking",
         customerName: row.customerName,
