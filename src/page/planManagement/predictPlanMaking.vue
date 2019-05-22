@@ -303,7 +303,8 @@ export default {
 
     //查看详情
     toPlanDetail(row){
-      param={
+      const that  = this;
+      let param={
         flag: 3,
         goback: "predictPlanMaking",
         customerName: row.customerName,
@@ -346,7 +347,8 @@ export default {
           console.log("提交计划:");
           console.log(this.selectedTableData);
           this.selectedTableData.forEach(element=>{
-            this.$axios.post(`${window.$config.HOST}/planManagement/submitPlan`,{id:element.id})
+            this.$axios
+            .post(`${window.$config.HOST}/planManagement/submitPlan`,{id:element.id})
               .then(response=>{
                 if(response.data < 0){
                   this.$message.error("提交失败,失败代码:"+(resData.errcode));
@@ -373,6 +375,7 @@ export default {
 
     //编辑预测计划
     editPredictPlan(row){
+      const that = this;
       param={
         flag: 2,
         goback: "predictPlanMaking",

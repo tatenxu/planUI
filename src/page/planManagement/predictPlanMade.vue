@@ -296,7 +296,9 @@ export default {
         });
     },
     inspectDetail(row){
-      param={
+      const that = this;
+
+      let param={
         flag: 3,
         goback: "predictPlanMade",
         customerName: row.customerName,
