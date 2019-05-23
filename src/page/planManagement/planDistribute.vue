@@ -144,10 +144,14 @@ export default {
           }
         });
 
+        //时间排序
+        this.totalTableData.sort(function(a,b){
+          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        });
         
         //分页
         this.pagination.total = this.totalTableData.length;
-        this.pagination.currentPage = 1;
+        // this.pagination.currentPage = 1;
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
         var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
         this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
@@ -191,7 +195,6 @@ export default {
           params:param
         })
         .then(response => {
-          console.log("初始化加载下发计划成功");
           this.totalTableData = [];
           response.data.forEach(element=>{
             if(this.isVerifiedPlan){
@@ -205,6 +208,10 @@ export default {
             }
           });
 
+          //时间排序
+          this.totalTableData.sort(function(a,b){
+            return Date.parse(b.createTime)-Date.parse(a.createTime);
+          });
           this.pagination.total = this.totalTableData.length;
           var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
           var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);

@@ -213,6 +213,10 @@ export default {
             this.totalTableData.push(element);
           }
         });
+        //时间排序
+        this.totalTableData.sort(function(a,b){
+          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        });
 
         this.pagination.total = this.totalTableData.length;
         // this.pagination.currentPage = 1;
@@ -283,9 +287,11 @@ export default {
             if(element.state === "已提交"){
               this.totalTableData.push(element);
             }
-
+            //时间排序
+            this.totalTableData.sort(function(a,b){
+              return Date.parse(b.createTime)-Date.parse(a.createTime);
+            });
             this.pagination.total = this.totalTableData.length;
-            this.pagination.currentPage = 1;
             var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
             var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
             this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);

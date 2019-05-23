@@ -56,35 +56,35 @@
 
       <el-tab-pane label="新增服装层次" name="second" v-if="addCardShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">服装层次名称:</span>
-            <el-input v-model="addInfoName" class="input" placeholder="请输入服装层次名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">服装层次描述:</span>
-            <el-input
-              class="inputArea"
-              type="textarea"
-              :rows="4"
-              placeholder="请输入服装层次描述"
-              v-model="addInfoDescription">
-            </el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleNewSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
-          </div>
+          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="add-ruleForm">
+            <el-form-item label="层次名称:" prop="addInfoName">
+              <el-input v-model="ruleForm.addInfoName" class="inputStyle" placeholder="请输入服装层次名称" ></el-input>
+            </el-form-item>
+            <el-form-item label="层次描述" prop="addInfoDescription">
+              <el-input
+                class="inputArea"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入服装层次描述"
+                v-model="ruleForm.addInfoDescription">
+              </el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="save" @click="handleNewSaveClick('ruleForm')">保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
       <el-tab-pane label="编辑服装层次" name="third" v-if="editCardShowFlag">
         <el-card>
           <div class="inputCombine">
-            <span class="inputTag">服装层次名称:</span>
+            <span class="inputTag">层次名称:</span>
             <el-input v-model="editInfoName" class="input" placeholder="请输入服装层次名称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">服装层次描述:</span>
+            <span class="inputTag">层次描述:</span>
             <el-input
               class="inputArea"
               type="textarea"
@@ -126,6 +126,10 @@
       line-height: 40px;
       min-width: 90px;
     }
+  }
+  .add-ruleForm{
+    min-width: 250px;
+    max-width: 500px;
   }
 
   .inputCombine{
@@ -170,8 +174,14 @@
         editInfoId:'',
         editInfoInitCustomerId:'',
 
-        addInfoDescription:'',
-        addInfoName:'',
+        ruleForm:{
+          addInfoDescription:'',
+          addInfoName:'',
+        },
+        rules:{
+          addInfoDescription:[{ required: true, message: '请输入服装类型信息', trigger: 'blur' },],
+          addInfoName:[{ required: true, message: '请输入服装类型名称', trigger: 'blur' },],
+        },
 
         addCardShowFlag:false,
         editCardShowFlag: false,
@@ -288,8 +298,8 @@
       },
       handleNewSaveClick(){
         var param = {
-          name : (this.addInfoName==="")?null:this.addInfoName,
-          description : (this.addInfoDescription==="")?null:this.addInfoDescription,
+          name : (this.ruleForm.addInfoName==="")?null:this.ruleForm.addInfoName,
+          description : (this.ruleForm.addInfoDescription==="")?null:this.ruleForm.addInfoDescription,
         };
         console.log(param);
 
@@ -310,10 +320,8 @@
             console.log("添加失败");
           })
         
-        this.addInfoName = "";
-        this.addInfoAbbr = "";
-        this.addInfoDescription = "";
-        this.addInfoCustomer = "";
+        this.ruleForm.addInfoName = "";
+        this.ruleForm.addInfoDescription = "";
 
         this.addCardShowFlag = false;
         this.viewname = "first";

@@ -214,6 +214,11 @@ export default {
             this.totalTableData.push(element);
           }
 
+          //时间排序
+          this.totalTableData.sort(function(a,b){
+            return Date.parse(b.createTime)-Date.parse(a.createTime);
+          });
+
           this.pagination.total = this.totalTableData.length;
           // this.pagination.currentPage = 1;
           var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
@@ -288,6 +293,11 @@ export default {
             if( element.state === "已制定"){
               this.totalTableData.push(element);
             }
+
+            //时间排序
+            this.totalTableData.sort(function(a,b){
+              return Date.parse(b.createTime)-Date.parse(a.createTime);
+            });
 
             this.pagination.total = this.totalTableData.length;
             // this.pagination.currentPage = 1;

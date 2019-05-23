@@ -195,13 +195,11 @@ export default {
         params:{stage:"delete"}
       })
       .then(response => {
-        // response.data.forEach(element=>{
-        //   if(element.state === '6'){
-        //     this.totalTableData.push(element);
-        //   }
-        // });
         this.totalTableData = response.data;
-
+        //时间排序
+        this.totalTableData.sort(function(a,b){
+          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        });
 
         this.pagination.total = this.totalTableData.length;
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
@@ -323,13 +321,11 @@ export default {
           params:param
         })
         .then(response => {
-          // this.totalTableData = [];
-          // response.data.forEach(element=>{
-          //   if(element.state === '6'){
-          //     this.totalTableData.push(element);
-          //   }
-          // })
           this.totalTableData = response.data;
+          //时间排序
+          this.totalTableData.sort(function(a,b){
+            return Date.parse(b.createTime)-Date.parse(a.createTime);
+          });
 
           this.pagination.total = this.totalTableData.length;
           var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;

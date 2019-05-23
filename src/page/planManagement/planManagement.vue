@@ -336,6 +336,11 @@ export default {
             element.parentName = "根计划";
           }
         });
+        //时间排序
+        this.totalTableData.sort(function(a,b){
+          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        });
+
         //复制计划名称
         this.searchOptions.options.planNameOptions = response.data;
         this.searchOptions.options.distributedPlanNameOptions = response.data;
@@ -732,6 +737,10 @@ export default {
                 element.parentName = "根计划";
               }
             });
+            //时间排序
+            this.tableData.sort(function(a,b){
+              return Date.parse(b.createTime)-Date.parse(a.createTime);
+            });
             
             //分页
             this.pagination.total=response.data.length;
@@ -838,6 +847,11 @@ export default {
                 element.parentName = "根计划";
               }
             });
+
+            //时间排序
+            this.totalTableData.sort(function(a,b){
+              return Date.parse(b.createTime)-Date.parse(a.createTime);
+            }); 
 
             //分页
             this.pagination.total=response.data.length;

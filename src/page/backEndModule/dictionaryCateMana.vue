@@ -63,18 +63,18 @@
       
       <el-tab-pane label="新增字典类别" name="second" v-if="addCateShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">字典类别名称:</span>
-            <el-input v-model="addCateName" class="input" placeholder="请输入字典类别名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">字典类别编码:</span>
-            <el-input v-model="addCateCode" class="input" placeholder="请输入字典类别编码"></el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleAddCateSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleAddCateCancelClick()">取消</el-button>
-          </div>
+          <el-form :model="ruleFormCate" :rules="rulesCate" ref="ruleForm1" label-width="100px" class="add-ruleForm">
+            <el-form-item label="类别名称:" prop="addCateName">
+              <el-input v-model="ruleFormCate.addCateName"  placeholder="请输入字典类别名称" ></el-input>
+            </el-form-item>
+            <el-form-item label="类别描述" prop="addCateCode">
+              <el-input v-model="ruleFormCate.addCateCode" class="input" placeholder="请输入字典类别编码"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="save" @click="handleAddCateSaveClick('ruleForm')">保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleAddCateCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
@@ -97,17 +97,15 @@
 
       <el-tab-pane label="新增类别属性" name="fourth" v-if="addPropShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">类别属性名称:</span>
-            <el-input v-model="addPropName" class="input" placeholder="请输入类别属性名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">类别属性编码:</span>
-            <el-input v-model="addPropCode" class="input" placeholder="请输入类别属性编码"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">所属类别:</span>
-              <el-select v-model="addPropCategoryId" placeholder="请选择" class="inputSelector">
+          <el-form :model="ruleFormProp" :rules="rulesProp" ref="ruleForm1" label-width="100px" class="add-ruleForm">
+            <el-form-item label="属性名称:" prop="addPropName">
+              <el-input v-model="ruleFormProp.addPropName" class="input" placeholder="请输入类别属性名称"></el-input>
+            </el-form-item>
+            <el-form-item label="属性编码" prop="addPropCode">
+              <el-input v-model="ruleFormProp.addPropCode" class="input" placeholder="请输入类别属性编码"></el-input>
+            </el-form-item>
+            <el-form-item label="所属类别" prop="addPropCategoryId">
+              <el-select v-model="ruleFormProp.addPropCategoryId" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in dictionCategories"
                   :key="item.id"
@@ -115,11 +113,12 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleAddPropSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleAddPropCancelClick()">取消</el-button>
-          </div>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="save" @click="handleAddPropSaveClick('ruleForm')">保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleAddPropCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
@@ -161,6 +160,10 @@
     margin: 20px 50px;
     padding: 0 20px;
   }
+  .add-ruleForm{
+    min-width: 250px;
+    max-width: 500px;
+  }
   .submainCard{
     .subAside{
       width:400px;
@@ -188,17 +191,17 @@
   }
 
     .inputCombine{
-    margin-top: 10px;
-    display: flex;
-    flex-direction: row;
-    min-width: 250px;
-    max-width: 500px;
-    .inputTag{
-      font-size: 18px;
-      line-height: 40px;
-      min-width: 130px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: row;
+      min-width: 250px;
+      max-width: 500px;
+      .inputTag{
+        font-size: 18px;
+        line-height: 40px;
+        min-width: 130px;
+      }
     }
-  }
 
   .secondButtonDiv{
     margin-top: 20px;
@@ -221,16 +224,29 @@ export default {
       selectedCateProps:[],
       multiplePropSelection:[],
 
-      addCateName:'',
-      addCateCode:'',
+      ruleFormCate:{
+        addCateName:'',
+        addCateCode:'',
+      },
+      rulesCate:{
+        addCateName:[{ required: true, message: '请输入字典类别名称', trigger: 'blur' },],
+        addCateCode:[{ required: true, message: '请输入字典类别编码', trigger: 'blur' },],
+      },
 
       editCateId:'',
       editCateName:'',
       editCateCode:'',
 
-      addPropName:'',
-      addPropCode:'',
-      addPropCategoryId:'',
+      ruleFormProp:{
+        addPropName:'',
+        addPropCode:'',
+        addPropCategoryId:'',
+      },
+      rulesProp:{
+        addPropName:[{ required: true, message: '请输入类别属性名称', trigger: 'blur' },],
+        addPropCode:[{ required: true, message: '请输入类别属性编码', trigger: 'blur' },],
+        addPropCategoryId:[{ required: true, message: '请选择所属类别', trigger: 'blur' },],
+      },
 
       editPropId:'',
       editPropName:'',
@@ -485,8 +501,8 @@ export default {
     },
     handleAddCateSaveClick(){
       var param = {
-        category : (this.addCateName==='')?null:this.addCateName,
-		    code : (this.addCateCode==='')?null:this.addCateCode,
+        category : (this.ruleFormCate.addCateName==='')?null:this.ruleFormCate.addCateName,
+		    code : (this.ruleFormCate.addCateCode==='')?null:this.ruleFormCate.addCateCode,
       }
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addDictionaryCategory`,param)
         .then(response=>{
@@ -504,13 +520,13 @@ export default {
           this.$message.error("添加失败");
         });
 
-      this.addCateName = "";
-      this.addCateCode ="";
+      this.ruleFormCate.addCateName = "";
+      this.ruleFormCate.addCateCode ="";
 
 
 
-      this.addCateShowFlag = false;
-      this.viewname = 'first';
+      this.ruleFormCate.addCateShowFlag = false;
+      this.ruleFormCate.viewname = 'first';
     },
     handleAddCateCancelClick(){
       this.$message({
@@ -518,8 +534,8 @@ export default {
         type:"info"
       });
 
-      this.addCateName = "";
-      this.addCateCode ="";
+      this.ruleFormCate.addCateName = "";
+      this.ruleFormCate.addCateCode ="";
 
       this.addCateShowFlag = false;
       this.viewname = 'first';
@@ -563,9 +579,9 @@ export default {
     },
     handleAddPropSaveClick(){
       var param = {
-        name : (this.addPropName==='')?null:this.addPropName,
-        code : (this.addPropCode==='')?null:this.addPropCode,
-        categoryId : (this.addPropCategoryId==='')?null:this.addPropCategoryId,
+        name : (this.ruleFormProp.addPropName==='')?null:this.ruleFormProp.addPropName,
+        code : (this.ruleFormProp.addPropCode==='')?null:this.ruleFormProp.addPropCode,
+        categoryId : (this.ruleFormProp.addPropCategoryId==='')?null:this.ruleFormProp.addPropCategoryId,
       };
 
       console.log(param);
@@ -587,9 +603,9 @@ export default {
           this.$message.error("添加失败");
         });
 
-      this.addPropName = "";
-      this.addPropCode ="";
-      this.addPropCategoryId ="";
+      this.ruleFormProp.addPropName = "";
+      this.ruleFormProp.addPropCode ="";
+      this.ruleFormProp.addPropCategoryId ="";
 
       this.addPropShowFlag = false;
       this.viewname = 'first';
@@ -600,9 +616,9 @@ export default {
         type:"info"
       });
       
-      this.addPropName = "";
-      this.addPropCode = "";
-      this.addPropCategoryId = "";
+      this.ruleFormProp.addPropName = "";
+      this.ruleFormProp.addPropCode = "";
+      this.ruleFormProp.addPropCategoryId = "";
 
       this.addPropShowFlag = false;
       this.viewname = 'first';

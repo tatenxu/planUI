@@ -57,40 +57,37 @@
 
       <el-tab-pane label="新增产品信息" name="second" v-if="newCardShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">产品编号:</span>
-            <el-input v-model="addInfoCode" class="input" placeholder="请输入产品名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">产品名称:</span>
-            <el-input v-model="addInfoName" class="input" placeholder="请输入产品简称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">产品部门:</span>
-            <el-cascader
-              expand-trigger="hover"
-              :options="selectionData"
-              v-model="addInfoDepart"
-              :props="deptToCascaderProps"
-              change-on-select="true"
-             >
-            </el-cascader>
-              
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">产品描述:</span>
-            <el-input
-              class="inputArea"
-              type="textarea"
-              :rows="4"
-              placeholder="请输入产品描述"
-              v-model="addInfoDescription">
-            </el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleNewSaveClick()">保存</el-button>
+          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="add-ruleForm">
+            <el-form-item label="产品编号:" prop="addInfoCode">
+              <el-input v-model="ruleForm.addInfoCode" class="inputStyle" placeholder="请输入产品名称" ></el-input>
+            </el-form-item>
+            <el-form-item label="产品名称:" prop="addInfoName">
+              <el-input v-model="ruleForm.addInfoName" class="inputStyle" placeholder="请输入产品简称"></el-input>
+            </el-form-item>
+            <el-form-item label="产品部门:" prop="addInfoDepart">
+              <el-cascader
+                expand-trigger="hover"
+                :options="selectionData"
+                v-model="ruleForm.addInfoDepart"
+                :props="deptToCascaderProps"
+                :change-on-select="true"
+              >
+              </el-cascader>            
+            </el-form-item>
+            <el-form-item label="客户描述" prop="addInfoDescription">
+              <el-input
+                class="inputArea"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入产品描述"
+                v-model="ruleForm.addInfoDescription">
+              </el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="save" @click="handleNewSaveClick('ruleForm')">保存</el-button>
             <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
-          </div>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
@@ -111,7 +108,7 @@
               :options="selectionData"
               v-model="editInfoDepart"
               :props="deptToCascaderProps"
-              change-on-select="true"
+              :change-on-select="true"
               :placeholder="editInfoDepartPlaceHolder"
              >
             </el-cascader>
@@ -160,6 +157,10 @@
       line-height: 40px;
       min-width: 90px;
     }
+  }
+  .add-ruleForm{
+    min-width: 250px;
+    max-width: 500px;
   }
 
   .inputCombine{
@@ -210,10 +211,18 @@
         editInfoDepartId:'',
         tmpeditInfoDepartName:'',
 
-        addInfoDescription:'',
-        addInfoName:'',
-        addInfoCode:'',
-        addInfoDepart:[],
+        ruleForm:{
+          addInfoDescription:'',
+          addInfoName:'',
+          addInfoCode:'',
+          addInfoDepart:[],
+        },
+        rules:{
+          addInfoDescription:[{ required: true, message: '请输入产品描述', trigger: 'blur' },],
+          addInfoName:[{ required: true, message: '请输入产品名称', trigger: 'blur' },],
+          addInfoCode:[{ required: true, message: '请输入产品编码', trigger: 'blur' },],
+          addInfoDepart:[{ required: true, message: '请选择产品部门', trigger: 'blur' },],
+        },
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -350,10 +359,11 @@
       },
       handleNewSaveClick(){
         var param = {
-          number : (this.addInfoCode==="")?undefined:this.addInfoCode,
-          name : (this.addInfoName==="")?undefined:this.addInfoName,
-          description : (this.addInfoDescription==="")?undefined:this.addInfoDescription,
-          deptName : (this.addInfoDepart.length===0)?undefined:this.addInfoDepart[this.addInfoDepart.length-1],
+          number : (this.ruleForm.addInfoCode==="")?undefined:this.ruleForm.addInfoCode,
+          name : (this.ruleForm.addInfoName==="")?undefined:this.ruleForm.addInfoName,
+          description : (this.ruleForm.addInfoDescription==="")?undefined:this.ruleForm.addInfoDescription,
+          deptName : (this.ruleForm.addInfoDepart.length===0)?
+                        undefined:this.ruleForm.addInfoDepart[this.ruleForm.addInfoDepart.length-1],
         };
         console.log(param);
         
@@ -378,9 +388,10 @@
         this.newCardShowFlag = false;
         this.viewname = "first";
 
-        this.addInfoName = "";
-        this.addInfoDescription = "";
-        this.addInfoDepart = [];
+        this.ruleForm.addInfoName = "";
+        this.ruleForm.addInfoCode = "";
+        this.ruleForm.addInfoDescription = "";
+        this.ruleForm.ddInfoDepart = [];
         return;
       },
       handleNewCancelClick(){

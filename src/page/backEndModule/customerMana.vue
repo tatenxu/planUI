@@ -1,6 +1,6 @@
 <template>
   <el-card class="box-card">
-    <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
+    <el-tabs v-model="viewname"  class="cardTab">
       <el-tab-pane label="客户信息管理" name="first" class="tabPane">
         <el-container class="paneContainer">
           <el-header clas="containerHeader">
@@ -57,39 +57,37 @@
 
       <el-tab-pane label="新增客户信息" name="second" v-if="newCardShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">客户名称:</span>
-            <el-input v-model="addInfoName" class="input" placeholder="请输入客户名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">客户简称:</span>
-            <el-input v-model="addInfoAbbr" class="input" placeholder="请输入客户简称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">所属业务组:</span>
+          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="add-ruleForm">
+            <el-form-item label="客户名称:" prop="addInfoName">
+              <el-input v-model="ruleForm.addInfoName" class="inputStyle" placeholder="请输入客户名称" ></el-input>
+            </el-form-item>
+            <el-form-item label="客户简称" prop="addInfoAbbr">
+              <el-input v-model="ruleForm.addInfoAbbr" class="inputStyle" placeholder="请输入客户简称"></el-input>
+            </el-form-item>
+            <el-form-item label="所属业务组" prop="addInfoGroup">
               <el-cascader
                 expand-trigger="hover"
                 :options="selectionData"
-                v-model="addInfoGroup"
+                v-model="ruleForm.addInfoGroup"
                 :props="deptToCascaderProps"
-                change-on-select="true"
+                :change-on-select="true"
               >
-              </el-cascader>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">客户描述:</span>
-            <el-input
-              class="inputArea"
-              type="textarea"
-              :rows="4"
-              placeholder="请输入客户描述"
-              v-model="addInfoDescription">
-            </el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleNewSaveClick()">保存</el-button>
+              </el-cascader>            
+            </el-form-item>
+            <el-form-item label="客户描述" prop="addInfoDescription">
+              <el-input
+                class="inputArea"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入客户描述"
+                v-model="ruleForm.addInfoDescription">
+              </el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="save" @click="handleNewSaveClick('ruleForm')">保存</el-button>
             <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
-          </div>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
@@ -110,7 +108,7 @@
                 :options="selectionData"
                 v-model="editInfoGroup"
                 :props="deptToCascaderProps"
-                change-on-select="true"
+                :change-on-select="true"
                 :placeholder="editInfoGroupPlaceHolder"
               >
             </el-cascader>
@@ -141,7 +139,10 @@
     margin: 20px 50px;
     padding: 0 20px;
   }
-  
+  .add-ruleForm{
+    min-width: 250px;
+    max-width: 500px;
+  }
   // background: black;
   .containerHeaderDiv2{
     // margin-right: 100px;
@@ -156,7 +157,7 @@
     .inputTag{
       font-size: 14px;
       line-height: 40px;
-      min-width: 90px;
+      min-width: 70px;
     }
   }
 
@@ -210,10 +211,18 @@ import { error } from 'util';
         editIndoInitGroupId:'',
         tmpeditInfoGroupName:'',
 
-        addInfoDescription:'',
-        addInfoName:'',
-        addInfoAbbr:'',
-        addInfoGroup:[],
+        ruleForm:{
+          addInfoDescription:'',
+          addInfoName:'',
+          addInfoAbbr:'',
+          addInfoGroup:[],
+        },
+        rules:{
+          addInfoDescription:[{ required: true, message: '请输入客描述', trigger: 'blur' },],
+          addInfoName:[{ required: true, message: '请输入客户名称', trigger: 'blur' },],
+          addInfoAbbr:[{ required: true, message: '请输入客户简称', trigger: 'blur' },],
+          addInfoGroup:[{ required: true, message: '请选择业务组', trigger: 'blur' },],
+        },
 
         newCardShowFlag:false,
         editCardShowFlag: false,
@@ -349,10 +358,10 @@ import { error } from 'util';
       },
       handleNewSaveClick(){
         var param = {
-          name : (this.addInfoName==="")?undefined:this.addInfoName,
-          abbr : (this.addInfoAbbr==="")?undefined:this.addInfoAbbr,
-          description : (this.addInfoDescription==="")?undefined:this.addInfoDescription,
-          groupName : (this.addInfoGroup.length===0)?undefined:this.addInfoGroup[this.addInfoGroup.length-1],
+          name : (this.ruleForm.addInfoName==="")?undefined:this.ruleForm.addInfoName,
+          abbr : (this.ruleForm.addInfoAbbr==="")?undefined:this.ruleForm.addInfoAbbr,
+          description : (this.ruleForm.addInfoDescription==="")?undefined:this.ruleForm.addInfoDescription,
+          groupName : (this.addInfoGroup.length===0)?undefined:this.ruleForm.addInfoGroup[this.addInfoGroup.length-1],
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
@@ -372,10 +381,10 @@ import { error } from 'util';
             this.$message.error("添加失败!");
           });
 
-        this.addInfoName = "";
-        this.addInfoAbbr = "";
-        this.addInfoDescription = "";
-        this.addInfoGroup = [];
+        this.ruleForm.addInfoName = "";
+        this.ruleForm.addInfoAbbr = "";
+        this.ruleForm.addInfoDescription = "";
+        this.ruleForm.addInfoGroup = [];
 
         this.newCardShowFlag = false;
         this.viewname = "first";

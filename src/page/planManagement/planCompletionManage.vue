@@ -93,6 +93,11 @@ export default {
           element.createTime = time;
         });
 
+        //时间排序
+        this.totalTableData.sort(function(a,b){
+          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        });
+
         this.pagination.total = this.totalTableData.length;
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
         var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
@@ -146,6 +151,11 @@ export default {
             var d = new Date(element.createTime);
             let time = d.toLocaleString();
             element.createTime = time;
+          });
+
+          //时间排序
+          this.totalTableData.sort(function(a,b){
+            return Date.parse(b.createTime)-Date.parse(a.createTime);
           });
 
           this.pagination.total = this.totalTableData.length;
