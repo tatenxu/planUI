@@ -10,7 +10,7 @@
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="客户名称"  placeholder="请选择客户名称">
+            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
               <el-select v-model="ruleForm.customerName" @change="clientSelect2">
                 <el-option
                   v-for="item in options.customerNameOptions"
@@ -22,7 +22,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="品牌名称" placeholder="请选择品牌名称">
+            <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
               <el-select v-model="ruleForm.brandName">
                 <el-option
                   v-for="item in options.brandNameOptions"
@@ -34,7 +34,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="服装层次"  placeholder="请选择服装层次">
+            <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
               <el-select v-model="ruleForm.clothingType">
                 <el-option
                   v-for="item in options.clothingTypeOptions"

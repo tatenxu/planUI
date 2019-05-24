@@ -217,14 +217,13 @@ export default {
     var that = this;
     //获得品牌名字
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-        customerId: ""
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
+        name: undefined
       })
       .then(response => {
         // this.searchOptions.options.brandNameOptions = response.data;
         response.data.forEach(element => {
           this.searchOptions.options.brandNameOptions.push(element);
-   
         });
       
       })
@@ -237,7 +236,7 @@ export default {
 
     //获得顾客名称
     that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`)
       .then(response => {
         response.data.forEach(element => {
           this.searchOptions.options.customerNameOptions.push(element);
@@ -428,18 +427,18 @@ export default {
       //   this.ruleForm.brandNameOptions=this.searchOptions.options.brandNameOptions;
       //   return ;
       // }
-      let list = {
-        customerId: this.ruleForm.customerName===0?"":this.ruleForm.customerName
-      };
+      // let list = {
+      //   customerId: this.ruleForm.customerName===0?"":this.ruleForm.customerName
+      // };
       console.log(list);
       this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-          params: list
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
+          params: {
+            name:this.ruleForm.customerName===0?"":this.ruleForm.customerName
+          }
         })
         .then(response => {
           console.log(response.data);
-          
-          
           this.ruleForm.options.brandNameOptions =[            {
               id: 0,
               name: "*"
