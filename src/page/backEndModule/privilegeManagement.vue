@@ -434,7 +434,7 @@ export default {
       this.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
           params: {
-            name:this.ruleForm.customerName
+            customerId:this.ruleForm.customerName
           }
         })
         .then(response => {
