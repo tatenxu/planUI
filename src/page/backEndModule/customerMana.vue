@@ -59,12 +59,12 @@
         <el-card>
           <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="add-ruleForm">
             <el-form-item label="客户名称:" prop="addInfoName">
-              <el-input v-model="ruleForm.addInfoName" class="inputStyle" placeholder="请输入客户名称" ></el-input>
+              <el-input v-model="ruleForm.addInfoName" class="inputStyle" placeholder="请输入客户名称" required></el-input>
             </el-form-item>
-            <el-form-item label="客户简称" prop="addInfoAbbr">
+            <el-form-item label="客户简称:" prop="addInfoAbbr">
               <el-input v-model="ruleForm.addInfoAbbr" class="inputStyle" placeholder="请输入客户简称"></el-input>
             </el-form-item>
-            <el-form-item label="所属业务组" prop="addInfoGroup">
+            <el-form-item label="所属业务组:" prop="addInfoGroup">
               <el-cascader
                 expand-trigger="hover"
                 :options="selectionData"
@@ -74,7 +74,7 @@
               >
               </el-cascader>            
             </el-form-item>
-            <el-form-item label="客户描述" prop="addInfoDescription">
+            <el-form-item label="客户描述:" prop="addInfoDescription">
               <el-input
                 class="inputArea"
                 type="textarea"
@@ -361,7 +361,7 @@ import { error } from 'util';
           name : (this.ruleForm.addInfoName==="")?undefined:this.ruleForm.addInfoName,
           abbr : (this.ruleForm.addInfoAbbr==="")?undefined:this.ruleForm.addInfoAbbr,
           description : (this.ruleForm.addInfoDescription==="")?undefined:this.ruleForm.addInfoDescription,
-          groupName : (this.ruleForm.addInfoGroup.length===0)?undefined:this.ruleForm.addInfoGroup[this.addInfoGroup.length-1],
+          groupName : (this.ruleForm.addInfoGroup.length===0)?undefined:this.ruleForm.addInfoGroup[this.ruleForm.addInfoGroup.length-1],
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)
