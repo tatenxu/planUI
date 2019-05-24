@@ -509,8 +509,8 @@ export default {
             .catch(error => {
               this.handleSearch();
               this.$message({
-                message: "添加成功",
-                type: "success"
+                message: "添加失败",
+                type: "error"
               });
             });
         } else {
