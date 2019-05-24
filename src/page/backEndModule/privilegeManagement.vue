@@ -487,7 +487,7 @@ export default {
 	              	brandId : this.ruleForm.brandName,
             })
             .then(response => {
-              console.log(reponse.data)
+              console.log(response.data)
               var ok = response.data;
               if (ok < 0) {
                 this.$message({
