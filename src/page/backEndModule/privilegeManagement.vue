@@ -429,17 +429,17 @@ export default {
       // }
       // let list = {
       //   customerId: this.ruleForm.customerName===0?"":this.ruleForm.customerName
-      // };
-      console.log(list);
+      // // };
+      // console.log(list);
       this.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
           params: {
-            name:this.ruleForm.customerName===0?"":this.ruleForm.customerName
+            customerId:this.ruleForm.customerName
           }
         })
         .then(response => {
           console.log(response.data);
-          this.ruleForm.options.brandNameOptions =[            {
+          this.ruleForm.options.brandNameOptions =[{
               id: 0,
               name: "*"
             }];
