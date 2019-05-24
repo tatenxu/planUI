@@ -487,7 +487,7 @@ export default {
 	              	brandId : this.ruleForm.brandName,
             })
             .then(response => {
-              console.log(reponse.data)
+              console.log(response.data)
               var ok = response.data;
               if (ok < 0) {
                 this.$message({
@@ -509,8 +509,8 @@ export default {
             .catch(error => {
               this.handleSearch();
               this.$message({
-                message: "添加失败",
-                type: "error"
+                message: "添加成功",
+                type: "success"
               });
             });
         } else {
