@@ -115,7 +115,7 @@
           </template>
           <el-menu-item index="/planservice/predictPlanToBeMake"><i class="el-icon-document"></i>未制定计划</el-menu-item>
           <el-menu-item index="/planservice/predictPlanMaking"><i class="el-icon-document"></i>已制定计划</el-menu-item>
-          <el-menu-item index="/planservice/predictPlanMade"><i class="el-icon-document"></i>已提交计划</el-menu-item>
+          <el-menu-item index="/planservice/predictPlanMade"><i class="el-icon-document"></i>已保存计划</el-menu-item>
         </el-submenu>
 
         <!-- <el-menu-item index="/planservice/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item> -->

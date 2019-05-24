@@ -361,7 +361,7 @@ import { error } from 'util';
           name : (this.ruleForm.addInfoName==="")?undefined:this.ruleForm.addInfoName,
           abbr : (this.ruleForm.addInfoAbbr==="")?undefined:this.ruleForm.addInfoAbbr,
           description : (this.ruleForm.addInfoDescription==="")?undefined:this.ruleForm.addInfoDescription,
-          groupName : (this.addInfoGroup.length===0)?undefined:this.ruleForm.addInfoGroup[this.addInfoGroup.length-1],
+          groupName : (this.ruleForm.addInfoGroup.length===0)?undefined:this.ruleForm.addInfoGroup[this.addInfoGroup.length-1],
         };
         console.log(param);
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addCustomer`,param)

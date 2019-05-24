@@ -91,7 +91,7 @@
     </el-card>
 
     <el-card class="box-card">
-      <div><el-button type="primary" @click="submitPredictPlan">提交预测计划</el-button></div>
+      <div><el-button type="primary" @click="submitPredictPlan">保存预测计划</el-button></div>
       <div>
         <el-table :data="tableData" max-height="550"  style="width : 100%" :stripe="true" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
