@@ -34,7 +34,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-select v-model="searchOptions.searchParams.rangeName" :clearable="true"> 
+            <el-select v-model="searchOptions.searchParams.rangeName" :clearable="true">
               <!-- @change="rangeNameSelectionChange" -->
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
@@ -351,14 +351,14 @@ export default {
         //   { required: true, message: "请输入系列款数", trigger: "blur" }
         // ]
       },
-      tableDataA:[],
+      tableDataA: [],
       dateRange: "",
       dialogFormVisible1: false,
       DateStart: "",
       DateEnd: "",
       pagination: {
         currentPage: 1,
-        pageSizes: [10, 20, 30, 40,50],
+        pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
       },
@@ -519,36 +519,37 @@ export default {
           message: "获取客户名称失败",
           type: "error"
         });
-
       });
 
     //得到搜索信息
     this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
-
-      })
+      .post(`${window.$config.HOST}/infoManagement/getStyleList`, {})
       .then(response => {
-        console.log(response.data)
+        console.log(response.data);
         var SearchList = response.data;
         this.data.tableData = SearchList;
-                        this.data.tableData.sort(function(b,a){
-    return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
-});
-                this.data.tableData.forEach(element=>{
-
+        this.data.tableData.sort(function(b, a) {
+          if(a.styleGroupId=="") return 1;
+          else if(b.styleGroupId=="") return -1;
+          return a.styleGroupId-b.styleGroupId; //时间正序
+        });
+        this.data.tableData.forEach(element => {
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
 
-        this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
-        {
-          this.tableDataA.push(this.data.tableData[i]);
-        }
+          this.pagination.total = response.data.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
+
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.data.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.data.tableData[i]);
+          }
         });
       })
       .catch(error => {
@@ -559,17 +560,15 @@ export default {
       });
   },
   methods: {
-
-          handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
-        this.handleSearch();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.handleSearch();
-      },
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
+      this.handleSearch();
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     dialogCustomerNameSelectionChange() {
       var list = {
         customerId: this.ruleForm.customerName
@@ -637,17 +636,14 @@ export default {
 
     // 搜索按钮点击
     handleSearch() {
-    
-       let startDate;
+      let startDate;
       let endDate;
-      if(this.dateRange==null)
-      {
-        startDate=undefined;
-        endDate=undefined;
-      }
-      else{
-                  startDate= this.changeDate(this.dateRange[0]),
-          endDate=this.changeDate(this.dateRange[1])
+      if (this.dateRange == null) {
+        startDate = undefined;
+        endDate = undefined;
+      } else {
+        (startDate = this.changeDate(this.dateRange[0])),
+          (endDate = this.changeDate(this.dateRange[1]));
       }
       let list = {
         customerId:
@@ -671,8 +667,8 @@ export default {
         startDate: startDate,
         endDate: endDate
       };
-      console.log(list)
-    
+      console.log(list);
+
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getStyleList`, {
           customerId:
@@ -693,36 +689,36 @@ export default {
               ? undefined
               : this.searchOptions.searchParams.number,
           id: undefined,
-        startDate: startDate,
-        endDate: endDate
+          startDate: startDate,
+          endDate: endDate
         })
         .then(response => {
-          this.data.tableData=response.data;
-          this.data.tableData.sort(function(b,a){
-    return Date.parse(a.createTime) - Date.parse(b.createTime);//时间正序
-});
-                    this.data.tableData.forEach(element=>{
+          this.data.tableData = response.data;
+        this.data.tableData.sort(function(b, a) {
+          if(a.styleGroupId=="") return 1;
+          else if(b.styleGroupId=="") return -1;
+          return a.styleGroupId-b.styleGroupId; //时间正序
+        });
+          this.data.tableData.forEach(element => {
+            var d = new Date(element.createTime);
+            let time = d.toLocaleString();
+            element.createTime = time;
 
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
-
-
-        console.log(this.tableDataA)
+            console.log(this.tableDataA);
           });
-          
-          this.pagination.total=response.data.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.data.tableData.length;i++)
-        {
-          this.tableDataA.push(this.data.tableData[i]);
-        }
 
+          this.pagination.total = response.data.length;
+          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          this.tableDataA = [];
 
-
+          for (
+            ;
+            i - k < this.pagination.pageSize && i < this.data.tableData.length;
+            i++
+          ) {
+            this.tableDataA.push(this.data.tableData[i]);
+          }
         })
         .catch(error => {
           this.$message({
@@ -837,10 +833,20 @@ export default {
           type: "warning"
         });
       } else if (that.multipleSelection.length >= 1) {
+        let rangeId = this.multipleSelection[0].rangeId;
+        this.multipleSelection.forEach(element => {
+          if (element.rangeId != rangeId) {
+            this.$message({
+              message: "请选择同一系列下的款式进行绑定！",
+              type: "warning"
+            });
+            return;
+          }
+        });
+
         that.$router.push({
           name: `bindStyleGroup`,
           query: {
-
             bindData: that.multipleSelection
           }
         });
@@ -874,6 +880,9 @@ export default {
       const that = this;
       console.log("点击了本行的修改");
 
+      if(row.styleGroupId!="")
+      {
+        
       //得到系列名称
 
       this.$axios
@@ -910,7 +919,7 @@ export default {
           });
         });
 
-        (this.ruleForm.firstCustomerName = row.customerName),
+      (this.ruleForm.firstCustomerName = row.customerName),
         (this.ruleForm.firstBrandName = row.brandName),
         (this.ruleForm.firstRangeName = row.rangeName),
         (this.ruleForm.firstNumber = row.number),
@@ -936,6 +945,15 @@ export default {
         (this.ruleForm.state = row.state),
         (this.ruleForm.havePlan = row.havePlan),
         (this.dialogFormVisible1 = true);
+            }
+
+            else {
+                 this.$message({
+                type: "error",
+                message: "该款式已绑定款式组，无法修改！"
+              });
+            }
+
     },
     // 表格中的删除
     deleteStyleData(row) {
@@ -988,7 +1006,7 @@ export default {
               rangeId: this.ruleForm.rangeName
             })
             .then(response => {
-                   this.handleSearch();
+              this.handleSearch();
               var ok = response.data;
               if (ok < 0) {
                 this.$message({
@@ -1020,7 +1038,7 @@ export default {
                 this.options.rangeNameTypeOptions = "";
                 this.options.styleNumberOptions = "";
                 this.dialogFormVisible = false;
-           
+
                 this.$message({
                   type: "success",
                   message: "添加成功"
@@ -1045,16 +1063,12 @@ export default {
     submitForm1(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-
-          if(this.ruleForm.firstRangeName===this.ruleForm.rangeName)
-          {
-            this.options.rangeNameTypeOptions.forEach(element=>{
-              if(element.name === this.ruleForm.rangeName)
-              {
+          if (this.ruleForm.firstRangeName === this.ruleForm.rangeName) {
+            this.options.rangeNameTypeOptions.forEach(element => {
+              if (element.name === this.ruleForm.rangeName) {
                 this.ruleForm.rangeName = element.id;
               }
-            })
-            
+            });
           }
           var list = {
             id: this.ruleForm.id,
