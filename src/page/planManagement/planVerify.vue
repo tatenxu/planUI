@@ -455,44 +455,91 @@ export default {
         startDate: this.DataStartTime,
         endDate: this.DataEndTime
       };
+
+      let list1 = {
+        stage: "distribute",
+        customerId: this.clientId === "" ? undefined : this.clientId,
+        brandId: this.brandId === "" ? undefined : this.brandId,
+        rangeId: this.rangeId === "" ? undefined : this.rangeId,
+        name: undefined,
+        clothingLevelId: undefined,
+        startDate: this.DataStartTime,
+        endDate: this.DataEndTime
+      };
       console.log(list);
-      that.$axios
 
-        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-          params: list
-        })
-        .then(response => {
-          console.log(response.data);
-          let stateName;
-          if (this.checked === 1) {
-            stateName = "已提交";
-          } else if (this.checked === 2) {
-            stateName = "已审核";
-          } else if (this.checked === 3) {
-            stateName = "已下发";
-          }
+      let stateName;
+      if (this.checked === 1) {
+        stateName = "已提交";
+      } else if (this.checked === 2) {
+        stateName = "已审核";
+      } else if (this.checked === 3) {
+        stateName = "已下发";
+      }
 
-          (this.tableData = []),
-            response.data.forEach(element => {
-              console.log("dsadsa");
-              if (element.state === stateName) this.tableData.push(element);
-            });
+      if (this.checked === 3) {
+        that.$axios
+          .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+            params: list1
+          })
+          .then(response => {
+            console.log(response.data);
 
-          this.pagination.total = this.tableData.length;
-          let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
-          this.tableDataA = [];
+            (this.tableData = []),
+              response.data.forEach(element => {
+                console.log("dsadsa");
+                if (element.state === stateName) this.tableData.push(element);
+              });
 
-          for (
-            ;
-            i - k < this.pagination.pageSize && i < this.tableData.length;
-            i++
-          ) {
-            this.tableDataA.push(this.tableData[i]);
-          }
-        })
+            this.pagination.total = this.tableData.length;
+            let i =
+              (this.pagination.currentPage - 1) * this.pagination.pageSize;
+            let k =
+              (this.pagination.currentPage - 1) * this.pagination.pageSize;
+            this.tableDataA = [];
 
-        .catch(error => {});
+            for (
+              ;
+              i - k < this.pagination.pageSize && i < this.tableData.length;
+              i++
+            ) {
+              this.tableDataA.push(this.tableData[i]);
+            }
+          })
+
+          .catch(error => {});
+      } else {
+        that.$axios
+          .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+            params: list
+          })
+          .then(response => {
+            console.log(response.data);
+
+            (this.tableData = []),
+              response.data.forEach(element => {
+                console.log("dsadsa");
+                if (element.state === stateName) this.tableData.push(element);
+              });
+
+            this.pagination.total = this.tableData.length;
+            let i =
+              (this.pagination.currentPage - 1) * this.pagination.pageSize;
+            let k =
+              (this.pagination.currentPage - 1) * this.pagination.pageSize;
+            this.tableDataA = [];
+
+            for (
+              ;
+              i - k < this.pagination.pageSize && i < this.tableData.length;
+              i++
+            ) {
+              this.tableDataA.push(this.tableData[i]);
+            }
+          })
+
+          .catch(error => {});
+      }
     },
     isChanged(val) {
       this.AnyChanged = val;

@@ -52,10 +52,10 @@
       <div class="table">
         <el-row :gutter="10">
           <el-col :span="3">
-            <el-button type="primary" @click="addUser">添加用户</el-button>
+            <el-button type="primary" @click="addUser">添加权限</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button type="primary" @click="deleteUser">删除用户</el-button>
+            <el-button type="primary" @click="deleteUser">删除权限</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -127,29 +127,35 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="品牌名称" prop="brandName">
-              <el-select v-model="ruleForm.brandName">
-                <el-option
-                  v-for="item in ruleForm.options.brandNameOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
+        <el-col :span="3">
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch1">搜索</el-button>
+        </el-col>
+
+          <el-col :span="3" >
+            <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
           </el-col>
+          <!-- <el-col :span="3">
+            <el-button type="info" @click="cancel">取消</el-button>
+          </el-col> -->
         </el-row>
 
-        <el-row style="margin: 50px 0 10px 0">
-          <el-col :span="3" :offset="10">
-            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-          </el-col>
-          <el-col :span="3">
-            <el-button type="info" @click="cancel">取消</el-button>
-          </el-col>
-        </el-row>
+              <div class="table">
+        <el-table
+          :data="ruleForm.tableData"
+          max-height="400"
+          @selection-change="changeCheckBoxFun1"
+          :stripe="true"
+          :highlight-current-row="true"
+          style="width: 100%; margin-top: 20px;margin-left:30%"
+        >
+          <el-table-column type="selection" width="50px" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+          <el-table-column prop="brandName" width="200" label="品牌" align="center"></el-table-column>
+        </el-table>
+      </div>
       </el-form>
+
+
     </el-dialog>
   </div>
 </template>
@@ -192,6 +198,8 @@ export default {
       },
 
       ruleForm: {
+        multipleSelection:[],
+        tableData:[],
         userName:"",
         brandName: "",
         brandId: "",
@@ -290,6 +298,25 @@ export default {
         .catch(error => {
         });
     },
+
+    handleSearch1(){
+            this.$axios
+        .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
+          params: {
+            customerId:this.ruleForm.customerName
+          }
+        })
+        .then(response => {
+          console.log(response.data);
+          this.ruleForm.tableData =response.data;
+        })
+        .catch(error => {
+          this.$message({
+            message: "获取品牌信息失败",
+            type: "error"
+          });
+        });
+    },
     // 表格中的删除
     deleteRangeData(row, index) {
       const that = this;
@@ -345,6 +372,11 @@ export default {
     changeCheckBoxFun(val) {
       const that = this;
       that.multipleSelection = val;
+    },
+
+        changeCheckBoxFun1(val) {
+      const that = this;
+      that.ruleForm.multipleSelection = val;
     },
 
     deleteUser() {
@@ -471,20 +503,16 @@ export default {
               userName=element.realName;
             }
           })
-          let list={
-                          		userId :this.ruleForm.userName ,
-		              userName : userName,
-	              	customerId :this.ruleForm.customerName ,
-	              	brandId : this.ruleForm.brandName,
-          }
-          console.log(list)
-          
+          let brandList=[];
+          this.ruleForm.multipleSelection.forEach(element=>{
+            brandList.push(element.brandId)
+          })
           this.$axios
             .post(`${window.$config.HOST}/authorityManagement/addUserDataAuthority`,{
               		userId :this.ruleForm.userName ,
 		              userName : userName,
 	              	customerId :this.ruleForm.customerName ,
-	              	brandId : this.ruleForm.brandName,
+	              	brandId : brandList
             })
             .then(response => {
               console.log(response.data)
@@ -513,6 +541,9 @@ export default {
                 type: "error"
               });
             });
+
+
+
         } else {
           this.$message({
             message: "请填写必须填写的项！",

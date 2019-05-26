@@ -84,6 +84,13 @@
             </el-upload>
           </el-col>
         </el-row>
+                <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="示例图片" style="margin-top:20px">
+              <img style="width: 180px; height: 150px" :src="url"></img>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row style="margin: 20px 0 10px 0">
           <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
           <el-table
@@ -114,6 +121,7 @@ import XLSX from "xlsx";
 export default {
   data() {
     return {
+         url: "/static/styleImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }

@@ -68,6 +68,13 @@
             </el-upload>
           </el-col>
         </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="示例图片" style="margin-top:20px">
+              <img style="width: 300px; height: 150px" :src="url"></img>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
           <el-table
@@ -100,6 +107,7 @@ import XLSX from "xlsx";
 export default {
   data() {
     return {
+      url: "/static/rangeImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -116,19 +124,18 @@ export default {
         brandName: "",
         clothingType: "",
         filePath: "",
-        tableData: [ ]
+        tableData: []
       },
       options: {
-        customerNameOptions: [ ],
-        brandNameOptions: [ ],
-        clothingTypeOptions: [ ]
+        customerNameOptions: [],
+        brandNameOptions: [],
+        clothingTypeOptions: []
       },
       fileList: []
     };
   },
   created: function() {
     var that = this;
-  
 
     //获得顾客名称
     that.$axios
@@ -137,7 +144,6 @@ export default {
         console.log("获得顾客信息成功了");
         var CustomerList = response.data;
         this.options.customerNameOptions = CustomerList;
-
       })
       .catch(error => {
         this.$message({
@@ -170,7 +176,6 @@ export default {
         console.log("获得服装层次信息成功了");
         var ClothingList = response.data;
         this.options.clothingTypeOptions = ClothingList;
-
       })
       .catch(error => {
         this.$message({
@@ -178,16 +183,14 @@ export default {
           type: "error"
         });
       });
-
-   
   },
   methods: {
-     clientSelect2() {
-      this.ruleForm.brandName="";
-      let list={
-            customerId: this.ruleForm.customerName
-          };
-          console.log(list);
+    clientSelect2() {
+      this.ruleForm.brandName = "";
+      let list = {
+        customerId: this.ruleForm.customerName
+      };
+      console.log(list);
       this.$axios
         .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
           params: list
@@ -203,7 +206,6 @@ export default {
           });
         });
     },
-
 
     ////////////// methods for xls /////////////
     readExcel(file) {
@@ -365,32 +367,29 @@ export default {
         });
       });
 
-
       this.$axios
         //此处的接口为批量导入
-        .post(`${window.$config.HOST}/infoManagement/addRangeList`, 
+        .post(
+          `${window.$config.HOST}/infoManagement/addRangeList`,
           RangeListAdd
         )
         .then(response => {
-        this.$router.push({
-          name: `rangeManagement`
-        });
+          this.$router.push({
+            name: `rangeManagement`
+          });
           var ok = response.data;
           if (ok >= 0) {
-            if(ok===RangeListAdd.length)
-            {
-this.$message({
-              message: "成功添加",
-              type: "success"
-            });
-            }
-            else {
+            if (ok === RangeListAdd.length) {
               this.$message({
-              message: (RangeListAdd.length-ok)+"条数据未导入",
-              type: "success"
-            });
+                message: "成功添加",
+                type: "success"
+              });
+            } else {
+              this.$message({
+                message: RangeListAdd.length - ok + "条数据未导入",
+                type: "success"
+              });
             }
-            
           } else {
             this.$message({
               message: "导入失败",
@@ -404,8 +403,6 @@ this.$message({
             type: "warning"
           });
         });
-
-
     },
     // 取消按钮点击
     cancel() {
