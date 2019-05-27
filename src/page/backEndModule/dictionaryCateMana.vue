@@ -521,12 +521,10 @@ export default {
         });
 
       this.ruleFormCate.addCateName = "";
-      this.ruleFormCate.addCateCode ="";
-
-
-
-      this.ruleFormCate.addCateShowFlag = false;
-      this.ruleFormCate.viewname = 'first';
+      this.ruleFormCate.addCateCode = "";
+      
+      this.addCateShowFlag = false;
+      this.viewname = 'first';
     },
     handleAddCateCancelClick(){
       this.$message({

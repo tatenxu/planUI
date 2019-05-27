@@ -111,7 +111,7 @@
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
-        <el-table-column prop="havePlan" label="状态" align="center">
+        <el-table-column prop="state" label="状态" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.havePlan">已制定</p>
             <p v-else>未制定</p>

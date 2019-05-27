@@ -512,7 +512,7 @@ export default {
               		userId :this.ruleForm.userName ,
 		              userName : userName,
 	              	customerId :this.ruleForm.customerName ,
-	              	brandId : brandList
+	              	brandIdList : brandList
             })
             .then(response => {
               console.log(response.data)

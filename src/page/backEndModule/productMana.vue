@@ -271,10 +271,6 @@
       handleSearchClick(allFlag){
         var param = {name:undefined};
         if(!allFlag){
-          /* if(this.searchInput === ""){
-            this.$message.error("请输入产品名称");
-            return;
-          } */
           param = {
             name: (this.searchInput==="")?undefined:this.searchInput,
           };
@@ -347,8 +343,11 @@
                 console.log(element.name+"删除失败");
                 this.$message.error(element.name+"删除失败");
               }
-              var i = this.tableData.indexOf(element);
-              this.tableData.splice(i,1);
+              this.handleSearchClick(true);
+              this.$message({
+                message:"删除成功!",
+                type:'success'
+              });
             })
             .catch(error=>{
                 console.log(element.name+"删除失败");

@@ -123,7 +123,7 @@
           <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="state" width="70" label="状态" align="center"></el-table-column>
+          <el-table-column prop="stateStr" width="70" label="状态" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
@@ -356,7 +356,7 @@ export default {
         this.data.tableData = response.data;
 
         //时间排序
-        this.totalTableData.sort(function(a,b){
+        this.data.tableData.sort(function(a,b){
           return Date.parse(b.createTime)-Date.parse(a.createTime);
         });
 
@@ -584,7 +584,7 @@ export default {
           this.data.tableData = response.data;
 
           //时间排序
-          this.totalTableData.sort(function(a,b){
+          this.data.tableData.sort(function(a,b){
             return Date.parse(b.createTime)-Date.parse(a.createTime);
           });
 
@@ -727,7 +727,6 @@ export default {
     }, */
     // 表格中的修改
     changeStyleGroupData(row){
-      const that = this;
       console.log("点击了本行的修改");
       this.controlData.ifStyleGroupChange = true;
       
@@ -840,7 +839,7 @@ export default {
           .then(response=>{
             if(response.data >= 0){
               this.$message({
-                message: '成功新增款式组信息',
+                message: '成功新增款式组信息:',
                 type: 'success'
               });
               this.handleSearch();
@@ -874,7 +873,7 @@ export default {
             var resData = response.data;
             if(resData >= 0){
               this.$message({
-                message: '成功修改款式组信息',
+                message: '成功修改款式组信息:'+response.data,
                 type: 'success'
               });
               this.handleSearch();

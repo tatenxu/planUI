@@ -260,6 +260,10 @@ export default {
               console.log(this.chosenPlanRow+"下发失败!");
             }else{
               console.log(this.chosenPlanRow+"下发成功!");
+              that.$message({
+                message:this.chosenPlanRow+"下发失败!",
+                type:'success'
+              });
               this.handleSearch();
             }
           })

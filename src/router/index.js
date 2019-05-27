@@ -56,9 +56,12 @@ const dictionaryCateMana = r => require.ensure([], () => r(require('../page/back
 var servicePath = "/planservice";
 // -------------------------------------------- 路由配置部分 --------------------------------------------
 export default [{
-    path: Config.route.login,
-    name: 'Login',
-    component: Login
+    // path: Config.route.login,
+    // name: 'Login',
+    // component: Login
+    path: servicePath+'/',
+    name: 'Layout',
+    component: Layout,
   },
   
   {
@@ -384,9 +387,12 @@ export default [{
     ]
   },
   {
-    path: '*',
-    redirect: Config.route.login,
-    name: 'Login',
-    component: Login
+    // path: '*',
+    // redirect: Config.route.login,
+    // name: 'Login',
+    // component: Login
+    path: servicePath+'/',
+    name: 'Layout',
+    component: Layout,
   }
 ]
