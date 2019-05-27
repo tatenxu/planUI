@@ -150,7 +150,7 @@
         >
           <el-table-column type="selection" width="50px" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="200" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="name" width="200" label="品牌" align="center"></el-table-column>
         </el-table>
       </div>
       </el-form>
@@ -330,12 +330,13 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-
         .then(() => {
+          console.log("要删除",row.id)
           this.$axios
             .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,{
               params:{
-                id:row.id
+                userId:row.userId,
+                brandId:row.brandId
               }
             })
             .then(response => {
@@ -410,7 +411,10 @@ export default {
               this.$axios
                 .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,
                 {
-                  params:list
+                  params:{
+                userId:element.userId,
+                brandId:element.brandId
+                  }
                 })
                 .then(response => {
                   this.handleSearch();
@@ -489,6 +493,15 @@ export default {
     // 添加用户
     addUser() {
       const that = this;
+       this.ruleForm.multipleSelection=[],
+        this.ruleForm.tableData=[],
+        this.ruleForm.userName="",
+        this.ruleForm.brandName= "",
+        this.ruleForm.brandId="",
+        this.ruleForm.customerName="",
+        this.ruleForm.customerId= "",
+        this.ruleForm.name="",
+        this.ruleForm.id= "",
       this.dialogFormVisible = true;
     },
 
@@ -503,16 +516,18 @@ export default {
               userName=element.realName;
             }
           })
+
+          console.log("dsadsad",this.ruleForm.multipleSelection)
           let brandList=[];
           this.ruleForm.multipleSelection.forEach(element=>{
-            brandList.push(element.brandId)
+            brandList.push(element.id)
           })
           this.$axios
             .post(`${window.$config.HOST}/authorityManagement/addUserDataAuthority`,{
               		userId :this.ruleForm.userName ,
 		              userName : userName,
 	              	customerId :this.ruleForm.customerName ,
-	              	brandId : brandList
+	              	brandIdList : brandList
             })
             .then(response => {
               console.log(response.data)

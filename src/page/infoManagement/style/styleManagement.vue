@@ -834,22 +834,28 @@ export default {
         });
       } else if (that.multipleSelection.length >= 1) {
         let rangeId = this.multipleSelection[0].rangeId;
+        let ok=0;
         this.multipleSelection.forEach(element => {
           if (element.rangeId != rangeId) {
+            ok++;
+            
             this.$message({
               message: "请选择同一系列下的款式进行绑定！",
               type: "warning"
             });
-            return;
           }
         });
-
-        that.$router.push({
+        if(ok===0)
+        {
+           that.$router.push({
           name: `bindStyleGroup`,
           query: {
             bindData: that.multipleSelection
           }
         });
+        }
+
+        
       }
     },
     // 表格中的查看
@@ -879,12 +885,11 @@ export default {
     changeStyleData(row) {
       const that = this;
       console.log("点击了本行的修改");
+      console.log("ID为：",row.styleGroupId)
 
-      if(row.styleGroupId!="")
+      if(row.styleGroupId===null)
       {
-        
-      //得到系列名称
-
+          //得到系列名称
       this.$axios
         .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
           params: {
@@ -945,14 +950,16 @@ export default {
         (this.ruleForm.state = row.state),
         (this.ruleForm.havePlan = row.havePlan),
         (this.dialogFormVisible1 = true);
-            }
+            
 
-            else {
-                 this.$message({
+      }
+      else{
+          this.$message({
                 type: "error",
-                message: "该款式已绑定款式组，无法修改！"
+                message: "该款式已被绑定，无法修改！"
               });
-            }
+      }
+    
 
     },
     // 表格中的删除
