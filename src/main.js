@@ -65,7 +65,7 @@ window.$config = {};
 // window.$config.HOST = 'http://192.168.1.180:8081'
 // window.$config.HOST2 = 'http://192.168.1.180:8001/uaa';
 
-//production
+// production
 window.$config.HOST = 'http://202.120.1.66:8080/planservice'
 window.$config.HOST2 = 'http://202.120.1.66:8080/service-authorization/uaa';
 
