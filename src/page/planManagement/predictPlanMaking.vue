@@ -348,13 +348,19 @@ export default {
     //提交已制定的预测计划
     submitPredictPlan(){
       // console.log("提交计划"+row.id);
-      this.$confirm("是否确认提交计划?", "提示", {
+      if(this.selectedTableData.length === 0){
+        this.$message({
+          message: '请选择要保存的计划!',
+          type: 'warning'
+        });
+      }else{
+        this.$confirm("是否确认保存计划?", "提示", {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
         .then(()=>{
-          console.log("提交计划:");
+          console.log("保存计划:");
           console.log(this.selectedTableData);
           this.selectedTableData.forEach(element=>{
             this.$axios
@@ -364,26 +370,27 @@ export default {
           })
               .then(response=>{
                 if(response.data < 0){
-                  this.$message.error("提交失败,失败代码:"+(resData.errcode));
+                  this.$message.error("保存失败,失败代码:"+(resData.errcode));
                 }else{
                   this.$message({
-                    message: '成功提交!',
+                    message: '成功保存!',
                     type: 'success'
                   });
-                  console.log(element.name+"提交成功");
+                  console.log(element.name+"保存成功");
                 }
               })
               .catch(error=>{
-                this.$message.error(element.name+"提交失败!");
+                this.$message.error(element.name+"保存失败!");
               }); 
           }); 
         })
         .catch(()=>{
           this.$message({
-            message: '取消提交!',
+            message: '取消保存!',
             type: 'info'
           });
         });
+      }
     },
 
     //编辑预测计划

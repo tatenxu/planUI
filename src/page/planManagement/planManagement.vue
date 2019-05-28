@@ -337,7 +337,7 @@ export default {
           }
         });
         //时间排序
-        this.totalTableData.sort(function(a,b){
+        this.tableData.sort(function(a,b){
           return Date.parse(b.createTime)-Date.parse(a.createTime);
         });
 
@@ -849,7 +849,7 @@ export default {
             });
 
             //时间排序
-            this.totalTableData.sort(function(a,b){
+            this.tableData.sort(function(a,b){
               return Date.parse(b.createTime)-Date.parse(a.createTime);
             }); 
 
