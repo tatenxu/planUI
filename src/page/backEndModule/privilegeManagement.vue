@@ -552,6 +552,7 @@ export default {
     },
     // 添加用户
     addUser() {
+    
       const that = this;
        this.ruleForm.multipleSelection=[],
         this.ruleForm.tableData=[],
@@ -566,6 +567,15 @@ export default {
     },
 
     submitForm(formName) {
+
+        if(this.ruleForm.multipleSelection.length===0)
+      {
+          this.$message({
+            message: "请至少选择一个品牌！",
+            type: "error"
+          });
+          return ;
+      }
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {

@@ -111,6 +111,7 @@
         </el-row>
         <el-table
           :data="tableDataA"
+          :default-sort="{prop:'styleGroupName',order:'ascending'}"
           max-height="400"
           border
           @selection-change="changeCheckBoxFun"
@@ -528,11 +529,12 @@ export default {
         console.log(response.data);
         var SearchList = response.data;
         this.data.tableData = SearchList;
-        this.data.tableData.sort(function(b, a) {
-          if(a.styleGroupId=="") return 1;
-          else if(b.styleGroupId=="") return -1;
-          return a.styleGroupId-b.styleGroupId; //时间正序
-        });
+        // this.data.tableData.sort(function(b, a) {
+        //   console.log("a-b:",a.styleGroupId-b.styleGroupId)
+        //   if(a.styleGroupId==null) return 1;
+        //   else if(b.styleGroupId==null) return -1;
+        //   return a.styleGroupId-b.styleGroupId; 
+        // });
         this.data.tableData.forEach(element => {
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
