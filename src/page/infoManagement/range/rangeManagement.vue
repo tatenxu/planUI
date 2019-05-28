@@ -690,14 +690,44 @@ export default {
                 .then(response => {
                   this.handleSearch();
                   var ok = response.data;
-                  if (ok < 0) {
+                  if (ok === -1) {
                     this.$message({
-                      message: "删除失败",
+                      message: "新增的数据已存在！",
                       type: "error"
                     });
-                  } else {
+                  } else if(ok===-2) {
                     this.$message({
-                      message: "删除成功",
+                      message: "传入信息的字段确实！",
+                      type: "error"
+                    });
+                  }else if(ok===-3) {
+                    this.$message({
+                      message: "数据库操作错误！",
+                      type: "error"
+                    });
+                  }else if(ok===-4) {
+                    this.$message({
+                      message: "数据不唯一！",
+                      type: "error"
+                    });
+                  }else if(ok===-5) {
+                    this.$message({
+                      message: "数据库其他错误！",
+                      type: "error"
+                    });
+                  }else if(ok===-6) {
+                    this.$message({
+                      message: "数据不存在！",
+                      type: "error"
+                    });
+                  }else if(ok===-7) {
+                    this.$message({
+                      message: "数据状态错误！",
+                      type: "error"
+                    });
+                  }else{
+                    this.$message({
+                      message: "操作成功！",
                       type: "success"
                     });
                   }
@@ -793,18 +823,48 @@ export default {
             })
             .then(response => {
               this.handleSearch();
-              var ok = response.data;
-              if (ok < 0) {
-                this.$message({
-                  message: "删除失败",
-                  type: "error"
-                });
-              } else {
-                this.$message({
-                  message: "删除成功",
-                  type: "success"
-                });
-              }
+                  var ok = response.data;
+                  if (ok === -1) {
+                    this.$message({
+                      message: "新增的数据已存在！",
+                      type: "error"
+                    });
+                  } else if(ok===-2) {
+                    this.$message({
+                      message: "传入信息的字段确实！",
+                      type: "error"
+                    });
+                  }else if(ok===-3) {
+                    this.$message({
+                      message: "数据库操作错误！",
+                      type: "error"
+                    });
+                  }else if(ok===-4) {
+                    this.$message({
+                      message: "数据不唯一！",
+                      type: "error"
+                    });
+                  }else if(ok===-5) {
+                    this.$message({
+                      message: "数据库其他错误！",
+                      type: "error"
+                    });
+                  }else if(ok===-6) {
+                    this.$message({
+                      message: "数据不存在！",
+                      type: "error"
+                    });
+                  }else if(ok===-7) {
+                    this.$message({
+                      message: "数据状态错误！",
+                      type: "error"
+                    });
+                  }else{
+                    this.$message({
+                      message: "操作成功！",
+                      type: "success"
+                    });
+                  }
             })
             .catch(error => {
               this.handleSearch();

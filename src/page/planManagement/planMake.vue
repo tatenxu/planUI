@@ -769,9 +769,44 @@ export default {
                   name: this.goback,
                   params: {}
                 });
-              } else {
+              } else if (ok===-1){
                 this.$message({
-                  message: "父计划未下发",
+                  message: "所需属性值缺失！",
+                  type: "error"
+                });
+              }else if (ok===-2){
+                this.$message({
+                  message: "计划名称重复",
+                  type: "error"
+                });
+              }else if (ok===-3){
+                this.$message({
+                  message: "父计划未下发！",
+                  type: "error"
+                });
+              }else if (ok===-4){
+                this.$message({
+                  message: "系列根计划不存在！",
+                  type: "error"
+                });
+              }else if (ok===-5){
+                this.$message({
+                  message: "款式组根计划不存在",
+                  type: "error"
+                });
+              }else if (ok===-6){
+                this.$message({
+                  message: "根计划已存在！",
+                  type: "error"
+                });
+              }else if (ok===-7){
+                this.$message({
+                  message: "计划开始结束时间超额！",
+                  type: "error"
+                });
+              }else if (ok===-8){
+                this.$message({
+                  message: "计划款数超额！",
                   type: "error"
                 });
               }

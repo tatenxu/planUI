@@ -45,7 +45,7 @@ const bePlanModelManagement = r => require.ensure([], () => r(require('../page/b
 const bePrivilegeManagement = r => require.ensure([], () => r(require('../page/backEndModule/privilegeManagement.vue')), 'privilegeManagement');
 const beUserManagement = r => require.ensure([], () => r(require('../page/backEndModule/userData/userManagement.vue')), 'beUserManagement');
 const beGroupManagement = r => require.ensure([], () => r(require('../page/backEndModule/userData/groupManagement.vue')), 'beGroupManagement');
-const beRoleManagement = r => require.ensure([], () => r(require('../page/backEndModule/userData/roleManagement.vue')), 'beRoleManagement');
+const beRoleManagement = r => require.ensure([], () => r(require('../page/backEndModule/roleManagement.vue')), 'beRoleManagement');
 const brandMana = r => require.ensure([], () => r(require('../page/backEndModule/brandMana.vue')), 'brandMana');
 const customerMana = r => require.ensure([], () => r(require('../page/backEndModule/customerMana.vue')), 'customerMana');
 const productMana = r => require.ensure([], () => r(require('../page/backEndModule/productMana.vue')), 'productMana');

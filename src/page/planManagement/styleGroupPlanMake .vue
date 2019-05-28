@@ -485,10 +485,12 @@ export default {
               message: "引用预测成功",
               type: "success"
             });
+            this.searchStyleGroup();
+            
           } else {
             this.$message({
-              message: "引用预测失败",
-              type: "warning"
+              message: "预测计划不存在！",
+              type: "error"
             });
           }
         })

@@ -150,7 +150,7 @@
         >
           <el-table-column type="selection" width="50px" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="200" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="name" width="200" label="品牌" align="center"></el-table-column>
         </el-table>
       </div>
       </el-form>
@@ -330,23 +330,54 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-
         .then(() => {
+          console.log("要删除",row.id)
           this.$axios
             .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,{
               params:{
-                id:row.id
+                userId:row.userId,
+                brandId:row.brandId
               }
             })
             .then(response => {
               this.handleSearch();
               var ok = response.data;
-              if (ok < 0) {
+              if (ok === 0) {
                 this.$message({
-                  message: "删除失败",
+                  message: "未知错误！",
                   type: "error"
                 });
-              } else {
+              }else if(ok===-1){
+                this.$message({
+                  message: "传送的对象属性中存在null值！",
+                  type: "error"
+                });
+              
+              } else if(ok===-2){
+                this.$message({
+                  message: "传送的参数与数据库中唯一字段重复！",
+                  type: "error"
+                });
+              
+              } else if(ok===-3){
+                this.$message({
+                  message: "传送的参数存在不一致的情况！",
+                  type: "error"
+                });
+              
+              }else if(ok===-4){
+                this.$message({
+                  message: "当前数据库记录不符合逻辑要求！",
+                  type: "error"
+                });
+              
+              } else if(ok===-5){
+                this.$message({
+                  message: "所要查询的数据不存在！",
+                  type: "error"
+                });
+              
+              }  else {
                 this.$message({
                   message: "删除成功",
                   type: "success"
@@ -410,17 +441,50 @@ export default {
               this.$axios
                 .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,
                 {
-                  params:list
+                  params:{
+                userId:element.userId,
+                brandId:element.brandId
+                  }
                 })
                 .then(response => {
                   this.handleSearch();
                   var ok = response.data;
-                  if (ok < 0) {
-                    this.$message({
-                      message: "删除失败",
-                      type: "error"
-                    });
-                  } else {
+                                if (ok === 0) {
+                this.$message({
+                  message: "未知错误！",
+                  type: "error"
+                });
+              }else if(ok===-1){
+                this.$message({
+                  message: "传送的对象属性中存在null值！",
+                  type: "error"
+                });
+              
+              } else if(ok===-2){
+                this.$message({
+                  message: "传送的参数与数据库中唯一字段重复！",
+                  type: "error"
+                });
+              
+              } else if(ok===-3){
+                this.$message({
+                  message: "传送的参数存在不一致的情况！",
+                  type: "error"
+                });
+              
+              }else if(ok===-4){
+                this.$message({
+                  message: "当前数据库记录不符合逻辑要求！",
+                  type: "error"
+                });
+              
+              } else if(ok===-5){
+                this.$message({
+                  message: "所要查询的数据不存在！",
+                  type: "error"
+                });
+              
+              } else {
                     this.$message({
                       message: "删除成功",
                       type: "success"
@@ -489,6 +553,15 @@ export default {
     // 添加用户
     addUser() {
       const that = this;
+       this.ruleForm.multipleSelection=[],
+        this.ruleForm.tableData=[],
+        this.ruleForm.userName="",
+        this.ruleForm.brandName= "",
+        this.ruleForm.brandId="",
+        this.ruleForm.customerName="",
+        this.ruleForm.customerId= "",
+        this.ruleForm.name="",
+        this.ruleForm.id= "",
       this.dialogFormVisible = true;
     },
 
@@ -503,9 +576,11 @@ export default {
               userName=element.realName;
             }
           })
+
+          console.log("dsadsad",this.ruleForm.multipleSelection)
           let brandList=[];
           this.ruleForm.multipleSelection.forEach(element=>{
-            brandList.push(element.brandId)
+            brandList.push(element.id)
           })
           this.$axios
             .post(`${window.$config.HOST}/authorityManagement/addUserDataAuthority`,{
