@@ -713,6 +713,7 @@ export default {
               message: "引用预测成功",
               type: "success"
             });
+            this.searchSeriesPlan();
           } else {
             this.$message({
               message: "预测计划不存在！",
