@@ -715,8 +715,8 @@ export default {
             });
           } else {
             this.$message({
-              message: "引用预测失败",
-              type: "warning"
+              message: "预测计划不存在！",
+              type: "error"
             });
           }
         })

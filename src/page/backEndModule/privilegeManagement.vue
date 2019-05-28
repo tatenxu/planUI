@@ -342,12 +342,42 @@ export default {
             .then(response => {
               this.handleSearch();
               var ok = response.data;
-              if (ok < 0) {
+              if (ok === 0) {
                 this.$message({
-                  message: "删除失败",
+                  message: "未知错误！",
                   type: "error"
                 });
-              } else {
+              }else if(ok===-1){
+                this.$message({
+                  message: "传送的对象属性中存在null值！",
+                  type: "error"
+                });
+              
+              } else if(ok===-2){
+                this.$message({
+                  message: "传送的参数与数据库中唯一字段重复！",
+                  type: "error"
+                });
+              
+              } else if(ok===-3){
+                this.$message({
+                  message: "传送的参数存在不一致的情况！",
+                  type: "error"
+                });
+              
+              }else if(ok===-4){
+                this.$message({
+                  message: "当前数据库记录不符合逻辑要求！",
+                  type: "error"
+                });
+              
+              } else if(ok===-5){
+                this.$message({
+                  message: "所要查询的数据不存在！",
+                  type: "error"
+                });
+              
+              }  else {
                 this.$message({
                   message: "删除成功",
                   type: "success"
@@ -419,12 +449,42 @@ export default {
                 .then(response => {
                   this.handleSearch();
                   var ok = response.data;
-                  if (ok < 0) {
-                    this.$message({
-                      message: "删除失败",
-                      type: "error"
-                    });
-                  } else {
+                                if (ok === 0) {
+                this.$message({
+                  message: "未知错误！",
+                  type: "error"
+                });
+              }else if(ok===-1){
+                this.$message({
+                  message: "传送的对象属性中存在null值！",
+                  type: "error"
+                });
+              
+              } else if(ok===-2){
+                this.$message({
+                  message: "传送的参数与数据库中唯一字段重复！",
+                  type: "error"
+                });
+              
+              } else if(ok===-3){
+                this.$message({
+                  message: "传送的参数存在不一致的情况！",
+                  type: "error"
+                });
+              
+              }else if(ok===-4){
+                this.$message({
+                  message: "当前数据库记录不符合逻辑要求！",
+                  type: "error"
+                });
+              
+              } else if(ok===-5){
+                this.$message({
+                  message: "所要查询的数据不存在！",
+                  type: "error"
+                });
+              
+              } else {
                     this.$message({
                       message: "删除成功",
                       type: "success"

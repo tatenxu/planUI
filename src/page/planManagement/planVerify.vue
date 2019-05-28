@@ -570,7 +570,7 @@ export default {
               });
             } else {
               this.$message({
-                message: "操作失败",
+                message: "当前计划状态不允许执行此操作！",
                 type: "error"
               });
             }
@@ -610,7 +610,7 @@ export default {
               });
             } else {
               this.$message({
-                message: "操作失败",
+                message: "当前计划状态不允许执行此操作！",
                 type: "error"
               });
             }
@@ -660,7 +660,7 @@ export default {
               });
             } else {
               this.$message({
-                message: "操作失败",
+                message: "当前计划状态不允许执行此操作！",
                 type: "error"
               });
             }
