@@ -379,7 +379,7 @@ export default {
         });
     },
     changeState() {
-      getWareList();
+      this.getWareList();
     },
     handleSizeChange(val) {
       this.pagination.pageSize = val;
@@ -456,16 +456,16 @@ export default {
         endDate: this.DataEndTime
       };
 
-      let list1 = {
-        stage: "distribute",
-        customerId: this.clientId === "" ? undefined : this.clientId,
-        brandId: this.brandId === "" ? undefined : this.brandId,
-        rangeId: this.rangeId === "" ? undefined : this.rangeId,
-        name: undefined,
-        clothingLevelId: undefined,
-        startDate: this.DataStartTime,
-        endDate: this.DataEndTime
-      };
+      // let list1 = {
+      //   stage: "distribute",
+      //   customerId: this.clientId === "" ? undefined : this.clientId,
+      //   brandId: this.brandId === "" ? undefined : this.brandId,
+      //   rangeId: this.rangeId === "" ? undefined : this.rangeId,
+      //   name: undefined,
+      //   clothingLevelId: undefined,
+      //   startDate: this.DataStartTime,
+      //   endDate: this.DataEndTime
+      // };
       console.log(list);
 
       let stateName;
@@ -476,39 +476,6 @@ export default {
       } else if (this.checked === 3) {
         stateName = "已下发";
       }
-
-      if (this.checked === 3) {
-        that.$axios
-          .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-            params: list1
-          })
-          .then(response => {
-            console.log(response.data);
-
-            (this.tableData = []),
-              response.data.forEach(element => {
-                console.log("dsadsa");
-                if (element.state === stateName) this.tableData.push(element);
-              });
-
-            this.pagination.total = this.tableData.length;
-            let i =
-              (this.pagination.currentPage - 1) * this.pagination.pageSize;
-            let k =
-              (this.pagination.currentPage - 1) * this.pagination.pageSize;
-            this.tableDataA = [];
-
-            for (
-              ;
-              i - k < this.pagination.pageSize && i < this.tableData.length;
-              i++
-            ) {
-              this.tableDataA.push(this.tableData[i]);
-            }
-          })
-
-          .catch(error => {});
-      } else {
         that.$axios
           .get(`${window.$config.HOST}/planManagement/getPlanList`, {
             params: list
@@ -539,7 +506,7 @@ export default {
           })
 
           .catch(error => {});
-      }
+      
     },
     isChanged(val) {
       this.AnyChanged = val;

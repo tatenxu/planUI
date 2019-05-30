@@ -195,14 +195,14 @@ export default {
             },
             {
               name: "异常管理"
-			},
-		    {
+            },
+            {
               name: "消息管理"
-			},
-			{
+            },
+            {
               name: "查询统计"
-			},
-			{
+            },
+            {
               name: "报表管理"
             }
           ],
@@ -257,16 +257,16 @@ export default {
           },
           {
             name: "异常管理"
-		  },
-		  {
-              name: "消息管理"
-			},
-			{
-              name: "查询统计"
-			},
-			{
-              name: "报表管理"
-            }
+          },
+          {
+            name: "消息管理"
+          },
+          {
+            name: "查询统计"
+          },
+          {
+            name: "报表管理"
+          }
         ],
         options: {
           roleOptions: []
@@ -280,13 +280,13 @@ export default {
     //获得角色名字
     that.$axios
       .get(`${window.$config.HOST2}/getRoleList`, {
-		  params:{
-			  need:"all"
-		  }
+        params: {
+          need: "all"
+        }
       })
       .then(response => {
-		this.searchOptions.options.roleOptions = response.data;
-		this.ruleForm.options.roleOptions=response.data;
+        this.searchOptions.options.roleOptions = response.data;
+        this.ruleForm.options.roleOptions = response.data;
       })
       .catch(error => {
         this.$message({
@@ -302,20 +302,20 @@ export default {
         this.tableData = response.data;
       })
       .catch(error => {
-		  this.tableDate=[]
-	  });
+        this.tableDate = [];
+      });
   },
 
   methods: {
-	  //搜索
+    //搜索
     handleSearch() {
       this.$axios
         .get(
           `${window.$config.HOST}/authorityManagement/getRoleSystemAuthority`,
           {
             params: {
-				roleId:this.roleId === "" ? undefined : this.roleId,
-				pageName:this.pageName === ""?undefined : this.pageName
+              roleId: this.roleId === "" ? undefined : this.roleId,
+              pageName: this.pageName === "" ? undefined : this.pageName
             }
           }
         )
@@ -325,7 +325,6 @@ export default {
         .catch(error => {});
     },
 
-   
     // 表格中的删除
     deleteRangeData(row, index) {
       const that = this;
@@ -409,6 +408,8 @@ export default {
         )
           .then(() => {
             console.log(this.multipleSelection);
+            var  len = this.multipleSelection.length;
+            var  count = 0;
             this.multipleSelection.forEach(element => {
               console.log(element.id);
               let list = {
@@ -428,18 +429,13 @@ export default {
                   }
                 )
                 .then(response => {
-                  this.handleSearch();
-                  var ok = response.data;
-                  if (ok < 0) {
+                  count++;
+                  if (count === len) {
                     this.$message({
-                      message: "删除失败",
-                      type: "error"
-                    });
-                  } else {
-                    this.$message({
-                      message: "删除成功",
-                      type: "success"
-                    });
+                      message:"删除成功！",
+                      type:"success"
+                    })
+                    this.handleSearch();
                   }
                 })
                 .catch(error => {
@@ -450,6 +446,7 @@ export default {
                   });
                 });
             });
+
 
             // this.$message({
             //   type: "success",
@@ -468,15 +465,14 @@ export default {
     // 添加用户
     addUser() {
       const that = this;
-      (this.ruleForm.multipleSelection = []),
+        // (this.ruleForm.multipleSelection = []),
         (this.ruleForm.roleId = ""),
         (this.ruleForm.roleName = ""),
         (this.dialogFormVisible = true);
-	},
-	
+    },
 
-	//OK
-    submitForm(formName) {  
+    //OK
+    submitForm(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -485,19 +481,21 @@ export default {
             if (element.id === this.ruleForm.roleId) {
               roleName = element.chineseName;
             }
-		  });
-		  
+          });
+
           let pageList = [];
           this.ruleForm.multipleSelection.forEach(element => {
             pageList.push(element.name);
           });
           this.$axios
             .post(
-              `${window.$config.HOST}/authorityManagement/addRoleSystemAuthority`,
+              `${
+                window.$config.HOST
+              }/authorityManagement/addRoleSystemAuthority`,
               {
                 roleId: this.ruleForm.roleId,
                 roleName: roleName,
-                pageNameList: pageList,
+                pageNameList: pageList
               }
             )
             .then(response => {
@@ -509,8 +507,8 @@ export default {
                   type: "warning"
                 });
               } else {
-                  this.handleSearch();
-                  (this.ruleForm.roleId = ""),
+                this.handleSearch();
+                (this.ruleForm.roleId = ""),
                   (this.ruleForm.roleName = ""),
                   (this.dialogFormVisible = false);
                 this.$message({
@@ -533,11 +531,11 @@ export default {
           });
         }
       });
-	},
-	
-	//Ok
+    },
+
+    //Ok
     cancel() {
-       (this.ruleForm.roleId = ""),
+      (this.ruleForm.roleId = ""),
         (this.ruleForm.roleName = ""),
         (this.dialogFormVisible = false);
     }
