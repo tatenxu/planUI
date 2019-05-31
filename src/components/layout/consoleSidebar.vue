@@ -175,7 +175,7 @@
       </el-menu-item>
       <!-- <el-menu-item index="/gantt"><i class="el-icon-document"></i>报表管理</el-menu-item> -->
 
-      <el-submenu index="backEnd">
+      <el-submenu index="backEnd" v-if="backMana">
         <template slot="title">
           <i class="el-icon-message"></i>
           后管理模块
@@ -256,6 +256,7 @@ export default {
       statistics:false,
       gantt:false,
       predictMana:false,
+      backMana:false
     };
   },
 
@@ -346,6 +347,9 @@ export default {
             }
             if(this.pageList.includes("报表管理")){
               this.gantt=true;
+            }
+            if(this.pageList.includes("后台管理")){
+              this.backMana=true;
             }
 
           })
