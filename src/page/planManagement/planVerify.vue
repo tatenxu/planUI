@@ -375,7 +375,7 @@ export default {
             if (element.state === "已提交") this.tableData.push(element);
           });
 
-        this.pagination.total = response.data.length;
+        this.pagination.total = this.tableData.length;
         let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
         let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
         this.tableDataA = [];
