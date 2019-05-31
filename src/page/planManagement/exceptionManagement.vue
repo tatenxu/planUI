@@ -132,9 +132,7 @@
   margin-top: 10px;
 }
 
-.bg-purple {
-  // background: #d3dce6;
-}
+
 
 .grid-content {
   border-radius: 4px;

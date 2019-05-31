@@ -188,8 +188,6 @@
 
 
 <script>
-// import { truncate } from 'fs';
-// import { constants } from 'fs';
   export default {
     data() {
       return {
@@ -222,6 +220,33 @@
 
         addCardShowFlag:false,
         editCardShowFlag: false,
+
+        baseInfoManagementErrorCode : [
+          {
+            errorCode:0,
+            errorInfo:"未知错误",
+          },
+          {
+            errorCode:-1,
+            errorInfo:"传送的对象属性中存在null",
+          },
+          {
+            errorCode:-2,
+            errorInfo:"字段重复",
+          },
+          {
+            errorCode:-3,
+            errorInfo:"参数存在不一致",
+          },
+          {
+            errorCode:-4,
+            errorInfo:"当前数据库记录不符合逻辑要求",
+          },
+          {
+            errorCode:-5,
+            errorInfo:"未知错所要查询的数据在数据库中不存在",
+          },
+        ],
       };
     },
     created:function(){
@@ -331,7 +356,7 @@
               })
               .then(response=>{
                 if(response.data<0){
-                  this.$message.error(element.name+"删除失败");
+                  this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
                   console.log(element.name+"删除失败");
                 }else{
                   console.log(element.name+"删除成功");
@@ -362,7 +387,7 @@
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addBrand`,param)
           .then(response=>{
             if(response.data < 0){
-              this.$message.error("添加失败");
+              this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
             }else{
               this.$message({
                 message:'添加成功!',
@@ -409,7 +434,7 @@
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateBrand`,param)
           .then(response=>{
             if(response.data<0){
-              this.$message.error("编辑失败");
+              this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
             }else{
               this.$message({
                 message:'编辑成功!',

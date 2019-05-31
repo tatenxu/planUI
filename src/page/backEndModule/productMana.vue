@@ -226,6 +226,33 @@
 
         newCardShowFlag:false,
         editCardShowFlag: false,
+
+        baseInfoManagementErrorCode : [
+          {
+            errorCode:0,
+            errorInfo:"未知错误",
+          },
+          {
+            errorCode:-1,
+            errorInfo:"传送的对象属性中存在null",
+          },
+          {
+            errorCode:-2,
+            errorInfo:"字段重复",
+          },
+          {
+            errorCode:-3,
+            errorInfo:"参数存在不一致",
+          },
+          {
+            errorCode:-4,
+            errorInfo:"当前数据库记录不符合逻辑要求",
+          },
+          {
+            errorCode:-5,
+            errorInfo:"未知错所要查询的数据在数据库中不存在",
+          },
+        ]
       };
     },
     created:function(){
@@ -340,8 +367,8 @@
           })
             .then(response=>{
               if(response.data<0){
-                console.log(element.name+"删除失败");
-                this.$message.error(element.name+"删除失败");
+                console.log("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
+                this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
               }
               this.handleSearchClick(true);
               this.$message({
@@ -369,8 +396,8 @@
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addProduct`,param)
           .then(response=>{
             if(response.data<0){
-              console.log("后台添加失败");
-              this.$message.error("添加失败!");
+              console.log("后台添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
+              this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
               return;
             }
             this.$message({
@@ -418,7 +445,7 @@
         this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateProduct`,param)
           .then(response=>{
             if(response.data < 0){
-              this.$message.error("编辑失败!");
+              this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
               return;
             }
             this.$message({

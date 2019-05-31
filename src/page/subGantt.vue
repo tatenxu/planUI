@@ -1,48 +1,6 @@
 <template>
   <div>
     <el-card class="box-card">
-      <el-row :gutter="20" style="margin-top:5px; ">
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">创建人:</div>
-            <el-select v-model="searchOptions.searchParams.createrName" clearable >
-              <el-option
-                v-for="item in searchOptions.options.createrNameOptions"
-                :key="item.realName"
-                :label="item.realName"
-                :value="item.realName">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">计划名称:</div>
-            <el-input v-model="searchOptions.searchParams.planName"/>
-          </div>
-        </el-col>
-
-        <el-col :span="10">
-          <div class="bar">
-            <div class="title">起止时间:</div>
-              <el-date-picker
-                v-model="searchOptions.searchParams.dateRange"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-              </el-date-picker>
-          </div>
-        </el-col>
-
-        <el-col :span="2">
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-        </el-col>
-      </el-row>
-    </el-card>
-
-    <el-card class="box-card">
       <gantt-elastic
         :options="options"
         :tasks="tasks"
@@ -68,38 +26,11 @@
     },
     data() {
       return {
-        searchOptions: {
-          searchParams: {
-            createrName: "",
-            planName: "",
-            dateRange: ""
-          },
-          options: {
-            createrNameOptions: [],
-          }
-        },
-
         tasks :[],
         options:{},
       }
     },
     created:function(){
-      //获取用户信息
-      this.$axios
-        .get(`${window.$config.HOST2}/getAllUserName`)
-        .then(response=>{
-          if(response.data.errcode < 0){
-            that.$message.error("下发对象加载失败!");
-          }
-          this.searchOptions.options.createrNameOptions = response.data;
-        })
-        .catch(error=>{
-          this.$message.error("下发对象加载失败!");
-        });
-      
-      //默认加载所有
-      this.handleSearch();
-
       let that = this;
       //初始化options
       this.options = {
@@ -109,7 +40,7 @@
         maxRows: 100,
         maxHeight: 500,
         title: {
-          label: "系列计划时间表",
+          label: "款式组计划时间表",
           html: false
         },
         row: {
@@ -145,8 +76,8 @@
                   console.log(data.id+"尝试跳转");
                   if(data.isRoot){
                     that.$router.push({
-                      name:'subGantt',
-                      params:{rangePlanid:data.id},
+                      name:'subsubGantt',
+                      params:{styleGroupPlanid:data.id},
                     })
                   } else {
                     this.$message({
@@ -190,22 +121,6 @@
               value: "quantity",
               width: 50
             },
-            // {
-            //   id: 5,
-            //   label: "%",
-            //   value: "progress",
-            //   width: 35,
-            //   style: {
-            //     "task-list-header-label": {
-            //       "text-align": "center",
-            //       width: "100%"
-            //     },
-            //     "task-list-item-value-container": {
-            //       "text-align": "center",
-            //       width: "100%"
-            //     }
-            //   }
-            // }
           ]
         },
         locale: {
@@ -218,6 +133,19 @@
           "Display task list": "侧边栏"
         }
       };
+    },
+    mounted:function(){
+      let rangePlanid = this.$route.params.rangePlanid;
+      console.log("系列ID:"+rangePlanid);
+      if(rangePlanid != undefined)
+        this.handleSearch(rangePlanid);
+      else{
+        this.$message({
+            message:"请返回报表管理重新开始!",
+            type:'warning'
+        });
+        // window.history.go(-1);
+      }
     },
     methods: {
       addTask() {
@@ -244,19 +172,23 @@
           return y + "-" + m + "-" + d ;
         }
       },
-      handleSearch(){
-        var param={
-          name: (this.searchOptions.searchParams.planName === "")?undefined:this.searchOptions.searchParams.planName, 
-          createrName: (this.searchOptions.searchParams.createrName==="")?undefined:this.searchOptions.searchParams.createrName,
-          startDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null), 
-          endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null), 
+      handleSearch(rangePlanid){
+        var param = {
+          id:rangePlanid,
         };
         console.log(param);
         this.$axios
-          .get(`${window.$config.HOST}/planManagement/getGanttForRangePlan`,{
-            params:param
+          .get(`${window.$config.HOST}/planManagement/getGanttForStyleGroupPlan`,{
+            params:param,
           })
           .then(response=>{
+            if(response.data.length === 0){
+              console.log("无子计划");
+              this.$message({
+                message:"选择的款式组没有子计划!",
+                type:'warning'
+              })
+            }
             // console.log(response.data);
             response.data.forEach(element=>{
               if(element.parentId ===0){
@@ -288,7 +220,8 @@
       },
     },
     beforeRouteLeave(to, from, next) {
-    if (to.name === 'subGantt') {
+    if (to.name === 'subsubGantt') {
+      console.log("设置formManage keepalive=true");
       from.meta.keepAlive = true;
     } else {
       from.meta.keepAlive = false;

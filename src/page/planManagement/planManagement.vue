@@ -274,6 +274,53 @@ export default {
       selectedData: [],
 
       subPlanTableData: [],
+
+      planManagementErrorCode:[
+        {
+          errorCode:-1,
+          errotInfo:"所需属性值缺失",
+        },
+        {
+          errorCode:-2,
+          errotInfo:"计划名称重复",
+        },
+        {
+          errorCode:-3,
+          errotInfo:"父计划未下发",
+        },
+        {
+          errorCode:-4,
+          errotInfo:"系列根计划不存在",
+        },
+        {
+          errorCode:-5,
+          errotInfo:"款式组根计划不存在",
+        },
+        {
+          errorCode:-6,
+          errotInfo:"根计划已存在",
+        },
+        {
+          errorCode:-7,
+          errotInfo:"计划开始结束时间超额",
+        },
+        {
+          errorCode:-8,
+          errotInfo:"计划款数超额",
+        },
+        {
+          errorCode:-9,
+          errotInfo:"引用预测计划时预测计划不存在",
+        },
+        {
+          errorCode:-10,
+          errotInfo:"当前计划状态不允许执行此操作",
+        },
+        {
+          errorCode:-11,
+          errotInfo:"与已有计划冲突",
+        },
+      ],
     };
   },
   created: function () {
@@ -491,8 +538,8 @@ export default {
         })
         .then(response=>{
           if(response.data < 0 ){
-            console.log(row.name + "提交失败(服务器)!");
-            this.$message.error(row.id + "提交失败!");
+            console.log("提交失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            this.$message.error( "提交失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
           }else{
             this.$message({
               type:"success",
@@ -549,8 +596,8 @@ export default {
         .post(`${window.$config.HOST}/planManagement/adjustPlanOrder`,param)
         .then(response=>{
           if(response.data < 0){
-            console.log("顺序调整失败");
-            this.$message.error("顺序调整失败");
+            console.log("顺序调整失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            this.$message.error("顺序调整失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
           }else{
             console.log("顺序调整成功");
             this.$message({
@@ -587,7 +634,7 @@ export default {
               this.$axios.post(`${window.$config.HOST}/planManagement/addException`,params)
                 .then(response=>{
                   if(response.data < 0){
-                    this.$message.error(element.name + "添加异常失败");
+                    this.$message.error("添加异常失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
                   }else{
                     this.$message({
                       type:"success",
@@ -677,8 +724,8 @@ export default {
         })
         .then(response=>{
           if(response.data < 0){
-            this.$message.error(planid+"删除失败");
-            console.log("删除失败");
+            this.$message.error("删除失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            console.log("删除失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
           }else{
             this.handleSearch();
             console.log("删除成功");

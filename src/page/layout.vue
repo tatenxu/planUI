@@ -32,7 +32,10 @@
         <console-navbar v-show="hasNavbar"></console-navbar>
         <div class="console-main" :class="{'console-main-full': hasNavbar}">
           <console-bcrumd class="console-bcrumd"></console-bcrumd>
-          <router-view></router-view>
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+          </keep-alive>
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
         </div>
     </div>
 </template>

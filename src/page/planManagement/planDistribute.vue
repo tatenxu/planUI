@@ -36,6 +36,7 @@
         :stripe="true"
       >
         <!-- <el-table-column type="selection" width="50" align="center"></el-table-column> -->
+        <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
         <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
@@ -101,6 +102,53 @@ export default {
         pageSize: 10,
         total: 0,
       },
+
+      planManagementErrorCode:[
+        {
+          errorCode:-1,
+          errotInfo:"所需属性值缺失",
+        },
+        {
+          errorCode:-2,
+          errotInfo:"计划名称重复",
+        },
+        {
+          errorCode:-3,
+          errotInfo:"父计划未下发",
+        },
+        {
+          errorCode:-4,
+          errotInfo:"系列根计划不存在",
+        },
+        {
+          errorCode:-5,
+          errotInfo:"款式组根计划不存在",
+        },
+        {
+          errorCode:-6,
+          errotInfo:"根计划已存在",
+        },
+        {
+          errorCode:-7,
+          errotInfo:"计划开始结束时间超额",
+        },
+        {
+          errorCode:-8,
+          errotInfo:"计划款数超额",
+        },
+        {
+          errorCode:-9,
+          errotInfo:"引用预测计划时预测计划不存在",
+        },
+        {
+          errorCode:-10,
+          errotInfo:"当前计划状态不允许执行此操作",
+        },
+        {
+          errorCode:-11,
+          errotInfo:"与已有计划冲突",
+        },
+      ],
     };
   },
   created:function(){
@@ -110,7 +158,7 @@ export default {
       .get(`${window.$config.HOST2}/getAllUserName`)
       .then(response=>{
         if(response.data.errcode < 0){
-          that.$message.error("下发对象加载失败!");
+          that.$message.error("下发对象加载失败");
         }
         this.searchOptions.options.userNameOptions = response.data;
       })
@@ -155,10 +203,10 @@ export default {
         var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
         var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
         this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+
       })
       .catch(error => {
         console.log("初始化加载计划列表获取错误");
-
         // this.tableData = [{id:1,number:"JX20190520001",
         // name:"系列计划制定测试计划001",rangeId:14,type:"系列计划",
         // isRoot:true,parentId:0,parentName:null,planObjectId:14,
@@ -171,7 +219,6 @@ export default {
         // customerName:"单独测试客户",isCompleted:false,clothingLevelId:3,clothingLevelName:"精品"}];
         // console.log(this.totalTableData);
       });
-      
   },
   methods: {
     chooseUserClick(){
@@ -180,7 +227,13 @@ export default {
     //计划表格单选
     handlePlanChosenChange(val){
       this.chosenPlanRow = val;
-      console.log(val);
+      this.tableData.forEach(row=>{
+        if(row.id === val.id){
+          this.$refs.singleTable.toggleRowSelection(row,true);
+        } else {
+          this.$refs.singleTable.toggleRowSelection(row, false);
+        }
+      });
     },
     //switch 处理函数
     planTypeSwitchChange(){
@@ -256,12 +309,12 @@ export default {
               executerIdList: paramUserList,
             });
             if(response.data < 0){
-              that.$message.error(this.chosenPlanRow+"下发失败!");
+              that.$message.error(this.chosenPlanRow+"下发失败:");
               console.log(this.chosenPlanRow+"下发失败!");
             }else{
               console.log(this.chosenPlanRow+"下发成功!");
               that.$message({
-                message:this.chosenPlanRow+"下发失败!",
+                message:this.chosenPlanRow+"下发成功!",
                 type:'success'
               });
               this.handleSearch();
@@ -272,8 +325,8 @@ export default {
               planId:this.chosenPlanRow.id,
               executerIdList: paramUserList,
             });
-            that.$message.error(this.chosenPlanRow+"下发失败!");
-            console.log(this.chosenPlanRow+"下发失败!");
+            that.$message.error("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            console.log("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
           });
       }
     },

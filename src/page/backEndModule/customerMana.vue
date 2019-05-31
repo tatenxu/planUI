@@ -229,6 +229,7 @@ import { error } from 'util';
       };
     },
     created:function(){
+      console.log("进入客户管理");
       //获取部门信息
       this.$axios.get(`${window.$config.HOST2}/getDeptTree`)
         .then(response=>{

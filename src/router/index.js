@@ -40,6 +40,8 @@ const messageManagement = r => require.ensure([], () => r(require('../page/messa
 const exceptionManagement = r => require.ensure([], () => r(require('../page/planManagement/exceptionManagement.vue')), 'exceptionManagement');
 const queryStatistic = r => require.ensure([], () => r(require('../page/queryStatistic.vue')), 'queryStatistic');
 const formManagement = r => require.ensure([], () => r(require('../page/formManagement.vue')), 'formManagement');
+const subGantt = r => require.ensure([], () => r(require('../page/subGantt.vue')), 'subGantt');
+const subsubGantt = r => require.ensure([], () => r(require('../page/subsubGantt.vue')), 'subsubGantt');
 const bePlanModelEdit = r => require.ensure([], () => r(require('../page/backEndModule/planModelEdit.vue')), 'bePlanModelEdit');
 const bePlanModelManagement = r => require.ensure([], () => r(require('../page/backEndModule/planModelManagement.vue')), 'bePlanModelManagement');
 const bePrivilegeManagement = r => require.ensure([], () => r(require('../page/backEndModule/privilegeManagement.vue')), 'privilegeManagement');
@@ -320,6 +322,24 @@ export default [{
         component: formManagement,
         meta: {
           bcrumd: ['报表管理'],
+          keepAlive: true
+        }
+      },
+      { 
+        path:servicePath+ '/subGantt',
+        name: 'subGantt',
+        component: subGantt,
+        meta: {
+          bcrumd: ['款式组甘特图'],
+          keepAlive: true
+        }
+      },
+      { 
+        path:servicePath+ '/subsubGantt',
+        name: 'subsubGantt',
+        component: subsubGantt,
+        meta: {
+          bcrumd: ['款式甘特图'],
         }
       },
       { 

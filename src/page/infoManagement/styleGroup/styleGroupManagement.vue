@@ -306,6 +306,36 @@ export default {
         ifStyleGroupAdd: false,
         ifStyleGroupChange: false,
       },
+      infoManagementErrorCode:[
+        {
+          errorCode:-1,
+          errotInfo:"新增的数据数据库中已经存在",
+        },
+        {
+          errorCode:-2,
+          errotInfo:"传入信息的字段缺失",
+        },
+        {
+          errorCode:-3,
+          errotInfo:"数据库操作错误",
+        },
+        {
+          errorCode:-4,
+          errotInfo:"数据不唯一",
+        },
+        {
+          errorCode:-5,
+          errotInfo:"数据库其他错误",
+        },
+        {
+          errorCode:-6,
+          errotInfo:"数据不存在",
+        },
+        {
+          errorCode:-7,
+          errotInfo:"数据状态错误",
+        },
+      ],
     };
   },
   created: function () {
@@ -327,7 +357,7 @@ export default {
         });
       })
       .catch(error => {
-        console.log("getCustomer error!");
+        console.log("客户信息加载失败:请检查网络");
       });
 
     //获取服装层次
@@ -337,7 +367,7 @@ export default {
         this.searchOptions.options.clothingTypeOptions = response.data;
       })
       .catch(error => {
-        console.log("服装层次加载错误");
+        console.log("服装层次加载错误:请检查网络");
       });
 
     var param = {
@@ -372,7 +402,7 @@ export default {
         }
       })
       .catch(error=>{
-        console.log("初始化款式组列表搜索错误");
+        console.log("初始化款式组列表搜索错误:请检查网络");
       });
  
     //品牌名称选择获取
@@ -385,7 +415,7 @@ export default {
           // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
       })
       .catch(error => {
-        console.log("品牌名称加载错误");
+        console.log("品牌名称加载错误:请检查网络");
         // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
       });
 
@@ -398,7 +428,7 @@ export default {
         this.searchOptions.options.rangeNameOptions = response.data;
       })
       .catch(error => {
-        console.log("系列名称加载错误");
+        console.log("系列名称加载错误:请检查网络");
       });
     
     //获取款式组名
@@ -419,22 +449,22 @@ export default {
         }
       })
       .catch(error => {
-        console.log("款式组获取错误");
+        console.log("款式组获取错误:请检查网络");
       });
   },
   methods: {
     //系列选择触发款式组名get
 
-       handleSizeChange(val) {
+    handleSizeChange(val) {
     
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
+      this.pagination.pageSize=val;
+      console.log("每页+"+this.pagination.pageSize)
+      this.handleSearch();
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage=val;
         this.handleSearch();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.handleSearch();
-      },
+    },
     rangeSelectionChange(){
       console.log("系列名称选择触发");
       console.log(this.searchOptions.searchParams.rangeValue);
@@ -473,7 +503,7 @@ export default {
           // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
         })
         .catch(error => {
-          console.log("对话框系列名称加载错误");
+          console.log("对话框系列名称加载错误:请检查网络");
           // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
         });
       
@@ -510,7 +540,7 @@ export default {
           }
         })
         .catch(error => {
-          console.log("对话框品牌名称加载错误");
+          console.log("对话框品牌名称加载错误:请检查网络");
         });
 
     },
@@ -526,12 +556,6 @@ export default {
         m = m < 10 ? "0" + m : m;
         var d = date.getDate();
         d = d < 10 ? "0" + d : d;
-        // var h = date.getHours();
-        // var minute = date.getMinutes();
-        // minute = minute < 10 ? "0" + minute : minute;
-        // var second = date.getSeconds();
-        // second = minute < 10 ? "0" + second : second;
-        // return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
         return y + "-" + m + "-" + d ;
       }
     },
@@ -600,7 +624,7 @@ export default {
           }
         })
         .catch(error=>{
-          console.log("款式组列表搜索错误");
+          console.log("款式组列表搜索错误:请检查网络");
         });
     },
     // 添加款式组
@@ -642,13 +666,14 @@ export default {
                     message: '删除成功!'
                   });
                 }else{
-                  this.$message.error('删除失败!'); 
+                  this.$message.error('删除失败:'+this.infoManagementErrorCode[-response.data-1].errotInfo); 
                 }
                 this.handleSearch();
               })
               .catch(error=>{
+                console.log('删除失败:请检查网络');
                 this.$message.error(
-                    '删除失败!'
+                    '删除失败:请检查网络'
                   ); 
               });
           })
@@ -691,8 +716,8 @@ export default {
               })
               .then(response=>{
                 if(response.data < 0){
-                  this.$message.error(element.name+"解绑失败!")
-                  console.log(element.name+"解绑失败!");
+                  this.$message.error(element.name+"解绑失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
+                  console.log(element.name+"解绑失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
                 }else{
                   this.$message({
                     type: 'success',
@@ -701,8 +726,8 @@ export default {
                 }
               })
               .catch(error=>{
-                console.log(element.name+"解绑失败!");
-                this.$message.error(element.name+"解绑失败!")
+                console.log(element.name+"解绑失败:请检查网络");
+                this.$message.error(element.name+"解绑失败:请检查网络")
               });
           });
         })
@@ -745,7 +770,7 @@ export default {
             // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
         })
         .catch(error => {
-          console.log("对话框品牌名称加载错误");
+          console.log("对话框品牌名称加载错误:请检查网络");
         });
       //对话框获取系列
       this.$axios
@@ -757,7 +782,7 @@ export default {
           // this.options.rangeNameOptions = this.searchOptions.options.rangeNameOptions;
         })
         .catch(error => {
-          console.log("对话框系列名称加载错误");
+          console.log("对话框系列名称加载错误:请检查网络");
         });
       this.options.rangeNameOptions = [];
       
@@ -804,12 +829,12 @@ export default {
               });
               this.handleSearch();
             }else{
-              this.$message.error('删除失败!'); 
+              this.$message.error('删除失败:'+this.infoManagementErrorCode[-response.data-1].errotInfo); 
             }
           })
           .catch(error=>{
             this.$message.error(
-                '删除失败!'
+                '删除失败:请检查网络'
               ); 
           });
       })
@@ -848,13 +873,13 @@ export default {
               this.ruleForm.tmpRange = "";
               this.ruleForm.tmpStyleGroup="";
             }else{
-              console.log("新增款式组信息失败");
-              this.$message.error('新增款式组信息失败');
+              console.log("新增款式组信息失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
+              this.$message.error('新增款式组信息失败:'+this.infoManagementErrorCode[-response.data-1].errotInfo);
             }
           })
           .catch(error=>{
-            console.log("新增款式组信息失败");
-            this.$message.error('新增款式组信息失败');
+            console.log("新增款式组信息失败:请检查网络");
+            this.$message.error('新增款式组信息失败:请检查网络');
           });
       }else if(this.controlData.ifStyleGroupChange){
         this.controlData.ifStyleGroupChange = false;
@@ -878,12 +903,13 @@ export default {
               });
               this.handleSearch();
             }else{
-              this.$message.error('后端修改款式组信息失败');
-              console.log("后端修改款式组信息失败");
+              console.log(response.data);
+              this.$message.error('修改款式组信息失败:'+this.infoManagementErrorCode[-response.data-1].errotInfo);
+              console.log("修改款式组信息失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
             }
           })
           .catch(error=>{
-            this.$message.error('修改款式组信息失败');
+            this.$message.error('修改款式组信息失败:请检查网络');
           });
       }
       

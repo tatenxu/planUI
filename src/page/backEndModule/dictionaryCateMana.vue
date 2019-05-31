@@ -259,6 +259,32 @@ export default {
       addPropShowFlag:false,
       editPropShowFlag:false,
 
+      baseInfoManagementErrorCode : [
+        {
+          errorCode:0,
+          errorInfo:"未知错误",
+        },
+        {
+          errorCode:-1,
+          errorInfo:"传送的对象属性中存在null",
+        },
+        {
+          errorCode:-2,
+          errorInfo:"字段重复",
+        },
+        {
+          errorCode:-3,
+          errorInfo:"参数存在不一致",
+        },
+        {
+          errorCode:-4,
+          errorInfo:"当前数据库记录不符合逻辑要求",
+        },
+        {
+          errorCode:-5,
+          errorInfo:"未知错所要查询的数据在数据库中不存在",
+        },
+      ]
     }
   },
   created:function(){
@@ -426,8 +452,8 @@ export default {
           })
           .then(response=>{
             if(response.data < 0){
-              this.$message.error("删除失败");
-              console.log("删除失败");
+              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
+              console.log("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
             }else{
               this.$message({
                 message:"删除成功!",
@@ -484,7 +510,7 @@ export default {
           })
           .then(response=>{
             if(response.data<0){
-              this.$message.error("删除失败");
+              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
             }else{
               this.$message({
                 message:"删除成功!",
@@ -507,7 +533,7 @@ export default {
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addDictionaryCategory`,param)
         .then(response=>{
           if(response.data<0){
-            this.$message.error("添加失败");
+            this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
           }else{
             this.$message({
               message:"添加成功!",
@@ -548,7 +574,7 @@ export default {
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateDictionaryCategory`,param)
         .then(response=>{
           if(response.data<0){
-            this.$message.error("编辑失败");
+            this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
           }else{
             this.$message({
               message:"编辑成功!",
@@ -587,7 +613,7 @@ export default {
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addCategoryProperty`,param)
         .then(response=>{
           if(response.data < 0){
-            this.$message.error("添加失败");
+            this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
           }else{
             console.log("添加成功");
             this.$message({
@@ -634,7 +660,7 @@ export default {
       this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateCategoryProperty`,param)
         .then(response=>{
           if(response.data<0){
-            this.$message.error("编辑失败");
+            this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
           }else{
             console.log("编辑成功");
             this.$message({
