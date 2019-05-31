@@ -811,6 +811,10 @@ export default {
               type:"success",
               message:"添加成功!"
             });
+            this.$router.push({
+              name:this.goback,
+              params:{}
+            });
           }
             })
             .catch(error => {
@@ -878,6 +882,10 @@ export default {
             this.$message({
               type:"success",
               message: "修改成功!"
+            });
+            this.$router.push({
+              name:this.goback,
+              params:{}
             });
           }
             })
