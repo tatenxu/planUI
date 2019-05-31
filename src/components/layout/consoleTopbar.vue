@@ -96,8 +96,8 @@
           user<i class="el-icon-caret-bottom el-icon--right"></i>
         </a>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>个人中心</el-dropdown-item>
-          <el-dropdown-item>重置密码</el-dropdown-item>
+          <!-- <el-dropdown-item>个人中心</el-dropdown-item> -->
+          <!-- <el-dropdown-item>重置密码</el-dropdown-item> -->
           <el-dropdown-item command="signOut">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -124,9 +124,7 @@
       handleCommand(command) { // 点击菜单项触发的事件回调
         const that = this;
         if(command == 'signOut') { // 模拟退出登录
-          
-          this.$cookies.remove("JSESSIONID");
-          if(this.$cookies.isKey("JSESSIONID")){
+          if(window.localStorage.clear()){
             console.log("登出失败!");
           } else {
             console.log("登出成功!");

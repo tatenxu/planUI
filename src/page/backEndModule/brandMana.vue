@@ -394,6 +394,13 @@
                 type:'success'
               });
               this.handleSearchClick(true);
+              this.ruleForm.addInfoName = "";
+              this.ruleForm.addInfoAbbr = "";
+              this.ruleForm.addInfoDescription = "";
+              this.ruleForm.addInfoCustomer = "";
+
+              this.addCardShowFlag = false;
+              this.viewname = "first";
             }
           })
           .catch(error=>{
@@ -401,14 +408,6 @@
             console.log("添加失败");
           })
         
-        this.ruleForm.addInfoName = "";
-        this.ruleForm.addInfoAbbr = "";
-        this.ruleForm.addInfoDescription = "";
-        this.ruleForm.addInfoCustomer = "";
-
-        this.addCardShowFlag = false;
-        this.viewname = "first";
-
         return;
       },
       handleNewCancelClick(){
@@ -441,22 +440,22 @@
                 type:'success'
               });
               this.handleSearchClick(true);
+
+              this.editInfoId = "";
+              this.editInfoName = "";
+              this.editInfoAbbr = "";
+              this.editInfoCustomer = "";
+              this.editInfoCustomerName = "";
+              this.tmpeditInfoCustomerName = "";
+              this.editInfoDescription = "";
+
+              this.editCardShowFlag = false;
+              this.viewname = "first";
             }
           })
         .catch(error=>{
           this.$message.error("编辑失败");
         });
-
-        this.editInfoId = "";
-        this.editInfoName = "";
-        this.editInfoAbbr = "";
-        this.editInfoCustomer = "";
-        this.editInfoCustomerName = "";
-        this.tmpeditInfoCustomerName = "";
-        this.editInfoDescription = "";
-
-        this.editCardShowFlag = false;
-        this.viewname = "first";
 
         return;
       },

@@ -405,19 +405,20 @@
               type:'success'
             });
             this.handleSearchClick(true);
+
+            this.newCardShowFlag = false;
+            this.viewname = "first";
+
+            this.ruleForm.addInfoName = "";
+            this.ruleForm.addInfoCode = "";
+            this.ruleForm.addInfoDescription = "";
+            this.ruleForm.ddInfoDepart = [];
           })
           .catch(error=>{
             this.$message.error("添加失败!");
             this.handleSearchClick(true);
           });
 
-        this.newCardShowFlag = false;
-        this.viewname = "first";
-
-        this.ruleForm.addInfoName = "";
-        this.ruleForm.addInfoCode = "";
-        this.ruleForm.addInfoDescription = "";
-        this.ruleForm.ddInfoDepart = [];
         return;
       },
       handleNewCancelClick(){
@@ -453,23 +454,23 @@
               type:'success'
             });
             this.handleSearchClick(true);
+
+            this.editInfoName = '';
+            this.editInfoCode = '';
+            this.editInfoDepart = '';
+            this.editInfoDepartId = '';
+            this.tmpeditInfoDepartName = '';
+            this.editInfoDescription = '';
+            this.editInfoId = '';
+
+            this.editCardShowFlag = false;
+            this.viewname = "first";
           })
           .catch(error=>{
             this.$message.error("编辑失败!");
             this.handleSearchClick(true);
           });
         
-        this.editInfoName = '';
-        this.editInfoCode = '';
-        this.editInfoDepart = '';
-        this.editInfoDepartId = '';
-        this.tmpeditInfoDepartName = '';
-        this.editInfoDescription = '';
-        this.editInfoId = '';
-
-        this.editCardShowFlag = false;
-        this.viewname = "first";
-
         return;
       },
       handleEditCancelClick(){

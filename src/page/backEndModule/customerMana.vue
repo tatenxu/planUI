@@ -375,20 +375,20 @@ import { error } from 'util';
                 message:"添加成功"
               });
               this.handleSearchClick(true);
+
+              this.ruleForm.addInfoName = "";
+              this.ruleForm.addInfoAbbr = "";
+              this.ruleForm.addInfoDescription = "";
+              this.ruleForm.addInfoGroup = [];
+
+              this.newCardShowFlag = false;
+              this.viewname = "first";
             }
           })
           .catch(error=>{
             console.log("添加失败");
             this.$message.error("添加失败!");
           });
-
-        this.ruleForm.addInfoName = "";
-        this.ruleForm.addInfoAbbr = "";
-        this.ruleForm.addInfoDescription = "";
-        this.ruleForm.addInfoGroup = [];
-
-        this.newCardShowFlag = false;
-        this.viewname = "first";
 
         return;
       },
@@ -424,23 +424,23 @@ import { error } from 'util';
                 type:'success'
               });
               this.handleSearchClick(true);
+
+              this.editInfoId = "";
+              this.editInfoName = "";
+              this.editInfoAbbr = "";
+              this.editInfoGroup = "";
+              this.editIndoInitGroupId = "";
+              this.tmpeditInfoGroupName = "";
+              this.editInfoDescription = "";
+
+              this.editCardShowFlag = false;
+              this.viewname = "first";
             }
           })
           .catch(error=>{
             this.$message.error("编辑失败");
           });
 
-        this.editInfoId = "";
-        this.editInfoName = "";
-        this.editInfoAbbr = "";
-        this.editInfoGroup = "";
-        this.editIndoInitGroupId = "";
-        this.tmpeditInfoGroupName = "";
-        this.editInfoDescription = "";
-
-        this.editCardShowFlag = false;
-        this.viewname = "first";
-        
         return;
       },
       handleEditCancelClick(){

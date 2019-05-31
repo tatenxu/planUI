@@ -540,17 +540,17 @@ export default {
               type:"success"
             });
             this.reSearchCategory();
+
+            this.ruleFormCate.addCateName = "";
+            this.ruleFormCate.addCateCode = "";
+            
+            this.addCateShowFlag = false;
+            this.viewname = 'first';
           }
         })
         .catch(error=>{
           this.$message.error("添加失败");
         });
-
-      this.ruleFormCate.addCateName = "";
-      this.ruleFormCate.addCateCode = "";
-      
-      this.addCateShowFlag = false;
-      this.viewname = 'first';
     },
     handleAddCateCancelClick(){
       this.$message({
@@ -581,17 +581,15 @@ export default {
               type:"success"
             });
             this.reSearchCategory();
+
+          this.editCateId = "";
+          this.editCateName = "";
+          this.editPropCode = "";
+          
+          this.editCateShowFlag = false;
+          this.viewname = 'first';
           }
         });
-
-      this.editCateId = "";
-      this.editCateName = "";
-      this.editPropCode = "";
-      
-
-
-      this.editCateShowFlag = false;
-      this.viewname = 'first';
     },
     handleEditCateCancelClick(){
       this.$message({
@@ -621,18 +619,18 @@ export default {
               type:"success"
             });
             this.reSearchProperty(param.categoryId);
+
+            this.ruleFormProp.addPropName = "";
+            this.ruleFormProp.addPropCode ="";
+            this.ruleFormProp.addPropCategoryId ="";
+
+            this.addPropShowFlag = false;
+            this.viewname = 'first';
           }
         })
         .catch(error=>{
           this.$message.error("添加失败");
         });
-
-      this.ruleFormProp.addPropName = "";
-      this.ruleFormProp.addPropCode ="";
-      this.ruleFormProp.addPropCategoryId ="";
-
-      this.addPropShowFlag = false;
-      this.viewname = 'first';
     },
     handleAddPropCancelClick(){
       this.$message({
@@ -668,21 +666,21 @@ export default {
               type:"success"
             });
             this.reSearchProperty(param.categoryId);
+
+          this.editPropId = "";
+          this.editPropName = "";
+          this.editPropCode = "";
+          this.editPropCate = "";
+          this.initeditPropCateId = "";
+          this.initeditPropCateName = "";
+          
+          this.editPropShowFlag = false;
+          this.viewname = 'first';
           }
         })
         .catch(error=>{
           this.$message.error("编辑失败");
         });
-
-      this.editPropId = "";
-      this.editPropName = "";
-      this.editPropCode = "";
-      this.editPropCate = "";
-      this.initeditPropCateId = "";
-      this.initeditPropCateName = "";
-      
-      this.editPropShowFlag = false;
-      this.viewname = 'first';
     },
     handleEditPropCancelClick(){
       this.$message({
