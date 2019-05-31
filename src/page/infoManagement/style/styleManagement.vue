@@ -394,7 +394,7 @@ export default {
         },
         {
           errorCode: -3,
-          errotInfo: "数据库操作错误"
+          errotInfo: "已与款式组或款式绑定，不得删除"
         },
         {
           errorCode: -4,

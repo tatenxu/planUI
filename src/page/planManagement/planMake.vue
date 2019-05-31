@@ -392,8 +392,8 @@
             :file-list="fileList"
             style="margin-left:11%"
           >
-            <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            <el-button size="small" type="primary"    :disabled="true">点击上传</el-button>
+
           </el-upload>
         </el-row>
         <el-row :gutter="20">
