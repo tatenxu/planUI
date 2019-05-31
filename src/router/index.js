@@ -322,7 +322,7 @@ export default [{
         component: formManagement,
         meta: {
           bcrumd: ['报表管理'],
-          keepAlive: true
+          // keepAlive: true
         }
       },
       { 
@@ -331,7 +331,7 @@ export default [{
         component: subGantt,
         meta: {
           bcrumd: ['款式组甘特图'],
-          keepAlive: true
+          // keepAlive: true
         }
       },
       { 

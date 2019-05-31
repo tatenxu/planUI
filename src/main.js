@@ -21,6 +21,11 @@ import axios from "axios";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+//cookie
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
+
+
 Vue.use(VueRouter);
 Vue.use(ElementUI);
 
@@ -29,6 +34,7 @@ Vue.prototype.$loading = ElementUI.Loading;
 Vue.prototype.$message = ElementUI.Message;
 Vue.prototype.$sto = Sto;
 Vue.prototype.$conf = Config;
+Vue.prototype.$store = store;
 
 Vue.config.productionTip = false
 
@@ -62,12 +68,12 @@ router.beforeEach((to, from, next) => {
 window.$config = {};
 
 //dev
-// window.$config.HOST = 'http://192.168.1.180:8081'
-// window.$config.HOST2 = 'http://192.168.1.180:8001/uaa';
+window.$config.HOST = 'http://192.168.1.180:8081'
+window.$config.HOST2 = 'http://192.168.1.180:8001/uaa';
 
 // production
-window.$config.HOST = 'http://202.120.1.66:8080/planservice'
-window.$config.HOST2 = 'http://202.120.1.66:8080/service-authorization/uaa';
+// window.$config.HOST = 'http://202.120.1.66:8080/planservice'
+// window.$config.HOST2 = 'http://202.120.1.66:8080/service-authorization/uaa';
 
 /* eslint-disable no-new */
 new Vue({

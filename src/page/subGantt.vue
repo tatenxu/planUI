@@ -17,9 +17,10 @@
   import GanttElastic from "gantt-elastic";
   import GanttHeader from "gantt-elastic-header";
   import dayjs from "dayjs";
+import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
 
   export default {
-    name: "Gantt",
+    name: "subGantt",
     components: {
       GanttElastic,
       GanttHeader
@@ -31,6 +32,7 @@
       }
     },
     created:function(){
+      console.log("进入款式组gantt");
       let that = this;
       //初始化options
       this.options = {
@@ -219,12 +221,24 @@
           });
       },
     },
+    computed:{
+      keepAlives:{
+        get(){
+          console.log(this.$store.getters['baseinfo/keepAliveOptions']);
+          return this.$store.getters['baseinfo/keepAliveOptions'];
+        },
+        set(value){
+          return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+        }
+      }
+    },
     beforeRouteLeave(to, from, next) {
     if (to.name === 'subsubGantt') {
-      console.log("设置formManage keepalive=true");
-      from.meta.keepAlive = true;
+      this.keepAlives = ['formManagement','subGantt','subsubGantt'];
+    } else if(to.name === 'formManagement'){
+      this.keepAlives = ['formManagement'];
     } else {
-      from.meta.keepAlive = false;
+      this.keepAlives = [];
     }
       next();
     }

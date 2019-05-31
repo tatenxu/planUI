@@ -124,17 +124,28 @@
       handleCommand(command) { // 点击菜单项触发的事件回调
         const that = this;
         if(command == 'signOut') { // 模拟退出登录
-          let $sto = that.$sto;
-          let $conf = that.$conf;
-          let cookies = $sto.get($conf.constant.cookie);
-          // if(cookies && cookies.token) {
-          if(cookies && cookies.jsessionid) {
-            // delete cookies.token;
-            delete cookies.jsessionid;
+          
+          this.$cookies.remove("JSESSIONID");
+          if(this.$cookies.isKey("JSESSIONID")){
+            console.log("登出失败!");
+          } else {
+            console.log("登出成功!");
+            // window.location.href = 'http://127.0.0.1:8081/planservice/quick';
+            window.location.href = `${window.$config.HOST}`;
           }
+          
+
+          // let $sto = that.$sto;
+          // let $conf = that.$conf;
+          // let cookies = $sto.get($conf.constant.cookie);
+          // // if(cookies && cookies.token) {
+          // if(cookies && cookies.jsessionid) {
+          //   // delete cookies.token;
+          //   delete cookies.jsessionid;
+          // }
           // $sto.set($conf.constant.cookie, cookies);
           // that.$router.push({path: $conf.route.login});
-          window.location.href = `${window.$config.HOST}`
+          // window.location.href = `${window.$config.HOST}`
         }
       }
     }

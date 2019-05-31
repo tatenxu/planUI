@@ -19,7 +19,7 @@
   import dayjs from "dayjs";
 
   export default {
-   name: "Gantt",
+   name: "subsubGantt",
    components: {
      GanttElastic,
      GanttHeader
@@ -220,6 +220,25 @@
         });
      },
    },
+   computed:{
+      keepAlives:{
+        get(){
+          console.log(this.$store.getters['baseinfo/keepAliveOptions']);
+          return this.$store.getters['baseinfo/keepAliveOptions'];
+        },
+        set(value){
+          return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+        }
+      }
+    },
+    beforeRouteLeave(to, from, next) {
+    if (to.name === 'subGantt') {
+      this.keepAlives = ['formManagement','subGantt'];
+    } else {
+      this.keepAlives = [];
+    }
+      next();
+    }
   };
 </script>
 

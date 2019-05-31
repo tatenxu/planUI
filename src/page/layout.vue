@@ -32,10 +32,10 @@
         <console-navbar v-show="hasNavbar"></console-navbar>
         <div class="console-main" :class="{'console-main-full': hasNavbar}">
           <console-bcrumd class="console-bcrumd"></console-bcrumd>
-          <keep-alive>
-            <router-view v-if="$route.meta.keepAlive"></router-view>
+          <keep-alive :include="keepAlives">
+            <router-view ></router-view>
           </keep-alive>
-          <router-view v-if="!$route.meta.keepAlive"></router-view>
+          <!-- <router-view v-if="!$route.meta.keepAlive"></router-view> -->
         </div>
     </div>
 </template>
@@ -55,6 +55,16 @@
         return { }
       },
       computed: {
+        keepAlives:{
+          get(){
+            console.log(this.$store.getters['baseinfo/keepAliveOptions']);
+            return this.$store.getters['baseinfo/keepAliveOptions'];
+          },
+          set(value){
+            return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+          }
+        }
+        ,
         hasNavbar () {
           const $route = this.$route;
           return $route.meta && $route.meta.navbar && $route.meta.navbar.length > 0;

@@ -61,7 +61,7 @@
   import dayjs from "dayjs";
 
   export default {
-    name: "Gantt",
+    name: "formManagement",
     components: {
       GanttElastic,
       GanttHeader
@@ -287,15 +287,26 @@
           });
       },
     },
+    computed:{
+      keepAlives:{
+        get(){
+          console.log(this.$store.getters['baseinfo/keepAliveOptions']);
+          return this.$store.getters['baseinfo/keepAliveOptions'];
+        },
+        set(value){
+          return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+        }
+      }
+    },
     beforeRouteLeave(to, from, next) {
-    if (to.name === 'subGantt') {
-      from.meta.keepAlive = true;
-    } else {
-      from.meta.keepAlive = false;
-    }
+      if (to.name === 'subGantt') {
+        this.keepAlives = ['formManagement','subGantt'];
+      } else {
+        this.keepAlives = [];
+      }
       next();
     }
-  };
+};
 </script>
 
 <style lang="less" scoped>
