@@ -196,7 +196,7 @@
           <i class="el-icon-document"></i>品牌管理
         </el-menu-item>
         <el-menu-item index="/planservice/backEndModule/dictionary/clothingLevelMana">
-          <i class="el-icon-document"></i>服装类型管理
+          <i class="el-icon-document"></i>服装层次管理
         </el-menu-item>
         <el-menu-item index="/planservice/backEndModule/dictionary/dictionaryCateMana">
           <i class="el-icon-document"></i>数据字典管理
@@ -212,7 +212,7 @@
         </el-submenu>-->
 
         <el-menu-item index="/planservice/backEndModule/privilegeManagement">
-          <i class="el-icon-message"></i>用户权限管理
+          <i class="el-icon-message"></i>数据权限管理
         </el-menu-item>
         <el-menu-item index="/planservice/backEndModule/roleManagement">
           <i class="el-icon-message"></i>系统权限管理
