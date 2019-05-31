@@ -96,6 +96,7 @@
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
         <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="quantity" label="数量" align="center"></el-table-column>
         <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
@@ -560,7 +561,7 @@ export default {
 
           flag: 1, //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
           goback: "styleGroupPlanMake", //goback 为返回的 name
-          customerName: row.customerName,
+          customerName: row.customerName, 
           brandName: row.brandName,
           rangeId: row.rangeId,
           rangeName: row.rangeName,

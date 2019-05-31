@@ -121,6 +121,7 @@
           <el-table-column prop="rangeName" width="150" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="quantity" label="数量" align="center"></el-table-column>
           <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="stateStr" width="70" label="状态" align="center"></el-table-column>
