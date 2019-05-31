@@ -700,6 +700,7 @@ export default {
           planObjectId:row.id,
           topPlanName: "根计划",
           topPlanId: 0,
+          quantity:row.quantity
         }
       });
     },
