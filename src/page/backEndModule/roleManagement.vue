@@ -151,10 +151,6 @@ export default {
       searchOptions: {
         options: {
           roleOptions: [
-            {
-              roleId: 0,
-              roleName: "管理员"
-            }
           ],
           pageOptions: [
             {
