@@ -91,17 +91,17 @@
       <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
         <el-col :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="VerifyPass">审核通过</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="VerifyPass" v-if="checked===1">审核通过</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="VerifyRebut">审核驳回</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="VerifyRebut" v-if="checked===1">审核驳回</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="CancelVerify">取消审核</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="CancelVerify" v-if="checked===2">取消审核</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">

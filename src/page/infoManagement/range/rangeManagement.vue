@@ -113,7 +113,7 @@
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column prop="addingModeStr" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="stateStr" label="状态" align="center"></el-table-column>
+          <!-- <el-table-column prop="stateStr" label="状态" align="center"></el-table-column> -->
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
@@ -309,7 +309,7 @@ export default {
         },
         {
           errorCode:-3,
-          errotInfo:"数据库操作错误",
+          errotInfo:"已与款式组或款式绑定，不得删除",
         },
         {
           errorCode:-4,
