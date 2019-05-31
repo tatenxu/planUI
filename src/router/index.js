@@ -57,10 +57,16 @@ const dictionaryCateMana = r => require.ensure([], () => r(require('../page/back
 
 var servicePath = "/planservice";
 // -------------------------------------------- 路由配置部分 --------------------------------------------
-export default [{
-    path: Config.route.login,
-    name: 'Login',
-    component: Login
+export default [
+  // {
+  //   path: Config.route.login,
+  //   name: 'Login',
+  //   component: Login
+  // },
+  {
+    path: "/",
+    name: 'Layout',
+    component: Layout
   },
   
   {
@@ -330,7 +336,7 @@ export default [{
         name: 'subGantt',
         component: subGantt,
         meta: {
-          bcrumd: ['款式组甘特图'],
+          bcrumd: ['报表管理','款式组甘特图'],
           // keepAlive: true
         }
       },
@@ -339,7 +345,7 @@ export default [{
         name: 'subsubGantt',
         component: subsubGantt,
         meta: {
-          bcrumd: ['款式甘特图'],
+          bcrumd: ['报表管理','款式组甘特图','款式甘特图'],
         }
       },
       { 
@@ -408,7 +414,7 @@ export default [{
     // redirect: Config.route.login,
     // name: 'Login',
     // component: Login
-    // path: servicePath+'/',
+    path: servicePath+'/',
     name: 'Layout',
     component: Layout,
   }
