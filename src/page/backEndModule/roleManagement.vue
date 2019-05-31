@@ -202,7 +202,10 @@ export default {
             },
             {
               name: "报表管理"
-            }
+            },
+          {
+            name: "后台管理"
+          }
           ],
           userNameOptions: []
         }
@@ -293,6 +296,9 @@ export default {
           },
           {
             name: "报表管理"
+          },
+          {
+            name: "后台管理"
           }
         ],
         options: {
