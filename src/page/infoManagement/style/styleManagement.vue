@@ -383,7 +383,36 @@ export default {
         tableData: []
       },
       multipleSelection: [],
-
+      infoManagementErrorCode: [
+        {
+          errorCode: -1,
+          errotInfo: "新增的数据数据库中已经存在"
+        },
+        {
+          errorCode: -2,
+          errotInfo: "传入信息的字段缺失"
+        },
+        {
+          errorCode: -3,
+          errotInfo: "数据库操作错误"
+        },
+        {
+          errorCode: -4,
+          errotInfo: "数据不唯一"
+        },
+        {
+          errorCode: -5,
+          errotInfo: "数据库其他错误"
+        },
+        {
+          errorCode: -6,
+          errotInfo: "数据不存在"
+        },
+        {
+          errorCode: -7,
+          errotInfo: "数据状态错误"
+        }
+      ],
       ruleForm: {
         rangeId: "",
         rangeNumber: "",
@@ -533,7 +562,7 @@ export default {
         //   console.log("a-b:",a.styleGroupId-b.styleGroupId)
         //   if(a.styleGroupId==null) return 1;
         //   else if(b.styleGroupId==null) return -1;
-        //   return a.styleGroupId-b.styleGroupId; 
+        //   return a.styleGroupId-b.styleGroupId;
         // });
         this.data.tableData.forEach(element => {
           var d = new Date(element.createTime);
@@ -696,11 +725,11 @@ export default {
         })
         .then(response => {
           this.data.tableData = response.data;
-        this.data.tableData.sort(function(b, a) {
-          if(a.styleGroupId=="") return 1;
-          else if(b.styleGroupId=="") return -1;
-          return a.styleGroupId-b.styleGroupId; //时间正序
-        });
+          this.data.tableData.sort(function(b, a) {
+            if (a.styleGroupId == "") return 1;
+            else if (b.styleGroupId == "") return -1;
+            return a.styleGroupId - b.styleGroupId; //时间正序
+          });
           this.data.tableData.forEach(element => {
             var d = new Date(element.createTime);
             let time = d.toLocaleString();
@@ -794,46 +823,23 @@ export default {
                 })
                 .then(response => {
                   this.handleSearch();
-                  var ok = response.data;
-                  if (ok === -1) {
+                  if (response.data < 0) {
+                    this.$message.error(
+                      element.name +
+                        "删除失败:" +
+                        this.infoManagementErrorCode[-response.data - 1]
+                          .errotInfo
+                    );
+                    console.log(
+                      element.name +
+                        "删除失败:" +
+                        this.infoManagementErrorCode[-response.data - 1]
+                          .errotInfo
+                    );
+                  } else {
                     this.$message({
-                      message: "新增的数据已存在！",
-                      type: "error"
-                    });
-                  } else if(ok===-2) {
-                    this.$message({
-                      message: "传入信息的字段确实！",
-                      type: "error"
-                    });
-                  }else if(ok===-3) {
-                    this.$message({
-                      message: "数据库操作错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-4) {
-                    this.$message({
-                      message: "数据不唯一！",
-                      type: "error"
-                    });
-                  }else if(ok===-5) {
-                    this.$message({
-                      message: "数据库其他错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-6) {
-                    this.$message({
-                      message: "数据不存在！",
-                      type: "error"
-                    });
-                  }else if(ok===-7) {
-                    this.$message({
-                      message: "数据状态错误！",
-                      type: "error"
-                    });
-                  }else{
-                    this.$message({
-                      message: "操作成功！",
-                      type: "success"
+                      type: "success",
+                      message: element.name + "删除成功!"
                     });
                   }
                 })
@@ -866,28 +872,25 @@ export default {
         });
       } else if (that.multipleSelection.length >= 1) {
         let rangeId = this.multipleSelection[0].rangeId;
-        let ok=0;
+        let ok = 0;
         this.multipleSelection.forEach(element => {
           if (element.rangeId != rangeId) {
             ok++;
-            
+
             this.$message({
               message: "请选择同一系列下的款式进行绑定！",
               type: "warning"
             });
           }
         });
-        if(ok===0)
-        {
-           that.$router.push({
-          name: `bindStyleGroup`,
-          query: {
-            bindData: that.multipleSelection
-          }
-        });
+        if (ok === 0) {
+          that.$router.push({
+            name: `bindStyleGroup`,
+            query: {
+              bindData: that.multipleSelection
+            }
+          });
         }
-
-        
       }
     },
     // 表格中的查看
@@ -917,82 +920,76 @@ export default {
     changeStyleData(row) {
       const that = this;
       console.log("点击了本行的修改");
-      console.log("ID为：",row.styleGroupId)
+      console.log("ID为：", row.styleGroupId);
 
-      if(row.styleGroupId===null)
-      {
-          //得到系列名称
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
-          params: {
-            brandId: row.brandId
-          }
-        })
-        .then(response => {
-          // this.searchOptions.options.rangeNameOptions = response.data;
-          this.options.rangeNameTypeOptions = response.data;
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取系列名称失败",
-            type: "error"
+      if (row.styleGroupId === null) {
+        //得到系列名称
+        this.$axios
+          .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
+            params: {
+              brandId: row.brandId
+            }
+          })
+          .then(response => {
+            // this.searchOptions.options.rangeNameOptions = response.data;
+            this.options.rangeNameTypeOptions = response.data;
+          })
+          .catch(error => {
+            this.$message({
+              message: "获取系列名称失败",
+              type: "error"
+            });
           });
-        });
-      //得到品牌名称
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-          params: {
-            customerId: row.customerId
-          }
-        })
-        .then(response => {
-          // this.searchOptions.options.brandNameOptions = response.data;
-          this.options.brandNameOptions = response.data;
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
+        //得到品牌名称
+        this.$axios
+          .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+            params: {
+              customerId: row.customerId
+            }
+          })
+          .then(response => {
+            // this.searchOptions.options.brandNameOptions = response.data;
+            this.options.brandNameOptions = response.data;
+          })
+          .catch(error => {
+            this.$message({
+              message: "获取品牌信息失败",
+              type: "error"
+            });
           });
+
+        (this.ruleForm.firstCustomerName = row.customerName),
+          (this.ruleForm.firstBrandName = row.brandName),
+          (this.ruleForm.firstRangeName = row.rangeName),
+          (this.ruleForm.firstNumber = row.number),
+          (this.ruleForm.firstClothingLevel = row.clothingLevelName),
+          (this.ruleForm.rangeId = row.rangeId),
+          (this.ruleForm.rangeNumber = row.rangeNumber),
+          (this.ruleForm.rangeName = row.rangeName),
+          (this.ruleForm.styleGroupId = row.styleGroupId),
+          (this.ruleForm.styleGroupNumber = row.styleGroupNumber),
+          (this.ruleForm.styleGroupName = row.styleGroupName),
+          (this.ruleForm.id = row.id),
+          (this.ruleForm.number = row.number),
+          (this.ruleForm.customerId = row.customerId),
+          (this.ruleForm.customerName = row.customerName),
+          (this.ruleForm.brandId = row.brandId),
+          (this.ruleForm.brandName = row.brandName),
+          (this.ruleForm.clothingLevelId = row.clothingLevelId),
+          (this.ruleForm.clothingLevelName = row.clothingLevelName),
+          (this.ruleForm.createrName = row.createrName),
+          (this.ruleForm.deptName = row.deptName),
+          (this.ruleForm.createTime = row.createTime),
+          (this.ruleForm.addingMode = row.addingMode),
+          (this.ruleForm.state = row.state),
+          (this.ruleForm.havePlan = row.havePlan),
+          (this.dialogFormVisible1 = true);
+      } else {
+        this.$message({
+          type: "error",
+          message: "该款式已被绑定，无法修改！"
         });
-
-      (this.ruleForm.firstCustomerName = row.customerName),
-        (this.ruleForm.firstBrandName = row.brandName),
-        (this.ruleForm.firstRangeName = row.rangeName),
-        (this.ruleForm.firstNumber = row.number),
-        (this.ruleForm.firstClothingLevel = row.clothingLevelName),
-        (this.ruleForm.rangeId = row.rangeId),
-        (this.ruleForm.rangeNumber = row.rangeNumber),
-        (this.ruleForm.rangeName = row.rangeName),
-        (this.ruleForm.styleGroupId = row.styleGroupId),
-        (this.ruleForm.styleGroupNumber = row.styleGroupNumber),
-        (this.ruleForm.styleGroupName = row.styleGroupName),
-        (this.ruleForm.id = row.id),
-        (this.ruleForm.number = row.number),
-        (this.ruleForm.customerId = row.customerId),
-        (this.ruleForm.customerName = row.customerName),
-        (this.ruleForm.brandId = row.brandId),
-        (this.ruleForm.brandName = row.brandName),
-        (this.ruleForm.clothingLevelId = row.clothingLevelId),
-        (this.ruleForm.clothingLevelName = row.clothingLevelName),
-        (this.ruleForm.createrName = row.createrName),
-        (this.ruleForm.deptName = row.deptName),
-        (this.ruleForm.createTime = row.createTime),
-        (this.ruleForm.addingMode = row.addingMode),
-        (this.ruleForm.state = row.state),
-        (this.ruleForm.havePlan = row.havePlan),
-        (this.dialogFormVisible1 = true);
-            
-
       }
-      else{
-          this.$message({
-                type: "error",
-                message: "该款式已被绑定，无法修改！"
-              });
-      }
-    
-
     },
     // 表格中的删除
     deleteStyleData(row) {
@@ -1013,49 +1010,21 @@ export default {
           })
           .then(response => {
             this.handleSearch();
-            var ok = response.data;
-                  var ok = response.data;
-                  if (ok === -1) {
-                    this.$message({
-                      message: "新增的数据已存在！",
-                      type: "error"
-                    });
-                  } else if(ok===-2) {
-                    this.$message({
-                      message: "传入信息的字段确实！",
-                      type: "error"
-                    });
-                  }else if(ok===-3) {
-                    this.$message({
-                      message: "数据库操作错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-4) {
-                    this.$message({
-                      message: "数据不唯一！",
-                      type: "error"
-                    });
-                  }else if(ok===-5) {
-                    this.$message({
-                      message: "数据库其他错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-6) {
-                    this.$message({
-                      message: "数据不存在！",
-                      type: "error"
-                    });
-                  }else if(ok===-7) {
-                    this.$message({
-                      message: "数据状态错误！",
-                      type: "error"
-                    });
-                  }else{
-                    this.$message({
-                      message: "操作成功！",
-                      type: "success"
-                    });
-                  }
+            if (response.data < 0) {
+              this.$message.error(
+                "删除失败:" +
+                  this.infoManagementErrorCode[-response.data - 1].errotInfo
+              );
+              console.log(
+                "删除失败:" +
+                  this.infoManagementErrorCode[-response.data - 1].errotInfo
+              );
+            } else {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+            }
           })
           .catch(error => {
             this.handleSearch();
@@ -1077,44 +1046,17 @@ export default {
             })
             .then(response => {
               this.handleSearch();
-              var ok = response.data;
-                  var ok = response.data;
-                  if (ok === -1) {
-                    this.$message({
-                      message: "新增的数据已存在！",
-                      type: "error"
-                    });
-                  } else if(ok===-2) {
-                    this.$message({
-                      message: "传入信息的字段确实！",
-                      type: "error"
-                    });
-                  }else if(ok===-3) {
-                    this.$message({
-                      message: "数据库操作错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-4) {
-                    this.$message({
-                      message: "数据不唯一！",
-                      type: "error"
-                    });
-                  }else if(ok===-5) {
-                    this.$message({
-                      message: "数据库其他错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-6) {
-                    this.$message({
-                      message: "数据不存在！",
-                      type: "error"
-                    });
-                  }else if(ok===-7) {
-                    this.$message({
-                      message: "数据状态错误！",
-                      type: "error"
-                    });
-                  }else {
+            if (response.data < 0) {
+              this.$message.error(
+                "添加失败:" +
+                  this.infoManagementErrorCode[-response.data - 1].errotInfo
+              );
+              console.log(
+                "添加失败:" +
+                  this.infoManagementErrorCode[-response.data - 1].errotInfo
+              );
+          
+              } else {
                 (this.ruleForm.rangeId = ""),
                   (this.ruleForm.rangeNumber = ""),
                   (this.ruleForm.rangeName = ""),
@@ -1180,43 +1122,16 @@ export default {
             //此处的接口为GET订单款号
             .post(`${window.$config.HOST}/infoManagement/updateStyle`, list)
             .then(response => {
-                  var ok = response.data;
-                  if (ok === -1) {
-                    this.$message({
-                      message: "新增的数据已存在！",
-                      type: "error"
-                    });
-                  } else if(ok===-2) {
-                    this.$message({
-                      message: "传入信息的字段确实！",
-                      type: "error"
-                    });
-                  }else if(ok===-3) {
-                    this.$message({
-                      message: "数据库操作错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-4) {
-                    this.$message({
-                      message: "数据不唯一！",
-                      type: "error"
-                    });
-                  }else if(ok===-5) {
-                    this.$message({
-                      message: "数据库其他错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-6) {
-                    this.$message({
-                      message: "数据不存在！",
-                      type: "error"
-                    });
-                  }else if(ok===-7) {
-                    this.$message({
-                      message: "数据状态错误！",
-                      type: "error"
-                    });
-                 
+            if (response.data < 0) {
+              this.$message.error(
+                "更新失败:" +
+                  this.infoManagementErrorCode[-response.data - 1].errotInfo
+              );
+              console.log(
+                "更新失败:" +
+                  this.infoManagementErrorCode[-response.data - 1].errotInfo
+              );
+            
               } else {
                 this.handleSearch();
                 (this.ruleForm.rangeId = ""),

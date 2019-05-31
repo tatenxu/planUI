@@ -291,6 +291,52 @@ export default {
         pageSize: 10,
         total: 0
       },
+                  planManagementErrorCode:[
+        {
+          errorCode:-1,
+          errotInfo:"所需属性值缺失",
+        },
+        {
+          errorCode:-2,
+          errotInfo:"计划名称重复",
+        },
+        {
+          errorCode:-3,
+          errotInfo:"父计划未下发",
+        },
+        {
+          erorCode:-4,
+          errotInfo:"系列根计划不存在",
+        },
+        {
+          errorCode:-5,
+          errotInfo:"款式组根计划不存在",
+        },
+        {
+          errorCode:-6,
+          errotInfo:"根计划已存在",
+        },
+        {
+          errorCode:-7,
+          errotInfo:"计划开始结束时间超额",
+        },
+        {
+          errorCode:-8,
+          errotInfo:"计划款数超额",
+        },
+        {
+          errorCode:-9,
+          errotInfo:"引用预测计划时预测计划不存在",
+        },
+        {
+          errorCode:-10,
+          errotInfo:"当前计划状态不允许执行此操作",
+        },
+        {
+          errorCode:-11,
+          errotInfo:"与已有计划冲突",
+        },
+      ],
       clothingLevelId: "",
       DataStartTime: "",
       DataEndTime: "",
@@ -707,17 +753,14 @@ export default {
         })
         .then(response => {
           console.log("repsonse=" + response.data);
-          let ok = response.data;
-          if (ok > 0) {
+
+          if(response.data < 0 ){
+            console.log("引用失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            this.$message.error( "引用失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+          }else{
             this.$message({
-              message: "引用预测成功",
-              type: "success"
-            });
-            this.searchSeriesPlan();
-          } else {
-            this.$message({
-              message: "预测计划不存在！",
-              type: "error"
+              type:"success",
+              message: "引用成功!"
             });
           }
         })
