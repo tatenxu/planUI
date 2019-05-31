@@ -459,6 +459,7 @@ export default {
           planObjectId:data.planObjectId,
           topPlanName: data.name?data.name:"根计划",
           topPlanId: data.id,
+          quantity:data.quantity
         };
 
         console.log(param);

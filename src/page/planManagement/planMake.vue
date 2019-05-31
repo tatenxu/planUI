@@ -157,16 +157,15 @@
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="计划款数" prop="quantity" placeholder="请选择计划款数">
-                <el-input
+                <!-- <el-input
                   v-if="showit1"
                   v-model="ruleForm.quantity"
                   clearable
                   :rows="1"
                   placeholder="请输入"
                   style="min-width:240px"
-                ></el-input>
+                ></el-input> -->
                 <el-input
-                  v-else
                   v-model="ruleForm.quantity"
                   clearable
                   :rows="1"
@@ -955,6 +954,7 @@ export default {
 
       if (this.flag === 1) {
         //1的时候，为添加之类
+        this.ruleForm.quantity=data.quantity,
         (this.ruleForm.customerName = data.customerName),
           (this.ruleForm.brandName = data.brandName),
           (this.ruleForm.rangeId = data.rangeId),

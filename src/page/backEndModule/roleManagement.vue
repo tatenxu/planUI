@@ -150,12 +150,7 @@ export default {
 
       searchOptions: {
         options: {
-          roleOptions: [
-            {
-              roleId: 0,
-              roleName: "管理员"
-            }
-          ],
+          roleOptions: [],
           pageOptions: [
             {
               name: "系列管理"
@@ -177,6 +172,9 @@ export default {
             },
             {
               name: "系列计划制定"
+            },
+            {
+              name: "款式组计划制定"
             },
             {
               name: "款式计划制定"
@@ -209,32 +207,32 @@ export default {
           userNameOptions: []
         }
       },
-              baseInfoManagementErrorCode : [
-          {
-            errorCode:0,
-            errorInfo:"未知错误",
-          },
-          {
-            errorCode:-1,
-            errorInfo:"传送的对象属性中存在null",
-          },
-          {
-            errorCode:-2,
-            errorInfo:"字段重复",
-          },
-          {
-            errorCode:-3,
-            errorInfo:"参数存在不一致",
-          },
-          {
-            errorCode:-4,
-            errorInfo:"当前数据库记录不符合逻辑要求",
-          },
-          {
-            errorCode:-5,
-            errorInfo:"未知错所要查询的数据在数据库中不存在",
-          },
-        ],
+      baseInfoManagementErrorCode: [
+        {
+          errorCode: 0,
+          errorInfo: "未知错误"
+        },
+        {
+          errorCode: -1,
+          errorInfo: "传送的对象属性中存在null"
+        },
+        {
+          errorCode: -2,
+          errorInfo: "字段重复"
+        },
+        {
+          errorCode: -3,
+          errorInfo: "参数存在不一致"
+        },
+        {
+          errorCode: -4,
+          errorInfo: "当前数据库记录不符合逻辑要求"
+        },
+        {
+          errorCode: -5,
+          errorInfo: "未知错所要查询的数据在数据库中不存在"
+        }
+      ],
       multipleSelection: [],
       rules: {
         roleId: [{ required: true, message: "请选择角色", trigger: "change" }]
@@ -265,6 +263,9 @@ export default {
           },
           {
             name: "系列计划制定"
+          },
+          {
+            name: "款式组计划制定"
           },
           {
             name: "款式计划制定"
@@ -374,9 +375,11 @@ export default {
             )
             .then(response => {
               this.handleSearch();
-            if(response.data < 0){
-              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-
+              if (response.data < 0) {
+                this.$message.error(
+                  "删除失败:" +
+                    this.baseInfoManagementErrorCode[-response.data].errorInfo
+                );
               } else {
                 this.$message({
                   message: "删除成功",
@@ -431,8 +434,8 @@ export default {
         )
           .then(() => {
             console.log(this.multipleSelection);
-            var  len = this.multipleSelection.length;
-            var  count = 0;
+            var len = this.multipleSelection.length;
+            var count = 0;
             this.multipleSelection.forEach(element => {
               console.log(element.id);
               let list = {
@@ -455,9 +458,9 @@ export default {
                   count++;
                   if (count === len) {
                     this.$message({
-                      message:"删除成功！",
-                      type:"success"
-                    })
+                      message: "删除成功！",
+                      type: "success"
+                    });
                     this.handleSearch();
                   }
                 })
@@ -469,7 +472,6 @@ export default {
                   });
                 });
             });
-
 
             // this.$message({
             //   type: "success",
@@ -488,8 +490,8 @@ export default {
     // 添加用户
     addUser() {
       const that = this;
-        // (this.ruleForm.multipleSelection = []),
-        (this.ruleForm.roleId = ""),
+      // (this.ruleForm.multipleSelection = []),
+      (this.ruleForm.roleId = ""),
         (this.ruleForm.roleName = ""),
         (this.dialogFormVisible = true);
     },
@@ -523,9 +525,11 @@ export default {
             )
             .then(response => {
               console.log(response.data);
-            if(response.data < 0){
-              this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            
+              if (response.data < 0) {
+                this.$message.error(
+                  "添加失败:" +
+                    this.baseInfoManagementErrorCode[-response.data].errorInfo
+                );
               } else {
                 this.handleSearch();
                 (this.ruleForm.roleId = ""),
