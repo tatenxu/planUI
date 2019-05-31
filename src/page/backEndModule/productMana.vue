@@ -74,7 +74,7 @@
               >
               </el-cascader>            
             </el-form-item>
-            <el-form-item label="客户描述" prop="addInfoDescription">
+            <el-form-item label="产品描述" prop="addInfoDescription">
               <el-input
                 class="inputArea"
                 type="textarea"
