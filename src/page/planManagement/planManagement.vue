@@ -289,7 +289,7 @@ export default {
           errotInfo:"父计划未下发",
         },
         {
-          erorCode:-4,
+          errorCode:-4,
           errotInfo:"系列根计划不存在",
         },
         {
