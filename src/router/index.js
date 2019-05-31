@@ -62,13 +62,7 @@ export default [
     path: Config.route.login,
     name: 'Login',
     component: Login
-  },
-  // {
-    // path: "/",
-    // name: 'Layout',
-    // component: Layout
-  // },
-  
+  },  
   {
     path: servicePath+'/',
     name: 'Layout',
@@ -404,9 +398,7 @@ export default [
         meta: {
           bcrumd: ['快速入门']
         }
-      },
-
-      
+      },      
     ]
   },
   {
@@ -414,7 +406,7 @@ export default [
     // redirect: Config.route.login,
     // name: 'Login',
     // component: Login
-    path: servicePath+'/',
+    redirect: servicePath+'/',
     name: 'Layout',
     component: Layout,
   }
