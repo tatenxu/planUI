@@ -503,6 +503,52 @@ export default {
       flag: 1, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
       isModify: false, //是否是修改
       goback: "", //goback 为返回的 name
+            planManagementErrorCode:[
+        {
+          errorCode:-1,
+          errotInfo:"所需属性值缺失",
+        },
+        {
+          errorCode:-2,
+          errotInfo:"计划名称重复",
+        },
+        {
+          errorCode:-3,
+          errotInfo:"父计划未下发",
+        },
+        {
+          erorCode:-4,
+          errotInfo:"系列根计划不存在",
+        },
+        {
+          errorCode:-5,
+          errotInfo:"款式组根计划不存在",
+        },
+        {
+          errorCode:-6,
+          errotInfo:"根计划已存在",
+        },
+        {
+          errorCode:-7,
+          errotInfo:"计划开始结束时间超额",
+        },
+        {
+          errorCode:-8,
+          errotInfo:"计划款数超额",
+        },
+        {
+          errorCode:-9,
+          errotInfo:"引用预测计划时预测计划不存在",
+        },
+        {
+          errorCode:-10,
+          errotInfo:"当前计划状态不允许执行此操作",
+        },
+        {
+          errorCode:-11,
+          errotInfo:"与已有计划冲突",
+        },
+      ],
       ruleForm: {
         planId: "",
         customerName: "",
@@ -758,58 +804,15 @@ export default {
           that.$axios
             .post(`${window.$config.HOST}/planManagement/addPlan`, list)
             .then(response => {
-              console.log(response.data);
-              let ok = response.data;
-              if (ok > 0) {
-                this.$message({
-                  message: "添加成功",
-                  type: "success"
-                });
-                this.$router.push({
-                  name: this.goback,
-                  params: {}
-                });
-              } else if (ok===-1){
-                this.$message({
-                  message: "所需属性值缺失！",
-                  type: "error"
-                });
-              }else if (ok===-2){
-                this.$message({
-                  message: "计划名称重复",
-                  type: "error"
-                });
-              }else if (ok===-3){
-                this.$message({
-                  message: "父计划未下发！",
-                  type: "error"
-                });
-              }else if (ok===-4){
-                this.$message({
-                  message: "系列根计划不存在！",
-                  type: "error"
-                });
-              }else if (ok===-5){
-                this.$message({
-                  message: "款式组根计划不存在",
-                  type: "error"
-                });
-              }else if (ok===-6){
-                this.$message({
-                  message: "根计划已存在！",
-                  type: "error"
-                });
-              }else if (ok===-7){
-                this.$message({
-                  message: "计划开始结束时间超额！",
-                  type: "error"
-                });
-              }else if (ok===-8){
-                this.$message({
-                  message: "计划款数超额！",
-                  type: "error"
-                });
-              }
+          if(response.data < 0 ){
+            console.log("添加失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            this.$message.error( "添加失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+          }else{
+            this.$message({
+              type:"success",
+              message:"添加成功!"
+            });
+          }
             })
             .catch(error => {
               this.$message({
@@ -869,23 +872,15 @@ export default {
           that.$axios
             .post(`${window.$config.HOST}/planManagement/updatePlan`, list)
             .then(response => {
-              console.log(response.data);
-              let ok = response.data;
-              if (ok > 0) {
-                this.$message({
-                  message: "修改成功",
-                  type: "success"
-                });
-                this.$router.push({
-                  name: this.goback,
-                  params: {}
-                });
-              } else {
-                this.$message({
-                  message: "父计划未下发",
-                  type: "error"
-                });
-              }
+          if(response.data < 0 ){
+            console.log("修改失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            this.$message.error( "修改失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+          }else{
+            this.$message({
+              type:"success",
+              message: "修改成功!"
+            });
+          }
             })
             .catch(error => {
               this.$message({
@@ -895,7 +890,7 @@ export default {
             });
         } else {
           this.$message({
-            message: "制定计划失败!",
+            message: "修改计划失败!",
             type: "error"
           });
         }

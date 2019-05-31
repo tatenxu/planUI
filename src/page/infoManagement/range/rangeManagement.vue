@@ -298,6 +298,36 @@ export default {
       dialogFormVisible1: false,
       tableData: [],
       totalTableData: [],
+      infoManagementErrorCode:[
+        {
+          errorCode:-1,
+          errotInfo:"新增的数据数据库中已经存在",
+        },
+        {
+          errorCode:-2,
+          errotInfo:"传入信息的字段缺失",
+        },
+        {
+          errorCode:-3,
+          errotInfo:"数据库操作错误",
+        },
+        {
+          errorCode:-4,
+          errotInfo:"数据不唯一",
+        },
+        {
+          errorCode:-5,
+          errotInfo:"数据库其他错误",
+        },
+        {
+          errorCode:-6,
+          errotInfo:"数据不存在",
+        },
+        {
+          errorCode:-7,
+          errotInfo:"数据状态错误",
+        },
+      ],
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
@@ -689,48 +719,15 @@ export default {
                 })
                 .then(response => {
                   this.handleSearch();
-                  var ok = response.data;
-                  if (ok === -1) {
-                    this.$message({
-                      message: "新增的数据已存在！",
-                      type: "error"
-                    });
-                  } else if(ok===-2) {
-                    this.$message({
-                      message: "传入信息的字段确实！",
-                      type: "error"
-                    });
-                  }else if(ok===-3) {
-                    this.$message({
-                      message: "数据库操作错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-4) {
-                    this.$message({
-                      message: "数据不唯一！",
-                      type: "error"
-                    });
-                  }else if(ok===-5) {
-                    this.$message({
-                      message: "数据库其他错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-6) {
-                    this.$message({
-                      message: "数据不存在！",
-                      type: "error"
-                    });
-                  }else if(ok===-7) {
-                    this.$message({
-                      message: "数据状态错误！",
-                      type: "error"
-                    });
-                  }else{
-                    this.$message({
-                      message: "操作成功！",
-                      type: "success"
-                    });
-                  }
+                    if(response.data < 0){
+                  this.$message.error(element.name+"删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
+                  console.log(element.name+"删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
+                }else{
+                  this.$message({
+                    type: 'success',
+                    message: element.name + '删除成功!'
+                  });
+                }
                 })
                 .catch(error => {
                   this.handleSearch();
@@ -823,53 +820,20 @@ export default {
             })
             .then(response => {
               this.handleSearch();
-                  var ok = response.data;
-                  if (ok === -1) {
-                    this.$message({
-                      message: "新增的数据已存在！",
-                      type: "error"
-                    });
-                  } else if(ok===-2) {
-                    this.$message({
-                      message: "传入信息的字段确实！",
-                      type: "error"
-                    });
-                  }else if(ok===-3) {
-                    this.$message({
-                      message: "数据库操作错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-4) {
-                    this.$message({
-                      message: "数据不唯一！",
-                      type: "error"
-                    });
-                  }else if(ok===-5) {
-                    this.$message({
-                      message: "数据库其他错误！",
-                      type: "error"
-                    });
-                  }else if(ok===-6) {
-                    this.$message({
-                      message: "数据不存在！",
-                      type: "error"
-                    });
-                  }else if(ok===-7) {
-                    this.$message({
-                      message: "数据状态错误！",
-                      type: "error"
-                    });
-                  }else{
-                    this.$message({
-                      message: "操作成功！",
-                      type: "success"
-                    });
-                  }
+                  if(response.data < 0){
+                  this.$message.error("删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
+                  console.log("删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
+                }else{
+                  this.$message({
+                    type: 'success',
+                    message:  '删除成功!'
+                  });
+                }
             })
             .catch(error => {
               this.handleSearch();
               this.$message({
-                message: "删除2失败",
+                message: "删除失败，没有访问到数据库！",
                 type: "error"
               });
             });
@@ -905,13 +869,10 @@ export default {
               note: this.ruleForm.note === "" ? undefined : this.ruleForm.note
             })
             .then(response => {
-              var ok = response.data;
-              if (ok < 0) {
-                this.$message({
-                  message: "添加失败",
-                  type: "warning"
-                });
-              } else {
+                if(response.data < 0){
+                  this.$message.error("添加失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
+                  console.log("添加失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
+                } else {
                 //获得系列名称
                 that.$axios
                   .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
@@ -1009,12 +970,11 @@ export default {
             .then(response => {
               this.handleSearch();
               console.log("成功了");
-              var ok = response.data;
-              if (ok < 0) {
-                this.$message({
-                  message: "修改失败",
-                  type: "error"
-                });
+
+                if(response.data < 0){
+                  this.$message.error("修改失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
+                  console.log("修改失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
+                
               } else {
                 (this.ruleForm.id = ""),
                   (this.ruleForm.number = ""),
@@ -1046,7 +1006,7 @@ export default {
             .catch(error => {
               this.handleSearch();
               this.$message({
-                message: "修改失败!",
+                message: "修改失败，没有访问到数据库！",
                 type: "error"
               });
             });

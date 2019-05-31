@@ -209,6 +209,32 @@ export default {
           userNameOptions: []
         }
       },
+              baseInfoManagementErrorCode : [
+          {
+            errorCode:0,
+            errorInfo:"未知错误",
+          },
+          {
+            errorCode:-1,
+            errorInfo:"传送的对象属性中存在null",
+          },
+          {
+            errorCode:-2,
+            errorInfo:"字段重复",
+          },
+          {
+            errorCode:-3,
+            errorInfo:"参数存在不一致",
+          },
+          {
+            errorCode:-4,
+            errorInfo:"当前数据库记录不符合逻辑要求",
+          },
+          {
+            errorCode:-5,
+            errorInfo:"未知错所要查询的数据在数据库中不存在",
+          },
+        ],
       multipleSelection: [],
       rules: {
         roleId: [{ required: true, message: "请选择角色", trigger: "change" }]
@@ -348,12 +374,9 @@ export default {
             )
             .then(response => {
               this.handleSearch();
-              var ok = response.data;
-              if (ok < 0) {
-                this.$message({
-                  message: "删除失败",
-                  type: "error"
-                });
+            if(response.data < 0){
+              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
+
               } else {
                 this.$message({
                   message: "删除成功",
@@ -364,7 +387,7 @@ export default {
             .catch(error => {
               this.handleSearch();
               this.$message({
-                message: "删除2失败",
+                message: "删除失败",
                 type: "error"
               });
             });
@@ -500,12 +523,9 @@ export default {
             )
             .then(response => {
               console.log(response.data);
-              var ok = response.data;
-              if (ok < 0) {
-                this.$message({
-                  message: "添加失败",
-                  type: "warning"
-                });
+            if(response.data < 0){
+              this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
+            
               } else {
                 this.handleSearch();
                 (this.ruleForm.roleId = ""),
