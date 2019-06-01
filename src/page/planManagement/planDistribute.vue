@@ -33,6 +33,7 @@
         style="width: 100%; margin-top: 20px"
         highlight-current-row
         @current-change="handlePlanChosenChange"
+        @selection-change="planSelectionChange"
         :stripe="true"
       >
         <!-- <el-table-column type="selection" width="50" align="center"></el-table-column> -->
@@ -70,7 +71,7 @@
         :data="searchOptions.options.userNameOptions">
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
-        <el-table-column property="realName" label="下发对象" width="150"></el-table-column>
+        <el-table-column property="userName" label="下发对象" width="150"></el-table-column>
       </el-table>
     </el-dialog>
   </el-card>
@@ -153,28 +154,6 @@ export default {
   },
   created:function(){
     let that = this;
-    //获取用户信息
-    that.$axios
-      .get(`${window.$config.HOST2}/getAllUserName`)
-      .then(response=>{
-        if(response.data.errcode < 0){
-          that.$message.error("下发对象加载失败");
-        }
-        this.searchOptions.options.userNameOptions = response.data;
-      })
-      .catch(error=>{
-        that.$message.error("下发对象加载失败!");
-        // this.searchOptions.options.userNameOptions = [
-        //   {
-        //     id:425,
-        //     realName:"sdfasd"
-        //   },
-        //   {
-        //     id:123,
-        //     realName:"dsaf"
-        //   }
-        // ];
-      });
 
     //获取所有未下发计划
     var param = {
@@ -222,11 +201,31 @@ export default {
   },
   methods: {
     chooseUserClick(){
-      this.userChoseTableDialogShow = true;
+      // console.log(this.chosenPlanRow.brandId);
+      if(this.chosenPlanRow.brandId === undefined ){
+        this.$message({
+          message:"请选择一个计划!",
+          type:'warning'
+        });
+      } else {
+        //获取用户信息
+        this.$axios
+          .get(`${window.$config.HOST}/baseInfoManagement/getUserNameByBrandId`,{
+            params:{brandId: this.chosenPlanRow.brandId }
+          })
+          .then(response=>{
+            this.searchOptions.options.userNameOptions = response.data;
+          })
+          .catch(error=>{
+            that.$message.error("下发对象加载失败!");
+          });
+        this.userChoseTableDialogShow = true;
+      }
     },
     //计划表格单选
     handlePlanChosenChange(val){
       this.chosenPlanRow = val;
+      console.log(val);
       this.tableData.forEach(row=>{
         if(row.id === val.id){
           this.$refs.singleTable.toggleRowSelection(row,true);
@@ -234,6 +233,28 @@ export default {
           this.$refs.singleTable.toggleRowSelection(row, false);
         }
       });
+    },
+    //计划表格多选
+    planSelectionChange(val){
+      console.log(val);
+      if(val.length === 0){
+        this.chosenPlanRow = {};
+      } else if(val.length === 1){
+        this.chosenPlanRow = val[0];
+      } else if(val.length === 2){
+        val.forEach(row=>{
+          if(row.id === this.chosenPlanRow.id){
+            this.$refs.singleTable.toggleRowSelection(row,true);
+          } else {
+            this.$refs.singleTable.toggleRowSelection(row, false);
+          }
+        });
+      } else {
+        this.$message({
+          message:"只能选择一个计划!",
+          type:"warning"
+        });
+      };
     },
     //switch 处理函数
     planTypeSwitchChange(){
@@ -309,14 +330,15 @@ export default {
               executerIdList: paramUserList,
             });
             if(response.data < 0){
-              that.$message.error(this.chosenPlanRow+"下发失败:");
-              console.log(this.chosenPlanRow+"下发失败!");
+              that.$message.error("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+              console.log("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
             }else{
-              console.log(this.chosenPlanRow+"下发成功!");
+              console.log("下发成功!");
               that.$message({
-                message:this.chosenPlanRow+"下发成功!",
+                message:"下发成功!",
                 type:'success'
               });
+              this.chosenPlanRow = {};
               this.handleSearch();
             }
           })
@@ -325,8 +347,8 @@ export default {
               planId:this.chosenPlanRow.id,
               executerIdList: paramUserList,
             });
-            that.$message.error("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            console.log("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
+            that.$message.error("下发失败:请检查网络");
+            console.log("下发失败:请检查网络");
           });
       }
     },
@@ -335,7 +357,7 @@ export default {
       if(this.userTableMultpleSelection.length !== 0){
         var showStr = "已选择:";
         this.userTableMultpleSelection.forEach(element=>{
-          showStr = showStr + element.realName + ","
+          showStr = showStr + element.userName + ","
         });
         document.getElementById("userChosenList").innerHTML = showStr;
       } else {
