@@ -267,6 +267,9 @@ export default {
       .then(response => {
         console.log("role:", response.data);
         response.data.forEach(element => {
+          if(element.chineseName==="计划系统管理员"){
+            this.backMana=true;
+          }
           this.roleList.push(element.id);
         });
         console.log(this.roleList);
