@@ -98,7 +98,7 @@
         <el-dropdown-menu slot="dropdown">
           <!-- <el-dropdown-item>个人中心</el-dropdown-item> -->
           <!-- <el-dropdown-item>重置密码</el-dropdown-item> -->
-          <el-dropdown-item command="signOut">退出</el-dropdown-item>
+          <!-- <el-dropdown-item command="signOut">退出</el-dropdown-item> -->
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>

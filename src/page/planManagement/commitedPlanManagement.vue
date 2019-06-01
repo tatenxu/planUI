@@ -111,7 +111,12 @@
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center"> </el-table-column>
+        <el-table-column prop="state" label="状态" align="center">
+          <template slot-scope="scope">
+            <p v-if="scope.row.isCompleted">已完成</p>
+            <p v-else>未完成</p>
+          </template>
+        </el-table-column>
         <el-table-column label="异常状态" width="150" align="center">
           <template slot-scope="scope">
             <el-button
