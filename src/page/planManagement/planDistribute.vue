@@ -317,7 +317,7 @@ export default {
       } else {
         var paramUserList = [];
         this.userTableMultpleSelection.forEach(element=>{
-          paramUserList.push(element.id);
+          paramUserList.push(element.userId);
         });
         this.$axios
           .post(`${window.$config.HOST}/planManagement/distributePlan`,{
