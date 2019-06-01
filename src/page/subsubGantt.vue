@@ -183,36 +183,37 @@
          params:param,
         })
         .then(response=>{
-         if(response.data.length === 0){
-            console.log("无子计划");
-            this.$message({
-               message:"选择的款式组没有子计划!",
-               type:'warning'
-            })
-         }
-         // console.log(response.data);
-         response.data.forEach(element=>{
-           if(element.parentId ===0){
-            element.parentId = undefined;
-            element.collapsed = true;
-           }
-           if(!element.haveException){
-            element.style = {
-              base: {
-               fill: "GREEN",
-               stroke: "YELLOW"
+          this.tasks = [];
+          if(response.data.length === 0){
+              console.log("无子计划");
+              this.$message({
+                message:"选择的款式组没有子计划!",
+                type:'warning'
+              })
+          }
+          // console.log(response.data);
+          response.data.forEach(element=>{
+            if(element.parentId ===0){
+              element.parentId = undefined;
+              element.collapsed = true;
+            }
+            if(!element.haveException){
+              element.style = {
+                base: {
+                fill: "GREEN",
+                stroke: "YELLOW"
+                }
               }
             }
-           }
-           element.type = "task";
+            element.type = "task";
 
-           var dateObj1 = new Date(element.startDate);
-           var dateObj2 = new Date(element.endDate);
-           element.start = dateObj1.getTime();
-           element.duration = dateObj2.getTime()-dateObj1.getTime();
+            var dateObj1 = new Date(element.startDate);
+            var dateObj2 = new Date(element.endDate);
+            element.start = dateObj1.getTime();
+            element.duration = dateObj2.getTime()-dateObj1.getTime();
 
-           this.tasks.push(element);
-         })        
+            this.tasks.push(element);
+          })        
         })
         .catch(error=>{
          this.$message.error("搜索失败:请检查网络");

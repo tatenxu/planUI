@@ -184,6 +184,7 @@ import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
             params:param,
           })
           .then(response=>{
+            this.tasks = [];
             if(response.data.length === 0){
               console.log("无子计划");
               this.$message({

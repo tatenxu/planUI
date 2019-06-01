@@ -257,6 +257,7 @@
             params:param
           })
           .then(response=>{
+            this.tasks = [];
             // console.log(response.data);
             response.data.forEach(element=>{
               if(element.parentId ===0){
