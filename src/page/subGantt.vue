@@ -68,7 +68,7 @@ import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
           columns: [
             {
               id: 1,
-              label: "系列",
+              label: "款式组计划",
               value: "name",
               width: 150,
               expander: true,

@@ -135,7 +135,7 @@
           columns: [
             {
               id: 1,
-              label: "系列",
+              label: "系列计划",
               value: "name",
               width: 150,
               expander: true,
