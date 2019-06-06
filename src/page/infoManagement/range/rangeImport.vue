@@ -316,9 +316,9 @@ export default {
       let startString = sv[0];
       let endString = sv[1];
 
-      let start = startString.substring(0, startString.length - 1); // 字符'A'
+      let start = startString.substring(0, 1); // 字符'A'
       console.log("表格的起始列值为: ", start);
-      let end = endString.substring(0, endString.length - 1);
+      let end = endString.substring(0, 1);
       console.log("表格的结束列值为: ", end);
 
       let rowMax = parseInt(endString.substring(1, endString.length)); // 获得最大的行数
