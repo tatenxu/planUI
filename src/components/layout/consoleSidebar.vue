@@ -252,7 +252,7 @@ export default {
       rangeCompleted:false,
       planRecover:false,
       exceptionMana:false,
-      messageMana:true,
+      messageMana:false,
       statistics:false,
       gantt:false,
       predictMana:false,

@@ -121,7 +121,7 @@ import XLSX from "xlsx";
 export default {
   data() {
     return {
-         url: "/static/styleImport.png",
+         url: "/planservice/static/styleImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
