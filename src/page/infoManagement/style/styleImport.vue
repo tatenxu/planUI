@@ -121,7 +121,7 @@ import XLSX from "xlsx";
 export default {
   data() {
     return {
-         url: "/planservice/static/styleImport.png",
+         url: "/static/styleImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -212,6 +212,8 @@ export default {
 
     ////////////// methods for xls /////////////
     readExcel(file) {
+      console.log("readExcel")
+    
       // 解析Excel
       const that = this;
       return new Promise(function(resolve, reject) {
@@ -228,12 +230,13 @@ export default {
           let sheetData = []; //读取的数据，不含表头
           let locations = []; // A1,B1,C1,A2,B3,C3...
           // 遍历每张表读取
+          console.log("workbook.Sheets:",workbook.Sheets)
           for (var sheet in workbook.Sheets) {
             if (workbook.Sheets.hasOwnProperty(sheet)) {
               let sheetInfos = workbook.Sheets[sheet];
-              console.log("当前表格的内容(sheetInfos): ", sheetInfos);
+              console.log("当前表格的内容(sheetInfos): ", sheetInfos);   //对的
               fromTo = sheetInfos["!ref"]; // 如A1:B5
-              console.log("当前表格的范围(fromTo):" + fromTo);
+              console.log("当前表格的范围(fromTo):" + fromTo);   //对的
               locations = that.getLocationsKeys(fromTo);
               console.log("locations:" + locations);
               var colMax = locations[0];
@@ -241,7 +244,7 @@ export default {
               let rowData = {
                 // 每一行的数据
                 styleNumber: ""
-              };
+              };  
               for (let i = 1 + colMax; i < locations.length; i++) {
                 //遍历行数×列数内所有的单元格
                 var value = "";
@@ -252,6 +255,7 @@ export default {
                   value = "";
                   console.log(locations[i] + "对应的单元格的值缺失");
                 }
+                
                 if (i % colMax === 0) {
                   // 第三列为rangeNote 同时为最后一列
                   rowData.styleNumber = value;
@@ -273,6 +277,7 @@ export default {
       });
     },
     beforeUpload(file) {
+      console.log("beforeUpload")
       const that = this;
       return new Promise(function(resolve, reject) {
         that.readExcel(file).then(
@@ -295,19 +300,23 @@ export default {
       });
     },
     upLoadChange(content) {
+      console.log("upLoadChange")
       this.$message.success("文件上传成功!");
     },
     getLocationsKeys(range) {
       // A1:B5输出 A1,B1...
+      console.log("getLocationsKeys")
 
       let sv = range.split(":");
       console.log("range", sv);
       let startString = sv[0];
       let endString = sv[1];
+      console.log("startStr:",startString)
+      console.log("endStr:",endString)
 
-      let start = startString.substring(0, startString.length - 1); // 字符'A'
+      let start = startString.substring(0, 1); // 字符'A'
       console.log("表格的起始列值为: ", start);
-      let end = endString.substring(0, endString.length - 1);
+      let end = endString.substring(0, 1);
       console.log("表格的结束列值为: ", end);
 
       let rowMax = parseInt(endString.substring(1, endString.length)); // 获得最大的行数
@@ -330,6 +339,7 @@ export default {
       return result;
     },
     getCharByNum(index) {
+      console.log("getCharByNum")
       let a = parseInt(index / 26); // 整除
       let b = index % 26; // 余数
       let returnChar = String.fromCharCode(b + 65); // 最后一个字符
@@ -344,6 +354,7 @@ export default {
     ////////////// methods for xls /////////////
     // 保存按钮点击
     submitForm(formName) {
+      console.log("submitForm")
       const that = this;
       var RangeListAdd = [];
       this.ruleForm.tableData.forEach(element => {
