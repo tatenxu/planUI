@@ -448,13 +448,13 @@ export default {
             let time = d.toLocaleString();
             element.createTime = time;
 
-            if (this.checked != 0) {
+   
               if (this.checked == false && element.havePlan === false) {
                 this.tableData.push(element);
               } else if (this.checked == true && element.havePlan === true) {
                 this.tableData.push(element);
               }
-            } else this.tableData.push(element);
+
           });
 
                        this.pagination.total=this.tableData.length;

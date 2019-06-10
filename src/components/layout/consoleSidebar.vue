@@ -256,7 +256,30 @@ export default {
       statistics:false,
       gantt:false,
       predictMana:false,
-      backMana:false
+      backMana:false,
+
+
+      // rangeMana:true,
+      // styleGroupMana:true,
+      // styleMana:true,
+      // toDoPredict:true,
+      // doingPredict:true,
+      // savePredict:true,
+      // planMana:true,
+      // completedPlanMana:true,
+      // rangePlan:true,
+      // styleGroupPlan:true,
+      // stylePlan:true,
+      // planReview:true,
+      // planDistribute:true,
+      // rangeCompleted:true,
+      // planRecover:true,
+      // exceptionMana:true,
+      // messageMana:true,
+      // statistics:true,
+      // gantt:true,
+      // predictMana:true,
+      // backMana:true
     };
   },
 
