@@ -9,10 +9,7 @@
         class="demo-ruleForm"
       >
         <el-row :gutter="20">
-          <span class="Mtitle" v-if="flag===1">系列计划制定</span>
-          <span class="Mtitle" v-else-if="flag===2">款式组计划制定</span>
-          <span class="Mtitle" v-else-if="flag===3">款式计划制定</span>
-          <span class="Mtitle" v-else>计划制定</span>
+          <span class="Mtitle">计划制定</span>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="8">

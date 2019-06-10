@@ -258,7 +258,6 @@ export default {
       predictMana:false,
       backMana:false,
 
-
       // rangeMana:true,
       // styleGroupMana:true,
       // styleMana:true,
