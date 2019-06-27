@@ -53,6 +53,7 @@ const customerMana = r => require.ensure([], () => r(require('../page/backEndMod
 const productMana = r => require.ensure([], () => r(require('../page/backEndModule/productMana.vue')), 'productMana');
 const clothingLevelMana = r => require.ensure([], () => r(require('../page/backEndModule/clothingLevelMana.vue')), 'clothingLevelMana');
 const dictionaryCateMana = r => require.ensure([], () => r(require('../page/backEndModule/dictionaryCateMana.vue')), 'dictionaryCateMana');
+const numberRuleMana = r => require.ensure([], () => r(require('../page/backEndModule/numberRuleMana.vue')), 'numberRuleMana');
 
 
 var servicePath = "/planservice";
@@ -106,6 +107,14 @@ export default [
         component: clothingLevelMana,
         meta: {
           bcrumd: ['后台管理模块', '数据字典', '产品信息管理'],
+        }
+      },
+      {
+        path: servicePath+'/backEndModule/numberRuleMana',
+        name: 'numberRuleMana',
+        component: numberRuleMana,
+        meta: {
+          bcrumd: ['后台管理模块', '编号规则管理'],
         }
       },
       { 
