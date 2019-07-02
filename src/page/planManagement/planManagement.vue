@@ -432,6 +432,7 @@ export default {
           brandName: row.brandName,
           rangeId: row.rangeId,
           rangeName: row.rangeName,
+          files:row.files
         }
       });
     },    
@@ -459,7 +460,8 @@ export default {
           planObjectId:data.planObjectId,
           topPlanName: data.name?data.name:"根计划",
           topPlanId: data.id,
-          quantity:data.quantity
+          quantity:data.quantity,
+          files:row.files
         };
 
         console.log(param);
@@ -678,6 +680,7 @@ export default {
         planPropose:row.proposal,
         note:row.note,
         planDescribe:row.description,
+        files:row.files
       };
       console.log(param);
       this.$router.push({
@@ -710,6 +713,7 @@ export default {
         planPropose:row.proposal,
         note:row.note,
         planDescribe:row.description,
+        files:row.files,
       };
       console.log(param);
       this.$router.push({

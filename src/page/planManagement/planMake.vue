@@ -378,6 +378,7 @@
         </el-row>
         <el-row :gutter="20">
           <el-upload
+            v-if="flag===1 || flag===2"
             action
             :file-list="fileList"
             :http-request="uploadImg"
@@ -408,6 +409,23 @@
               @click="submitUpload"
             >上传</el-button>
           </el-upload>-->
+        </el-row>
+        <el-row :gutter="20" v-if="flag===2 || flag===3">
+          <el-col style="width:70%;margin-left:10%  ">
+            <el-table :data="uploadFileName" border style="width: 100%">
+              <el-table-column prop="fileName" label="上传结果"></el-table-column>
+              <el-table-column fixed="right" width="150" align="center" v-if="flag===2">
+                <template slot-scope="scope">
+                  <el-button @click="deleteFile(scope.row,scope.index)" type="text" size="small">删除</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column fixed="right" width="150" align="center" v-if="flag===3">
+                <template slot-scope="scope">
+                  <el-button @click="downloadRow(scope.row)" type="text" size="small">下载</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="20">
@@ -476,7 +494,7 @@ export default {
       // planObjId: "",
       fileList: [],
       // date: "",
-
+      uploadFileName: [],
       showit1: true,
       showit2: true,
       showit3: true,
@@ -757,6 +775,73 @@ export default {
   //所有的计划制定的跳转
 
   methods: {
+    downloadRow(row) {
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/downloadPlanFile`,
+       {
+         responseType:'blob',
+          params: {
+            planId: this.ruleForm.planId,
+            filename: row.fileName
+          }
+
+        })
+        .then(response => {
+  
+          let content = response.data;
+          let blob = new Blob([content]);
+          let fileName = row.fileName;
+          console.log(fileName)
+          if ("download" in document.createElement("a")) {
+            // 非IE下载
+            const elink = document.createElement("a");
+            elink.download = fileName;
+            elink.style.display = "none";
+            elink.href = URL.createObjectURL(blob);
+            document.body.appendChild(elink);
+            elink.click();
+            URL.revokeObjectURL(elink.href); // 释放URL 对象
+            document.body.removeChild(elink);
+          } else {
+            // IE10+下载
+            navigator.msSaveBlob(blob, fileName);
+          }
+        })
+        .catch(error => {});
+    },
+    deleteFile(row) {
+      this.$axios
+        .delete(`${window.$config.HOST}/planManagement/deletePlanFile`, {
+          params: {
+            planId: this.ruleForm.planId,
+            filename: row.fileName
+          }
+        })
+        .then(response => {
+          if (response.data >= 0) {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+
+            console.log("删除前", this.uploadFileName);
+            let i = 0;
+            this.uploadFileName.forEach(element => {
+              if (element.fileName === row.fileName) {
+                this.uploadFileName.splice(i, 1);
+              }
+              i = i + 1;
+            });
+            console.log("删除后", this.uploadFileName);
+          } else {
+            this.$message({
+              type: "error",
+              message: "要删除的文件不存在!"
+            });
+          }
+        })
+        .catch(error => {});
+    },
     uploadOK() {
       this.dialogVisible = false;
       this.$router.push({
@@ -851,8 +936,8 @@ export default {
                   )
                   .then(response => {
                     console.log(response.data);
-                    let l=[];
-                    if (response.data.length ==0) {
+                    let l = [];
+                    if (response.data.length == 0) {
                       this.$router.push({
                         name: this.goback,
                         params: {}
@@ -947,6 +1032,7 @@ export default {
           };
 
           console.log(list);
+
           that.$axios
             .post(`${window.$config.HOST}/planManagement/updatePlan`, list)
             .then(response => {
@@ -964,10 +1050,35 @@ export default {
                   type: "success",
                   message: "修改成功!"
                 });
-                this.$router.push({
-                  name: this.goback,
-                  params: {}
-                });
+
+                this.formData.append("planId", this.ruleForm.planId);
+                that.$axios
+                  .post(
+                    `${window.$config.HOST}/planManagement/addPlanFiles`,
+                    this.formData
+                  )
+                  .then(response => {
+                    console.log(response.data);
+                    let l = [];
+                    if (response.data.length == 0) {
+                      this.$router.push({
+                        name: this.goback,
+                        params: {}
+                      });
+                    } else {
+                      response.data.forEach(element => {
+                        this.uploadResult.push({
+                          result: element
+                        });
+                      });
+                      this.dialogVisible = true;
+                    }
+                  })
+                  .catch(error => {});
+                // this.$router.push({
+                //   name: this.goback,
+                //   params: {}
+                // });
               }
             })
             .catch(error => {
@@ -1042,6 +1153,7 @@ export default {
 
       if (this.flag === 1) {
         //1的时候，为添加之类
+
         (this.ruleForm.quantity = data.quantity),
           (this.ruleForm.customerName = data.customerName),
           (this.ruleForm.brandName = data.brandName),
@@ -1054,6 +1166,7 @@ export default {
           (this.ruleForm.topPlanId = data.topPlanId);
       } else if (this.flag === 2) {
         //2的时候，为修改之类
+
         (this.ruleForm.planId = data.planId),
           (this.ruleForm.customerName = data.customerName),
           (this.ruleForm.brandName = data.brandName),
@@ -1081,6 +1194,11 @@ export default {
           (this.ruleForm.planPropose = data.planPropose),
           (this.ruleForm.planDescribe = data.planDescribe),
           (this.ruleForm.note = data.note);
+        data.files.forEach(element => {
+          this.uploadFileName.push({
+            fileName: element
+          });
+        });
       } else if (this.flag === 3) {
         (this.showit1 = false),
           (this.ruleForm.planId = data.planId),
@@ -1108,6 +1226,11 @@ export default {
           (this.ruleForm.planPropose = data.planPropose),
           (this.ruleForm.planDescribe = data.planDescribe),
           (this.ruleForm.note = data.note);
+        data.files.forEach(element => {
+          this.uploadFileName.push({
+            fileName: element
+          });
+        });
       }
     }
   }
