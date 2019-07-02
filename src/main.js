@@ -68,12 +68,16 @@ router.beforeEach((to, from, next) => {
 window.$config = {};
 
 //dev
-// window.$config.HOST = 'http://192.168.1.180:8081'
-// window.$config.HOST2 = 'http://192.168.1.180:8001/uaa';
+window.$config.HOST = 'http://192.168.1.180:8080'
+window.$config.HOST2 = 'http://192.168.1.180:8080/uaa';
+
+//dev
+// window.$config.HOST = 'http://192.168.1.159:8080'
+// window.$config.HOST2 = 'http://192.168.1.159:8080/uaa';
 
 // production
-window.$config.HOST = 'http://202.120.1.66:8080/planservice'
-window.$config.HOST2 = 'http://202.120.1.66:8080/service-authorization/uaa';
+// window.$config.HOST = 'http://202.120.1.66:8080/planservice'
+// window.$config.HOST2 = 'http://202.120.1.66:8080/service-authorization/uaa';
 
 /* eslint-disable no-new */
 new Vue({

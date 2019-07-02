@@ -19,6 +19,8 @@ yarn run e2e
 
 # 所有测试
 yarn test
+
+#npm install
 ```
 
 ### 访问
