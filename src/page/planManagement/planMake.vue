@@ -161,7 +161,7 @@
                   :rows="1"
                   placeholder="请输入"
                   style="min-width:240px"
-                ></el-input> -->
+                ></el-input>-->
                 <el-input
                   v-model="ruleForm.quantity"
                   clearable
@@ -378,20 +378,36 @@
         </el-row>
         <el-row :gutter="20">
           <el-upload
-            class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            multiple
-            :limit="3"
-            :on-exceed="handleExceed"
+            action
             :file-list="fileList"
+            :http-request="uploadImg"
+            multiple
             style="margin-left:11%"
           >
-            <el-button size="small" type="primary"    :disabled="true">点击上传</el-button>
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            <!-- <el-button
+              style="margin-left: 10px;"
+              size="small"
+              type="success"
 
+            >上传到服务器</el-button>-->
           </el-upload>
+          <!-- <el-upload
+            action=""
+            :auto-upload="true"
+            multiple
+            :before-remove="beforeRemove"
+            style="margin-left:11%"
+             :file-list="fileList"
+          >
+            <el-button slot="trigger" size="small" type="primary">选取</el-button>
+            <el-button
+              style="margin-left: 10px;"
+              size="small"
+              type="success"
+              @click="submitUpload"
+            >上传</el-button>
+          </el-upload>-->
         </el-row>
         <el-row :gutter="20">
           <el-col :span="20">
@@ -409,6 +425,23 @@
           </el-col>
         </el-row>
       </el-form>
+
+      <el-dialog
+        title
+        :visible.sync="dialogVisible"
+        width="30%"
+        :before-close="handleClose"
+        :modal="false"
+      >
+        <!-- <span>这是一段信息</span> -->
+        <span slot="footer" class="dialog-footer">
+          <span>修改上传文件请到修改计划页面中！</span>
+          <el-button type="primary" @click="uploadOK">确 定</el-button>
+        </span>
+        <el-table :data="uploadResult" border style="width: 100%">
+          <el-table-column prop="result" label="上传结果"></el-table-column>
+        </el-table>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -418,6 +451,8 @@ import { POINT_CONVERSION_COMPRESSED } from "constants";
 export default {
   data() {
     return {
+      dialogVisible: false,
+      formData: "",
       endStr: "结束时间",
       startStr: "开始时间",
 
@@ -499,51 +534,51 @@ export default {
       flag: 1, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
       isModify: false, //是否是修改
       goback: "", //goback 为返回的 name
-            planManagementErrorCode:[
+      planManagementErrorCode: [
         {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
+          errorCode: -1,
+          errotInfo: "所需属性值缺失"
         },
         {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
+          errorCode: -2,
+          errotInfo: "计划名称重复"
         },
         {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
+          errorCode: -3,
+          errotInfo: "父计划未下发"
         },
         {
-          erorCode:-4,
-          errotInfo:"系列根计划不存在",
+          erorCode: -4,
+          errotInfo: "系列根计划不存在"
         },
         {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
+          errorCode: -5,
+          errotInfo: "款式组根计划不存在"
         },
         {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
+          errorCode: -6,
+          errotInfo: "根计划已存在"
         },
         {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
+          errorCode: -7,
+          errotInfo: "计划开始结束时间超额"
         },
         {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
+          errorCode: -8,
+          errotInfo: "计划款数超额"
         },
         {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
+          errorCode: -9,
+          errotInfo: "引用预测计划时预测计划不存在"
         },
         {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
+          errorCode: -10,
+          errotInfo: "当前计划状态不允许执行此操作"
         },
         {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
+          errorCode: -11,
+          errotInfo: "与已有计划冲突"
+        }
       ],
       ruleForm: {
         planId: "",
@@ -598,6 +633,8 @@ export default {
         // planID: "JH000001"
       },
 
+      uploadResult: [],
+
       ProjectTypeOpt: [],
       PlanProductOpt: [],
       datemodelOpt: [],
@@ -613,15 +650,13 @@ export default {
 
   created() {
     var that = this;
+    this.formData = new FormData();
 
-       
     //获得项目类型下拉框
     let CategoryId;
     that.$axios
       .get(
-        `${
-          window.$config.HOST
-        }/dictionaryManagement/getDictionaryCategoryIdByName`,
+        `${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`,
         {
           params: {
             name: "项目类型"
@@ -654,9 +689,7 @@ export default {
     //获取日期类型
     that.$axios
       .get(
-        `${
-          window.$config.HOST
-        }/dictionaryManagement/getDictionaryCategoryIdByName`,
+        `${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`,
         {
           params: {
             name: "日期类型"
@@ -701,44 +734,39 @@ export default {
   },
   mounted() {
     const that = this;
-       that.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
-          params: {
-            name: undefined
-          }
-        })
-        .then(response => {
-          this.PlanProductOpt = response.data;
-          console.log("计划产品下拉框",this.PlanProductOpt)
-            this.PlanProductOpt.forEach(element => {
-            if (element.id === this.ruleForm.planProductId)
-              this.ruleForm.planProductName = element.name;
-          })
-        })
-        .catch(error => {
-          console.log("获取品牌失败");
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+        params: {
+          name: undefined
+        }
+      })
+      .then(response => {
+        this.PlanProductOpt = response.data;
+        console.log("计划产品下拉框", this.PlanProductOpt);
+        this.PlanProductOpt.forEach(element => {
+          if (element.id === this.ruleForm.planProductId)
+            this.ruleForm.planProductName = element.name;
         });
+      })
+      .catch(error => {
+        console.log("获取品牌失败");
+      });
     this.init();
   },
   //五个参数控制
   //所有的计划制定的跳转
 
   methods: {
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    uploadOK() {
+      this.dialogVisible = false;
+      this.$router.push({
+        name: this.goback,
+        params: {}
+      });
     },
-    handlePreview(file) {
-      console.log(file);
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${
-          files.length
-        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
-      );
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+    uploadImg(item) {
+      this.formData.append("file", item.file);
+      console.log(this.formData);
     },
 
     changeDate(date1) {
@@ -800,19 +828,69 @@ export default {
           that.$axios
             .post(`${window.$config.HOST}/planManagement/addPlan`, list)
             .then(response => {
-          if(response.data < 0 ){
-            console.log("添加失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "添加失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
-            this.$message({
-              type:"success",
-              message:"添加成功!"
-            });
-            this.$router.push({
-              name:this.goback,
-              params:{}
-            });
-          }
+              if (response.data < 0) {
+                console.log(
+                  "添加失败:" +
+                    this.planManagementErrorCode[-response.data - 1].errotInfo
+                );
+                this.$message.error(
+                  "添加失败:" +
+                    this.planManagementErrorCode[-response.data - 1].errotInfo
+                );
+              } else {
+                this.$message({
+                  type: "success",
+                  message: "添加成功!"
+                });
+
+                this.formData.append("planId", response.data);
+                that.$axios
+                  .post(
+                    `${window.$config.HOST}/planManagement/addPlanFiles`,
+                    this.formData
+                  )
+                  .then(response => {
+                    console.log(response.data);
+                    let l=[];
+                    if (response.data.length ==0) {
+                      this.$router.push({
+                        name: this.goback,
+                        params: {}
+                      });
+                    } else {
+                      response.data.forEach(element => {
+                        this.uploadResult.push({
+                          result: element
+                        });
+                      });
+                      this.dialogVisible = true;
+                    }
+                  })
+                  .catch(error => {});
+
+                // this.formData.append("planId", response.data);
+                // that.$axios
+                //   .post(
+                //     `${window.$config.HOST}/planManagement/addPlanFiles`,
+                //     this.formData
+                //   )
+                //   .then(response => {
+                //     console.log(response.data);
+
+                //     response.data.forEach(element => {
+                //       this.uploadResult.push({
+                //         result: element
+                //       });
+                //     });
+                //     this.dialogVisible = true;
+                //   })
+                //   .catch(error => {});
+
+                // this.$router.push({
+                //   name: this.goback,
+                //   params: {}
+                // });
+              }
             })
             .catch(error => {
               this.$message({
@@ -872,19 +950,25 @@ export default {
           that.$axios
             .post(`${window.$config.HOST}/planManagement/updatePlan`, list)
             .then(response => {
-          if(response.data < 0 ){
-            console.log("修改失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "修改失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
-            this.$message({
-              type:"success",
-              message: "修改成功!"
-            });
-            this.$router.push({
-              name:this.goback,
-              params:{}
-            });
-          }
+              if (response.data < 0) {
+                console.log(
+                  "修改失败:" +
+                    this.planManagementErrorCode[-response.data - 1].errotInfo
+                );
+                this.$message.error(
+                  "修改失败:" +
+                    this.planManagementErrorCode[-response.data - 1].errotInfo
+                );
+              } else {
+                this.$message({
+                  type: "success",
+                  message: "修改成功!"
+                });
+                this.$router.push({
+                  name: this.goback,
+                  params: {}
+                });
+              }
             })
             .catch(error => {
               this.$message({
@@ -953,14 +1037,13 @@ export default {
       let data = this.$route.params;
       // console.log(data.dateStart)
 
-
       (this.goback = data.goback), //goback 为返回的 name
         (this.flag = data.flag); //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
 
       if (this.flag === 1) {
         //1的时候，为添加之类
-        this.ruleForm.quantity=data.quantity,
-        (this.ruleForm.customerName = data.customerName),
+        (this.ruleForm.quantity = data.quantity),
+          (this.ruleForm.customerName = data.customerName),
           (this.ruleForm.brandName = data.brandName),
           (this.ruleForm.rangeId = data.rangeId),
           (this.ruleForm.rangeName = data.rangeName),
@@ -989,10 +1072,10 @@ export default {
           // (this.ruleForm.dateEnd = data.dateEnd),
 
           (this.ruleForm.date = [data.dateStart, data.dateEnd]);
-          this.startStr = data.dateStart;
-          this.endStr = data.dateEnd;
+        this.startStr = data.dateStart;
+        this.endStr = data.dateEnd;
 
-          (this.ruleForm.productDateType = data.productDateType),
+        (this.ruleForm.productDateType = data.productDateType),
           (this.ruleForm.productDate = data.productDate),
           (this.ruleForm.planProductId = data.planProductId),
           (this.ruleForm.planPropose = data.planPropose),
@@ -1013,17 +1096,16 @@ export default {
           (this.ruleForm.planName = data.planName),
           (this.ruleForm.projectType = data.projectType),
           (this.ruleForm.quantity = data.quantity),
-
           // (this.ruleForm.dateStart = data.dateStart),
           // (this.ruleForm.dateEnd = data.dateEnd),
 
-        this.startStr = data.dateStart;
+          (this.startStr = data.dateStart);
         this.endStr = data.dateEnd;
         (this.ruleForm.productDateType = data.productDateType),
           (this.ruleForm.productDate = data.productDate),
           // (this.ruleForm.planProductName = data.planProductName),
           (this.ruleForm.planProductId = data.planProductId),
-          ((this.ruleForm.planPropose = data.planPropose)),
+          (this.ruleForm.planPropose = data.planPropose),
           (this.ruleForm.planDescribe = data.planDescribe),
           (this.ruleForm.note = data.note);
       }
