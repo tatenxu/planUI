@@ -9,21 +9,25 @@
             @change="planTypeSwitchChange"
             inactive-color="#13ce66"
             active-text="已审核计划"
-            inactive-text="已下发计划">
-          </el-switch>
+            inactive-text="已下发计划"
+          ></el-switch>
         </el-col>
         <el-col :span="3" v-if="isVerifiedPlan">
           <div class="bar">
             <el-button type="primary" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
           </div>
         </el-col>
-        <el-col :span="12" >
-          <div class="bar" id="userChosenList">
-          </div>
+        <el-col :span="12">
+          <div class="bar" id="userChosenList"></div>
         </el-col>
         <el-col :span="3" v-if="isVerifiedPlan">
           <div class="bar">
             <el-button type="primary" style="margin-right:20px" @click="distributePlanClick">下发计划</el-button>
+          </div>
+        </el-col>
+        <el-col :offset="1" :span="2">
+          <div class="bar">
+            <el-button type="primary" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
           </div>
         </el-col>
       </el-row>
@@ -65,14 +69,21 @@
     </div>
 
     <el-dialog title="选择下发对象" :visible.sync="userChoseTableDialogShow" :modal="false">
-      <el-table 
+      <el-table
         @selection-change="tableSelectionChange"
         :stripe="true"
-        :data="searchOptions.options.userNameOptions">
+        :data="searchOptions.options.userNameOptions"
+      >
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column property="userName" label="下发对象" width="150"></el-table-column>
       </el-table>
+    </el-dialog>
+
+    <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+      <div class="body">
+        <el-tree :data="allPlans" :props="defaultProps"></el-tree>
+      </div>
     </el-dialog>
   </el-card>
 </template>
@@ -81,108 +92,117 @@
 export default {
   data() {
     return {
-      userChoseTableDialogShow:false,
-      isVerifiedPlan:true,
+      lookAllPlans: false,
+      allPlans: [],
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      userChoseTableDialogShow: false,
+      isVerifiedPlan: true,
       searchOptions: {
         searchParams: {
-          userName:""
+          userName: ""
         },
         options: {
-          userNameOptions:[],
+          userNameOptions: []
         }
       },
-      
-      totalTableData:[],
+
+      totalTableData: [],
       tableData: [],
-      userTableMultpleSelection:[],
-      chosenPlanRow:{},
+      userTableMultpleSelection: [],
+      chosenPlanRow: {},
 
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
-        total: 0,
+        total: 0
       },
 
-      planManagementErrorCode:[
+      planManagementErrorCode: [
         {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
+          errorCode: -1,
+          errotInfo: "所需属性值缺失"
         },
         {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
+          errorCode: -2,
+          errotInfo: "计划名称重复"
         },
         {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
+          errorCode: -3,
+          errotInfo: "父计划未下发"
         },
         {
-          errorCode:-4,
-          errotInfo:"系列根计划不存在",
+          errorCode: -4,
+          errotInfo: "系列根计划不存在"
         },
         {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
+          errorCode: -5,
+          errotInfo: "款式组根计划不存在"
         },
         {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
+          errorCode: -6,
+          errotInfo: "根计划已存在"
         },
         {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
+          errorCode: -7,
+          errotInfo: "计划开始结束时间超额"
         },
         {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
+          errorCode: -8,
+          errotInfo: "计划款数超额"
         },
         {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
+          errorCode: -9,
+          errotInfo: "引用预测计划时预测计划不存在"
         },
         {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
+          errorCode: -10,
+          errotInfo: "当前计划状态不允许执行此操作"
         },
         {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
-      ],
+          errorCode: -11,
+          errotInfo: "与已有计划冲突"
+        }
+      ]
     };
   },
-  created:function(){
+  created: function() {
     let that = this;
 
     //获取所有未下发计划
     var param = {
-      stage:"distribute"
+      stage: "distribute"
     };
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-        params:param
+      .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+        params: param
       })
       .then(response => {
         console.log("初始化加载下发计划成功");
-        response.data.forEach(element=>{
-          if(element.state === "已审核"){
+        response.data.forEach(element => {
+          if (element.state === "已审核") {
             this.totalTableData.push(element);
           }
         });
 
         //时间排序
-        this.totalTableData.sort(function(a,b){
-          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        this.totalTableData.sort(function(a, b) {
+          return Date.parse(b.createTime) - Date.parse(a.createTime);
         });
-        
+
         //分页
         this.pagination.total = this.totalTableData.length;
         // this.pagination.currentPage = 1;
-        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        var pageEleStart =
+          (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        var pageEleEnd =
+          pageEleStart + this.pagination.pageSize > this.pagination.total
+            ? this.pagination.total
+            : pageEleStart + this.pagination.pageSize;
         this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
-
       })
       .catch(error => {
         console.log("初始化加载计划列表获取错误");
@@ -200,95 +220,132 @@ export default {
       });
   },
   methods: {
-    chooseUserClick(){
-      // console.log(this.chosenPlanRow.brandId);
-      if(this.chosenPlanRow.brandId === undefined ){
+    lookAllPlan() {
+      if (this.chosenPlanRow.length != 1) {
         this.$message({
-          message:"请选择一个计划!",
-          type:'warning'
+          message: "请选择一项！",
+          type: "warning"
+        });
+        return;
+      }
+      let list = {
+        id: this.chosenPlanRow[0].id
+      };
+
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
+          params: list
+        })
+        .then(response => {
+          this.allPlans = [];
+          this.allPlans.push(response.data);
+          console.log(this.allPlans);
+
+          this.lookAllPlans = true;
+        })
+        .catch(error => {
+          this.$message({
+            message: "获取总计划失败",
+            type: "warning"
+          });
+        });
+    },
+    chooseUserClick() {
+      // console.log(this.chosenPlanRow.brandId);
+      if (this.chosenPlanRow.brandId === undefined) {
+        this.$message({
+          message: "请选择一个计划!",
+          type: "warning"
         });
       } else {
         //获取用户信息
         this.$axios
-          .get(`${window.$config.HOST}/baseInfoManagement/getUserNameByBrandId`,{
-            params:{brandId: this.chosenPlanRow.brandId }
-          })
-          .then(response=>{
+          .get(
+            `${window.$config.HOST}/baseInfoManagement/getUserNameByBrandId`,
+            {
+              params: { brandId: this.chosenPlanRow.brandId }
+            }
+          )
+          .then(response => {
             this.searchOptions.options.userNameOptions = response.data;
           })
-          .catch(error=>{
+          .catch(error => {
             that.$message.error("下发对象加载失败!");
           });
         this.userChoseTableDialogShow = true;
       }
     },
     //计划表格单选
-    handlePlanChosenChange(val){
+    handlePlanChosenChange(val) {
       this.chosenPlanRow = val;
       console.log(val);
-      this.tableData.forEach(row=>{
-        if(row.id === val.id){
-          this.$refs.singleTable.toggleRowSelection(row,true);
+      this.tableData.forEach(row => {
+        if (row.id === val.id) {
+          this.$refs.singleTable.toggleRowSelection(row, true);
         } else {
           this.$refs.singleTable.toggleRowSelection(row, false);
         }
       });
     },
     //计划表格多选
-    planSelectionChange(val){
+    planSelectionChange(val) {
       console.log(val);
-      if(val.length === 0){
+      if (val.length === 0) {
         this.chosenPlanRow = {};
-      } else if(val.length === 1){
+      } else if (val.length === 1) {
         this.chosenPlanRow = val[0];
-      } else if(val.length === 2){
-        val.forEach(row=>{
-          if(row.id === this.chosenPlanRow.id){
-            this.$refs.singleTable.toggleRowSelection(row,true);
+      } else if (val.length === 2) {
+        val.forEach(row => {
+          if (row.id === this.chosenPlanRow.id) {
+            this.$refs.singleTable.toggleRowSelection(row, true);
           } else {
             this.$refs.singleTable.toggleRowSelection(row, false);
           }
         });
       } else {
         this.$message({
-          message:"只能选择一个计划!",
-          type:"warning"
+          message: "只能选择一个计划!",
+          type: "warning"
         });
-      };
+      }
     },
     //switch 处理函数
-    planTypeSwitchChange(){
+    planTypeSwitchChange() {
       this.handleSearch();
     },
-    handleSearch(){
+    handleSearch() {
       var param = {
-        stage:"distribute"
+        stage: "distribute"
       };
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-          params:param
+        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+          params: param
         })
         .then(response => {
           this.totalTableData = [];
-          response.data.forEach(element=>{
-            if(this.isVerifiedPlan){
-              if(element.state === "已审核"){
+          response.data.forEach(element => {
+            if (this.isVerifiedPlan) {
+              if (element.state === "已审核") {
                 this.totalTableData.push(element);
               }
-            }else{
-              if(element.state === "已下发"){
+            } else {
+              if (element.state === "已下发") {
                 this.totalTableData.push(element);
               }
             }
           });
 
           //时间排序
-          this.totalTableData.sort(function(a,b){
-            return Date.parse(b.createTime)-Date.parse(a.createTime);
+          this.totalTableData.sort(function(a, b) {
+            return Date.parse(b.createTime) - Date.parse(a.createTime);
           });
           this.pagination.total = this.totalTableData.length;
-          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          var pageEleStart =
+            (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          var pageEleEnd =
+            pageEleStart + this.pagination.pageSize > this.pagination.total
+              ? this.pagination.total
+              : pageEleStart + this.pagination.pageSize;
           this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error => {
@@ -316,52 +373,58 @@ export default {
         that.$message.error("请选择下发对象！");
       } else {
         var paramUserList = [];
-        this.userTableMultpleSelection.forEach(element=>{
+        this.userTableMultpleSelection.forEach(element => {
           paramUserList.push(element.userId);
         });
         this.$axios
-          .post(`${window.$config.HOST}/planManagement/distributePlan`,{
-            planId:this.chosenPlanRow.id,
-            executerIdList: paramUserList,
+          .post(`${window.$config.HOST}/planManagement/distributePlan`, {
+            planId: this.chosenPlanRow.id,
+            executerIdList: paramUserList
           })
-          .then(response=>{
+          .then(response => {
             console.log({
-              planId:this.chosenPlanRow.id,
-              executerIdList: paramUserList,
+              planId: this.chosenPlanRow.id,
+              executerIdList: paramUserList
             });
-            if(response.data < 0){
-              that.$message.error("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-              console.log("下发失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            }else{
+            if (response.data < 0) {
+              that.$message.error(
+                "下发失败:" +
+                  this.planManagementErrorCode[-response.data - 1].errotInfo
+              );
+              console.log(
+                "下发失败:" +
+                  this.planManagementErrorCode[-response.data - 1].errotInfo
+              );
+            } else {
               console.log("下发成功!");
               that.$message({
-                message:"下发成功!",
-                type:'success'
+                message: "下发成功!",
+                type: "success"
               });
               this.chosenPlanRow = {};
               this.handleSearch();
             }
           })
-          .catch(error=>{
+          .catch(error => {
             console.log({
-              planId:this.chosenPlanRow.id,
-              executerIdList: paramUserList,
+              planId: this.chosenPlanRow.id,
+              executerIdList: paramUserList
             });
             that.$message.error("下发失败:请检查网络");
             console.log("下发失败:请检查网络");
           });
       }
     },
-    tableSelectionChange(val){
+    tableSelectionChange(val) {
       this.userTableMultpleSelection = val;
-      if(this.userTableMultpleSelection.length !== 0){
+      if (this.userTableMultpleSelection.length !== 0) {
         var showStr = "已选择:";
-        this.userTableMultpleSelection.forEach(element=>{
-          showStr = showStr + element.userName + ","
+        this.userTableMultpleSelection.forEach(element => {
+          showStr = showStr + element.userName + ",";
         });
         document.getElementById("userChosenList").innerHTML = showStr;
       } else {
-        document.getElementById("userChosenList").innerHTML = '';
+        document.getElementById("userChosenList").innerHTML = "";
       }
     }
   }
@@ -378,11 +441,11 @@ export default {
     align-items: center;
     width: 100%;
     font-size: 14px;
-      min-width: 75px;
-      text-align: center;
-      line-height: 40px;
+    min-width: 75px;
+    text-align: center;
+    line-height: 40px;
     // .title {
-      
+
     //   // background: black;
     // }
     .el-input {
@@ -395,9 +458,8 @@ export default {
       min-width: 75px;
       // margin: 5px 10px;
     }
-    
   }
-  .el-switch{
+  .el-switch {
     height: 40px;
   }
   .block {

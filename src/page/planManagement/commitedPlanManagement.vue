@@ -89,6 +89,9 @@
       </el-row>
     </el-card>
     <el-card class="box-card">
+      <el-col :span="3">
+          <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
+        </el-col>
       
       <el-table
         :data="tableData"
@@ -158,6 +161,11 @@
           :total="pagination.total"
         ></el-pagination>
       </div>
+      <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+        <div class="body">
+          <el-tree :data="allPlans" :props="defaultProps"></el-tree>
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -167,6 +175,12 @@ import { error } from 'util';
 export default {
   data() {
     return {
+      lookAllPlans:false,
+      allPlans:[],
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
       searchOptions: {
         searchParams: {
           customerName: "",
@@ -275,6 +289,36 @@ export default {
       });
   },
   methods: {   
+    lookAllPlan() {
+      if (this.selectedData.length != 1) {
+        this.$message({
+          message: "请选择一项！",
+          type: "warning"
+        });
+        return;
+      }
+      let list = {
+        id: this.selectedData[0].id
+      };
+
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
+          params: list
+        })
+        .then(response => {
+          this.allPlans = [];
+          this.allPlans.push(response.data);
+          console.log(this.allPlans);
+
+          this.lookAllPlans = true;
+        })
+        .catch(error => {
+          this.$message({
+            message: "获取总计划失败",
+            type: "warning"
+          });
+        });
+    },
     changeCheckBoxFun(val) {
       this.selectedData = val;
     },
