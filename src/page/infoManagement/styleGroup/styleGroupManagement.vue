@@ -224,6 +224,7 @@
 <script>
 import styleManagementVue from '../style/styleManagement.vue';
 import { error } from 'util';
+import { strictEqual } from 'assert';
 export default {
   data() {
     return {
@@ -696,48 +697,71 @@ export default {
       const that = this;
       console.log('解绑款式组按钮点击');
       if(that.multipleSelection.length ===0){
-        this.$message({
+        that.$message({
           message: '请选择要解绑的款式组',
           type: 'warning'
         });
       }
-      else if(that.multipleSelection.length >= 1){
-        // console.log("有" + that.multipleSelection.length + "条数据被选中");
-        this.$confirm("解绑所选的" + that.multipleSelection.length + "条款式组, 是否继续?", "提示", {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-        .then(() => {
-          this.multipleSelection.forEach(element=>{
-            console.log("开始解绑");
-            this.$axios
-              .get(`${window.$config.HOST}/infoManagement/unbindStyleGroup`,{
-                params:{id:element.id}
-              })
-              .then(response=>{
-                if(response.data < 0){
-                  this.$message.error(element.name+"解绑失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
-                  console.log(element.name+"解绑失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
-                }else{
-                  this.$message({
-                    type: 'success',
-                    message: element.name + '解绑成功!'
-                  });
-                }
-              })
-              .catch(error=>{
-                console.log(element.name+"解绑失败:请检查网络");
-                this.$message.error(element.name+"解绑失败:请检查网络")
+      else if(that.multipleSelection.length == 1){
+        var styleInfoStr = "";
+        //根据款式组id获取款式
+        that.$axios
+          .get(`${window.$config.HOST}/infoManagement/getStyleListByGroupId`,{
+            params:{styleGroupId:that.multipleSelection[0].id}
+          })
+          .then(response=>{
+            if(response.data < 0){
+              that.$message.error("获取款式失败:"+that.infoManagementErrorCode[-response.data-1].errotInfo)
+              console.log("获取款式失败:"+that.infoManagementErrorCode[-response.data-1].errotInfo);
+            } else {
+              response.data.forEach(element=>{
+                styleInfoStr += (element.number + " ");
               });
+              console.log(styleInfoStr);
+
+              // console.log("有" + that.multipleSelection.length + "条数据被选中");
+              that.$confirm("包含款式: "+styleInfoStr+ " 是否继续?", "提示", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              })
+              .then(() => {
+                that.multipleSelection.forEach(element=>{
+                  console.log("开始解绑");
+                  that.$axios
+                    .get(`${window.$config.HOST}/infoManagement/unbindStyleGroup`,{
+                      params:{id:element.id}
+                    })
+                    .then(response=>{
+                      if(response.data < 0){
+                        that.$message.error(element.name+"解绑失败:"+that.infoManagementErrorCode[-response.data-1].errotInfo)
+                        console.log(element.name+"解绑失败:"+that.infoManagementErrorCode[-response.data-1].errotInfo);
+                      }else{
+                        that.$message({
+                          type: 'success',
+                          message: element.name + '解绑成功!'
+                        });
+                      }
+                    })
+                    .catch(error=>{
+                      console.log(element.name+"解绑失败:请检查网络");
+                      that.$message.error(element.name+"解绑失败:请检查网络")
+                    });
+                });
+              })
+              .catch(() => {
+                that.$message({
+                  type: 'info',
+                  message: '已取消解绑'
+                });          
+              });
+            }
+          })
+          .catch(error=>{
+            console.log("获取款式失败:请检查网络");
+            this.$message.error("获取款式失败:请检查网络")
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消解绑'
-          });          
-        });
+
       }
     },
     /* //查看操作

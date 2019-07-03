@@ -162,6 +162,7 @@
               type="text"
               size="small"
               v-if="scope.row.haveException"
+              style="background:red;"
             >有异常，查看</el-button>
             <p v-else>无异常</p>
           </template>
