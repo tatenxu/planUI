@@ -871,7 +871,7 @@ export default {
         ),
         endDate: this.changeDate(
           this.searchOptions.searchParams.dateRange
-            ? this.searchOptions.searchParams.dateRange[0]
+            ? this.searchOptions.searchParams.dateRange[1]
             : null
         )
       };
