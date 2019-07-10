@@ -57,7 +57,6 @@
       computed: {
         keepAlives:{
           get(){
-            console.log(this.$store.getters['baseinfo/keepAliveOptions']);
             return this.$store.getters['baseinfo/keepAliveOptions'];
           },
           set(value){

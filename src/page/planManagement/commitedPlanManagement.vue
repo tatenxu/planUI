@@ -173,6 +173,7 @@
 <script>
 import { error } from 'util';
 export default {
+  name: 'commitedPlanManagement',
   data() {
     return {
       lookAllPlans:false,
@@ -424,6 +425,24 @@ export default {
       this.pagination.currentPage=val;
       this.handleSearch();
     },
+  },
+  computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex') {
+      this.keepAlives = ['commitedPlanManagement',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   }
 };
 </script>

@@ -256,6 +256,7 @@
 import { error } from "util";
 import consoleSidebarVue from "../../components/layout/consoleSidebar.vue";
 export default {
+  name: 'planManagement',
   data() {
     return {
       lookAllPlans: false,
@@ -1071,6 +1072,24 @@ export default {
         that.subPlanTableData.splice(index, 0, downDate);
       }
     }
+  },
+  computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex' || to.name === 'exceptionManagement') {
+      this.keepAlives = ['planManagement',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   }
 };
 </script>

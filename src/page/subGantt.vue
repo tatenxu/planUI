@@ -17,7 +17,7 @@
   import GanttElastic from "gantt-elastic";
   import GanttHeader from "gantt-elastic-header";
   import dayjs from "dayjs";
-import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
+  import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
 
   export default {
     name: "subGantt",
@@ -225,7 +225,6 @@ import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
     computed:{
       keepAlives:{
         get(){
-          console.log(this.$store.getters['baseinfo/keepAliveOptions']);
           return this.$store.getters['baseinfo/keepAliveOptions'];
         },
         set(value){

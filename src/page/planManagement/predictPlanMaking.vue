@@ -135,6 +135,7 @@
 
 <script>
 export default {
+  name:'predictPlanMaking',
   data() {
     return {
       searchOptions: {
@@ -509,6 +510,24 @@ export default {
         });
     },
   },
+  computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex') {
+      this.keepAlives = ['predictPlanMaking',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
+  }
 }
 </script>
 

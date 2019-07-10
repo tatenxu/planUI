@@ -136,6 +136,7 @@
 
 <script>
 export default {
+  name:'predictPlanToBeMake',
   data() {
     return {
       searchOptions: {
@@ -324,7 +325,25 @@ export default {
           console.log("搜索失败");
         });
     },
-  },  
+  },
+  computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex') {
+      this.keepAlives = ['predictPlanToBeMake',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
+  }  
 }
 </script>
 
