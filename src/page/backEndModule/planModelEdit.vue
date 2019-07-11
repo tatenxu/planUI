@@ -1,163 +1,375 @@
 <template>
-  <el-card class="box-card">
-    <el-card>
+  <div class="body">
+    <el-card class="box-card" >
       <el-row :gutter="20">
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">客户名称：</span>
-            <el-select v-model="value" placeholder="请选择">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">客户名称</div>
+            <el-input  v-if="flag===2" v-model="client" clearable :disabled="true" :rows="1" placeholder></el-input>
+            <el-select v-model="client" clearable v-else>
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">品牌：</span>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+                v-for="item in clientNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
 
-        <el-col :span="8">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">模板名称：</span>
-            <el-input class="input" v-model="input" placeholder="请输入内容"></el-input>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">品牌</div>
+            <el-input  v-if="flag===2" v-model="brand" clearable :disabled="true" :rows="1" placeholder></el-input>
+            <el-select  v-else v-model="brand" clearable>
+              <el-option
+                v-for="item in brandNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
 
-        <el-col :span="2">
-          <div class="grid-content bg-purple">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">模板名称</div>
+            <el-input  v-if="flag===2" v-model="modelName" clearable :disabled="true" :rows="1" placeholder></el-input>
+            <el-input v-else v-model="modelName" clearable :rows="1" placeholder></el-input>
+          </div>
+        </el-col>
+        <!-- <el-col :span="2">
+          <div class="bar">
             <el-button type="primary">搜索</el-button>
           </div>
-        </el-col>
+        </el-col>-->
       </el-row>
     </el-card>
 
-    <el-card class="cardBelow">
-      <el-container>
-        <el-header>
-        </el-header>
-
-        <el-main>
-          <div>
+    <el-card class="box-card">
+      <el-row :gutter="20">
+        <el-col :span="3">
+          <div class="bar">
+            <el-button type="primary" @click="addNode" v-if="flag!=2">添加一个结点</el-button>
           </div>
-        </el-main>
-      </el-container>
+        </el-col>
+        <el-col :span="3">
+          <div class="bar">
+            <el-button type="primary" @click="addTemplate" v-if="flag===1">保存</el-button>
+          </div>
+        </el-col>
+
+        <el-col :span="3">
+          <div class="bar">
+            <el-button type="primary" @click="updateTemplate" v-if="flag===3">更新</el-button>
+          </div>
+        </el-col>
+
+        <el-col :span="3">
+          <div class="bar">
+            <el-button type="primary" @click="goback" v-if="flag===2">返回</el-button>
+          </div>
+        </el-col>
+      </el-row>
+
+      <br />
+
+      <br />
+      <el-tree
+        :data="data"
+        node-key="id"
+        :props="defaultProps"
+        default-expand-all
+        @node-drag-start="handleDragStart"
+        @node-drag-enter="handleDragEnter"
+        @node-drag-leave="handleDragLeave"
+        @node-drag-over="handleDragOver"
+        @node-drag-end="handleDragEnd"
+        @node-drop="handleDrop"
+        draggable
+        :allow-drop="allowDrop"
+        :allow-drag="allowDrag"
+        @click="() => append(data)"
+      ></el-tree>
+
+      <el-dialog :modal="false" title="添加结点" :visible.sync="dialogVisible" width="30%">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="bar">
+              <div class="title">结点名称</div>
+              <el-input
+                v-model="nodeName"
+                class="nameInput"
+                placeholder="请输入结点名称"
+                style="min-width:300px"
+              ></el-input>
+            </div>
+          </el-col>
+        </el-row>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addNode1">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-card>
-  </el-card>
+  </div>
 </template>
 
 
-<style lang="less" scoped>
-  .box-card{
-    min-width: 1500px;
-    margin: 20px 50px;
-    padding: 0 20px;
-  }
-  .el-row {
-    margin-bottom: 20px;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .el-col {
-      border-radius: 4px;
-      .inputCombineDiv{
-        display: flex;
-        flex-direction: row;
-        .inputTag{
-          min-width: 90px;
-          font-size: 18px;
-          line-height: 40px;
-          text-align:center;
-        }
-        .inputTag1{
-          margin-left: 10px;
-          margin-right: 10px;
-          width: 18px;
-          font-size: 18px;
-        }
-      }
-    }
-  }
-  
-  .cardBelow{
-    margin-top: 10px;
-  }
-  
-  .bg-purple {
-    // background: #d3dce6;
-  }
-  
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-  }
- 
-</style>
-
-
 <script>
-  export default {
-    data() {
-      return {
-        tableData: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }],
-        multipleSelection: []
+export default {
+  data() {
+    return {
+      flag: 0,
+      id:"",
+      nodeName: "",
+      dialogVisible: false,
+      modelName: "",
+      client: "",
+      brand: "",
+      brandNameOptions: [{
+        id:12,
+        name:"324441"
+      }],
+      clientNameOptions: [{
+        id:1,
+        name:"321"
+      }],
+      data: [],
+      defaultProps: {
+        children: "children",
+        label: "planName"
       }
+    };
+  },
+
+  mounted() {
+    let data = this.$route.params;
+    this.flag = data.flag;
+  
+    if(this.flag===2)  //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
+    {
+      this.data.push(data.tree)
+
+      this.client=data.customerName,
+      this.brand=data.brandName,
+      this.modelName=data.name
+
+
+    }
+    else if(this.flag===3)  //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
+    {
+      this.id=data.id,
+      this.client=data.customerName,
+      this.brand=data.brandName,
+      this.modelName=data.name,
+     this.data.push(data.tree)
+
+    }
+
+  },
+
+  created: function() {
+    var that = this;
+    //获得品牌名字
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName `, {
+        customerId: ""
+      })
+      .then(response => {
+        console.log("获得品牌信息成功了");
+        this.brandNameOptions = response.data;
+      })
+      .catch(error => {
+        this.$message({
+          message: "获取品牌信息失败",
+          type: "error"
+        });
+      });
+
+    //获得顾客名称
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+      .then(response => {
+        console.log("获得顾客信息成功了");
+        this.clientNameOptions = response.data;
+      })
+      .catch(error => {
+        this.$message({
+          message: "获取顾客信息失败",
+          type: "error"
+        });
+      });
+  },
+  methods: {
+    goback(){
+                this.$router.push({
+              name: "bePlanModelManagement",
+              params: {}
+            });
+    },
+    addTemplate() {
+      let list = {
+        name: this.modelName,
+        customerName: this.client,
+        brandName: this.brand,
+        tree: this.data
+      };
+      console.log(list);
+      this.$axios
+        .post(`${window.$config.HOST}/planManagement/addPlanTemplate `, {
+          name: this.modelName,
+          customerName: this.client,
+          brandName: this.brand,
+          tree: this.data[0]
+        })
+        .then(response => {
+          if (response.data > 0) {
+            this.$message({
+              type: "success",
+              message: "添加成功!"
+            });
+            this.$router.push({
+              name: "bePlanModelManagement",
+              params: {}
+            });
+          } else if (response.data === -11) {
+            this.$message({
+              type: "error",
+              message: "该模板与已有模板冲突!"
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "出现了未知的错误!"
+            });
+          }
+        })
+        .catch(error => {});
     },
 
-    methods: {
-      toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
+    updateTemplate() {
+      let list = {
+        id:this.id,
+        name: this.modelName,
+        customerName: this.client,
+        brandName: this.brand,
+        tree: this.data
+      };
+      console.log(list);
+      this.$axios
+        .post(`${window.$config.HOST}/planManagement/updatePlanTemplate `, {
+          id:this.id,
+          name: this.modelName,
+          customerName: this.client,
+          brandName: this.brand,
+          tree: this.data[0]
+        })
+        .then(response => {
+          if (response.data > 0) {
+            this.$message({
+              type: "success",
+              message: "添加成功!"
+            });
+            this.$router.push({
+              name: "bePlanModelManagement",
+              params: {}
+            });
+          } else if (response.data === -1) {
+            this.$message({
+              type: "error",
+              message: "属性有缺失!"
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "出现了未知的错误!"
+            });
+          }
+        })
+        .catch(error => {});
+    },
+    saveTree() {
+      console.log(this.data);
+    },
+    addNode() {
+      (this.dialogVisible = true), (this.nodeName = "");
+    },
+
+    addNode1() {
+      (this.dialogVisible = false),
+        this.data.push({
+          planName: this.nodeName,
+          children: []
+        });
+    },
+
+    handleDragStart(node, ev) {
+      console.log("drag start", node);
+    },
+    handleDragEnter(draggingNode, dropNode, ev) {
+      console.log("tree drag enter: ", dropNode.label);
+    },
+    handleDragLeave(draggingNode, dropNode, ev) {
+      console.log("tree drag leave: ", dropNode.label);
+    },
+    handleDragOver(draggingNode, dropNode, ev) {
+      console.log("tree drag over: ", dropNode.label);
+    },
+    handleDragEnd(draggingNode, dropNode, dropType, ev) {
+      console.log("tree drag end: ", dropNode && dropNode.label, dropType);
+    },
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log("tree drop: ", dropNode.label, dropType);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if (dropNode.data.label === "二级 3-1") {
+        return type !== "inner";
+      } else {
+        return true;
       }
+    },
+    allowDrag(draggingNode) {
+      return draggingNode.data.id != 1;
     }
   }
+};
 </script>
+
+
+<style lang="less" scoped>
+.box-card {
+  margin: 20px 50px;
+  padding: 0 20px;
+  .bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    .title {
+      font-size: 14px;
+      min-width: 75px;
+      text-align: center;
+    }
+    .el-input {
+      width: 300px;
+      min-width: 75px;
+      // margin: 5px 10px;
+    }
+    .el-select {
+      width: 300px;
+      min-width: 75px;
+      // margin: 5px 10px;
+    }
+  }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+    //border-right: solid 1px #EFF2F6;
+    //display: inline-block;
+    //box-sizing: border-box;
+  }
+}
+</style>

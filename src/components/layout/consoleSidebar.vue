@@ -183,9 +183,9 @@
         <el-menu-item index="/planservice/backEndModule/planModelManagement">
           <i class="el-icon-document"></i>计划模板管理
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/planModelEdit">
+        <!-- <el-menu-item index="/planservice/backEndModule/planModelEdit">
           <i class="el-icon-document"></i>计划模板编辑
-        </el-menu-item>
+        </el-menu-item> -->
         <el-menu-item index="/planservice/backEndModule/dictionary/productMana">
           <i class="el-icon-document"></i>产品管理
         </el-menu-item>
