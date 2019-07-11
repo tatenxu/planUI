@@ -777,6 +777,12 @@ export default {
       this.SavePlanModel = true;
       this.viewname = "third";
       console.log(this.viewname);
+    },
+
+        handleClick1() {
+      this.QuotePlanModel = true;
+      this.viewname = "second";
+      console.log(this.viewname);
     }
   }
 };

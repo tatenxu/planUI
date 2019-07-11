@@ -2,88 +2,54 @@
   <div class="body">
     <el-card class="box-card">
       <el-row :gutter="20">
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">客户名称：</span>
-            <el-select v-model="customerSelectValue" placeholder="请选择">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">客户名称</div>
+            <el-select v-model="customer" clearable style="min-width:260px">
               <el-option
-                v-for="item in customerOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+                v-for="item in customerNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
 
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">品牌：</span>
-            <el-select v-model="brandSelectionValue" placeholder="请选择">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">品牌</div>
+            <el-select v-model="brand" clearable style="min-width:260px">
               <el-option
-                v-for="item in brandOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
+                v-for="item in brandNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
 
-        
-
-        <el-col :span="9">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">添加时间：</span>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">添加时间</div>
             <el-date-picker
-              v-model="addTimeValue"
+              v-model="dateStart"
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
+              end-placeholder="结束日期"
+              align="right"
+              style="min-width:260px"
+            ></el-date-picker>
           </div>
         </el-col>
       </el-row>
 
-      <el-row :gutter="20">
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">服装层次：</span>
-            <el-select v-model="clothTypeSelectionValue" placeholder="请选择">
-              <el-option
-                v-for="item in clothTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-      </el-col>
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">模板名称：</span>
-            <el-input class="inputinline" v-model="modelNameValue" placeholder="请输入内容"></el-input>
-          </div>
-        </el-col>
-
-        <el-col :span="5">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">模板类型：</span>
-            <el-select v-model="modelTypeSelectionValue" placeholder="请选择">
-              <el-option
-                v-for="item in modelTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-
+      <el-row :gutter="20" style="margin-top:20px;margin-left:20px">
         <el-col :span="2">
           <div class="grid-content bg-purple">
-            <el-button type="primary">搜索</el-button>
+            <el-button type="primary" @click="searchModelList">搜索</el-button>
           </div>
         </el-col>
       </el-row>
@@ -105,17 +71,21 @@
               </div>
             </el-col>
 
-            <el-col :span="11">
+            <el-col :span="2">
               <div class="grid-content bg-purple">
-                
+                <el-button type="primary" @click="addTemplate">添加模板</el-button>
               </div>
+            </el-col>
+
+            <el-col :span="11">
+              <div class="grid-content bg-purple"></div>
             </el-col>
 
             <!-- <el-col :span="2">
               <div class="grid-content bg-purple">
                 <el-button type="primary">新建模板</el-button>
               </div>
-            </el-col> -->
+            </el-col>-->
           </el-row>
         </el-header>
 
@@ -126,72 +96,27 @@
               :data="modelDisplayData"
               tooltip-effect="dark"
               style="width: 100%"
-              @selection-change="handleSelectionChange">
-              <el-table-column
-                type="selection"
-                width="55">
-              </el-table-column>
-              <el-table-column
-                type="index"
-                label="序号"
-                width="50">
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="50">
                 <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
               </el-table-column>
-              <el-table-column
-                prop="modelCode"
-                label="模板编号"
-                width="120">
-              </el-table-column>
-              <el-table-column
-                prop="modelName"
-                label="模板名称"
-                width="120"
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                prop="customerName"
-                label="客户名称"
-                width="120"
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                prop="brand"
-                label="品牌"
-                width="120" 
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                prop="addPerson"
-                label="添加人"
-                width="120"
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                prop="isUniverse"
-                label="是否通用"
-                width="120"
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                prop="addTime"
-                label="添加时间"
-                width="120"
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                label="操作"
-                show-overflow-tooltip>
+              <el-table-column prop="id" label="模板编号" width="120"></el-table-column>
+              <el-table-column prop="name" label="模板名称" width="120" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="customerName" label="客户名称" width="120" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="brandName" label="品牌" width="120" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="createrName" label="添加人" width="120" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="publicName" label="是否通用" width="120" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="createTime" label="添加时间" width="120" show-overflow-tooltip></el-table-column>
+              <el-table-column label="操作" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  <el-button type="text" size="small">查看</el-button>
+                  <el-button type="text" size="small" @click="ViewModel(scope.row)">查看</el-button>
                   <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
                   <el-button type="text" size="small" @click="handleDeleteModelClick(scope.row)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
-            
-            <div style="margin-top: 20px">
-              <el-button type="info" @click="toggleSelection()">取消选择</el-button>
-            </div>
           </div>
         </el-main>
       </el-container>
@@ -200,226 +125,391 @@
 </template>
 
 
-<style lang="less" scoped>
-  .box-card {
-    min-width: 1500px;
-    margin: 20px 50px;
-    padding: 0 20px;
-  }
-  .el-row {
-    margin-bottom: 20px;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    .el-col {
-      border-radius: 4px;
-      .inputCombineDiv{
-        display: flex;
-        flex-direction: row;
-        .inputTag{
-          min-width: 80px;
-          font-size: 14px;
-          line-height: 40px;
-          text-align:center;
-        }
-        .inputinline{
-          width:220px;
-        }
-      }
-    }
-  }
-  
-  .bg-purple {
-    // background: #d3dce6;
-  }
-  
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-  }
-</style>
 
 <script>
-  export default {
-    data() {
-      return {
-        modelDisplayData: [
-          {
-            modelCode: '45245',
-            modelName: '模板1',
-            customerName: '客户1',
-            brand:'品牌1',
-            addPerson:'小明',
-            isUniverse:'是',
-            addTime:'2016-11-01'
-          },
-          {
-            modelCode: '45245',
-            modelName: '模板2',
-            customerName: '客户2',
-            brand:'品牌2',
-            addPerson:'小虎',
-            isUniverse:'否',
-            addTime:'2018-2-3'
-          },
-        ],
-        customerOptions:[
-          {
-            label:'客户1',
-            value:'客户1'
-          },
-          {
-            label:'客户2',
-            value:'客户2'
-          }
-        ],
-        brandOptions:[
-          {
-            label:'品牌1',
-            value:'品牌1'
-          },
-          {
-            label:'品牌2',
-            value:'品牌2'
-          }
-        ],
-        clothTypeOptions:[
-          {
-            label:'服装层次1',
-            value:'服装层次1'
-          },
-          {
-            label:'服装层次2',
-            value:'服装层次2'
-          }
-        ],
-        modelTypeOptions:[
-          {
-            label:'模板类型1',
-            value:'模板类型1'
-          },
-          {
-            label:'模板类型2',
-            value:'模板类型2'
-          }
-        ],
-        clothTypeSelectionValue:'',
-        modelTypeSelectionValue:'',
-        brandSelectionValue:'',
-        customerSelectValue:'',
-        addTimeValue:'',
-        modelNameValue:'',
+export default {
+  data() {
+    return {
+      customer: "",
+      brand: "",
+      clothingLevel: "",
+      modelType: "",
+      modelName: "",
+      dateStart: "",
+      modelDisplayData: [
+        {
+          modelCode: "45245",
+          modelName: "模板1",
+          customerName: "客户1",
+          brand: "品牌1",
+          addPerson: "小明",
+          isUniverse: "是",
+          addTime: "2016-11-01"
+        },
+        {
+          modelCode: "45245",
+          modelName: "模板2",
+          customerName: "客户2",
+          brand: "品牌2",
+          addPerson: "小虎",
+          isUniverse: "否",
+          addTime: "2018-2-3"
+        }
+      ],
+      customerNameOptions: [
+       
+      ],
+      brandNameOptions: [
+      
+      ],
+     
+     
 
-        multipleSelection: [],
+
+      multipleSelection: []
+    };
+  },
+  created: function() {
+    var that = this;
+    //获得品牌名字
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName `, {
+        customerId: ""
+      })
+      .then(response => {
+        console.log("获得品牌信息成功了");
+        this.brandNameOptions = response.data;
+      })
+      .catch(error => {
+        this.$message({
+          message: "获取品牌信息失败",
+          type: "error"
+        });
+      });
+
+   
+
+    //获得顾客名称
+    that.$axios
+      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+      .then(response => {
+        console.log(response.data);
+        this.customerNameOptions = response.data;
+      })
+      .catch(error => {
+        this.$message({
+          message: "获取顾客信息失败",
+          type: "error"
+        });
+      });
+
+
+
+    this.$axios
+      .get(`${window.$config.HOST}/planManagement/getPlanTemplate`)
+      .then(response => {
+        this.modelDisplayData = response.data;
+        this.modelDisplayData.forEach(element=>{
+          if(element.public) element.publicName="是"
+          else element.publicName="否"
+        })
+      })
+      .catch(error => {
+        this.$message({
+          message: "搜索失败！",
+          type: "error"
+        });
+      });
+  },
+  methods: {
+    addTemplate() {
+      this.$router.push({
+        name: "bePlanModelEdit",
+        params: {
+          flag: 1
+        }
+      });
+    },
+    // 改变日期格式
+    changeDate(date) {
+      console.log(date);
+      if (!date) {
+        return undefined;
+      } else {
+        // var date = new Date(date);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = date.getDate();
+        d = d < 10 ? "0" + d : d;
+        return y + "-" + m + "-" + d;
       }
     },
+    searchModelList() {
+      let list = {
+        customerName: this.customer===""?undefined: this.customer,
+        brandName: this.brand===""?undefined: this.brand,
+        startDate: this.changeDate(this.dateStart?this.dateStart[0]:undefined),
+        endDate: this.changeDate(this.dateStart?this.dateStart[1]:undefined)
+      };
 
-    methods: {
-      toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      handleSetUniverseClick(){
-        if(this.multipleSelection.length === 0){
-          this.$message({
-          message: '请选择一个模板!',
-          type: 'warning'
-          });
-          return;
-        }
-        this.$confirm("是否确认将所选模板设为通用?", "提示", {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanTemplate`, {
+          params: list
         })
-        .then(()=>{
+        .then(response => {
+          this.modelDisplayData = response.data;
+           this.modelDisplayData.forEach(element=>{
+          if(element.public) element.publicName="是"
+          else element.publicName="否"
+        })
+        })
+        .catch(error => {
           this.$message({
-          message: '成功设置!',
-          type: 'success'
-          });
-        }).
-        catch(()=>{
-          this.$message({
-          message: '取消设置!',
-          type: 'info'
+            message: "搜索失败！",
+            type: "error"
           });
         });
-        // console.log(confirm("是否确认将所选模板设为通用?"));
-      },
-      handleSetPrivateClick(){
-        if(this.multipleSelection.length === 0){
-          this.$message({
-          message: '请选择一个模板!',
-          type: 'warning'
-          });
-          return;
+
+      console.log(list);
+    },
+    ViewModel(row) {
+      console.log("model tree:", row);
+      this.$router.push({
+        name: "bePlanModelEdit",
+        params: {
+          flag: 2,
+          id: row.id,
+          name: row.name,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          tree: row.tree
         }
-        if(this.multipleSelection.length === 0){
-          this.$message({
-          message: '请选择一个模板!',
-          type: 'warning'
-          });
-          return;
+      });
+    },
+
+    handleEdit(row) {
+      console.log("model id:", row.id);
+      this.$router.push({
+        name: "bePlanModelEdit",
+        params: {
+          flag: 3,
+          id: row.id,
+          name: row.name,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          tree: row.tree
         }
-        this.$confirm("是否确认将所选模板设为私有?", "提示", {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-        .then(()=>{
-          this.$message({
-          message: '成功设置!',
-          type: 'success'
-          });
-        }).
-        catch(()=>{
-          this.$message({
-          message: '取消设置!',
-          type: 'info'
-          });
+      });
+    },
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
         });
-        // console.log(confirm("是否确认将所选模板设为私有?"));
-      },
-      handleDeleteModelClick(row){
-        const that = this;
-        // console.log("点击了本行的删除");
-        // console.log("当前row=", row);
-        var thisIndex = row.modelCode;
-        this.$confirm("是否确认删除该系列？", "提示", {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handleSetUniverseClick() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          message: "请选择一个模板!",
+          type: "warning"
+        });
+        return;
+      }
+      this.$confirm("是否确认将所选模板设为通用?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
         .then(() => {
-          // console.log();
-          for(var j = 0; j < this.modelDisplayData.length; j++){
-            var delResult = this.modelDisplayData[j];
-            console.log(delResult);
-            if (delResult["modelCode"] === thisIndex){
-              console.log(delResult);
-              this.modelDisplayData.splice(j,1);
-            }
-          }
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          this.multipleSelection.forEach(element => {
+            this.$axios
+              .post(
+                `${window.$config.HOST}/planManagement/changePlanTemplateState `,
+                {
+                  id: element.id,
+                  public: true
+                }
+              )
+              .then(response => {
+                if (response.data > 0) {
+                  this.searchModelList(),
+                  this.$message({
+                    message: "设置成功!",
+                    type: "success"
+                  });
+                } else {
+                  this.$message({
+                    message: "设置失败!",
+                    type: "error"
+                  });
+                }
+              })
+              .catch(error => {
+                this.$message({
+                  message: "搜索失败！",
+                  type: "error"
+                });
+              });
           });
         })
         .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+            message: "取消设置!",
+            type: "info"
+          });
         });
+      // console.log(confirm("是否确认将所选模板设为通用?"));
+    },
+    handleSetPrivateClick() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          message: "请选择一个模板!",
+          type: "warning"
+        });
+        return;
       }
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          message: "请选择一个模板!",
+          type: "warning"
+        });
+        return;
+      }
+      this.$confirm("是否确认将所选模板设为私有?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios
+            .post(
+              `${window.$config.HOST}/planManagement/changePlanTemplateState `,
+              {
+                id: element.id,
+                public: true
+              }
+            )
+            .then(response => {
+              if (response.data > 0) {
+                this.searchModelList(),
+                this.$message({
+                  message: "设置成功!",
+                  type: "success"
+                });
+              } else {
+                this.$message({
+                  message: "设置失败!",
+                  type: "error"
+                });
+              }
+            })
+            .catch(error => {
+              this.$message({
+                message: "搜索失败！",
+                type: "error"
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            message: "取消设置!",
+            type: "info"
+          });
+        });
+      // console.log(confirm("是否确认将所选模板设为私有?"));
+    },
+    handleDeleteModelClick(row) {
+      const that = this;
+      // console.log("点击了本行的删除");
+      // console.log("当前row=", row);
+      var thisIndex = row.modelCode;
+      this.$confirm("是否确认删除该系列？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios
+            .delete(
+              `${window.$config.HOST}/planManagement/deletePlanTemplate`,
+              {
+                params: {
+                  id: row.id
+                }
+              }
+            )
+            .then(response => {
+              if (response.data > 0) {
+                this.searchModelList(),
+                this.$message({
+                  message: "删除成功！",
+                  type: "success"
+                });
+              } else {
+                this.$message({
+                  message: "删除失败！",
+                  type: "error"
+                });
+              }
+            })
+            .catch(error => {
+              this.$message({
+                message: "删除遇到未知错误！",
+                type: "error"
+              });
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   }
+};
 </script>
+
+
+
+<style lang="less" scoped>
+.box-card {
+  margin: 20px 50px;
+  padding: 0 20px;
+  .bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    .title {
+      font-size: 14px;
+      min-width: 75px;
+      text-align: center;
+    }
+    .el-input {
+      width: 300px;
+      min-width: 75px;
+      // margin: 5px 10px;
+    }
+    .el-select {
+      width: 300px;
+      min-width: 75px;
+      // margin: 5px 10px;
+    }
+  }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+    //border-right: solid 1px #EFF2F6;
+    //display: inline-block;
+    //box-sizing: border-box;
+  }
+}
+</style>
