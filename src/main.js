@@ -69,7 +69,7 @@ window.$config = {};
 
 //dev
 window.$config.HOST = 'http://192.168.1.180:8080'
-window.$config.HOST2 = 'http://192.168.1.180:8080/uaa';
+window.$config.HOST2 = 'http://192.168.1.180:8001/uaa';
 
 //dev
 // window.$config.HOST = 'http://192.168.1.159:8080'

@@ -61,11 +61,11 @@
             <el-table-column v-if="isRcvMsg" prop="senderName" label="发送人" align="center"></el-table-column>
             <el-table-column v-if="!isRcvMsg" prop="receiverName" label="接收人" align="center"></el-table-column>
             <el-table-column prop="createTime" label="发送时间" align="center"></el-table-column>
-            <el-table-column label="操作" align="center">
+            <!-- <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                   <el-button type="text" size="small">删除</el-button>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             </el-table>
           </div>
           <div class="block">
@@ -298,7 +298,7 @@ export default {
       } else {
         var flag = 1;
         that.tableSelectionData.forEach(ele=>{
-          if(ele.stateStr === "未读"){
+          if(ele.stateStr === "已读"){
             that.$message({
               message:"不能选择已读信息,请重新选择!",
               type:"warning"
@@ -309,7 +309,7 @@ export default {
         if(flag===1){
           that.tableSelectionData.forEach(ele=>{
             that.$axios
-            .get(`${window.$config.HOST}/baseInfoManagement/updateMessageStateRead `, {
+            .get(`${window.$config.HOST}/baseInfoManagement/updateMessageStateRead`, {
               params:{id:ele.id}
             })
             .then(response=>{
@@ -339,7 +339,7 @@ export default {
     sendMessageClick() {
       let that=this;
       that.$axios
-        .get(`${window.$config.HOST}/getAllUserName`)
+        .get(`${window.$config.HOST2}/getAllUserName`)
         .then(response => {
           that.sendTargetOption = response.data;
         })
@@ -361,11 +361,17 @@ export default {
           message:"请选择接收人,并填写消息内容!"
         });
       } else {
-        that.$axios
-          .post(`${window.$config.HOST}/baseInfoManagement/addMessage`, {
+        var param = {
             receiverId:that.rcvUser,
             messageDetails:that.msgContent,
-          })
+          };
+        that.sendTargetOption.forEach(ele=>{
+          if(ele.id === that.rcvUser){
+            param.receiverName = ele.realName;
+          }
+        })
+        that.$axios
+          .post(`${window.$config.HOST}/baseInfoManagement/addMessage`, param)
           .then(response=>{
             if(response.data < 0){
               console.log("发送失败:"+that.planManagementErrorCode[-response.data - 1].errotInfo);
