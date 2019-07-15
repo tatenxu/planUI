@@ -117,6 +117,7 @@
 
 <script>
 export default {
+  name:'stylePlanMake',
   data() {
     return {
       tableDataA: [],
@@ -169,6 +170,24 @@ export default {
         selectDataLength: 0
       }
     };
+  },
+  computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex') {
+      this.keepAlives = ['stylePlanMake',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   },
 
   created: function() {

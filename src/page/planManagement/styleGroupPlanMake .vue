@@ -126,6 +126,7 @@
 
 <script>
 export default {
+  name:'styleGroupPlanMake',
   data() {
     return {
       pagination: {
@@ -201,6 +202,24 @@ export default {
       DataStartTime: "",
       DataEndTime: ""
     };
+  },
+  computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex') {
+      this.keepAlives = ['styleGroupPlanMake',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   },
 
   created: function() {

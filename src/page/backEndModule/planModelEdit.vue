@@ -122,6 +122,7 @@
 export default {
   data() {
     return {
+      gobackA:"",
       flag: 0,
       id:"",
       nodeName: "",
@@ -148,10 +149,15 @@ export default {
   mounted() {
     let data = this.$route.params;
     this.flag = data.flag;
+    this.gobackA=data.goback;
+
+    console.log("data",data)
   
     if(this.flag===2)  //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
     {
+      this.data=[],
       this.data.push(data.tree)
+      console.log("this.data",this.data)
 
       this.client=data.customerName,
       this.brand=data.brandName,
@@ -161,6 +167,7 @@ export default {
     }
     else if(this.flag===3)  //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
     {
+      this.data=[],
       this.id=data.id,
       this.client=data.customerName,
       this.brand=data.brandName,
@@ -206,7 +213,7 @@ export default {
   methods: {
     goback(){
                 this.$router.push({
-              name: "bePlanModelManagement",
+              name: this.gobackA,
               params: {}
             });
     },
@@ -232,7 +239,7 @@ export default {
               message: "添加成功!"
             });
             this.$router.push({
-              name: "bePlanModelManagement",
+              name: this.gobackA,
               params: {}
             });
           } else if (response.data === -11) {
@@ -274,7 +281,7 @@ export default {
               message: "添加成功!"
             });
             this.$router.push({
-              name: "bePlanModelManagement",
+              name: this.gobackA,
               params: {}
             });
           } else if (response.data === -1) {
