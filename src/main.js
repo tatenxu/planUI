@@ -68,6 +68,7 @@ router.beforeEach((to, from, next) => {
 window.$config = {};
 
 //dev
+
 // window.$config.HOST = 'http://192.168.1.180:8080'
 // window.$config.HOST2 = 'http://192.168.1.180:8081/uaa';
 
