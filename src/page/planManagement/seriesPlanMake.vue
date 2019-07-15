@@ -80,17 +80,21 @@
               <el-button type="primary" @click="searchSeriesPlan">搜索</el-button>
             </el-col>
             <el-col :span="4">
-              <el-button type="primary" @click="handleClick1()">引用计划模板</el-button>
+              <el-button type="primary" @click="handleClick1()"  v-if="checked===false">引用计划模板</el-button>
             </el-col>
             <el-col :span="5">
-              <el-button type="primary" @click="handleClick2()">存为计划模板</el-button>
+              <el-button type="primary" @click="handleClick2()"  v-if="checked===true">存为计划模板</el-button>
             </el-col>
           </el-col>
         </el-row>
 
-        <hr>
+        <hr />
 
-        <el-table :data="tableDataA" style="width: 100%; margin-top: 20px">
+        <el-table
+          :data="tableDataA"
+          style="width: 100%; margin-top: 20px"
+          @selection-change="IsChanged"
+        >
           <el-table-column w idth="50" type="selection" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
 
@@ -154,7 +158,7 @@
                     v-for="item in client"
                     :key="item.id"
                     :label="item.name"
-                    :value="item.id"
+                    :value="item.name"
                   ></el-option>
                 </el-select>
               </div>
@@ -167,7 +171,7 @@
                     v-for="item in brand"
                     :key="item.id"
                     :label="item.name"
-                    :value="item.id"
+                    :value="item.name"
                   ></el-option>
                 </el-select>
               </div>
@@ -175,13 +179,13 @@
 
             <el-col :span="8">
               <div class="bar">
-                <el-button type="primary">查询</el-button>
+                <el-button type="primary" @click="searchTemplate">查询</el-button>
               </div>
             </el-col>
           </el-row>
-          <br>
-          <hr>
-          <br>
+          <br />
+          <hr />
+          <br />
 
           <el-row :gutter="20">
             <el-col :span="2">
@@ -194,18 +198,19 @@
           <el-table
             :data="tableData1"
             style="width: 100%; margin-top: 20px"
-            @selection-change="IsChanged"
+            @selection-change="IsChanged1"
           >
             <el-table-column w idth="50" type="selection" align="center"></el-table-column>
-            <el-table-column prop="Id" label="序号" align="center"></el-table-column>
-            <el-table-column prop="ModelId" label="模板编号" align="center"></el-table-column>
-            <el-table-column prop="ModelName" label="模板名称" align="center"></el-table-column>
-            <el-table-column prop="ClientName" label="客户名称" align="center"></el-table-column>
-            <el-table-column prop="BrandName" label="品牌" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" align="center"></el-table-column>
+            <el-table-column prop="id" label="模板编号" align="center"></el-table-column>
+            <el-table-column prop="name" label="模板名称" align="center"></el-table-column>
+            <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+            <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+            <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
 
             <el-table-column fixed="right" label="操作" width="200">
               <template slot-scope="scope">
-                <el-button type="text" size="small">查看</el-button>
+                <el-button type="text" size="small" @click="toPlanModelPage(scope.row)">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -214,31 +219,41 @@
 
       <el-tab-pane label="保存计划模版" name="third" v-if="SavePlanModel">
         <el-card>
+          <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
           <el-row :gutter="20">
             <el-col :span="8">
               <div class="bar">
-                <div class="title">客户名称</div>
-                <el-select v-model="ClientName3" clearable placeholder="请选择">
+                <el-form-item label="客户名称" prop="ClientName3" placeholder="请选择客户名称">
+                <el-select v-model="ruleForm.ClientName3" clearable placeholder="请选择"  style="min-width:250px">
                   <el-option
                     v-for="item in client"
                     :key="item.id"
                     :label="item.name"
-                    :value="item.id"
+                    :value="item.name"
                   ></el-option>
                 </el-select>
+                </el-form-item>
               </div>
             </el-col>
             <el-col :span="8">
               <div class="bar">
-                <div class="title">品牌</div>
-                <el-select v-model="BrandName3" clearable placeholder="请选择">
+                <el-form-item label="品牌名称" prop="BrandName3" placeholder="请选择品牌名称">
+                <el-select v-model="ruleForm.BrandName3" clearable placeholder="请选择"  style="min-width:250px">
                   <el-option
                     v-for="item in brand"
                     :key="item.id"
                     :label="item.name"
-                    :value="item.id"
+                    :value="item.name"
+                   
                   ></el-option>
                 </el-select>
+                </el-form-item>/
               </div>
             </el-col>
           </el-row>
@@ -246,20 +261,22 @@
           <el-row :gutter="20">
             <el-col :span="8">
               <div class="bar">
-                <div class="title">模板名称</div>
+                <el-form-item label="模板名称" prop="FormName" placeholder="请输入模板名称">
                 <el-input
-                  v-model="FormName"
+                  v-model="ruleForm.FormName"
                   clearable
                   :rows="1"
-                  style="margin-left: 20px"
+                  style="margin-left: 20px;min-width:250px"
                   placeholder="请输入"
+              
                 ></el-input>
+                </el-form-item>
               </div>
             </el-col>
 
             <el-col :span="3">
               <div class="bar">
-                <el-checkbox v-model="IsPublic">是否公用</el-checkbox>
+                <el-checkbox v-model="isPublic">是否公用</el-checkbox>
               </div>
             </el-col>
 
@@ -275,7 +292,9 @@
               </div>
             </el-col>
           </el-row>
+          </el-form>
         </el-card>
+        
       </el-tab-pane>
     </el-tabs>
   </el-card>
@@ -283,59 +302,78 @@
 
 <script>
 export default {
+  name: "seriesPlanMake",
   data() {
     return {
+       rules: {
+        ClientName3: [
+          { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        BrandName3: [
+          { required: true, message: "请选择品牌名称", trigger: "change" }
+        ],
+        FormName: [
+          { required: true, message: "请输入模板名称", trigger: "blur" }
+        ],
+       },
+      ruleForm:{
+        FormName:"",
+        BrandName3:"",
+        ClientName3:"",
+      },
+      isPublic:false,
+      rangeIdForTemplate: "",
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
       },
-                  planManagementErrorCode:[
+      planManagementErrorCode: [
         {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
+          errorCode: -1,
+          errotInfo: "所需属性值缺失"
         },
         {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
+          errorCode: -2,
+          errotInfo: "计划名称重复"
         },
         {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
+          errorCode: -3,
+          errotInfo: "父计划未下发"
         },
         {
-          erorCode:-4,
-          errotInfo:"系列根计划不存在",
+          erorCode: -4,
+          errotInfo: "系列根计划不存在"
         },
         {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
+          errorCode: -5,
+          errotInfo: "款式组根计划不存在"
         },
         {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
+          errorCode: -6,
+          errotInfo: "根计划已存在"
         },
         {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
+          errorCode: -7,
+          errotInfo: "计划开始结束时间超额"
         },
         {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
+          errorCode: -8,
+          errotInfo: "计划款数超额"
         },
         {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
+          errorCode: -9,
+          errotInfo: "引用预测计划时预测计划不存在"
         },
         {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
+          errorCode: -10,
+          errotInfo: "当前计划状态不允许执行此操作"
         },
         {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
+          errorCode: -11,
+          errotInfo: "与已有计划冲突"
+        }
       ],
       clothingLevelId: "",
       DataStartTime: "",
@@ -360,6 +398,7 @@ export default {
       PlanName: "",
       OrderId: "",
       AnyChanged: [],
+      AnyChanged1: [],
       SeriesDetail: [],
       defaultProps: {
         children: "children",
@@ -371,13 +410,7 @@ export default {
 
       series: [],
       tableData1: [
-        {
-          Id: 0,
-          ModelId: "X-000001",
-          ModelName: "模板A",
-          ClientName: "客户A",
-          BrandName: "商标A"
-        }
+
       ],
       tableDataA: [],
       tableData: []
@@ -389,6 +422,18 @@ export default {
     let customer = {
       customerId: ""
     };
+
+    this.$axios
+      .get(`${window.$config.HOST}/planManagement/getPlanTemplate`)
+      .then(response => {
+        this.tableData1 = response.data;
+      })
+      .catch(error => {
+        this.$message({
+          message: "搜索失败！",
+          type: "error"
+        });
+      });
     //获得品牌下拉框
     that.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
@@ -503,6 +548,38 @@ export default {
       });
   },
   methods: {
+    toPlanModelPage(row){
+      this.$router.push({
+        name: "bePlanModelEdit",
+        params: {
+          flag: 2,
+          id: row.id,
+          name: row.name,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          tree: row.tree,
+          goback:'seriesPlanMake'
+        }
+      });
+    },
+    searchTemplate() {
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/getPlanTemplate`, {
+          params: {
+            customerName: this.ClientName2===""?undefined:this.ClientName2,
+            brandName: this.brandName2===""?undefined:this.brandName2
+          }
+        })
+        .then(response => {
+          this.tableData1 = response.data;
+        })
+        .catch(error => {
+          this.$message({
+            message: "搜索失败！",
+            type: "error"
+          });
+        });
+    },
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       console.log("每页+" + this.pagination.pageSize);
@@ -677,6 +754,10 @@ export default {
     IsChanged(val) {
       this.AnyChanged = val;
     },
+
+    IsChanged1(val) {
+      this.AnyChanged1 = val;
+    },
     ToPlanForm(row) {
       if (row.havePlan === true) {
         this.$message({
@@ -689,7 +770,7 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 1, 
+          flag: 1,
           goback: "seriesPlanMake", //goback 为返回的 name
           customerName: row.customerName,
           brandName: row.brandName,
@@ -697,10 +778,10 @@ export default {
           rangeName: row.name,
           planType: "系列计划",
           planObjectName: row.name,
-          planObjectId:row.id,
+          planObjectId: row.id,
           topPlanName: "根计划",
           topPlanId: 0,
-          quantity:row.styleQuantity
+          quantity: row.styleQuantity
         }
       });
     },
@@ -708,36 +789,86 @@ export default {
       console.log(tab, event);
     },
     SaveModel() {
-      if (this.AnyChanged.length === 0) {
+      if (this.AnyChanged1.length != 1) {
         this.$message({
-          message: "请至少选择一项！",
-          type: "warning"
+          message: "请选择一条进行引用！",
+          type: "error"
         });
         return;
       }
-      this.QuotePlanModel = false;
-      this.viewname = "first";
-      this.AnyChanged.splice(0, 1);
-      return;
+
+      this.$axios
+        .post(`${window.$config.HOST}/planManagement/quotePlanTemplate`, {
+          rangeId: this.rangeIdForTemplate,
+          quantity: this.AnyChanged[0].styleQuantity,
+          planTemplateId: this.AnyChanged1[0].id
+        })
+        .then(response => {
+          if (response.data > 0) {
+            this.searchSeriesPlan(),
+            this.$message({
+              message: "引用成功！",
+              type: "success"
+            });
+
+            this.QuotePlanModel = false;
+            this.viewname = "first";
+            this.AnyChanged1 = [];
+            return;
+          } else {
+            this.$message({
+              message: "引用失败！",
+              type: "error"
+            });
+          }
+        })
+        .catch(error => {
+          this.$message({
+            message: "引用发生未知的错误！",
+            type: "error"
+          });
+        });
     },
     CancelModel() {
       this.QuotePlanModel = false;
       this.viewname = "first";
-      this.AnyChanged.splice(0, 1);
+      this.AnyChanged1.splice(0, 1);
       return;
     },
 
     SaveModel2() {
-      if (this.FormName === "") {
-        this.$message({
-          message: "模板名称为空",
-          type: "warning"
-        });
-        return;
-      }
+       this.$axios
+        .post(`${window.$config.HOST}/planManagement/saveToPlanTemplate`, {
+          rangeId: this.rangeIdForTemplate,
+          name: this.ruleForm.FormName,
+          customerName: this.ruleForm.ClientName3,
+          brandName:this.ruleForm.BrandName3,
+          public:this.isPublic
+        })
+        .then(response => {
+          if (response.data > 0) {
+            this.$message({
+              message: "保存成功！",
+              type: "success"
+            });
+
       this.SavePlanModel = false;
       this.viewname = "first";
       return;
+            return;
+          } else {
+            this.$message({
+              message: "保存失败！",
+              type: "error"
+            });
+          }
+        })
+        .catch(error => {
+          this.$message({
+            message: "引用发生未知的错误！",
+            type: "error"
+          });
+        });
     },
     CancelModel2() {
       this.SavePlanModel = false;
@@ -755,12 +886,18 @@ export default {
         .then(response => {
           console.log("repsonse=" + response.data);
 
-          if(response.data < 0 ){
-            console.log("引用失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "引用失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
+          if (response.data < 0) {
+            console.log(
+              "引用失败:" +
+                this.planManagementErrorCode[-response.data - 1].errotInfo
+            );
+            this.$message.error(
+              "引用失败:" +
+                this.planManagementErrorCode[-response.data - 1].errotInfo
+            );
+          } else {
             this.$message({
-              type:"success",
+              type: "success",
               message: "引用成功!"
             });
           }
@@ -774,16 +911,53 @@ export default {
         });
     },
     handleClick2() {
+            if(this.AnyChanged.length!=1)
+      {
+         this.$message({
+        message: "请选择一条系列进行引用模板！",
+        type: "error"
+      });
+      return ;
+      }
+      this.rangeIdForTemplate=this.AnyChanged[0].id;
       this.SavePlanModel = true;
       this.viewname = "third";
       console.log(this.viewname);
     },
 
-        handleClick1() {
+    handleClick1() {
+          if(this.AnyChanged.length!=1)
+          {
+             this.$message({
+            message: "请选择一条系列进行引用模板！",
+            type: "error"
+          });
+          return ;
+          }
+      this.rangeIdForTemplate=this.AnyChanged[0].id;
       this.QuotePlanModel = true;
       this.viewname = "second";
       console.log(this.viewname);
     }
+  },
+
+  computed: {
+    keepAlives: {
+      get() {
+        return this.$store.getters["baseinfo/keepAliveOptions"];
+      },
+      set(value) {
+        return this.$store.commit("baseinfo/keepalive-opt-arr", value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === "planMakeIndex" ||to.name === "bePlanModelEdit" ) {
+      this.keepAlives = ["seriesPlanMake",];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   }
 };
 </script>

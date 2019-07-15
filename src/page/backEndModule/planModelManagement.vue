@@ -128,6 +128,7 @@
 
 <script>
 export default {
+  name:'planModelManagement',
   data() {
     return {
       customer: "",
@@ -137,24 +138,7 @@ export default {
       modelName: "",
       dateStart: "",
       modelDisplayData: [
-        {
-          modelCode: "45245",
-          modelName: "模板1",
-          customerName: "客户1",
-          brand: "品牌1",
-          addPerson: "小明",
-          isUniverse: "是",
-          addTime: "2016-11-01"
-        },
-        {
-          modelCode: "45245",
-          modelName: "模板2",
-          customerName: "客户2",
-          brand: "品牌2",
-          addPerson: "小虎",
-          isUniverse: "否",
-          addTime: "2018-2-3"
-        }
+
       ],
       customerNameOptions: [
        
@@ -202,6 +186,7 @@ export default {
           type: "error"
         });
       });
+     
 
 
 
@@ -221,12 +206,31 @@ export default {
         });
       });
   },
+  // computed:{
+  //   keepAlives:{
+  //     get(){
+  //       return this.$store.getters['baseinfo/keepAliveOptions'];
+  //     },
+  //     set(value){
+  //       return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+  //     }
+  //   }
+  // },
+  // beforeRouteLeave(to, from, next) {
+  //   if (to.name === 'bePlanModelEdit') {
+  //     this.keepAlives = ['planModelManagement',];
+  //   } else {
+  //     this.keepAlives = [];
+  //   }
+  //   next();
+  // },
   methods: {
     addTemplate() {
       this.$router.push({
         name: "bePlanModelEdit",
         params: {
-          flag: 1
+          flag: 1,
+          goback:'bePlanModelManagement',
         }
       });
     },
@@ -283,7 +287,8 @@ export default {
           name: row.name,
           customerName: row.customerName,
           brandName: row.brandName,
-          tree: row.tree
+          tree: row.tree,
+          goback:'bePlanModelManagement'
         }
       });
     },
@@ -298,7 +303,8 @@ export default {
           name: row.name,
           customerName: row.customerName,
           brandName: row.brandName,
-          tree: row.tree
+          tree: row.tree,
+          goback:'bePlanModelManagement'
         }
       });
     },
@@ -328,6 +334,18 @@ export default {
         type: "warning"
       })
         .then(() => {
+
+          
+      //       this.multipleSelection.forEach(element=>{
+      //   if(element.public === true)
+      //   {
+      //       this.$message({
+      //     message: "请选择私有模板设置为通用!",
+      //     type: "warning"
+      //   });
+      //           return ;
+      //   }
+      // })
           this.multipleSelection.forEach(element => {
             this.$axios
               .post(
@@ -375,25 +393,32 @@ export default {
         });
         return;
       }
-      if (this.multipleSelection.length === 0) {
-        this.$message({
-          message: "请选择一个模板!",
-          type: "warning"
-        });
-        return;
-      }
+
+
       this.$confirm("是否确认将所选模板设为私有?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$axios
+          
+      // this.multipleSelection.forEach(element=>{
+      //   if(element.public === false)
+      //   {
+      //       this.$message({
+      //     message: "请选择通用模板设置为私有!",
+      //     type: "warning"
+      //   });
+      //           return ; 
+      //   }
+      // })
+          this.multipleSelection.forEach(element=>{
+             this.$axios
             .post(
               `${window.$config.HOST}/planManagement/changePlanTemplateState `,
               {
                 id: element.id,
-                public: true
+                public: false
               }
             )
             .then(response => {
@@ -416,6 +441,8 @@ export default {
                 type: "error"
               });
             });
+          })
+          
         })
         .catch(() => {
           this.$message({

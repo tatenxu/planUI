@@ -199,7 +199,7 @@
 <script>
 const cityOptions = ["已制定", "未制定", "制定中"];
 export default {
-  name: "warehouseList",
+  name: "planVerify",
   data() {
     return {
       lookAllPlans: false,
@@ -312,6 +312,25 @@ export default {
       pages: 0,
       AnyChanged: []
     };
+  },
+
+   computed:{
+    keepAlives:{
+      get(){
+        return this.$store.getters['baseinfo/keepAliveOptions'];
+      },
+      set(value){
+        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'planMakeIndex') {
+      this.keepAlives = ['planVerify',];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   },
   created: function() {
     var that = this;
