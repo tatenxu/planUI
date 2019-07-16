@@ -102,7 +102,7 @@
               <el-table-column type="index" label="序号" width="50">
                 <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
               </el-table-column>
-              <el-table-column prop="id" label="模板编号" width="120"></el-table-column>
+              <!-- <el-table-column prop="id" label="模板编号" width="120"></el-table-column> -->
               <el-table-column prop="name" label="模板名称" width="120" show-overflow-tooltip></el-table-column>
               <el-table-column prop="customerName" label="客户名称" width="120" show-overflow-tooltip></el-table-column>
               <el-table-column prop="brandName" label="品牌" width="120" show-overflow-tooltip></el-table-column>
