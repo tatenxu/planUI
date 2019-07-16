@@ -122,9 +122,9 @@
         :data="tableDataShow"
         max-height="400"
         @selection-change="changeCheckBoxFun"
-        :stripe="true"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
+        :row-style="tableRowClassName"
       >
         <el-table-column width="50" type="selection" align="center"></el-table-column>
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
@@ -445,6 +445,11 @@ export default {
       });
   },
   methods: {
+    tableRowClassName({row, rowIndex}) {
+      if(row.fromTemplate){
+        return "background: oldlace;"
+      }
+    },
     lookAllPlan() {
       if (this.selectedData.length != 1) {
         this.$message({
@@ -1095,6 +1100,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
+ .el-table .warning-row {
+    background: oldlace;
+  }
+
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
 .Mtitle {
   font-size: 3ch;
   margin-left: 47%;

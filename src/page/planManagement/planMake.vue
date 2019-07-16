@@ -448,7 +448,6 @@
         title
         :visible.sync="dialogVisible"
         width="30%"
-        :before-close="handleClose"
         :modal="false"
       >
         <!-- <span>这是一段信息</span> -->
