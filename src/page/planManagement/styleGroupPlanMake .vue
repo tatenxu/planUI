@@ -102,7 +102,7 @@
         <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" width="250" align="center" v-if="checked===false">
           <template slot-scope="scope">
-            <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small">引用系列计划</el-button>
+            <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small" :disabled="true">引用系列计划</el-button>
             <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
           </template>
         </el-table-column>

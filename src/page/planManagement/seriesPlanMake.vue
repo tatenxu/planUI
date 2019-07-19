@@ -122,7 +122,7 @@
                 <el-tree :data="SeriesDetail" :props="defaultProps"></el-tree>
                 <el-button type="primary" @click="ViewDetails=false" style="margin-left:90%">确认</el-button>
               </el-dialog>
-              <el-button size="mini" @click="QuotePre(scope.row)" type="text">引用预测</el-button>
+              <el-button size="mini" @click="QuotePre(scope.row)" type="text" :disabled="true">引用预测</el-button>
               <el-button size="mini" @click="ToPlanForm(scope.row)" type="text">制定计划</el-button>
             </template>
           </el-table-column>

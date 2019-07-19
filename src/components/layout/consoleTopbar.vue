@@ -125,17 +125,10 @@
         const that = this;
         // this.$cookies.set("jaseifks","sdfsdf");
         if(command == 'signOut') { // 模拟退出登录
-          // this.$axios.get(`${window.$config.HOST}/logout`)
-          this.$axios.get(`http://202.120.1.66:8080/logout`)
-            .then(response=>{
-              if(response.data){
-                consol.log(response.data);
-                console.log("登出成功!");
-              } else {
-                console.log("登出失败!");
-                // window.location.href = `${window.$config.HOST}`;
-              }
-            })
+        window.location.href="http://202.120.1.66:8080/logout"; 
+        
+        
+          
         }
       }
     }

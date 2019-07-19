@@ -167,7 +167,6 @@
                   clearable
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="true"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -444,12 +443,7 @@
         </el-row>
       </el-form>
 
-      <el-dialog
-        title
-        :visible.sync="dialogVisible"
-        width="30%"
-        :modal="false"
-      >
+      <el-dialog title :visible.sync="dialogVisible" width="30%" :modal="false">
         <!-- <span>这是一段信息</span> -->
         <span slot="footer" class="dialog-footer">
           <span>修改上传文件请到修改计划页面中！</span>
@@ -776,21 +770,18 @@ export default {
   methods: {
     downloadRow(row) {
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/downloadPlanFile`,
-       {
-         responseType:'blob',
+        .get(`${window.$config.HOST}/planManagement/downloadPlanFile`, {
+          responseType: "blob",
           params: {
             planId: this.ruleForm.planId,
             filename: row.fileName
           }
-
         })
         .then(response => {
-  
           let content = response.data;
           let blob = new Blob([content]);
           let fileName = row.fileName;
-          console.log(fileName)
+          console.log(fileName);
           if ("download" in document.createElement("a")) {
             // 非IE下载
             const elink = document.createElement("a");
