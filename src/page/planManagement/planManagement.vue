@@ -259,6 +259,7 @@ export default {
   name: 'planManagement',
   data() {
     return {
+      isCacheFlag: true,
       lookAllPlans: false,
       allPlans: [],
       defaultProps: {
@@ -482,6 +483,8 @@ export default {
     },
     ToSearchException(row) {
       console.log("查看异常" + row.id);
+
+      this.isCacheFlag = true;
       this.$router.push({
         name: "exceptionManagement",
         params: {
@@ -521,10 +524,11 @@ export default {
           topPlanName: data.name ? data.name : "根计划",
           topPlanId: data.id,
           quantity: data.quantity,
-     
         };
 
         console.log(param);
+
+        this.isCacheFlag = true;
         this.$router.push({
           name: "planMakeIndex",
           params: param
@@ -760,6 +764,8 @@ export default {
         files: row.files
       };
       console.log(param);
+
+      this.isCacheFlag = true;
       this.$router.push({
         name: "planMakeIndex",
         params: param
@@ -793,6 +799,8 @@ export default {
         files: row.files
       };
       console.log(param);
+
+      this.isCacheFlag = false;
       this.$router.push({
         name: "planMakeIndex",
         params: param
@@ -1089,7 +1097,7 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'planMakeIndex' || to.name === 'exceptionManagement') {
+    if (this.isCacheFlag && (to.name === 'planMakeIndex' || to.name === 'exceptionManagement')) {
       this.keepAlives = ['planManagement',];
     } else {
       this.keepAlives = [];
