@@ -521,7 +521,7 @@ export default {
           topPlanName: data.name ? data.name : "根计划",
           topPlanId: data.id,
           quantity: data.quantity,
-          files: row.files
+     
         };
 
         console.log(param);
