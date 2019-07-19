@@ -121,7 +121,7 @@
         <el-menu-item index="/planservice/commitedPlanManagement" v-if="completedPlanMana">
           <i class="el-icon-document"></i>已完成计划管理
         </el-menu-item>
-        <el-submenu index="predictPlanManagement" v-if="predictMana">
+        <el-submenu index="predictPlanManagement" disabled v-if="predictMana">
           <template slot="title">
             <i class="el-icon-document"></i>
             预测计划管理
