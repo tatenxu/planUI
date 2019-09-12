@@ -348,6 +348,7 @@ export default {
         planPropose:row.proposal,
         note:row.note,
         planDescribe:row.description,
+        files:row.files
       };
       console.log(param);
       this.$router.push({

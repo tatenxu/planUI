@@ -137,7 +137,10 @@
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <!-- <el-button @click="getStyleData(scope.row)" type="text" size="small">查看</el-button> -->
-              <el-button @click="changeStyleData(scope.row)" type="text" size="small">修改</el-button>
+              <el-button v-if="scope.row.styleGroupNumber" @click="deleteStyleData(scope.row)" type="text" size="small" disabled>修改</el-button>
+              <el-button  v-else @click="changeStyleData(scope.row)" type="text" size="small">修改</el-button>
+              
+              
               <el-button @click="deleteStyleData(scope.row)" type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
@@ -839,7 +842,7 @@ export default {
                   } else {
                     this.$message({
                       type: "success",
-                      message: element.name + "删除成功!"
+                      message: "删除成功!"
                     });
                   }
                 })

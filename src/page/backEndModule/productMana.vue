@@ -361,7 +361,14 @@
             type:'warning'
           });
         }
-        this.multipleSelection.forEach(element => {
+
+
+        this.$confirm('是否确认删除该记录？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.multipleSelection.forEach(element => {
           this.$axios.delete(`${window.$config.HOST}/baseInfoManagement/deleteProduct`,{
             params:{id: element.id}
           })
@@ -382,6 +389,14 @@
             });          
         });
         // this.tableData = this.multipleSelection;
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      
+       
       },
       handleNewSaveClick(){
         var param = {

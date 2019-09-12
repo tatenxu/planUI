@@ -444,7 +444,13 @@ export default {
             type:'warning'
           });
         }
-      this.multiCateSelection.forEach(element => {
+
+        this.$confirm('是否确认删除该记录？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.multiCateSelection.forEach(element => {
         console.log("删除"+element.id);
         this.$axios
           .delete(`${window.$config.HOST}/dictionaryManagement/deleteDictionaryCategory`,{
@@ -468,6 +474,14 @@ export default {
             console.log("删除失败");
           });
       });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      
+      
       
     },
     handleAddPropClick(){
@@ -503,7 +517,13 @@ export default {
             type:'warning'
           });
         }
-      this.multiplePropSelection.forEach(element => {
+
+        this.$confirm('是否确认删除该记录？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+         this.multiplePropSelection.forEach(element => {
         this.$axios
           .delete(`${window.$config.HOST}/dictionaryManagement/deleteCategoryProperty`,{
             params:{id:element.id}
@@ -523,6 +543,14 @@ export default {
             this.$message.error("删除失败");
           });
       });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      
+      
       
     },
     handleAddCateSaveClick(){

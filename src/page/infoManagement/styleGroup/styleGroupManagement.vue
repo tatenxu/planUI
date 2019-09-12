@@ -719,7 +719,12 @@ export default {
               });
               console.log(styleInfoStr);
 
-              // console.log("有" + that.multipleSelection.length + "条数据被选中");
+              if(styleInfoStr=="")
+              {
+                that.$message.error("该款式组未绑定款式！")
+              }
+              else{
+                              // console.log("有" + that.multipleSelection.length + "条数据被选中");
               that.$confirm("包含款式: "+styleInfoStr+ " 是否继续?", "提示", {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -741,6 +746,7 @@ export default {
                           type: 'success',
                           message: element.name + '解绑成功!'
                         });
+                        this.handleSearch();
                       }
                     })
                     .catch(error=>{
@@ -755,6 +761,10 @@ export default {
                   message: '已取消解绑'
                 });          
               });
+              }
+            
+
+
             }
           })
           .catch(error=>{

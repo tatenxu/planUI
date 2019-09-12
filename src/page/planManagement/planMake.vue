@@ -168,6 +168,7 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
+                  disabled
                 ></el-input>
               </el-form-item>
             </div>

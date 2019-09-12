@@ -483,7 +483,8 @@ export default {
           planProductId: row.productId,
           planPropose: row.proposal,
           planDescribe: row.description,
-          note: row.note
+          note: row.note,
+          files:row.files
         }
       });
     },

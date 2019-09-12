@@ -71,6 +71,12 @@
             <el-button type="primary" @click="goback" v-if="flag===2">返回</el-button>
           </div>
         </el-col>
+
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title" style="font-size:14px;color:red">注意：只能保留一个根节点,否则会保存失败！</div>
+          </div>
+        </el-col>
       </el-row>
 
       <br />
