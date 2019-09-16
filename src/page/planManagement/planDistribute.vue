@@ -44,7 +44,7 @@
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-        <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
+        <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
@@ -54,6 +54,11 @@
         <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center"></el-table-column>
         <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+        <el-table-column fixed="right" width="100" label="操作" align="center">
+            <template slot-scope="scope">
+              <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
+            </template>
+          </el-table-column>
       </el-table>
     </div>
     <div class="block">
@@ -220,6 +225,39 @@ export default {
       });
   },
   methods: {
+     //查看详情
+    searchDetails(row) {
+      console.log(row);
+      this.$router.push({
+        name: "planMakeIndex",
+        params: {
+          flag: 3,
+          goback: "planVerify",
+          planId: row.id,
+          planName: row.name,
+          customerName: row.customerName,
+          brandName: row.brandName,
+          rangeName: row.rangeName,
+          rangeId: row.rangeId,
+          planType: row.type,
+          planObjectName: row.planObject,
+          planObjectId: row.planObjectId,
+          topPlanName: row.isRoot === true ? row.name : row.parentName,
+          topPlanId: row.parentId,
+          projectType: row.projectType,
+          quantity: row.quantity,
+          dateStart: row.startDate,
+          dateEnd: row.endDate,
+          productDateType: row.productDateType,
+          productDate: row.productDate,
+          planProductId: row.productId,
+          planPropose: row.proposal,
+          planDescribe: row.description,
+          note: row.note,
+          files:row.files
+        }
+      });
+    },
     lookAllPlan() {
       if (this.chosenPlanRow.length != 1) {
         this.$message({

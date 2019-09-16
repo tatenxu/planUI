@@ -93,7 +93,7 @@
     <el-col :xs="12" :sm="12" :md="12" :lg="12">
       <el-dropdown trigger="click" class="topbar-info" @command="handleCommand">
         <a href="javascript:void(0)" class="user-name">
-          user<i class="el-icon-caret-bottom el-icon--right"></i>
+          {{userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
         </a>
         <el-dropdown-menu slot="dropdown">
           <!-- <el-dropdown-item>个人中心</el-dropdown-item> -->
@@ -117,10 +117,31 @@
     },
     data () {
       return {
+        userName:"loading",
 
       }
     },
+    created(){
+       //获取账户信息
+        this.$axios
+          .get(
+            `${
+              window.$config.HOST3
+            }/getUserInfo`)
+          .then(response => {
+            this.userName=response.data.realName
+      
+
+          })
+          .catch(error => {
+            this.$message({
+              message: "获取账户信息失败",
+              type: "warning"
+            });
+          });
+    },
     methods: {
+      
       handleCommand(command) { // 点击菜单项触发的事件回调
         const that = this;
         // this.$cookies.set("jaseifks","sdfsdf");

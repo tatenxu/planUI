@@ -224,6 +224,13 @@ export default {
             });
     },
     addTemplate() {
+      if(this.data.length>1){
+         this.$message({
+              type: "error",
+              message: "只能保留一个根节点，请重试!"
+            });
+            retrun ;
+      }
       let list = {
         name: this.modelName,
         customerName: this.client,

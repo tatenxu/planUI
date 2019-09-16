@@ -522,6 +522,7 @@ export default {
       // consol.log(val);
       this.ruleForm.tmpBrand = "";
       this.ruleForm.tmpRange = "";
+      this.options.rangeNameOptions = [];
       console.log("对话框客户名称选择触发");
       var param = {
         customerId: (this.ruleForm.tmpCustomer===this.ruleForm.customerName)?this.ruleForm.customerId:this.ruleForm.tmpCustomer,
