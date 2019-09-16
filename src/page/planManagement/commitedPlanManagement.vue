@@ -96,12 +96,15 @@
       <el-table
         :data="tableData"
         max-height="400"
-        @selection-change="changeCheckBoxFun"
         :stripe="true"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
       >
-        <el-table-column width="50" type="selection" align="center"></el-table-column>
+        <el-table-column label="" width="65">
+        <template slot-scope="scope">
+            <el-radio :label="scope.row.id" v-model="templateRadio" @change.native="getTemplateRow(scope.$index,scope.row)">&nbsp</el-radio>
+        </template>
+        </el-table-column>
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="id" v-if="false"></el-table-column>
         <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
@@ -176,6 +179,7 @@ export default {
   name: 'commitedPlanManagement',
   data() {
     return {
+      templateRadio:"",
       lookAllPlans:false,
       allPlans:[],
       defaultProps: {
@@ -290,18 +294,14 @@ export default {
       });
   },
   methods: {   
+    getTemplateRow(index,row){                       
+    this.selectedData = row;
+    console.log(row)
+},
     lookAllPlan() {
-      if (this.selectedData.length != 1) {
-        this.$message({
-          message: "请选择一项！",
-          type: "warning"
-        });
-        return;
-      }
       let list = {
-        id: this.selectedData[0].id
+        id: this.selectedData.id
       };
-
       this.$axios
         .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
           params: list
