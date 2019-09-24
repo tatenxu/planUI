@@ -20,6 +20,9 @@ yarn run e2e
 # 所有测试
 yarn test
 
+#gantt
+npm install --save gantt-elastic
+
 #npm install
 ```
 

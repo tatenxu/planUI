@@ -41,7 +41,6 @@
         :stripe="true"
       >
         <!-- <el-table-column type="selection" width="50" align="center"></el-table-column> -->
-        <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
         <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
@@ -259,7 +258,7 @@ export default {
       });
     },
     lookAllPlan() {
-      if (this.chosenPlanRow.length != 1) {
+      if (this.chosenPlanRow === []) {
         this.$message({
           message: "请选择一项！",
           type: "warning"
@@ -267,7 +266,7 @@ export default {
         return;
       }
       let list = {
-        id: this.chosenPlanRow[0].id
+        id: this.chosenPlanRow.id
       };
 
       this.$axios
