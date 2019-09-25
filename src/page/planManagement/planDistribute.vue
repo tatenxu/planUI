@@ -32,15 +32,22 @@
         </el-col>
       </el-row>
       <el-table
-        ref="singleTable"
         :data="tableData"
         style="width: 100%; margin-top: 20px"
         highlight-current-row
-        @current-change="handlePlanChosenChange"
-        @selection-change="planSelectionChange"
+
         :stripe="true"
       >
         <!-- <el-table-column type="selection" width="50" align="center"></el-table-column> -->
+        <el-table-column label width="65">
+          <template slot-scope="scope">
+            <el-radio
+              :label="scope.row.id"
+              v-model="templateRadio"
+              @change.native="getTemplateRow(scope.$index,scope.row)"
+            >&nbsp</el-radio>
+          </template>
+        </el-table-column>
         <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
         <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
@@ -54,10 +61,10 @@
         <el-table-column prop="state" label="状态" align="center"></el-table-column>
         <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
         <el-table-column fixed="right" width="100" label="操作" align="center">
-            <template slot-scope="scope">
-              <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
-            </template>
-          </el-table-column>
+          <template slot-scope="scope">
+            <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="block">
@@ -96,6 +103,7 @@
 export default {
   data() {
     return {
+      templateRadio:"",
       lookAllPlans: false,
       allPlans: [],
       defaultProps: {
@@ -116,7 +124,7 @@ export default {
       totalTableData: [],
       tableData: [],
       userTableMultpleSelection: [],
-      chosenPlanRow: {},
+      chosenPlanRow: [],
 
       pagination: {
         currentPage: 1,
@@ -175,7 +183,6 @@ export default {
   },
   created: function() {
     let that = this;
-
     //获取所有未下发计划
     var param = {
       stage: "distribute"
@@ -210,21 +217,14 @@ export default {
       })
       .catch(error => {
         console.log("初始化加载计划列表获取错误");
-        // this.tableData = [{id:1,number:"JX20190520001",
-        // name:"系列计划制定测试计划001",rangeId:14,type:"系列计划",
-        // isRoot:true,parentId:0,parentName:null,planObjectId:14,
-        // planObject:"系列款号1",projectType:"品样",quantity:12,productId:2,
-        // productDate:"2019-05-29",productDateType:"出运日期",startDate:"2019-06-11",
-        // endDate:"2019-06-20",proposal:"系列计划制定测试计划001",description:"系列计划制定测试计划001",
-        // state:"已审核",createrName:"孙博士",deptName:"设计管理部",createTime:"2019-05-20 18:13:07",
-        // rejectReason:"3213213",deleterName:null,deleteTime:null,haveException:false,note:"系列计划制定测试计划001",
-        // rangeNumber:"XL20190520005",rangeName:"系列款号1",brandId:5,brandName:"单独测试品牌",customerId:4,
-        // customerName:"单独测试客户",isCompleted:false,clothingLevelId:3,clothingLevelName:"精品"}];
-        // console.log(this.totalTableData);
       });
   },
   methods: {
-     //查看详情
+    getTemplateRow(index, row) {
+      this.chosenPlanRow = row;
+      console.log(this.chosenPlanRow);
+    },
+    //查看详情
     searchDetails(row) {
       console.log(row);
       this.$router.push({
@@ -253,18 +253,19 @@ export default {
           planPropose: row.proposal,
           planDescribe: row.description,
           note: row.note,
-          files:row.files
+          files: row.files
         }
       });
     },
     lookAllPlan() {
-      if (this.chosenPlanRow === []) {
+      if (this.chosenPlanRow.id === undefined) {
         this.$message({
-          message: "请选择一项！",
+          message: "请选择一项计划进行查看！",
           type: "warning"
         });
         return;
       }
+
       let list = {
         id: this.chosenPlanRow.id
       };
@@ -277,7 +278,6 @@ export default {
           this.allPlans = [];
           this.allPlans.push(response.data);
           console.log(this.allPlans);
-
           this.lookAllPlans = true;
         })
         .catch(error => {
@@ -289,7 +289,8 @@ export default {
     },
     chooseUserClick() {
       // console.log(this.chosenPlanRow.brandId);
-      if (this.chosenPlanRow.brandId === undefined) {
+      const that = this;
+      if (this.chosenPlanRow.length === 0) {
         this.$message({
           message: "请选择一个计划!",
           type: "warning"
@@ -310,40 +311,6 @@ export default {
             that.$message.error("下发对象加载失败!");
           });
         this.userChoseTableDialogShow = true;
-      }
-    },
-    //计划表格单选
-    handlePlanChosenChange(val) {
-      this.chosenPlanRow = val;
-      console.log(val);
-      this.tableData.forEach(row => {
-        if (row.id === val.id) {
-          this.$refs.singleTable.toggleRowSelection(row, true);
-        } else {
-          this.$refs.singleTable.toggleRowSelection(row, false);
-        }
-      });
-    },
-    //计划表格多选
-    planSelectionChange(val) {
-      console.log(val);
-      if (val.length === 0) {
-        this.chosenPlanRow = {};
-      } else if (val.length === 1) {
-        this.chosenPlanRow = val[0];
-      } else if (val.length === 2) {
-        val.forEach(row => {
-          if (row.id === this.chosenPlanRow.id) {
-            this.$refs.singleTable.toggleRowSelection(row, true);
-          } else {
-            this.$refs.singleTable.toggleRowSelection(row, false);
-          }
-        });
-      } else {
-        this.$message({
-          message: "只能选择一个计划!",
-          type: "warning"
-        });
       }
     },
     //switch 处理函数
@@ -406,6 +373,7 @@ export default {
     distributePlanClick() {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       let that = this;
+
       if (that.userTableMultpleSelection.length === 0) {
         that.$message.error("请选择下发对象！");
       } else {
