@@ -1,11 +1,18 @@
 <template>
   <div class="body">
-    <el-card class="box-card" >
+    <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-input  v-if="flag===2" v-model="client" clearable :disabled="true" :rows="1" placeholder></el-input>
+            <el-input
+              v-if="flag===2"
+              v-model="client"
+              clearable
+              :disabled="true"
+              :rows="1"
+              placeholder
+            ></el-input>
             <el-select v-model="client" clearable v-else>
               <el-option
                 v-for="item in clientNameOptions"
@@ -20,8 +27,15 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-input  v-if="flag===2" v-model="brand" clearable :disabled="true" :rows="1" placeholder></el-input>
-            <el-select  v-else v-model="brand" clearable>
+            <el-input
+              v-if="flag===2"
+              v-model="brand"
+              clearable
+              :disabled="true"
+              :rows="1"
+              placeholder
+            ></el-input>
+            <el-select v-else v-model="brand" clearable>
               <el-option
                 v-for="item in brandNameOptions"
                 :key="item.id"
@@ -35,7 +49,14 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">模板名称</div>
-            <el-input  v-if="flag===2" v-model="modelName" clearable :disabled="true" :rows="1" placeholder></el-input>
+            <el-input
+              v-if="flag===2"
+              v-model="modelName"
+              clearable
+              :disabled="true"
+              :rows="1"
+              placeholder
+            ></el-input>
             <el-input v-else v-model="modelName" clearable :rows="1" placeholder></el-input>
           </div>
         </el-col>
@@ -93,6 +114,7 @@
         @node-drag-over="handleDragOver"
         @node-drag-end="handleDragEnd"
         @node-drop="handleDrop"
+        @node-click="handleCheck"
         draggable
         :allow-drop="allowDrop"
         :allow-drag="allowDrag"
@@ -128,22 +150,27 @@
 export default {
   data() {
     return {
-      gobackA:"",
+      nowClickName: "",
+      gobackA: "",
       flag: 0,
-      id:"",
+      id: "",
       nodeName: "",
       dialogVisible: false,
       modelName: "",
       client: "",
       brand: "",
-      brandNameOptions: [{
-        id:12,
-        name:"324441"
-      }],
-      clientNameOptions: [{
-        id:1,
-        name:"321"
-      }],
+      brandNameOptions: [
+        {
+          id: 12,
+          name: "324441"
+        }
+      ],
+      clientNameOptions: [
+        {
+          id: 1,
+          name: "321"
+        }
+      ],
       data: [],
       defaultProps: {
         children: "children",
@@ -155,33 +182,27 @@ export default {
   mounted() {
     let data = this.$route.params;
     this.flag = data.flag;
-    this.gobackA=data.goback;
+    this.gobackA = data.goback;
 
-    console.log("data",data)
-  
-    if(this.flag===2)  //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
-    {
-      this.data=[],
-      this.data.push(data.tree)
-      console.log("this.data",this.data)
+    console.log("data", data);
 
-      this.client=data.customerName,
-      this.brand=data.brandName,
-      this.modelName=data.name
+    if (this.flag === 2) {
+      //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
+      (this.data = []), this.data.push(data.tree);
+      console.log("this.data", this.data);
 
-
+      (this.client = data.customerName),
+        (this.brand = data.brandName),
+        (this.modelName = data.name);
+    } else if (this.flag === 3) {
+      //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
+      (this.data = []),
+        (this.id = data.id),
+        (this.client = data.customerName),
+        (this.brand = data.brandName),
+        (this.modelName = data.name),
+        this.data.push(data.tree);
     }
-    else if(this.flag===3)  //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
-    {
-      this.data=[],
-      this.id=data.id,
-      this.client=data.customerName,
-      this.brand=data.brandName,
-      this.modelName=data.name,
-     this.data.push(data.tree)
-
-    }
-
   },
 
   created: function() {
@@ -217,19 +238,23 @@ export default {
       });
   },
   methods: {
-    goback(){
-                this.$router.push({
-              name: this.gobackA,
-              params: {}
-            });
+    handleCheck(data, node) {
+      this.nowClickName = data.planName;
+    },
+
+    goback() {
+      this.$router.push({
+        name: this.gobackA,
+        params: {}
+      });
     },
     addTemplate() {
-      if(this.data.length>1){
-         this.$message({
-              type: "error",
-              message: "只能保留一个根节点，请重试!"
-            });
-            retrun ;
+      if (this.data.length > 1) {
+        this.$message({
+          type: "error",
+          message: "只能保留一个根节点，请重试!"
+        });
+        retrun;
       }
       let list = {
         name: this.modelName,
@@ -271,15 +296,15 @@ export default {
     },
 
     updateTemplate() {
-      if(this.data.length>1){
-         this.$message({
-              type: "error",
-              message: "只能保留一个根节点，请重试!"
-            });
-            retrun ;
+      if (this.data.length > 1) {
+        this.$message({
+          type: "error",
+          message: "只能保留一个根节点，请重试!"
+        });
+        retrun;
       }
       let list = {
-        id:this.id,
+        id: this.id,
         name: this.modelName,
         customerName: this.client,
         brandName: this.brand,
@@ -288,7 +313,7 @@ export default {
       console.log(list);
       this.$axios
         .post(`${window.$config.HOST}/planManagement/updatePlanTemplate `, {
-          id:this.id,
+          id: this.id,
           name: this.modelName,
           customerName: this.client,
           brandName: this.brand,
@@ -322,15 +347,46 @@ export default {
       console.log(this.data);
     },
     addNode() {
+      
       (this.dialogVisible = true), (this.nodeName = "");
     },
 
     addNode1() {
-      (this.dialogVisible = false),
+      this.dialogVisible = false;
+      if (this.data.length === 0 ) {
+
         this.data.push({
           planName: this.nodeName,
           children: []
         });
+       } else{
+         if(this.nowClickName==="") 
+         {
+           this.$message({
+              type: "error",
+              message: "请选择一个节点再点击添加按钮！"
+            });
+         }
+         else  this.preTree(this.data[0], 0);
+       } 
+   
+    },
+
+    preTree(T, flag) {
+      console.log("1",T.planName)
+      if (T.planName == this.nowClickName) {
+        console.log("2")
+        T.children.push({
+          planName: this.nodeName,
+          children: []
+        });
+        flag = 1;
+        return flag;
+      } else {
+        T.children.forEach(child => {
+          flag = this.preTree(child, flag);
+        });
+      }
     },
 
     handleDragStart(node, ev) {
