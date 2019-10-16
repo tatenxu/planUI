@@ -60,7 +60,7 @@ var servicePath = "/planservice";
 // -------------------------------------------- 路由配置部分 --------------------------------------------
 export default [
   {
-    path: Config.route.login,
+    path:'/login',
     name: 'Login',
     component: Login
   },  
@@ -68,7 +68,16 @@ export default [
     path: servicePath+'/',
     name: 'Layout',
     component: Layout,
+    redirect: '/Quick',
     children: [
+      { 
+        path: 'login',
+        name: 'login',
+        component: Login,
+        meta: {
+          bcrumd: ['login']
+        }
+      },
       { // 快速入门
         path: servicePath+'/quick',
         name: 'Quick',
@@ -410,11 +419,9 @@ export default [
   },
   {
     path: '*',
-    // redirect: Config.route.login,
-    // name: 'Login',
-    // component: Login
     redirect: servicePath+'/',
     name: 'Layout',
     component: Layout,
+
   }
 ]
