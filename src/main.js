@@ -10,8 +10,6 @@ import routes from './router';
 // store为实例化生成的
 import store from './store';
 
-import Config from './config/index';
-
 import Sto from 'store';
 
 import axios from "axios";
@@ -33,7 +31,6 @@ Vue.prototype.$axios = axios;
 Vue.prototype.$loading = ElementUI.Loading;
 Vue.prototype.$message = ElementUI.Message;
 Vue.prototype.$sto = Sto;
-Vue.prototype.$conf = Config;
 Vue.prototype.$store = store;
 
 Vue.config.productionTip = false
@@ -46,21 +43,24 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  let cookies = Sto.get(Config.constant.cookie);
-  if ((!cookies || !cookies.token) && to.path != Config.route.login) {
-    next(Config.route.login);
-  } else if (cookies && cookies.token && to.path != Config.route.login) {
-    let token = cookies.token;
-    // 保存2个小时TOKEN
-    if ((new Date()).getTime() - token > 7200000) {
-      delete cookies.token;
-      Sto.set(Config.constant.cookie, cookies);
-      next(Config.route.login);
+  const token = sessionStorage.getItem('token')
+  const exp = sessionStorage.getItem('token-expired')
+  const now = new Date().getTime()
+  if (to.path === '/login') {
+    if (token && exp && (now - exp < 30000)) {
+      next("/")
     } else {
-      next();
+      next()
     }
   } else {
-    next(); 
+    // token每过3小时需刷新一次
+    if (token && exp && (now - exp < 10800000)) {
+      next()
+    } else {
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('token-expired')
+      next('/login')
+    }
   }
 })
 

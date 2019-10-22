@@ -1,4 +1,3 @@
-import Config from '../config/index';
 // -------------------------------------------- 为模版原版代码 --------------------------------------------
 const Login = r => require.ensure([], () => r(require('../page/user/login')), 'login');
 const Layout = r => require.ensure([], () => r(require('../page/layout')), 'layout');
@@ -55,8 +54,6 @@ const clothingLevelMana = r => require.ensure([], () => r(require('../page/backE
 const dictionaryCateMana = r => require.ensure([], () => r(require('../page/backEndModule/dictionaryCateMana.vue')), 'dictionaryCateMana');
 const numberRuleMana = r => require.ensure([], () => r(require('../page/backEndModule/numberRuleMana.vue')), 'numberRuleMana');
 
-
-var servicePath = "/planservice";
 // -------------------------------------------- 路由配置部分 ----------------------------------------------
 export default [
   {
@@ -65,21 +62,13 @@ export default [
     component: Login
   },  
   {
-    path: servicePath+'/',
+    path: '/',
     name: 'Layout',
     component: Layout,
-    redirect: '/Quick',
+    redirect: '/quick',
     children: [
-      { 
-        path: 'login',
-        name: 'login',
-        component: Login,
-        meta: {
-          bcrumd: ['login']
-        }
-      },
       { // 快速入门
-        path: servicePath+'/quick',
+        path: '/quick',
         name: 'Quick',
         component: Quick,
         meta: {
@@ -87,7 +76,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/dictionary/brandMana',
+        path: '/backEndModule/dictionary/brandMana',
         name: 'brandMana',
         component: brandMana,
         meta: {
@@ -95,7 +84,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/dictionary/customerMana',
+        path: '/backEndModule/dictionary/customerMana',
         name: 'customerMana',
         component: customerMana,
         meta: {
@@ -103,7 +92,7 @@ export default [
         }
       },
       {
-        path: servicePath+'/backEndModule/dictionary/productMana',
+        path: '/backEndModule/dictionary/productMana',
         name: 'productMana',
         component: productMana,
         meta: {
@@ -111,7 +100,7 @@ export default [
         }
       },
       {
-        path: servicePath+'/backEndModule/dictionary/clothingLevelMana',
+        path: '/backEndModule/dictionary/clothingLevelMana',
         name: 'clothingLevelMana',
         component: clothingLevelMana,
         meta: {
@@ -119,7 +108,7 @@ export default [
         }
       },
       {
-        path: servicePath+'/backEndModule/numberRuleMana',
+        path: '/backEndModule/numberRuleMana',
         name: 'numberRuleMana',
         component: numberRuleMana,
         meta: {
@@ -127,7 +116,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/dictionary/dictionaryCateMana',
+        path: '/backEndModule/dictionary/dictionaryCateMana',
         name: 'dictionaryCateMana',
         component: dictionaryCateMana,
         meta: {
@@ -135,7 +124,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/range/rangeManagement',
+        path: '/range/rangeManagement',
         name: 'rangeManagement',
         component: rangeManagement,
         meta: {
@@ -143,7 +132,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/range/rangeInfo',
+        path: '/range/rangeInfo',
         name: 'rangeInfo',
         component: rangeInfo,
         meta: {
@@ -151,7 +140,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/range/rangeImport',
+        path: '/range/rangeImport',
         name: 'rangeImport',
         component: rangeImport,
         meta: {
@@ -159,7 +148,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/styleGroup/styleGroupManagement',
+        path: '/styleGroup/styleGroupManagement',
         name: 'styleGroupManagement',
         component: styleGroupManagement,
         meta: {
@@ -167,7 +156,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/styleGroup/styleGroupInfo',
+        path: '/styleGroup/styleGroupInfo',
         name: 'styleGroupInfo',
         component: styleGroupInfo,
         meta: {
@@ -175,7 +164,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/style/styleManagement',
+        path: '/style/styleManagement',
         name: 'styleManagementIndex',
         component: styleManagement,
         meta: {
@@ -183,7 +172,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/style/styleInfo',
+        path: '/style/styleInfo',
         name: 'styleInfo',
         component: styleInfo,
         meta: {
@@ -191,7 +180,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/style/bindStyleGroup',
+        path: '/style/bindStyleGroup',
         name: 'bindStyleGroup',
         component: bindStyleGroup,
         meta: {
@@ -199,7 +188,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/style/styleImport',
+        path: '/style/styleImport',
         name: 'styleImport',
         component: styleImport,
         meta: {
@@ -207,7 +196,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/predictPlanToBeMake',
+        path: '/predictPlanToBeMake',
         name: 'predictPlanToBeMake',
         component: predictPlanToBeMake,
         meta: {
@@ -215,7 +204,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/predictPlanMaking',
+        path: '/predictPlanMaking',
         name: 'predictPlanMaking',
         component: predictPlanMaking,
         meta: {
@@ -223,7 +212,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/predictPlanMade',
+        path: '/predictPlanMade',
         name: 'predictPlanMade',
         component: predictPlanMade,
         meta: {
@@ -231,7 +220,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planManagement',
+        path: '/planManagement',
         name: 'planManagement',
         component: planManagement,
         meta: {
@@ -239,7 +228,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/commitedPlanManagement',
+        path: '/commitedPlanManagement',
         name: 'commitedPlanManagement',
         component: commitedPlanManagement,
         meta: {
@@ -247,7 +236,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planCompletionManage',
+        path: '/planCompletionManage',
         name: 'planCompletionManage',
         component: planCompletionManage,
         meta: {
@@ -255,7 +244,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planMake/planMakeIndex',
+        path: '/planMake/planMakeIndex',
         name: 'planMakeIndex',
         component: planMakeIndex,
         meta: {
@@ -263,7 +252,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planMake/seriesPlanMake',
+        path: '/planMake/seriesPlanMake',
         name: 'seriesPlanMake',
         component: seriesPlanMake,
         meta: {
@@ -271,7 +260,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planMake/styleGroupPlanMake',
+        path: '/planMake/styleGroupPlanMake',
         name: 'styleGroupPlanMake',
         component: styleGroupPlanMake,
         meta: {
@@ -279,7 +268,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planMake/stylePlanMake',
+        path: '/planMake/stylePlanMake',
         name: 'stylePlanMake',
         component: stylePlanMake,
         meta: {
@@ -287,7 +276,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planVerify',
+        path: '/planVerify',
         name: 'planVerify',
         component: planVerify,
         meta: {
@@ -295,7 +284,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planDistribute',
+        path: '/planDistribute',
         name: 'planDistribute',
         component: planDistribute,
         meta: {
@@ -303,7 +292,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/planRecover',
+        path: '/planRecover',
         name: 'planRecover',
         component: planRecover,
         meta: {
@@ -311,7 +300,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/messageManagement',
+        path: '/messageManagement',
         name: 'messageManagement',
         component: messageManagement,
         meta: {
@@ -319,7 +308,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/exceptionManagement',
+        path: '/exceptionManagement',
         name: 'exceptionManagement',
         component: exceptionManagement,
         meta: {
@@ -327,7 +316,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/queryStatistic',
+        path: '/queryStatistic',
         name: 'queryStatistic',
         component: queryStatistic,
         meta: {
@@ -335,7 +324,7 @@ export default [
         }
       },
       { 
-        path:servicePath+ '/formManagement',
+        path: '/formManagement',
         name: 'formManagement',
         component: formManagement,
         meta: {
@@ -343,7 +332,7 @@ export default [
         }
       },
       { 
-        path:servicePath+ '/subGantt',
+        path: '/subGantt',
         name: 'subGantt',
         component: subGantt,
         meta: {
@@ -351,7 +340,7 @@ export default [
         }
       },
       { 
-        path:servicePath+ '/subsubGantt',
+        path: '/subsubGantt',
         name: 'subsubGantt',
         component: subsubGantt,
         meta: {
@@ -359,7 +348,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/planModelEdit',
+        path: '/backEndModule/planModelEdit',
         name: 'bePlanModelEdit',
         component: bePlanModelEdit,
         meta: {
@@ -367,7 +356,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/planModelManagement',
+        path: '/backEndModule/planModelManagement',
         name: 'bePlanModelManagement',
         component: bePlanModelManagement,
         meta: {
@@ -375,7 +364,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/privilegeManagement',
+        path: '/backEndModule/privilegeManagement',
         name: 'bePrivilegeManagement',
         component: bePrivilegeManagement,
         meta: {
@@ -383,7 +372,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/userManagement',
+        path: '/backEndModule/userManagement',
         name: 'beUserManagement',
         component: beUserManagement,
         meta: {
@@ -391,7 +380,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/groupManagement',
+        path: '/backEndModule/groupManagement',
         name: 'beGroupManagement',
         component: beGroupManagement,
         meta: {
@@ -399,7 +388,7 @@ export default [
         }
       },
       { 
-        path: servicePath+'/backEndModule/roleManagement',
+        path: '/backEndModule/roleManagement',
         name: 'beRoleManagement',
         component: beRoleManagement,
         meta: {
@@ -408,7 +397,7 @@ export default [
       },
       { // 默认路由
         path: '*',
-        redirect: servicePath+'/quick',
+        redirect: '/quick',
         name: 'Quick',
         component: Quick,
         meta: {
@@ -419,8 +408,8 @@ export default [
   },
   {
     path: '*',
-    redirect: servicePath+'/',
-    name: 'Layout',
-    component: Layout,
+    redirect: '/login',
+    name: 'Login',
+    component: Login,
   }
 ]

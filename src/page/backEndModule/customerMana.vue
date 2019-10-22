@@ -251,7 +251,7 @@ export default {
     console.log("进入客户管理");
     // //获取部门信息
     this.$axios
-      .get(`http://192.168.1.180:8081/dept/find`)
+      .get('http://192.168.1.180:8081/dept/find')
       .then(response => {
         this.selectionData = response.data.result;
       })
@@ -262,7 +262,7 @@ export default {
 
     //加载默认客户信息
     request
-      .get(`${window.$config.HOST}/backstage/client/find`, {
+      .get('/backstage/client/find', {
         params: { name: undefined }
       })
       .then(response => {
@@ -297,7 +297,7 @@ export default {
       console.log("搜索参数" + allFlag);
       console.log(param);
       request
-        .get(`${window.$config.HOST}/backstage/client/find`, {
+        .get('/backstage/client/find', {
           params: param
         })
         .then(response => {

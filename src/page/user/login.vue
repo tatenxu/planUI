@@ -77,20 +77,16 @@
         </div>
         <el-form :model="formLogin" :rules="rulesLogin" ref="formLogin">
           <el-form-item prop="username">
-            <el-input type="text" v-model="formLogin.username" auto-complete="off" @keyup.enter.native="submitForm('formLogin')"></el-input>
+            <el-input type="text" v-model="formLogin.username" auto-complete="off" @keyup.enter.native="submitForm"></el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input type="password" v-model="formLogin.password" auto-complete="off" @keyup.enter.native="submitForm('formLogin')" ></el-input>
+            <el-input type="password" v-model="formLogin.password" auto-complete="off" @keyup.enter.native="submitForm" ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('formLogin')">登录</el-button>
-            <el-button @click="resetForm('formLogin')">重置</el-button>
+            <el-button type="primary" @click="submitForm">登录</el-button>
+            <el-button @click="resetForm">重置</el-button>
           </el-form-item>
         </el-form>
-        <div class="login-account">
-          <!-- <span>账号：sosout</span><span>密码：sosout</span> -->
-          <span>账号密码随意输</span>
-        </div>
       </div>
     </transition>
     <div id="loginThree"></div>
@@ -98,15 +94,9 @@
 </template>
 
 <script>
-// import { Form, FormItem, Input, Button } from 'element-ui';
-import THREE from '../../libs/three/three';
+import THREE from '../../libs/three/three'
+import { login } from '@/api/login-out'
 export default {
-  components: {
-    // ElForm: Form,
-    // ElFormItem: FormItem,
-    // ElInput: Input,
-    // ElButton: Button
-  },
   data () {
     return {
       formLogin: {
@@ -124,15 +114,6 @@ export default {
       showLogin: false
     };
   },
-  created () {
-    const that = this;
-    let $sto = that.$sto;
-    let $conf = that.$conf;
-    let cookies = $sto.get($conf.constant.cookie);
-    that.formLogin.username = (cookies && cookies.username) || '';
-    
-    that.goLogin();
-  },
   mounted () {
     const that = this;
     that.showLogin = true;
@@ -141,40 +122,29 @@ export default {
   methods: {
     submitForm(name) {
       const that = this;
-      that.$refs[name].validate((valid) => {
+      that.$refs.formLogin.validate((valid) => {
         if (valid) that.goLogin(); // 验证通过，前去登录
       });
     },
-    resetForm(name) { // 重置表单
+    resetForm() { // 重置表单
       const that = this;
-      this.$refs[name].resetFields();
+      this.$refs.formLogin.resetFields();
     },
-    async goLogin () { // 登录
+    goLogin () { // 登录
       const that = this;
       const formLogin = that.formLogin;
       const params = {
         username: formLogin.username,
         password: formLogin.password
       }
-      const res = [1];
-      if (res.length > 0) {
-        let $sto = that.$sto;
-        let $conf = that.$conf;
-        // 模拟登录成功返回的Token
-        let cookies = $sto.get($conf.constant.cookie);
-        if(!cookies) {
-          cookies = {
-            token: (new Date()).getTime(),
-            username: params.username
-          };
-        } else {
-          cookies.token = (new Date()).getTime();
-        }
-        $sto.set($conf.constant.cookie, cookies);
-        that.$router.push({name: 'Layout'});
-      } else {
+      login(params).then(response => {
+        sessionStorage.setItem('token', response.data)
+        sessionStorage.setItem('token-expired', new Date().getTime())
+        this.$router.push({ name: 'Quick' })
+      }).catch(error => {
+        console.log(error)
         that.$message.error('用户名或密码错误！');
-      }
+      })
     },
     init3D () { // 初始化3D动画
       var SCREEN_WIDTH = window.innerWidth;

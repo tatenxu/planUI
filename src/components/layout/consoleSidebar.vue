@@ -77,7 +77,7 @@
     >
       <div class="sidebar-fold">计划服务-系列规划</div>
 
-      <el-menu-item index="/planservice/quick'">
+      <el-menu-item index="/quick'">
         <i class="el-icon-message"></i>
         快速入门
       </el-menu-item>
@@ -87,21 +87,21 @@
           <i class="el-icon-document"></i>
           信息管理
         </template>
-        <el-menu-item index="/planservice/range/rangeManagement" v-if="rangeMana">
+        <el-menu-item index="/range/rangeManagement" v-if="rangeMana">
           <i class="el-icon-document"></i>系列管理
         </el-menu-item>
         <!-- <el-menu-item index="/range/rangeInfo"><i class="el-icon-document"></i>系列信息</el-menu-item> -->
         <!-- <el-menu-item index="/range/rangeImport"><i class="el-icon-document"></i>导入系列</el-menu-item> -->
 
         <el-menu-item
-          index="/planservice/styleGroup/styleGroupManagement"
+          index="/styleGroup/styleGroupManagement"
           v-if="styleGroupMana"
         >
           <i class="el-icon-document"></i>款式组管理
         </el-menu-item>
         <!-- <el-menu-item index="/styleGroup/styleGroupInfo"><i class="el-icon-document"></i>款式组信息</el-menu-item> -->
 
-        <el-menu-item index="/planservice/style/styleManagement" v-if="styleMana">
+        <el-menu-item index="/style/styleManagement" v-if="styleMana">
           <i class="el-icon-document"></i>款式管理
         </el-menu-item>
         <!-- <el-menu-item index="/style/styleInfo"><i class="el-icon-document"></i>款式信息</el-menu-item> -->
@@ -115,10 +115,10 @@
           计划管理
         </template>
 
-        <el-menu-item index="/planservice/planManagement" v-if="planMana">
+        <el-menu-item index="/planManagement" v-if="planMana">
           <i class="el-icon-document"></i>进行中计划管理
         </el-menu-item>
-        <el-menu-item index="/planservice/commitedPlanManagement" v-if="completedPlanMana">
+        <el-menu-item index="/commitedPlanManagement" v-if="completedPlanMana">
           <i class="el-icon-document"></i>已完成计划管理
         </el-menu-item>
         <el-submenu index="predictPlanManagement" disabled v-if="predictMana">
@@ -126,51 +126,51 @@
             <i class="el-icon-document"></i>
             预测计划管理
           </template>
-          <el-menu-item index="/planservice/predictPlanToBeMake">
+          <el-menu-item index="/predictPlanToBeMake">
             <i class="el-icon-document"></i>未制定计划
           </el-menu-item>
-          <el-menu-item index="/planservice/predictPlanMaking">
+          <el-menu-item index="/predictPlanMaking">
             <i class="el-icon-document"></i>已制定计划
           </el-menu-item>
-          <el-menu-item index="/planservice/predictPlanMade">
+          <el-menu-item index="/predictPlanMade">
             <i class="el-icon-document"></i>已保存计划
           </el-menu-item>
         </el-submenu>
 
-        <!-- <el-menu-item index="/planservice/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item> -->
-        <el-menu-item index="/planservice/planMake/seriesPlanMake" v-if="rangePlan">
+        <!-- <el-menu-item index="/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item> -->
+        <el-menu-item index="/planMake/seriesPlanMake" v-if="rangePlan">
           <i class="el-icon-document"></i>系列计划制定
         </el-menu-item>
-        <el-menu-item index="/planservice/planMake/styleGroupPlanMake" v-if="styleGroupPlan">
+        <el-menu-item index="/planMake/styleGroupPlanMake" v-if="styleGroupPlan">
           <i class="el-icon-document"></i>款式组计划制定
         </el-menu-item>
-        <el-menu-item index="/planservice/planMake/stylePlanMake" v-if="stylePlan">
+        <el-menu-item index="/planMake/stylePlanMake" v-if="stylePlan">
           <i class="el-icon-document"></i>款式计划制定
         </el-menu-item>
-        <el-menu-item index="/planservice/planVerify" v-if="planReview">
+        <el-menu-item index="/planVerify" v-if="planReview">
           <i class="el-icon-document"></i>计划审核管理
         </el-menu-item>
-        <el-menu-item index="/planservice/planDistribute" v-if="planDistribute">
+        <el-menu-item index="/planDistribute" v-if="planDistribute">
           <i class="el-icon-document"></i>计划下发管理
         </el-menu-item>
-        <el-menu-item index="/planservice/planCompletionManage" v-if="rangeCompleted">
+        <el-menu-item index="/planCompletionManage" v-if="rangeCompleted">
           <i class="el-icon-document"></i>系列完成管理
         </el-menu-item>
-        <el-menu-item index="/planservice/planRecover" v-if="planRecover">
+        <el-menu-item index="/planRecover" v-if="planRecover">
           <i class="el-icon-document"></i>计划回收站
         </el-menu-item>
-        <el-menu-item index="/planservice/exceptionManagement" v-if="exceptionMana">
+        <el-menu-item index="/exceptionManagement" v-if="exceptionMana">
           <i class="el-icon-document"></i>异常管理
         </el-menu-item>
       </el-submenu>
 
-      <el-menu-item index="/planservice/messageManagement" v-if="messageMana">
+      <el-menu-item index="/messageManagement" v-if="messageMana">
         <i class="el-icon-document"></i>消息管理
       </el-menu-item>
-      <el-menu-item index="/planservice/queryStatistic" v-if="statistics">
+      <el-menu-item index="/queryStatistic" v-if="statistics">
         <i class="el-icon-document"></i>查询统计
       </el-menu-item>
-      <el-menu-item index="/planservice/formManagement" v-if="gantt">
+      <el-menu-item index="/formManagement" v-if="gantt">
         <i class="el-icon-document"></i>报表管理
       </el-menu-item>
       <!-- <el-menu-item index="/gantt"><i class="el-icon-document"></i>报表管理</el-menu-item> -->
@@ -180,31 +180,31 @@
           <i class="el-icon-message"></i>
           后管理模块
         </template>
-        <el-menu-item index="/planservice/backEndModule/planModelManagement">
+        <el-menu-item index="/backEndModule/planModelManagement">
           <i class="el-icon-document"></i>计划模板管理
         </el-menu-item>
-        <!-- <el-menu-item index="/planservice/backEndModule/planModelEdit">
+        <!-- <el-menu-item index="/backEndModule/planModelEdit">
           <i class="el-icon-document"></i>计划模板编辑
         </el-menu-item> -->
-        <!-- <el-menu-item index="/planservice/backEndModule/dictionary/productMana">
+        <!-- <el-menu-item index="/backEndModule/dictionary/productMana">
           <i class="el-icon-document"></i>产品管理
         </el-menu-item> -->
-        <el-menu-item index="/planservice/backEndModule/dictionary/customerMana">
+        <el-menu-item index="/backEndModule/dictionary/customerMana">
           <i class="el-icon-document"></i>客户管理
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/dictionary/brandMana">
+        <el-menu-item index="/backEndModule/dictionary/brandMana">
           <i class="el-icon-document"></i>品牌管理
         </el-menu-item>
-        <!-- <el-menu-item index="/planservice/backEndModule/dictionary/clothingLevelMana">
+        <!-- <el-menu-item index="/backEndModule/dictionary/clothingLevelMana">
           <i class="el-icon-document"></i>服装层次管理
         </el-menu-item> -->
-        <el-menu-item index="/planservice/backEndModule/dictionary/dictionaryCateMana">
+        <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana">
           <i class="el-icon-document"></i>数据字典管理
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/dictionary/321">
+        <el-menu-item index="/backEndModule/dictionary/321">
           <i class="el-icon-document"></i>项目类型
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/dictionary/3124">
+        <el-menu-item index="/backEndModule/dictionary/3124">
           <i class="el-icon-document"></i>订单阶段
         </el-menu-item>
         <!-- <el-submenu index="dictionary">
@@ -217,13 +217,13 @@
           <el-menu-item index="/backEndModule/roleManagement"><i class="el-icon-document"></i>角色管理</el-menu-item>
         </el-submenu>-->
 
-        <el-menu-item index="/planservice/backEndModule/privilegeManagement">
+        <el-menu-item index="/backEndModule/privilegeManagement">
           <i class="el-icon-message"></i>数据权限管理
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/roleManagement">
+        <el-menu-item index="/backEndModule/roleManagement">
           <i class="el-icon-message"></i>系统权限管理
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/numberRuleMana">
+        <el-menu-item index="/backEndModule/numberRuleMana">
           <i class="el-icon-message"></i>编号规则管理
         </el-menu-item>
 

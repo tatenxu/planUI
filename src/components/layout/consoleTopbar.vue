@@ -141,15 +141,13 @@
           });
     },
     methods: {
-      
-      handleCommand(command) { // 点击菜单项触发的事件回调
-        const that = this;
-        // this.$cookies.set("jaseifks","sdfsdf");
-        if(command == 'signOut') { // 模拟退出登录
-        window.location.href="http://202.120.1.66:8080/logout"; 
-        
-        
-          
+      // 点击菜单项触发的事件回调
+      handleCommand(command) {
+        const that = this
+        if(command == 'signOut') {
+          sessionStorage.removeItem('token')
+          sessionStorage.removeItem('token-expired')
+          that.$router.push('/login')
         }
       }
     }
