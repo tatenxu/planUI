@@ -215,6 +215,7 @@
 </style>
 
 <script>
+import request from "@/utils/request";
 export default {
   data(){
     return{
@@ -289,120 +290,31 @@ export default {
   },
   created:function(){
     //加载所有的字典类别
-    this.$axios
-      .get(`${window.$config.HOST}/dictionaryManagement/getAllDictionaryCategory`)
+    request
+      .get(`${window.$config.HOST}/backstage/dic-category/find`)
       .then(response=>{
-        this.dictionCategories = response.data;
+        this.dictionCategories = response.result;
       })
-      .catch(error=>{
-        console.log("字典类别加载错误");
-        this.dictionCategories = [
-          {
-            id:"241234",
-            category:"性别",
-            code:"sex",
-          },
-          {
-            id:"4234",
-            category:"职称",
-            code:"job",
-          },
-          {
-            id:"2345234",
-            category:"学历",
-            code:"education",
-          },
-          {
-            id:"2412764",
-            category:"客户类型",
-            code:"customerType",
-          },
-        ];
-      });
   },
   methods:{
     reSearchProperty(cateId){
       console.log(cateId);
-      this.$axios
-        .get(`${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,{
+      request
+        .get(`${window.$config.HOST}/backstage/dic-property/find`,{
           params:{categoryId:cateId}
         })
         .then(response=>{
-          this.selectedCateProps = response.data;
+          this.selectedCateProps = response.result;
         })
-        .catch(error=>{
-          this.$message.error("属性信息加载失败");
-          this.selectedCateProps = [
-            {
-              id : "3245123",
-              name : "属性1",
-              code : "faksjdk",
-              categoryId : "54145",
-              categoryName:"类别1"
-            },
-            {
-              id : "1543",
-              name : "属性2",
-              code : "adsf",
-              categoryId : "54145",
-              categoryName:"类别1"
-            },
-            {
-              id : "3245123",
-              name : "属性3",
-              code : "xggffh",
-              categoryId : "54145",
-              categoryName:"类别1"
-            },
-            {
-              id : "3245123",
-              name : "属性4",
-              code : "ertdf ",
-              categoryId : "54145",
-              categoryName:"类别1"
-            },
-            {
-              id : "76867",
-              name : "属性7",
-              code : "dfgadf",
-              categoryId : "54145",
-              categoryName:"类别1"
-            },
-          ]
-        });
+
     },
     reSearchCategory(){
       console.log("再搜索");
       //重新加载
-      this.$axios.get(`${window.$config.HOST}/dictionaryManagement/getAllDictionaryCategory`)
+      request.get(`${window.$config.HOST}/backstage/dic-category/find`)
         .then(response=>{
-          this.dictionCategories = response.data;
+          this.dictionCategories = response.result;
         })
-        .catch(error=>{
-          console.log("字典类别加载错误");
-          this.dictionCategories = [
-            {
-              id:"241234",
-              category:"性别",
-              code:"sex",
-            },
-            {
-              id:"4234",
-              category:"职称",
-              code:"job",
-            },
-            {
-              id:"2345234",
-              category:"学历",
-              code:"education",
-            },
-            {
-              id:"241234",
-              category:"客户类型",
-              code:"customerType",
-            },
-          ];
-        });
     },
     handleViewChange(tab, event) {
       console.log(tab, event);
@@ -452,27 +364,16 @@ export default {
         }).then(() => {
           this.multiCateSelection.forEach(element => {
         console.log("删除"+element.id);
-        this.$axios
-          .delete(`${window.$config.HOST}/dictionaryManagement/deleteDictionaryCategory`,{
+        request
+          .delete(`${window.$config.HOST}/backstage/dic-category/delete`,{
             params:{id:element.id}
           })
           .then(response=>{
-            if(response.data < 0){
-              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-              console.log("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            }else{
-              this.$message({
-                message:"删除成功!",
-                type:"success"
-              });
-              console.log("删除成功");
+ 
               this.reSearchCategory();
-            }
+            
           })
-          .catch(error=>{
-            this.$message.error("删除失败");
-            console.log("删除失败");
-          });
+
       });
         }).catch(() => {
           this.$message({
@@ -524,24 +425,16 @@ export default {
           type: 'warning'
         }).then(() => {
          this.multiplePropSelection.forEach(element => {
-        this.$axios
-          .delete(`${window.$config.HOST}/dictionaryManagement/deleteCategoryProperty`,{
+        request
+          .delete(`${window.$config.HOST}/backstage/dic-property/delete`,{
             params:{id:element.id}
           })
           .then(response=>{
-            if(response.data<0){
-              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            }else{
-              this.$message({
-                message:"删除成功!",
-                type:"success"
-              });
+           
               this.reSearchProperty(element.categoryId);
-            }
+            
           })
-          .catch(error=>{
-            this.$message.error("删除失败");
-          });
+
       });
         }).catch(() => {
           this.$message({
@@ -558,15 +451,9 @@ export default {
         category : (this.ruleFormCate.addCateName==='')?null:this.ruleFormCate.addCateName,
 		    code : (this.ruleFormCate.addCateCode==='')?null:this.ruleFormCate.addCateCode,
       }
-      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addDictionaryCategory`,param)
+      request.post(`${window.$config.HOST}/backstage/dic-category/insert`,param)
         .then(response=>{
-          if(response.data<0){
-            this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-          }else{
-            this.$message({
-              message:"添加成功!",
-              type:"success"
-            });
+
             this.reSearchCategory();
 
             this.ruleFormCate.addCateName = "";
@@ -574,11 +461,9 @@ export default {
             
             this.addCateShowFlag = false;
             this.viewname = 'first';
-          }
+          
         })
-        .catch(error=>{
-          this.$message.error("添加失败");
-        });
+
     },
     handleAddCateCancelClick(){
       this.$message({
@@ -599,15 +484,9 @@ export default {
         code : (this.editCateCode==="")?null:this.editCateCode,
       };
     
-      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateDictionaryCategory`,param)
+      request.put(`${window.$config.HOST}/backstage/dic-category/update`,param)
         .then(response=>{
-          if(response.data<0){
-            this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-          }else{
-            this.$message({
-              message:"编辑成功!",
-              type:"success"
-            });
+        
             this.reSearchCategory();
 
           this.editCateId = "";
@@ -616,7 +495,7 @@ export default {
           
           this.editCateShowFlag = false;
           this.viewname = 'first';
-          }
+          
         });
     },
     handleEditCateCancelClick(){
@@ -636,16 +515,9 @@ export default {
 
       console.log(param);
 
-      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/addCategoryProperty`,param)
+      request.post(`${window.$config.HOST}/backstage/dic-property/insert`,param)
         .then(response=>{
-          if(response.data < 0){
-            this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-          }else{
-            console.log("添加成功");
-            this.$message({
-              message:"添加成功!",
-              type:"success"
-            });
+         
             this.reSearchProperty(param.categoryId);
 
             this.ruleFormProp.addPropName = "";
@@ -654,11 +526,9 @@ export default {
 
             this.addPropShowFlag = false;
             this.viewname = 'first';
-          }
+          
         })
-        .catch(error=>{
-          this.$message.error("添加失败");
-        });
+
     },
     handleAddPropCancelClick(){
       this.$message({
@@ -683,16 +553,8 @@ export default {
       }
       console.log(param);
 
-      this.$axios.post(`${window.$config.HOST}/dictionaryManagement/updateCategoryProperty`,param)
+      request.post(`${window.$config.HOST}/backstage/dic-property/update`,param)
         .then(response=>{
-          if(response.data<0){
-            this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-          }else{
-            console.log("编辑成功");
-            this.$message({
-              message:"编辑成功!",
-              type:"success"
-            });
             this.reSearchProperty(param.categoryId);
 
           this.editPropId = "";
@@ -704,11 +566,9 @@ export default {
           
           this.editPropShowFlag = false;
           this.viewname = 'first';
-          }
+          
         })
-        .catch(error=>{
-          this.$message.error("编辑失败");
-        });
+
     },
     handleEditPropCancelClick(){
       this.$message({

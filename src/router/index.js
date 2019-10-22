@@ -57,7 +57,7 @@ const numberRuleMana = r => require.ensure([], () => r(require('../page/backEndM
 
 
 var servicePath = "/planservice";
-// -------------------------------------------- 路由配置部分 --------------------------------------------
+// -------------------------------------------- 路由配置部分 ----------------------------------------------
 export default [
   {
     path:'/login',
@@ -422,6 +422,5 @@ export default [
     redirect: servicePath+'/',
     name: 'Layout',
     component: Layout,
-
   }
 ]

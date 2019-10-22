@@ -186,20 +186,26 @@
         <!-- <el-menu-item index="/planservice/backEndModule/planModelEdit">
           <i class="el-icon-document"></i>计划模板编辑
         </el-menu-item> -->
-        <el-menu-item index="/planservice/backEndModule/dictionary/productMana">
+        <!-- <el-menu-item index="/planservice/backEndModule/dictionary/productMana">
           <i class="el-icon-document"></i>产品管理
-        </el-menu-item>
+        </el-menu-item> -->
         <el-menu-item index="/planservice/backEndModule/dictionary/customerMana">
           <i class="el-icon-document"></i>客户管理
         </el-menu-item>
         <el-menu-item index="/planservice/backEndModule/dictionary/brandMana">
           <i class="el-icon-document"></i>品牌管理
         </el-menu-item>
-        <el-menu-item index="/planservice/backEndModule/dictionary/clothingLevelMana">
+        <!-- <el-menu-item index="/planservice/backEndModule/dictionary/clothingLevelMana">
           <i class="el-icon-document"></i>服装层次管理
-        </el-menu-item>
+        </el-menu-item> -->
         <el-menu-item index="/planservice/backEndModule/dictionary/dictionaryCateMana">
           <i class="el-icon-document"></i>数据字典管理
+        </el-menu-item>
+        <el-menu-item index="/planservice/backEndModule/dictionary/321">
+          <i class="el-icon-document"></i>项目类型
+        </el-menu-item>
+        <el-menu-item index="/planservice/backEndModule/dictionary/3124">
+          <i class="el-icon-document"></i>订单阶段
         </el-menu-item>
         <!-- <el-submenu index="dictionary">
           <template slot="title">
@@ -236,52 +242,53 @@
 <script>
 export default {
   data() {
+    //项目类型，订单阶段  跟数据字典页面类似
     return {
       roleList: [],
       pageList: [],
-      rangeMana:false,
-      styleGroupMana:false,
-      styleMana:false,
-      toDoPredict:false,
-      doingPredict:false,
-      savePredict:false,
-      planMana:false,
-      completedPlanMana:false,
-      rangePlan:false,
-      styleGroupPlan:false,
-      stylePlan:false,
-      planReview:false,
-      planDistribute:false,
-      rangeCompleted:false,
-      planRecover:false,
-      exceptionMana:false,
-      messageMana:false,
-      statistics:false,
-      gantt:false,
-      predictMana:false,
-      backMana:false,
+      // rangeMana:false,
+      // styleGroupMana:false,
+      // styleMana:false,
+      // toDoPredict:false,
+      // doingPredict:false,
+      // savePredict:false,
+      // planMana:false,
+      // completedPlanMana:false,
+      // rangePlan:false,
+      // styleGroupPlan:false,
+      // stylePlan:false,
+      // planReview:false,
+      // planDistribute:false,
+      // rangeCompleted:false,
+      // planRecover:false,
+      // exceptionMana:false,
+      // messageMana:false,
+      // statistics:false,
+      // gantt:false,
+      // predictMana:false,
+      // backMana:false,
 
-      // rangeMana:true,
-      // styleGroupMana:true,
-      // styleMana:true,
-      // toDoPredict:true,
-      // doingPredict:true,
-      // savePredict:true,
-      // planMana:true,
-      // completedPlanMana:true,
-      // rangePlan:true,
-      // styleGroupPlan:true,
-      // stylePlan:true,
-      // planReview:true,
-      // planDistribute:true,
-      // rangeCompleted:true,
-      // planRecover:true,
-      // exceptionMana:true,
-      // messageMana:true,
-      // statistics:true,
-      // gantt:true,
-      // predictMana:true,
-      // backMana:true
+      rangeMana:true,
+      styleGroupMana:true,
+      styleMana:true,
+      toDoPredict:true,
+      doingPredict:true,
+      savePredict:true,
+      planMana:true,
+      completedPlanMana:true,
+      rangePlan:true,
+      styleGroupPlan:true,
+      stylePlan:true,
+      planReview:true,
+      planDistribute:true,
+      rangeCompleted:true,
+      planRecover:true,
+      exceptionMana:true,
+      messageMana:true,
+      statistics:true,
+      gantt:true,
+      predictMana:true,
+      backMana:true
     };
   },
 

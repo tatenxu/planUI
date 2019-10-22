@@ -19,7 +19,6 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-
             <el-select v-model="BrandValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
@@ -340,7 +339,6 @@ export default {
           customerNameOptions: [],
           brandNameOptions: [],
           clothingTypeOptions: [],
-
           rangeNameOption: []
         }
       },

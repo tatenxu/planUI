@@ -45,7 +45,7 @@
               <el-table-column  type="selection"  width="55"></el-table-column>
               <el-table-column  prop="id" label="id" v-if="false"  width="120"  ></el-table-column>
               <el-table-column  prop="name" label="品牌名称"  width="120"  ></el-table-column>
-              <el-table-column  prop="abbr"  label="品牌简称"  width="120"></el-table-column>
+              <el-table-column  prop="abbreviation"  label="品牌简称"  width="120"></el-table-column>
               <el-table-column  prop="description"  label="品牌描述"  width="120"></el-table-column>
               <el-table-column  prop="customerName"  label="所属客户"  show-overflow-tooltip></el-table-column>
             </el-table>
@@ -188,6 +188,7 @@
 
 
 <script>
+import request from "@/utils/request";
   export default {
     data() {
       return {
@@ -251,27 +252,20 @@
     },
     created:function(){
       //加载客户选择信息
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`)
+      request
+        .get(`${window.$config.HOST}/backstage/client/find`)
         .then(response=>{
-          this.selectionData = response.data;
+          this.selectionData = response.result;
         })
-        .catch(error=>{
-          console.log("客户信息加载失败");
-        });
 
       //加载默认信息
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrand`,{
+      request
+        .get(`${window.$config.HOST}/backstage/brand/find`,{
           params:{name:null},
         })
         .then(response=>{
-          console.log(response.data);
-          this.tableData =response.data;
+          this.tableData =response.result;
         })
-        .catch(error=>{
-          this.$message.error("信息加载失败");
-        });
     },
     methods: {
       handleTabClick(tab, event) {
@@ -300,16 +294,13 @@
         }
         console.log("搜索参数");
         console.log(param);
-        this.$axios
-          .get(`${window.$config.HOST}/baseInfoManagement/getBrand`,{
+        request
+          .get(`${window.$config.HOST}/backstage/brand/find`,{
             params:param,
           })
           .then(response=>{
-            this.tableData =response.data;
+            this.tableData =response.result;
           })
-          .catch(error=>{
-            this.$message.error("搜索失败");
-          });
       },
       handleNewInfoClick(){
         this.addCardShowFlag = true;
@@ -335,10 +326,10 @@
         console.log(this.multipleSelection[0]);
         this.editInfoId = this.multipleSelection[0].id;
         this.editInfoName = this.multipleSelection[0].name;
-        this.editInfoAbbr = this.multipleSelection[0].abbr;
-        this.editInfoCustomer = this.multipleSelection[0].customerId;
-        this.editInfoCustomerName = this.multipleSelection[0].customerName;
-        this.tmpeditInfoCustomerName = this.multipleSelection[0].customerName;
+        this.editInfoAbbr = this.multipleSelection[0].abbreviation;
+        this.editInfoCustomer = this.multipleSelection[0].clientId;
+        this.editInfoCustomerName = this.multipleSelection[0].clientName;
+        this.tmpeditInfoCustomerName = this.multipleSelection[0].clientName;
         this.editInfoDescription = this.multipleSelection[0].description;
         this.viewname = 'third';
       },
@@ -350,49 +341,31 @@
           });
         }else{
           this.multipleSelection.forEach(element => {
-            this.$axios
-              .delete(`${window.$config.HOST}/baseInfoManagement/deleteBrand`,{
+            request
+              .delete(`${window.$config.HOST}/backstage/brand/delete`,{
                 params:{id:element.id},
               })
               .then(response=>{
-                if(response.data<0){
-                  this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-                  console.log(element.name+"删除失败");
-                }else{
-                  console.log(element.name+"删除成功");
-                  this.$message({
-                    type:"success",
-                    message:element.name+"删除成功"
-                  });
                   var i = this.tableData.indexOf(element);
                   this.tableData.splice(i,1);
-                }
+                
               })
-              .catch(error=>{
-                this.$message.error(element.name+"删除失败");
-                console.log(element.name+"删除失败");
-              });
+            
           });
         }
       },
       handleNewSaveClick(){
         var param = {
           name : (this.ruleForm.addInfoName==="")?null:this.ruleForm.addInfoName,
-          abbr : (this.ruleForm.addInfoAbbr==="")?null:this.ruleForm.addInfoAbbr,
+          abbreviation : (this.ruleForm.addInfoAbbr==="")?null:this.ruleForm.addInfoAbbr,
           description : (this.ruleForm.addInfoDescription==="")?null:this.ruleForm.addInfoDescription,
-          customerId : (this.ruleForm.addInfoCustomer==="")?null:this.ruleForm.addInfoCustomer,
+          clientId : (this.ruleForm.addInfoCustomer==="")?null:this.ruleForm.addInfoCustomer,
         };
         console.log(param);
 
-        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/addBrand`,param)
+        request.post(`${window.$config.HOST}/backstage/brand/insert`,param)
           .then(response=>{
-            if(response.data < 0){
-              this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            }else{
-              this.$message({
-                message:'添加成功!',
-                type:'success'
-              });
+  
               this.handleSearchClick(true);
               this.ruleForm.addInfoName = "";
               this.ruleForm.addInfoAbbr = "";
@@ -401,11 +374,7 @@
 
               this.addCardShowFlag = false;
               this.viewname = "first";
-            }
-          })
-          .catch(error=>{
-            this.$message.error("添加失败");
-            console.log("添加失败");
+            
           })
         
         return;
@@ -424,21 +393,15 @@
         var param = {
           id : (this.editInfoId==="")?null:this.editInfoId,
           name : (this.editInfoName==="")?null:this.editInfoName,
-          abbr : (this.editInfoAbbr==="")?null:this.editInfoAbbr,
+          abbreviation : (this.editInfoAbbr==="")?null:this.editInfoAbbr,
           description : (this.editInfoDescription==="")?null:this.editInfoDescription,
-          customerId : (tmp==="")?null:tmp,
+          clientId : (tmp==="")?null:tmp,
         }
         console.log(param);
 
-        this.$axios.post(`${window.$config.HOST}/baseInfoManagement/updateBrand`,param)
+        request.put(`${window.$config.HOST}/backstage/brand/update`,param)
           .then(response=>{
-            if(response.data<0){
-              this.$message.error("编辑失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            }else{
-              this.$message({
-                message:'编辑成功!',
-                type:'success'
-              });
+          
               this.handleSearchClick(true);
 
               this.editInfoId = "";
@@ -451,11 +414,9 @@
 
               this.editCardShowFlag = false;
               this.viewname = "first";
-            }
+            
           })
-        .catch(error=>{
-          this.$message.error("编辑失败");
-        });
+
 
         return;
       },
