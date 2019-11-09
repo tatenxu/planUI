@@ -53,6 +53,7 @@ const productMana = r => require.ensure([], () => r(require('../page/backEndModu
 const clothingLevelMana = r => require.ensure([], () => r(require('../page/backEndModule/clothingLevelMana.vue')), 'clothingLevelMana');
 const dictionaryCateMana = r => require.ensure([], () => r(require('../page/backEndModule/dictionaryCateMana.vue')), 'dictionaryCateMana');
 const numberRuleMana = r => require.ensure([], () => r(require('../page/backEndModule/numberRuleMana.vue')), 'numberRuleMana');
+const projectType = r => require.ensure([], () => r(require('../page/backEndModule/projectType.vue')), 'projectType');
 
 // -------------------------------------------- 路由配置部分 ----------------------------------------------
 export default [
@@ -113,6 +114,14 @@ export default [
         component: numberRuleMana,
         meta: {
           bcrumd: ['后台管理模块', '编号规则管理'],
+        }
+      },
+      {
+        path: '/backEndModule/projectType',
+        name: 'projectType',
+        component: projectType,
+        meta: {
+          bcrumd: ['后台管理模块', '项目类型-订单'],
         }
       },
       { 

@@ -277,31 +277,32 @@
 </template>
 
 <script>
+import request from "@/utils/request";
 import { POINT_CONVERSION_COMPRESSED } from "constants";
 export default {
   data() {
     return {
       numberPrefixRange: "",
       numberLengthRange: "",
-      dateRuleRange: "20190101",
+      dateRuleRange: "2019-01-01",
       rangeRuleNumber: "",
       lengthRange: "",
 
       numberPrefixStyleGroup: "",
       numberLengthStyleGroup: "",
-      dateRuleStyleGroup: "20190101",
+      dateRuleStyleGroup: "2019-01-01",
       styleGroupRuleNumber: "",
       lengthStyleGroup: "",
 
       numberPrefixException: "",
       numberLengthException: "",
-      dateRuleException: "20190101",
+      dateRuleException: "2019-01-01",
       exceptionRuleNumber: "",
       lengthException: "",
 
       numberPrefixPlan: "",
       numberLengthPlan: "",
-      dateRulePlan: "20190101",
+      dateRulePlan: "2019-01-01",
       planRuleNumber: "",
       lengthPlan: "",
 
@@ -316,90 +317,58 @@ export default {
   created: function() {
     const that = this;
     //系列
-    this.$axios
-      .get(
-        `${window.$config.HOST}/baseInfoManagement/getSerialNoRegularByObject`,
-        {
-          params: {
-            numberObject: "系列"
-          }
+    request
+      .get(`/backstage/serial-number/find`, {
+        params: {
+          type: 1
         }
-      )
-      .then(response => {
-        this.initialRange = response.data;
-        this.numberPrefixRange = response.data.numberPrefix; //前段
-        this.numberLengthRange = response.data.numberLength;
-        this.lengthRange = response.data.lastNumberLength;
-        console.log("前长度：", this.lengthRange);
-        console.log("现在长度:", this.numberLengthRange);
       })
-      .catch(error => {
-        console.log("系列编号规则获取失败!");
+      .then(response => {
+        this.initialRange = response.result;
+        this.numberPrefixRange = this.initialRange.prefix; //前段
+        this.numberLengthRange = this.initialRange.length;
+        this.lengthRange = this.initialRange.length;
       });
 
     //款式组
-    this.$axios
-      .get(
-        `${window.$config.HOST}/baseInfoManagement/getSerialNoRegularByObject`,
-        {
-          params: {
-            numberObject: "款式组"
-          }
+    request
+      .get(`/backstage/serial-number/find`, {
+        params: {
+          type: 2
         }
-      )
-      .then(response => {
-        this.initialStyleGroup = response.data;
-        this.numberPrefixStyleGroup = response.data.numberPrefix; //前段
-        this.numberLengthStyleGroup = response.data.numberLength;
-        this.lengthStyleGroup = response.data.numberLength;
       })
-      .catch(error => {
-        console.log("款式组编号规则获取失败!");
-        this.numberPrefixStyleGroup = "获取失败";
-        this.numberLengthStyleGroup = "获取失败";
+      .then(response => {
+        this.initialStyleGroup = response.result;
+        this.numberPrefixStyleGroup = this.initialStyleGroup.prefix; //前段
+        this.numberLengthStyleGroup = this.initialStyleGroup.length;
+        this.lengthStyleGroup = this.initialStyleGroup.length;
       });
 
     //异常
-    this.$axios
-      .get(
-        `${window.$config.HOST}/baseInfoManagement/getSerialNoRegularByObject`,
-        {
-          params: {
-            numberObject: "异常"
-          }
+    request
+      .get(`/backstage/serial-number/find`, {
+        params: {
+          type: 4
         }
-      )
-      .then(response => {
-        this.initialException = response.data;
-        this.numberPrefixException = response.data.numberPrefix; //前段
-        this.numberLengthException = response.data.numberLength;
-        this.lengthException = response.data.numberLength;
       })
-      .catch(error => {
-        console.log("异常编号规则获取失败!");
-        this.numberPrefixException = "获取失败";
-        this.numberLengthException = "获取失败";
+      .then(response => {
+        this.initialException = response.result;
+        this.numberPrefixException = this.initialException.prefix; //前段
+        this.numberLengthException = this.initialException.length;
+        this.lengthException = this.initialException.length;
       });
 
-    this.$axios
-      .get(
-        `${window.$config.HOST}/baseInfoManagement/getSerialNoRegularByObject`,
-        {
-          params: {
-            numberObject: "计划"
-          }
+    request
+      .get(`/backstage/serial-number/find`, {
+        params: {
+          type: 3
         }
-      )
-      .then(response => {
-        this.initialPlan = response.data;
-        this.numberPrefixPlan = response.data.numberPrefix; //前段
-        this.numberLengthPlan = response.data.numberLength;
-        this.lengthPlan = response.data.numberLength;
       })
-      .catch(error => {
-        console.log("计划编号规则获取失败!");
-        this.numberPrefixPlan = "获取失败";
-        this.numberLengthPlan = "获取失败";
+      .then(response => {
+        this.initialPlan = response.result;
+        this.numberPrefixPlan = this.initialPlan.prefix; //前段
+        this.numberLengthPlan = this.initialPlan.length;
+        this.lengthPlan = this.initialPlan.length;
       });
   },
 
@@ -437,7 +406,7 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.exceptionRuleNumber = this.numberLengthException + "20190101" + ss;
+      this.exceptionRuleNumber = this.numberPrefixException + "2019-01-01-" + ss;
     },
     previewStyleGroup() {
       if (
@@ -472,7 +441,7 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.styleGroupRuleNumber = this.numberLengthStyleGroup + "20190101" + ss;
+      this.styleGroupRuleNumber = this.numberPrefixStyleGroup + "2019-01-01-" + ss;
     },
     previewRange() {
       if (
@@ -506,7 +475,7 @@ export default {
       console.log("ss:", ss);
       ss = ss + "1";
       console.log("ss:", ss);
-      this.rangeRuleNumber = this.numberPrefixRange + "20190101" + ss;
+      this.rangeRuleNumber = this.numberPrefixRange + "2019-01-01-" + ss;
     },
     previewPlan() {
       if (
@@ -538,7 +507,7 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.planRuleNumber = this.numberLengthPlan + "20190101" + ss;
+      this.planRuleNumber = this.numberPrefixPlan + "2019-01-01-" + ss;
     },
     saveRangeRule() {
       if (
@@ -579,54 +548,13 @@ export default {
       console.log("this.lengthRange", this.lengthRange);
       console.log("this.numberLengthRange", this.numberLengthRange);
 
-      this.$axios
-        .post(
-          `${window.$config.HOST}/baseInfoManagement/updateSerialNoRegular`,
-          {
-            id: this.initialRange.id,
-            numberObject: this.initialRange.numberObject,
-            numberPrefix: this.numberPrefixRange, // 单号的字母
-            numberLength: parseInt(this.numberLengthRange), // 当前长度
-            lastNumberLength: parseInt(this.lengthRange) // 之前的长度
-          }
-        )
-        .then(response => {
-          if (response.data === 1) {
-            //系列
-            this.$axios
-              .get(
-                `${
-                  window.$config.HOST
-                }/baseInfoManagement/getSerialNoRegularByObject`,
-                {
-                  params: {
-                    numberObject: "系列"
-                  }
-                }
-              )
-              .then(response => {
-                this.initialRange = response.data;
-                this.numberPrefixRange = response.data.numberPrefix; //前段
-                this.numberLengthRange = response.data.numberLength;
-              })
-              .catch(error => {
-                console.log("系列编号规则获取失败!");
-              });
-            this.$message({
-              message: "保存成功！",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "保存失败！",
-              type: "warning"
-            });
-          }
+      request
+        .put(`/backstage/serial-number/update`, {
+          id: this.initialRange.id,
+          prefix: this.numberPrefixRange, // 单号的字母
+          length: parseInt(this.numberLengthRange) // 当前长度
         })
-        .catch(error => {
-          console.log("保存失败!");
-        });
-      return;
+        .then(response => {});
     },
     saveStyleGroupRule() {
       if (
@@ -670,54 +598,13 @@ export default {
       console.log("this.lengthStyleGroup", this.lengthStyleGroup);
       console.log("this.numberLengthStyleGroup", this.numberLengthStyleGroup);
 
-      this.$axios
-        .post(
-          `${window.$config.HOST}/baseInfoManagement/updateSerialNoRegular`,
-          {
-            id: this.initialStyleGroup.id,
-            numberObject: this.initialStyleGroup.numberObject,
-            numberPrefix: this.numberPrefixStyleGroup, // 单号的字母
-            numberLength: parseInt(this.numberLengthStyleGroup), // 当前长度
-            lastNumberLength: parseInt(this.lengthStyleGroup) // 之前的长度
-          }
-        )
-        .then(response => {
-          if (response.data === 1) {
-            //款式组
-            this.$axios
-              .get(
-                `${
-                  window.$config.HOST
-                }/baseInfoManagement/getSerialNoRegularByObject`,
-                {
-                  params: {
-                    numberObject: "款式组"
-                  }
-                }
-              )
-              .then(response => {
-                this.initialStyleGroup = response.data;
-                this.numberPrefixStyleGroup = response.data.numberPrefix; //前段
-                this.numberLengthStyleGroup = response.data.numberLength;
-              })
-              .catch(error => {
-                console.log("款式组编号规则获取失败!");
-              });
-            this.$message({
-              message: "保存成功！",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "保存失败！",
-              type: "warning"
-            });
-          }
+      request
+        .put(`/backstage/serial-number/update`, {
+          id: this.initialStyleGroup.id,
+          prefix: this.numberPrefixStyleGroup, // 单号的字母
+          length: parseInt(this.numberLengthStyleGroup) // 当前长度
         })
-        .catch(error => {
-          console.log("保存失败!");
-        });
-      return;
+        .then(response => {});
     },
     saveExceptionRule() {
       if (
@@ -761,54 +648,13 @@ export default {
       console.log("this.lengthException", this.lengthException);
       console.log("this.numberLengthException", this.numberLengthException);
 
-      this.$axios
-        .post(
-          `${window.$config.HOST}/baseInfoManagement/updateSerialNoRegular`,
-          {
-            id: this.initialException.id,
-            numberObject: this.initialException.numberObject,
-            numberPrefix: this.numberPrefixException, // 单号的字母
-            numberLength: parseInt(this.numberLengthException), // 当前长度
-            lastNumberLength: parseInt(this.lengthException) // 之前的长度
-          }
-        )
-        .then(response => {
-          if (response.data === 1) {
-            //异常
-            this.$axios
-              .get(
-                `${
-                  window.$config.HOST
-                }/baseInfoManagement/getSerialNoRegularByObject`,
-                {
-                  params: {
-                    numberObject: "异常"
-                  }
-                }
-              )
-              .then(response => {
-                this.initialException = response.data;
-                this.numberPrefixException = response.data.numberPrefix; //前段
-                this.numberLengthException = response.data.numberLength;
-              })
-              .catch(error => {
-                console.log("异常编号规则获取失败!");
-              });
-            this.$message({
-              message: "保存成功！",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "保存失败！",
-              type: "warning"
-            });
-          }
+      request
+        .put(`/backstage/serial-number/update`, {
+          id: this.initialException.id,
+          prefix: this.numberPrefixException, // 单号的字母
+          length: parseInt(this.numberLengthException) // 当前长度
         })
-        .catch(error => {
-          console.log("保存失败!");
-        });
-      return;
+        .then(response => {});
     },
     savePlanRule() {
       if (
@@ -849,54 +695,13 @@ export default {
       console.log("this.lengthPlan", this.lengthPlan);
       console.log("this.numberLengthPlan", this.numberLengthPlan);
 
-      this.$axios
-        .post(
-          `${window.$config.HOST}/baseInfoManagement/updateSerialNoRegular`,
-          {
-            id: this.initialPlan.id,
-            numberObject: this.initialPlan.numberObject,
-            numberPrefix: this.numberPrefixPlan, // 单号的字母
-            numberLength: parseInt(this.numberLengthPlan), // 当前长度
-            lastNumberLength: parseInt(this.lengthPlan) // 之前的长度
-          }
-        )
-        .then(response => {
-          if (response.data === 1) {
-            //计划
-            this.$axios
-              .get(
-                `${
-                  window.$config.HOST
-                }/baseInfoManagement/getSerialNoRegularByObject`,
-                {
-                  params: {
-                    numberObject: "计划"
-                  }
-                }
-              )
-              .then(response => {
-                this.initialPlan = response.data;
-                this.numberPrefixPlan = response.data.numberPrefix; //前段
-                this.numberLengthPlan = response.data.numberLength;
-              })
-              .catch(error => {
-                console.log("计划编号规则获取失败!");
-              });
-            this.$message({
-              message: "保存成功！",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "保存失败！",
-              type: "warning"
-            });
-          }
+      request
+        .put(`/backstage/serial-number/update`, {
+          id: this.initialPlan.id,
+          prefix: this.numberPrefixPlan, // 单号的字母
+          length: parseInt(this.numberLengthPlan) // 当前长度
         })
-        .catch(error => {
-          console.log("保存失败!");
-        });
-      return;
+        .then(response => {});
     }
   }
 };

@@ -183,39 +183,22 @@
         <el-menu-item index="/backEndModule/planModelManagement">
           <i class="el-icon-document"></i>计划模板管理
         </el-menu-item>
-        <!-- <el-menu-item index="/backEndModule/planModelEdit">
-          <i class="el-icon-document"></i>计划模板编辑
-        </el-menu-item> -->
-        <!-- <el-menu-item index="/backEndModule/dictionary/productMana">
-          <i class="el-icon-document"></i>产品管理
-        </el-menu-item> -->
+ 
         <el-menu-item index="/backEndModule/dictionary/customerMana">
           <i class="el-icon-document"></i>客户管理
         </el-menu-item>
         <el-menu-item index="/backEndModule/dictionary/brandMana">
           <i class="el-icon-document"></i>品牌管理
         </el-menu-item>
-        <!-- <el-menu-item index="/backEndModule/dictionary/clothingLevelMana">
-          <i class="el-icon-document"></i>服装层次管理
-        </el-menu-item> -->
-        <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana">
+
+        <el-menu-item index="/backEndModule/projectType">
+          <i class="el-icon-document"></i>项目类型——订单
+        </el-menu-item>
+
+
+       <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana">
           <i class="el-icon-document"></i>数据字典管理
         </el-menu-item>
-        <el-menu-item index="/backEndModule/dictionary/321">
-          <i class="el-icon-document"></i>项目类型
-        </el-menu-item>
-        <el-menu-item index="/backEndModule/dictionary/3124">
-          <i class="el-icon-document"></i>订单阶段
-        </el-menu-item>
-        <!-- <el-submenu index="dictionary">
-          <template slot="title">
-            <i class="el-icon-message"></i>
-            用户数据管理
-          </template>
-          <el-menu-item index="/backEndModule/userManagement"><i class="el-icon-document"></i>用户管理</el-menu-item>
-          <el-menu-item index="/backEndModule/groupManagement"><i class="el-icon-document"></i>部门管理</el-menu-item>
-          <el-menu-item index="/backEndModule/roleManagement"><i class="el-icon-document"></i>角色管理</el-menu-item>
-        </el-submenu>-->
 
         <el-menu-item index="/backEndModule/privilegeManagement">
           <i class="el-icon-message"></i>数据权限管理

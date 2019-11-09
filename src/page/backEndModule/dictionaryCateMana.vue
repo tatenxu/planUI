@@ -24,7 +24,7 @@
                     @selection-change="handleCategSelectionChange">
                     <el-table-column  type="selection"  width="55"> </el-table-column>
                     <el-table-column  prop="id"  v-if="false" label="id"  show-overflow-tooltip></el-table-column>
-                    <el-table-column  prop="category"   label="字典类别"  show-overflow-tooltip></el-table-column>
+                    <el-table-column  prop="name"   label="字典类别"  show-overflow-tooltip></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -109,7 +109,7 @@
                 <el-option
                   v-for="item in dictionCategories"
                   :key="item.id"
-                  :label="item.category"
+                  :label="item.name"
                   :value="item.id">
                 </el-option>
               </el-select>
@@ -134,11 +134,11 @@
           </div>
           <div class="inputCombine">
             <span class="inputTag">所属类别:</span>
-              <el-select v-model="editPropCate" placeholder="请选择" class="inputSelector">
+              <el-select v-model="initeditPropCateId" placeholder="请选择" class="inputSelector">
                 <el-option
                   v-for="item in dictionCategories"
                   :key="item.id"
-                  :label="item.category"
+                  :label="item.name"
                   :value="item.id">
                 </el-option>
               </el-select>
@@ -219,6 +219,7 @@ import request from "@/utils/request";
 export default {
   data(){
     return{
+      initeditPropCateId:"",
       viewname:'first',
       dictionCategories:[],
       multiCateSelection:[],
@@ -344,7 +345,7 @@ export default {
          return;
       }
       this.editCateId = this.multiCateSelection[0].id;
-      this.editCateName = this.multiCateSelection[0].category;
+      this.editCateName = this.multiCateSelection[0].name;
       this.editCateCode = this.multiCateSelection[0].code;
       this.editCateShowFlag = true;
       this.viewname = 'third';
@@ -399,7 +400,7 @@ export default {
          alert("只能选择一个类别属性!");
          return;
       }
-
+      console.log(this.multiplePropSelection[0])
       this.editPropId = this.multiplePropSelection[0].id
       this.editPropName = this.multiplePropSelection[0].name;
       this.editPropCode = this.multiplePropSelection[0].code;
@@ -448,17 +449,14 @@ export default {
     },
     handleAddCateSaveClick(){
       var param = {
-        category : (this.ruleFormCate.addCateName==='')?null:this.ruleFormCate.addCateName,
+        name : (this.ruleFormCate.addCateName==='')?null:this.ruleFormCate.addCateName,
 		    code : (this.ruleFormCate.addCateCode==='')?null:this.ruleFormCate.addCateCode,
       }
       request.post(`${window.$config.HOST}/backstage/dic-category/insert`,param)
         .then(response=>{
-
             this.reSearchCategory();
-
             this.ruleFormCate.addCateName = "";
             this.ruleFormCate.addCateCode = "";
-            
             this.addCateShowFlag = false;
             this.viewname = 'first';
           
@@ -544,16 +542,17 @@ export default {
       this.viewname = 'first';
     },
     handleEditPropSaveClick(){
-      var tmp = (this.editPropCate===this.initeditPropCateName)?this.initeditPropCateId:this.editPropCate;
+      console.log("dictionCategories:",this.dictionCategories)
+      var tmp = (this.initeditPropCateId==="")?null:this.initeditPropCateId;
       var param={
         id : (this.editPropId==="")? null:this.editPropId,
         name : (this.editPropName==="")? null:this.editPropName,
         code : (this.editPropCode==="")? null:this.editPropCode,
-        categoryId :  (tmp==="")? null:tmp,
+        categoryId :  tmp
       }
       console.log(param);
 
-      request.post(`${window.$config.HOST}/backstage/dic-property/update`,param)
+      request.put(`${window.$config.HOST}/backstage/dic-property/update`,param)
         .then(response=>{
             this.reSearchProperty(param.categoryId);
 

@@ -253,6 +253,7 @@ export default {
     this.$axios
       .get('http://192.168.1.180:8081/dept/find')
       .then(response => {
+        console.log(response)
         this.selectionData = response.data.result;
       })
       .catch(error => {

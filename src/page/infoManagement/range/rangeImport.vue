@@ -11,19 +11,20 @@
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" @change="clientSelect2">
+              <el-select v-model="ruleForm.customerName" @change="clientSelect2" style="width:300px">
                 <el-option
                   v-for="item in options.customerNameOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
+                  
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
-              <el-select v-model="ruleForm.brandName">
+              <el-select v-model="ruleForm.brandName" style="width:300px">
                 <el-option
                   v-for="item in options.brandNameOptions"
                   :key="item.id"
@@ -35,16 +36,36 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
-              <el-select v-model="ruleForm.clothingType">
+              <el-select v-model="ruleForm.clothingType" style="width:300px">
                 <el-option
                   v-for="item in options.clothingTypeOptions"
-                  :key="item.id"
+                  :key="item.name"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.name"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:25px">
+          <el-col :span="8">
+            <el-form-item label="系统编号" prop="systemCode" placeholder="请输入系统编号">
+                <el-input v-model="ruleForm.systemCode" clearable placeholder="请输入" style="width:300px"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="季节" prop="season" placeholder="请选择季节">
+              <el-select v-model="ruleForm.season" style="width:300px">
+                <el-option
+                  v-for="item in options.seasonOptions"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="10">
@@ -67,6 +88,7 @@
               </el-button>
             </el-upload>
           </el-col>
+          
         </el-row>
         <el-row :gutter="20">
           <el-col :span="8">
@@ -104,6 +126,7 @@
 
 <script>
 import XLSX from "xlsx";
+import request from "@/utils/request";
 export default {
   data() {
     return {
@@ -117,9 +140,17 @@ export default {
         ],
         clothingType: [
           { required: true, message: "请选择服装层次", trigger: "change" }
+        ],
+        season:[
+           { required: true, message: "请选择季节", trigger: "change" }
+        ],
+        systemCode:[
+           { required: true, message: "请输入系统编号", trigger: "blur" }
         ]
       },
       ruleForm: {
+        season:"",
+        systemCode:"",
         customerName: "",
         brandName: "",
         clothingType: "",
@@ -127,6 +158,20 @@ export default {
         tableData: []
       },
       options: {
+        seasonOptions:[
+          {
+            name:"春"
+          },
+          {
+            name:"夏"
+          },
+          {
+            name:"秋"
+          },
+          {
+            name:"冬"
+          },
+        ],
         customerNameOptions: [],
         brandNameOptions: [],
         clothingTypeOptions: []
@@ -138,73 +183,39 @@ export default {
     var that = this;
 
     //获得顾客名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+    request
+      .get(`/backstage/client/name`)
       .then(response => {
-        console.log("获得顾客信息成功了");
-        var CustomerList = response.data;
+        var CustomerList = response.result;
         this.options.customerNameOptions = CustomerList;
       })
-      .catch(error => {
-        this.$message({
-          message: "获取顾客信息失败",
-          type: "error"
-        });
-        // console.log("获得顾客信息失败了");
-        // var CustomerList = [
-        //   {
-        //     id: 1,
-        //     name: "顾客A"
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "顾客B"
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "顾客C"
-        //   }
-        // ];
-        // this.searchOptions.options.customerNameOptions = CustomerList;
-        // this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-      });
 
     //获得服装层次
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
+    request
+      .get(`/backstage/dic-property/name`,
+      {
+        params:{
+          categoryName :"服装层次"
+        }
+      })
       .then(response => {
-        console.log("获得服装层次信息成功了");
-        var ClothingList = response.data;
+        var ClothingList = response.result;
         this.options.clothingTypeOptions = ClothingList;
       })
-      .catch(error => {
-        this.$message({
-          message: "获取服装层次失败",
-          type: "error"
-        });
-      });
+
   },
   methods: {
     clientSelect2() {
       this.ruleForm.brandName = "";
-      let list = {
-        customerId: this.ruleForm.customerName
-      };
-      console.log(list);
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-          params: list
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId:this.ruleForm.customerName
+          }
         })
         .then(response => {
-          console.log(response.data);
-          this.options.brandNameOptions = response.data;
+          this.options.brandNameOptions = response.result;
         })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
-          });
-        });
     },
 
     ////////////// methods for xls /////////////
@@ -360,49 +371,25 @@ export default {
       this.ruleForm.tableData.forEach(element => {
         RangeListAdd.push({
           name: element.rangeName,
-          customerId: this.ruleForm.customerName,
           brandId: this.ruleForm.brandName,
-          clothingLevelId: this.ruleForm.clothingType,
-          note: element.rangeNote
+          clothesLevelName: this.ruleForm.clothingType,
+          note: element.rangeNote,
+          season:this.ruleForm.season,
+          systemCode:this.ruleForm.systemCode,
+          addMode:"导入"
         });
       });
 
-      this.$axios
-        //此处的接口为批量导入
+      request
         .post(
-          `${window.$config.HOST}/infoManagement/addRangeList`,
+          `/info/series/batch/insert`,
           RangeListAdd
         )
         .then(response => {
           this.$router.push({
             name: `rangeManagement`
           });
-          var ok = response.data;
-          if (ok >= 0) {
-            if (ok === RangeListAdd.length) {
-              this.$message({
-                message: "成功添加",
-                type: "success"
-              });
-            } else {
-              this.$message({
-                message: RangeListAdd.length - ok + "条数据未导入",
-                type: "success"
-              });
-            }
-          } else {
-            this.$message({
-              message: "导入失败",
-              type: "warning"
-            });
-          }
         })
-        .catch(error => {
-          this.$message({
-            message: "添加失败",
-            type: "warning"
-          });
-        });
     },
     // 取消按钮点击
     cancel() {

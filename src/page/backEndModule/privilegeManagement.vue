@@ -69,7 +69,7 @@
           <el-table-column type="selection" width="50px" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="userName" width="200" label="用户" align="center"></el-table-column>
-          <el-table-column prop="customerName" width="200" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="200" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" width="200" label="品牌" align="center"></el-table-column>
           <el-table-column label="操作" width="200" min-width="100" align="center">
             <template slot-scope="scope">
@@ -90,11 +90,11 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="pagination.total"
           ></el-pagination>
-        </div> -->
+        </div>-->
       </div>
     </el-card>
 
-    <el-dialog :modal="false" title="新增用户" :visible.sync="dialogFormVisible">
+    <el-dialog :modal="false" title="添加权限" :visible.sync="dialogFormVisible" :before-close="cancel">
       <el-form
         :model="ruleForm"
         :rules="rules"
@@ -104,20 +104,8 @@
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="用户" prop="userName">
-              <el-select v-model="ruleForm.userName">
-                <el-option
-                  v-for="item in ruleForm.options.userNameOptions"
-                  :key="item.id"
-                  :label="item.realName"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" @change="clientSelect2">
+            <el-form-item label="客户" prop="customerName">
+              <el-select v-model="ruleForm.customerName">
                 <el-option
                   v-for="item in ruleForm.options.customerNameOptions"
                   :key="item.id"
@@ -127,48 +115,105 @@
               </el-select>
             </el-form-item>
           </el-col>
-        <el-col :span="3">
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch1">搜索</el-button>
-        </el-col>
 
-          <el-col :span="3" >
+          <el-col :span="3">
+            <el-button type="primary" icon="el-icon-search" @click="handleSearch1">搜索</el-button>
+          </el-col>
+
+          <el-col :span="3">
             <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
           </el-col>
           <!-- <el-col :span="3">
             <el-button type="info" @click="cancel">取消</el-button>
-          </el-col> -->
+          </el-col>-->
         </el-row>
 
-              <div class="table">
-        <el-table
-          :data="ruleForm.tableData"
-          max-height="400"
-          @selection-change="changeCheckBoxFun1"
-          :stripe="true"
-          :highlight-current-row="true"
-          style="width: 100%; margin-top: 20px;margin-left:30%"
-        >
-          <el-table-column type="selection" width="50px" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" width="200" label="品牌" align="center"></el-table-column>
-        </el-table>
-      </div>
+        <div class="table">
+          <el-table
+            :data="ruleForm.tableData"
+            max-height="400"
+            @selection-change="changeCheckBoxFun1"
+            :stripe="true"
+            :highlight-current-row="true"
+            style="width: 100%; margin-top: 20px;margin-left:30%"
+          >
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="品牌" align="center"></el-table-column>
+          </el-table>
+        </div>
       </el-form>
+    </el-dialog>
 
+    <el-dialog :modal="false" title="添加权限" :visible.sync="dialogFormVisible1" :before-close="cancel">
+      <el-row :gutter="20" style="margin-top:-30px;">
+        <el-col :span="6">
+          <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
+        </el-col>
+        <el-col :span="10">
+          <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="nextStep" style="margin-left:100px">下一步</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:15px;">
+        <el-col :span="6">
+          <el-tree :data="productionLine" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        </el-col>
+        <el-col :span="10">
+          <el-table
+            :data="personTable"
+            max-height="400"
+            @selection-change="changeCheckBoxFun2"
+            :stripe="true"
+            :highlight-current-row="true"
+            style="width: 100%; margin-top: 20px;margin-left:30%"
+          >
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
 
+      <!-- <div class="table">
+          <el-table
+            :data="personTable"
+            max-height="400"
+            @selection-change="changeCheckBoxFun1"
+            :stripe="true"
+            :highlight-current-row="true"
+            style="width: 100%; margin-top: 20px;margin-left:30%"
+          >
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
+          </el-table>
+      </div>-->
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { POINT_CONVERSION_COMPRESSED } from 'constants';
+import request from "@/utils/request";
+import { POINT_CONVERSION_COMPRESSED } from "constants";
 export default {
   data() {
     return {
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      userSelectionList: [],
+      userSelection: [],
+      productionLine: [],
+      personTable: [],
       userName: "",
       CustomerValue: "",
       BrandValue: "",
       dialogFormVisible: false,
+      dialogFormVisible1: false,
       tableData: [],
       pagination: {
         currentPage: 1,
@@ -186,9 +231,6 @@ export default {
       },
       multipleSelection: [],
       rules: {
-        userName: [
-          { required: true, message: "请选择用户", trigger: "change" }
-        ],
         brandName: [
           { required: true, message: "请选择品牌", trigger: "change" }
         ],
@@ -196,36 +238,36 @@ export default {
           { required: true, message: "请选择客户名称", trigger: "change" }
         ]
       },
-              baseInfoManagementErrorCode : [
-          {
-            errorCode:0,
-            errorInfo:"未知错误",
-          },
-          {
-            errorCode:-1,
-            errorInfo:"传送的对象属性中存在null",
-          },
-          {
-            errorCode:-2,
-            errorInfo:"字段重复",
-          },
-          {
-            errorCode:-3,
-            errorInfo:"参数存在不一致",
-          },
-          {
-            errorCode:-4,
-            errorInfo:"当前数据库记录不符合逻辑要求",
-          },
-          {
-            errorCode:-5,
-            errorInfo:"未知错所要查询的数据在数据库中不存在",
-          },
-        ],
+      baseInfoManagementErrorCode: [
+        {
+          errorCode: 0,
+          errorInfo: "未知错误"
+        },
+        {
+          errorCode: -1,
+          errorInfo: "传送的对象属性中存在null"
+        },
+        {
+          errorCode: -2,
+          errorInfo: "字段重复"
+        },
+        {
+          errorCode: -3,
+          errorInfo: "参数存在不一致"
+        },
+        {
+          errorCode: -4,
+          errorInfo: "当前数据库记录不符合逻辑要求"
+        },
+        {
+          errorCode: -5,
+          errorInfo: "未知错所要查询的数据在数据库中不存在"
+        }
+      ],
       ruleForm: {
-        multipleSelection:[],
-        tableData:[],
-        userName:"",
+        multipleSelection: [],
+        tableData: [],
+        userName: "",
         brandName: "",
         brandId: "",
         customerName: "",
@@ -233,14 +275,9 @@ export default {
         name: "",
         id: "",
         options: {
-          customerNameOptions: [
-
-          ],
-          brandNameOptions: [
-          ],
-          userNameOptions: [
- 
-          ]
+          customerNameOptions: [],
+          brandNameOptions: [],
+          userNameOptions: []
         }
       }
     };
@@ -248,98 +285,97 @@ export default {
 
   created: function() {
     var that = this;
-    //获得品牌名字
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
-        name: undefined
-      })
+    //获取产线
+    request
+      .get(`http://192.168.1.180:8081/product-line/find`)
       .then(response => {
-        // this.searchOptions.options.brandNameOptions = response.data;
-        response.data.forEach(element => {
-          this.searchOptions.options.brandNameOptions.push(element);
-        });
-      
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取品牌信息失败",
-          type: "error"
-        });
+        this.productionLine = response.result;
       });
+
+    //获得品牌名字
+    request.get(`/backstage/brand/name`).then(response => {
+      this.searchOptions.options.brandNameOptions = response.result;
+    });
 
     //获得顾客名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomer`)
-      .then(response => {
-        response.data.forEach(element => {
-          this.searchOptions.options.customerNameOptions.push(element);
-          this.ruleForm.options.customerNameOptions.push(element);
-        });
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取顾客信息失败",
-          type: "error"
-        });
-      });
-
+    request.get(`/backstage/client/name`).then(response => {
+      this.searchOptions.options.customerNameOptions = response.result;
+      this.ruleForm.options.customerNameOptions = response.result;
+    });
 
     //获得用户名称
-    that.$axios
-      .get(`${window.$config.HOST2}/getAllUserName`)
-      .then(response => {
-        response.data.forEach(element => {
-           this.ruleForm.options.userNameOptions.push(element)
-           this.searchOptions.options.userNameOptions.push(element)
-        });
-      })
-      .catch(error => {
-        console.log(error)
-      });
+    // that.$axios
+    //   .get(`${window.$config.HOST2}/getAllUserName`)
+    //   .then(response => {
+    //     response.data.forEach(element => {
+    //        this.ruleForm.options.userNameOptions.push(element)
+    //        this.searchOptions.options.userNameOptions.push(element)
+    //     });
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //   });
     //获得空搜索
-    this.$axios
-      .get(`${window.$config.HOST}/authorityManagement/getUserDataAuthority`)
-      .then(response => {
-        console.log("获得品牌信息成功了");
-        console.log(response.data)
-        this.tableData = response.data;
-      })
-      .catch(error => {
-      });
-
+    request.get(`/backstage/user-client-brand/find`).then(response => {
+      this.tableData = response.result;
+    });
   },
 
   methods: {
-    handleSearch(){
-      this.$axios
-        .get(`${window.$config.HOST}/authorityManagement/getUserDataAuthority`, {params:{
-          userId:this.userName === "" ? undefined : this.userName,
-          customerId:this.CustomerValue === "" ? undefined : this.CustomerValue,
-          brandId:this.BrandValue === "" ? undefined : this.BrandValue,
-        }})
-        .then(response => {
-          this.tableData = response.data;
-        })
-        .catch(error => {
+    nextStep() {
+      console.log(this.userSelection);
+      if (this.userSelection.length === 0) {
+        this.$message({
+          message: "请至少选择一个人员！",
+          type: "error"
         });
+        return;
+      }
+      (this.dialogFormVisible1 = false), (this.dialogFormVisible = true);
     },
-
-    handleSearch1(){
-            this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
+    handleNodeClick(data) {
+      console.log(data);
+      request
+        .get(`http://192.168.1.180:8081/user-product-line/find`, {
           params: {
-            customerId:this.ruleForm.customerName
+            productLineId: data.id
           }
         })
         .then(response => {
-          console.log(response.data);
-          this.ruleForm.tableData =response.data;
+          this.personTable = response.result;
+        });
+    },
+    handleSearch() {
+      request
+        .get(`/backstage/user-client-brand/find`, {
+          params: {
+            userId: this.userName === "" ? undefined : this.userName,
+            clientId:
+              this.CustomerValue === "" ? undefined : this.CustomerValue,
+            brandId: this.BrandValue === "" ? undefined : this.BrandValue
+          }
         })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
-          });
+        .then(response => {
+          this.tableData = response.result;
+        });
+    },
+
+    handleSearch1() {
+      if (this.ruleForm.customerName === "") {
+        this.$message({
+          message: "请选择一个客户再进行搜索！",
+          type: "error"
+        });
+        return;
+      }
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.ruleForm.customerName
+          }
+        })
+        .then(response => {
+          this.ruleForm.tableData = response.result;
         });
     },
     // 表格中的删除
@@ -356,33 +392,14 @@ export default {
         type: "warning"
       })
         .then(() => {
-          console.log("要删除",row.id)
-          this.$axios
-            .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,{
-              params:{
-                userId:row.userId,
-                brandId:row.brandId
+          request
+            .delete(`/backstage/user-client-brand/delete`, {
+              params: {
+                id: row.id
               }
             })
             .then(response => {
               this.handleSearch();
-      
-            if(response.data < 0){
-              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            }else{
-              this.$message({
-                message:'删除成功!',
-                type:'success'
-              });
-
-            }
-            })
-            .catch(error => {
-              this.handleSearch();
-              this.$message({
-                message: "删除2失败",
-                type: "error"
-              });
             });
         })
         .catch(() => {
@@ -397,8 +414,12 @@ export default {
       const that = this;
       that.multipleSelection = val;
     },
+    changeCheckBoxFun2(val) {
+      const that = this;
+      that.userSelection = val;
+    },
 
-        changeCheckBoxFun1(val) {
+    changeCheckBoxFun1(val) {
       const that = this;
       that.ruleForm.multipleSelection = val;
     },
@@ -424,32 +445,21 @@ export default {
           }
         )
           .then(() => {
-            console.log(this.multipleSelection)
+            console.log(this.multipleSelection);
             this.multipleSelection.forEach(element => {
               console.log(element.id);
-                let list = {
-                  id: element.id
-                };
-                console.log(list)
-              this.$axios
-                .delete(`${window.$config.HOST}/authorityManagement/deleteUserDataAuthority`,
-                {
-                  params:{
-                userId:element.userId,
-                brandId:element.brandId
+              let list = {
+                id: element.id
+              };
+              console.log(list);
+              request
+                .delete(`/backstage/user-client-brand/delete`, {
+                  params: {
+                    id: element.id
                   }
                 })
                 .then(response => {
                   this.handleSearch();
-            if(response.data < 0){
-              this.$message.error("删除失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-            }else{
-              this.$message({
-                message:'删除成功!',
-                type:'success'
-              });
-
-            }
                 })
                 .catch(error => {
                   this.handleSearch();
@@ -459,11 +469,6 @@ export default {
                   });
                 });
             });
-
-            // this.$message({
-            //   type: "success",
-            //   message: "删除成功!"
-            // });
           })
           .catch(() => {
             this.handleSearch();
@@ -474,119 +479,60 @@ export default {
           });
       }
     },
-    //当弹出框的客户名称改变的时候GET弹出框的品牌信息
-    clientSelect2() {
-      console.log(this.ruleForm.customerName)
-      this.ruleForm.brandName = "";
-      // if(this.ruleForm.customerName===0)
-      // {
-      //   this.ruleForm.brandNameOptions=this.searchOptions.options.brandNameOptions;
-      //   return ;
-      // }
-      // let list = {
-      //   customerId: this.ruleForm.customerName===0?"":this.ruleForm.customerName
-      // // };
-      // console.log(list);
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrand`, {
-          params: {
-            customerId:this.ruleForm.customerName
-          }
-        })
-        .then(response => {
-          console.log(response.data);
-          this.ruleForm.options.brandNameOptions =[{
-              id: 0,
-              name: "*"
-            }];
-            response.data.forEach(element=>{
-               this.ruleForm.options.brandNameOptions.push(element)
-            })
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
-          });
-        });
-    },
+
     // 添加用户
     addUser() {
-    
       const that = this;
-       this.ruleForm.multipleSelection=[],
-        this.ruleForm.tableData=[],
-        this.ruleForm.userName="",
-        this.ruleForm.brandName= "",
-        this.ruleForm.brandId="",
-        this.ruleForm.customerName="",
-        this.ruleForm.customerId= "",
-        this.ruleForm.name="",
-        this.ruleForm.id= "",
-      this.dialogFormVisible = true;
+      (this.ruleForm.multipleSelection = []),
+        (this.ruleForm.tableData = []),
+        (this.ruleForm.userName = ""),
+        (this.ruleForm.brandName = ""),
+        (this.ruleForm.brandId = ""),
+        (this.ruleForm.customerName = ""),
+        (this.ruleForm.customerId = ""),
+        (this.ruleForm.name = ""),
+        (this.ruleForm.id = ""),
+        (this.userSelection = []),
+        (this.dialogFormVisible1 = true);
     },
 
     submitForm(formName) {
-
-        if(this.ruleForm.multipleSelection.length===0)
-      {
-          this.$message({
-            message: "请至少选择一个品牌！",
-            type: "error"
-          });
-          return ;
+      if (this.ruleForm.multipleSelection.length === 0) {
+        this.$message({
+          message: "请至少选择一个品牌！",
+          type: "error"
+        });
+        return;
       }
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let userName;
-          this.ruleForm.options.userNameOptions.forEach(element=>{
-            if(element.id===this.ruleForm.userName)
-            {
-              userName=element.realName;
-            }
-          })
-
-          console.log("dsadsad",this.ruleForm.multipleSelection)
-          let brandList=[];
-          this.ruleForm.multipleSelection.forEach(element=>{
-            brandList.push(element.id)
-          })
-          this.$axios
-            .post(`${window.$config.HOST}/authorityManagement/addUserDataAuthority`,{
-              		userId :this.ruleForm.userName ,
-		              userName : userName,
-	              	customerId :this.ruleForm.customerName ,
-	              	brandIdList : brandList
-            })
-            .then(response => {
-              console.log(response.data)
-              var ok = response.data;
-            if(response.data < 0){
-              this.$message.error("添加失败:"+this.baseInfoManagementErrorCode[-response.data].errorInfo);
-
-            }else {
-                this.handleSearch();
-                this.ruleForm.customerName = "",
-                this.ruleForm.brandName = "",
-                this.ruleForm.userName = "",
-                this.dialogFormVisible = false;
-                this.$message({
-                  message: "添加成功",
-                  type: "success"
-                });
-              }
-            })
-            .catch(error => {
-              this.handleSearch();
-              this.$message({
-                message: "添加失败",
-                type: "error"
+          this.userSelection.forEach(element1 => {
+            this.ruleForm.multipleSelection.forEach(element2 => {
+              this.userSelectionList.push({
+                userId: element1.id,
+                userName: element1.username,
+                brandId: element2.id,
+                clientId: this.ruleForm.customerName
               });
             });
+          });
 
+          console.log(this.userSelectionList);
 
-
+          request
+            .post(`/backstage/user-client-brand/insert`, this.userSelectionList)
+            .then(response => {
+              this.handleSearch();
+              (this.ruleForm.customerName = ""),
+                (this.ruleForm.brandName = ""),
+                (this.ruleForm.userName = ""),
+                (this.userSelection = []),
+                (this.userSelectionList = []),
+                (this.ruleForm.multipleSelection = []),
+                (this.personTable = []),
+                (this.dialogFormVisible = false);
+            });
         } else {
           this.$message({
             message: "请填写必须填写的项！",
@@ -600,7 +546,12 @@ export default {
       (this.ruleForm.customerName = ""),
         (this.ruleForm.brandName = ""),
         (this.ruleForm.userName = ""),
+        (this.userSelection = []),
+        (this.userSelectionList = []),
+        (this.ruleForm.multipleSelection = []),
+        (this.personTable = []),
         (this.dialogFormVisible = false);
+      this.dialogFormVisible1 = false;
     }
   }
 };

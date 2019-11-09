@@ -33,14 +33,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-select v-model="RangeValue" :clearable="true">
-              <el-option
-                v-for="item in searchOptions.options.rangeNameOption"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+            <el-input v-model="rangeName" placeholder="请输入系列名称" :clearable="true"></el-input>
           </div>
         </el-col>
 
@@ -52,7 +45,7 @@
                 v-for="item in searchOptions.options.clothingTypeOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               ></el-option>
             </el-select>
           </div>
@@ -102,16 +95,16 @@
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="number" width="130" label="系列编号" align="center"></el-table-column>
-          <el-table-column prop="customerName" width="120" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="serialNo" width="130" label="系列编号" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothingLevelName" label="服装类型" align="center"></el-table-column>
+          <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
           <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="styleQuantity" label="款数" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addingModeStr" label="添加方式" align="center"></el-table-column>
+          <el-table-column prop="addMode" label="添加方式" align="center"></el-table-column>
           <!-- <el-table-column prop="stateStr" label="状态" align="center"></el-table-column> -->
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
@@ -183,9 +176,26 @@
                   v-for="item in ruleForm.options.clothingTypeOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.name"
                 ></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="季节" prop="season">
+              <el-select v-model="ruleForm.season ">
+                <el-option
+                  v-for="item in ruleForm.options.seasonOptions"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="系统编码" prop="systemCode">
+              <el-input v-model="ruleForm.systemCode" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -259,6 +269,23 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="季节" prop="season">
+              <el-select v-model="ruleForm.season ">
+                <el-option
+                  v-for="item in ruleForm.options.seasonOptions"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="系统编码" prop="systemCode">
+              <el-input v-model="ruleForm.systemCode" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
@@ -281,6 +308,7 @@
 </template>
 
 <script>
+import request from "@/utils/request";
 export default {
   data() {
     return {
@@ -292,40 +320,41 @@ export default {
       RangeValue: "",
       Data: "",
       DataStartTime: "",
+      rangeName: "",
       DataEndTime: "",
       dialogFormVisible: false,
       dialogFormVisible1: false,
       tableData: [],
       totalTableData: [],
-      infoManagementErrorCode:[
+      infoManagementErrorCode: [
         {
-          errorCode:-1,
-          errotInfo:"新增的数据数据库中已经存在",
+          errorCode: -1,
+          errotInfo: "新增的数据数据库中已经存在"
         },
         {
-          errorCode:-2,
-          errotInfo:"传入信息的字段缺失",
+          errorCode: -2,
+          errotInfo: "传入信息的字段缺失"
         },
         {
-          errorCode:-3,
-          errotInfo:"已与款式组或款式绑定，不得删除",
+          errorCode: -3,
+          errotInfo: "已与款式组或款式绑定，不得删除"
         },
         {
-          errorCode:-4,
-          errotInfo:"数据不唯一",
+          errorCode: -4,
+          errotInfo: "数据不唯一"
         },
         {
-          errorCode:-5,
-          errotInfo:"数据库其他错误",
+          errorCode: -5,
+          errotInfo: "数据库其他错误"
         },
         {
-          errorCode:-6,
-          errotInfo:"数据不存在",
+          errorCode: -6,
+          errotInfo: "数据不存在"
         },
         {
-          errorCode:-7,
-          errotInfo:"数据状态错误",
-        },
+          errorCode: -7,
+          errotInfo: "数据状态错误"
+        }
       ],
       pagination: {
         currentPage: 1,
@@ -347,6 +376,10 @@ export default {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
+        season: [{ required: true, message: "请选择季节", trigger: "change" }],
+        systemCode: [
+          { required: true, message: "请输入系统编码", trigger: "blur" }
+        ],
         brandName: [
           { required: true, message: "请选择品牌", trigger: "change" }
         ],
@@ -360,6 +393,8 @@ export default {
       },
 
       ruleForm: {
+        season: "",
+        systemCode: "",
         brandName: "",
         brandId: "",
         customerName: "",
@@ -372,7 +407,21 @@ export default {
           customerNameOptions: [],
           brandNameOptions: [],
           clothingTypeOptions: [],
-          rangeNameOption: []
+          rangeNameOption: [],
+          seasonOptions: [
+            {
+              name: "春"
+            },
+            {
+              name: "夏"
+            },
+            {
+              name: "秋"
+            },
+            {
+              name: "冬"
+            }
+          ]
         }
       }
     };
@@ -381,134 +430,50 @@ export default {
   created: function() {
     var that = this;
     //获得品牌名字
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName `, {
-        customerId: ""
+    request
+      .get(`${window.$config.HOST}/backstage/brand/find`, {
+        name: undefined
       })
       .then(response => {
         console.log("获得品牌信息成功了");
-        this.searchOptions.options.brandNameOptions = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取品牌信息失败",
-          type: "error"
-        });
-      });
-
-    //获得系列名称
-    that.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
-        params: {
-          brandId: ""
-        }
-      })
-      .then(response => {
-        console.log("获得系列信息成功了");
-        this.searchOptions.options.rangeNameOption = response.data;
-        // this.ruleForm.options.rangeNameOption = response;
-      })
-      .catch(error => {
-        console.log("失败了");
-        this.$message({
-          message: "获取系列信息失败",
-          type: "error"
-        });
+        this.searchOptions.options.brandNameOptions = response.result;
       });
 
     //获得顾客名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+    request
+      .get(`${window.$config.HOST}/backstage/client/find`)
       .then(response => {
-        console.log("获得顾客信息成功了");
-        var CustomerList = response.data;
+        var CustomerList = response.result;
         this.searchOptions.options.customerNameOptions = CustomerList;
         this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-        console.log(response.data);
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取顾客信息失败",
-          type: "error"
-        });
       });
 
     //获得服装层次
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "服装层次"
+        }
+      })
       .then(response => {
-        console.log("获得服装层次信息成功了");
-        var ClothingList = response.data;
+        var ClothingList = response.result;
         this.searchOptions.options.clothingTypeOptions = ClothingList;
         this.ruleForm.options.clothingTypeOptions = this.searchOptions.options.clothingTypeOptions;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取服装层次失败",
-          type: "error"
-        });
-        // console.log("获得服装层次失败了");
-        // var ClothingList = [
-        //   {
-        //     id: 1,
-        //     name: "时装"
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "精品"
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "时尚"
-        //   }
-        // ];
-        // this.searchOptions.options.clothingTypeOptions = ClothingList;
-        // this.ruleForm.options.clothingTypeOptions = this.searchOptions.options.clothingTypeOptions;
       });
 
     //获得空搜索集
-    this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {})
-      .then(response => {
-        console.log("获得搜索列表成功了");
-        this.totalTableData = response.data;
-        console.log(response.data);
-
-        this.totalTableData.sort(function(b, a) {
-          return Date.parse(a.createTime) - Date.parse(b.createTime); //时间正序
-        });
-        // this.tableData = SearchList;
-
-        this.totalTableData.forEach(element => {
-          if (element.addingMode === 1) element.addingModeName = "手动";
-          else element.addingModeName = "导入";
-
-          if (element.state === 1) element.stateName = "已制定";
-          else if (element.state === 2) element.stateName = "已提交";
-          else if (element.state === 3) element.stateName = "被驳回";
-          else if (element.state === 4) element.stateName = "已审核";
-          else if (element.state === 5) element.stateName = "已下发";
-          else if (element.state === 6) element.stateName = "已删除";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
-        });
-
-        this.pagination.total = this.totalTableData.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableData=[];
-        for(;i-k<this.pagination.pageSize && i < this.pagination.total;i++)
-        {
-          this.tableData.push(this.totalTableData[i])
+    request
+      .get(`${window.$config.HOST}/info/series/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 10
         }
-        // this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
-      .catch(error => {
-        this.$message({
-          message: "获取搜索结果失败",
-          type: "error"
-        });
+      .then(response => {
+        console.log(response.result);
+        this.tableData = response.result;
+        
+        this.pagination.total = response.total;
       });
   },
 
@@ -517,22 +482,14 @@ export default {
     clientSelect2() {
       this.ruleForm.brandName = "";
       let list = {
-        customerId: this.ruleForm.customerName
+        clientId: this.ruleForm.customerName
       };
-      console.log(list);
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+      request
+        .get(`/backstage/brand/name`, {
           params: list
         })
         .then(response => {
-          console.log(response.data);
-          this.ruleForm.options.brandNameOptions = response.data;
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
-          });
+          this.ruleForm.options.brandNameOptions = response.result;
         });
     },
     // 改变日期格式
@@ -571,12 +528,58 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.pagination.currentPage = val;
-      this.handleSearch();
+      this.pageChanged();
     },
     // 选择框改变监控
     changeCheckBoxFun(val) {
       const that = this;
       that.multipleSelection = val;
+    },
+    pageChanged() {
+      let startDate;
+      let endDate;
+      if (this.dateRange == undefined) {
+        startDate = undefined;
+        endDate = undefined;
+      } else {
+        (startDate = this.changeDate(this.dateRange[0])),
+          (endDate = this.changeDate(this.dateRange[1]));
+      }
+      let list = {
+        clientId: this.CustomerValue === "" ? undefined : this.CustomerValue,
+        brandId: this.BrandValue === "" ? undefined : this.BrandValue,
+        name: this.rangeName === "" ? undefined : this.rangeName,
+        clothesLevelName:
+          this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
+        createAfter: startDate,
+        createBefore: endDate,
+        pageSize: this.pagination.pageSize,
+        pageNum: this.pagination.currentPage
+      };
+      console.log("list:", list);
+
+      request
+        .get(`${window.$config.HOST}/info/series/find`, {
+          params: {
+            clientId:
+              this.CustomerValue === "" ? undefined : this.CustomerValue,
+            brandId: this.BrandValue === "" ? undefined : this.BrandValue,
+            name: this.rangeName === "" ? undefined : this.rangeName,
+            clothesLevelName:
+              this.ClothingLevelValue === ""
+                ? undefined
+                : this.ClothingLevelValue,
+            createAfter: startDate,
+            createBefore: endDate,
+            pageSize: this.pagination.pageSize,
+            pageNum: this.pagination.currentPage
+          }
+        })
+        .then(response => {
+          this.tableData = response.result;
+         
+          this.pagination.total = response.total;
+        });
     },
     handleSearch() {
       let startDate;
@@ -589,78 +592,39 @@ export default {
           (endDate = this.changeDate(this.dateRange[1]));
       }
       let list = {
-        customerId: this.CustomerValue === "" ? undefined : this.CustomerValue,
+        clientId: this.CustomerValue === "" ? undefined : this.CustomerValue,
         brandId: this.BrandValue === "" ? undefined : this.BrandValue,
-        id: this.RangeValue === "" ? undefined : this.RangeValue,
-        clothingLevelId:
+        name: this.rangeName === "" ? undefined : this.rangeName,
+        clothesLevelName:
           this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
-        dataRange: this.dataRange
+        createAfter: startDate,
+        createBefore: endDate,
+        pageSize: this.pagination.pageSize,
+        pageNum: this.pagination.currentPage
       };
+      console.log("list:", list);
 
-      console.log(list);
-      console.log(startDate);
-      this.$axios
-        .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-          customerId:
-            this.CustomerValue === "" ? undefined : this.CustomerValue,
-          brandId: this.BrandValue === "" ? undefined : this.BrandValue,
-          id: this.RangeValue === "" ? undefined : this.RangeValue,
-          clothingLevelId:
-            this.ClothingLevelValue === ""
-              ? undefined
-              : this.ClothingLevelValue,
-          startDate: startDate,
-          endDate: endDate
+      request
+        .get(`${window.$config.HOST}/info/series/find`, {
+          params: {
+            clientId:
+              this.CustomerValue === "" ? undefined : this.CustomerValue,
+            brandId: this.BrandValue === "" ? undefined : this.BrandValue,
+            name: this.rangeName === "" ? undefined : this.rangeName,
+            clothesLevelName:
+              this.ClothingLevelValue === ""
+                ? undefined
+                : this.ClothingLevelValue,
+            createAfter: startDate,
+            createBefore: endDate,
+            pageSize: this.pagination.pageSize,
+            pageNum: 1
+          }
         })
         .then(response => {
-          // (this.CustomerValue = ""),
-          // (this.BrandValue = ""),
-          // (this.RangeValue = ""),
-          // (this.ClothingLevelValue = ""),
-          // (this.dateRange = ""),
-          this.totalTableData = response.data;
-
-          this.totalTableData.sort(function(b, a) {
-            return Date.parse(a.createTime) - Date.parse(b.createTime); //时间正序
-          });
-          this.totalTableData.forEach(element => {
-            if (element.addingMode === 1) element.addingModeName = "手动";
-            else element.addingModeName = "导入";
-
-            // if (element.state === 1) element.stateName = "已制定";
-            // else if (element.state === 2) element.stateName = "已提交";
-            // else if (element.state === 3) element.stateName = "被驳回";
-            // else if (element.state === 4) element.stateName = "已审核";
-            // else if (element.state === 5) element.stateName = "已下发";
-            // else if (element.state === 6) element.stateName = "已删除";
-            var d = new Date(element.createTime);
-            let time = d.toLocaleString();
-            element.createTime = time;
-          });
-
-          // this.pagination.currentPage = 1;
-          // var pageEleStart =
-          //   (this.pagination.currentPage - 1) * this.pagination.pageSize;
-          // var pageEleEnd =
-          //   pageEleStart + this.pagination.pageSize > this.pagination.total
-          //     ? this.pagination.total
-          //     : pageEleStart + this.pagination.pageSize;
-          // this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
-
-                  this.pagination.total = this.totalTableData.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableData=[];
-        for(;i-k<this.pagination.pageSize && i < this.pagination.total;i++)
-        {
-          this.tableData.push(this.totalTableData[i])
-        }
-        })
-        .catch(error => {
-          this.$message({
-            message: "搜索失败",
-            type: "error"
-          });
+          this.tableData = response.result;
+         
+          this.pagination.total = response.total;
         });
     },
 
@@ -707,33 +671,18 @@ export default {
         )
           .then(() => {
             this.multipleSelection.forEach(element => {
-              console.log(element.id);
               let list = {
                 id: element.id
               };
-              this.$axios
-                .delete(`${window.$config.HOST}/infoManagement/deleteRange`, {
+              request
+                .delete(`/info/series/delete`, {
                   params: list
                 })
                 .then(response => {
                   this.handleSearch();
-                    if(response.data < 0){
-                  this.$message.error(element.name+"删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
-                  console.log(element.name+"删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
-                }else{
-                  this.$message({
-                    type: 'success',
-                    message: element.name + '删除成功!'
-                  });
-                }
+            
                 })
-                .catch(error => {
-                  this.handleSearch();
-                  this.$message({
-                    message: "删除失败",
-                    type: "error"
-                  });
-                });
+          
             });
 
             // this.$message({
@@ -753,40 +702,30 @@ export default {
 
     // 表格中的修改
     changeRangeData(row) {
-      const that = this;
-      //获得品牌名字
-      that.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
+       request
+        .get(`/backstage/brand/name`, {
           params: {
-            customerId: row.customerId
+            clientId:row.clientId,
           }
         })
         .then(response => {
-          console.log(response);
-          this.ruleForm.options.brandNameOptions = response.data;
-
-          // this.ruleForm.options.brandNameOptions = response;
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
-          });
+          this.ruleForm.options.brandNameOptions = response.result;
         });
-
-      (this.ruleForm.firstCustomerName = row.customerName),
+        (this.ruleForm.firstCustomerName = row.clientName),
         (this.ruleForm.firstBrandName = row.brandName),
         (this.ruleForm.firstRangeName = row.name),
-        (this.ruleForm.firstClothingLevel = row.clothingLevelName),
+        (this.ruleForm.firstClothingLevel = row.clothesLevelName),
         (this.ruleForm.id = row.id),
+        this.ruleForm.systemCode = row.systemCode,
+        this.ruleForm.season=row.season,
         (this.ruleForm.number = row.number),
         (this.ruleForm.name = row.name),
         (this.ruleForm.customerId = row.customerId),
-        (this.ruleForm.customerName = row.customerName),
+        (this.ruleForm.customerName = row.clientName),
         (this.ruleForm.brandId = row.brandId),
         (this.ruleForm.brandName = row.brandName),
         (this.ruleForm.clothingLevelId = row.clothingLevelId),
-        (this.ruleForm.clothingLevelName = row.clothingLevelName),
+        (this.ruleForm.clothingLevelName = row.clothesLevelName),
         (this.ruleForm.createrName = row.createrName),
         (this.ruleForm.styleQuantity = row.styleQuantity),
         (this.ruleForm.deptName = row.deptName),
@@ -795,7 +734,7 @@ export default {
         (this.ruleForm.state = row.state),
         (this.ruleForm.note = row.note),
         (this.ruleForm.havePlan = row.havePlan),
-        (this.dialogFormVisible1 = true);
+        (this.dialogFormVisible1 = true)
     },
     // 表格中的删除
     deleteRangeData(row, index) {
@@ -812,33 +751,19 @@ export default {
       })
 
         .then(() => {
-          this.$axios
-            .delete(`${window.$config.HOST}/infoManagement/deleteRange`, {
+          request
+            .delete(`/info/series/delete`, {
               params: list
             })
             .then(response => {
               this.handleSearch();
-                  if(response.data < 0){
-                  this.$message.error("删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
-                  console.log("删除失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
-                }else{
-                  this.$message({
-                    type: 'success',
-                    message:  '删除成功!'
-                  });
-                }
             })
-            .catch(error => {
-              this.handleSearch();
-              this.$message({
-                message: "删除失败，没有访问到数据库！",
-                type: "error"
-              });
-            });
+
+
         })
         .catch(() => {
           this.$message({
-            message: "删除3失败",
+            message: "删除失败",
             type: "error"
           });
         });
@@ -849,80 +774,50 @@ export default {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$axios
-            .post(`${window.$config.HOST}/infoManagement/addRange`, {
+          request
+            .post(`/info/series/insert`, {
               name: this.ruleForm.name === "" ? undefined : this.ruleForm.name,
-              customerId:
-                this.ruleForm.customerName === ""
-                  ? undefined
-                  : this.ruleForm.customerName,
+      
               brandId:
                 this.ruleForm.brandName === ""
                   ? undefined
                   : this.ruleForm.brandName,
-              clothingLevelId:
+              clothesLevelName:
                 this.ruleForm.clothingLevelName === ""
                   ? undefined
                   : this.ruleForm.clothingLevelName,
-              note: this.ruleForm.note === "" ? undefined : this.ruleForm.note
+              note: this.ruleForm.note === "" ? undefined : this.ruleForm.note,
+              season :this.ruleForm.season === "" ? undefined : this.ruleForm.season,
+              addMode:"手动",
+              systemCode:this.ruleForm.systemCode === "" ? undefined : this.ruleForm.systemCode,
             })
             .then(response => {
-                if(response.data < 0){
-                  this.$message.error("添加失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
-                  console.log("添加失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
-                } else {
-                //获得系列名称
-                that.$axios
-                  .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
-                    params: {
-                      brandId: ""
-                    }
-                  })
-                  .then(response => {
-                    console.log("获得系列信息成功了");
-                    this.searchOptions.options.rangeNameOption = response.data;
-                    // this.ruleForm.options.rangeNameOption = response;
-                  })
-                  .catch(error => {
-                    console.log("失败了");
-                    this.$message({
-                      message: "获取系列信息失败",
-                      type: "error"
-                    });
-                  });
-                this.handleSearch();
-                (this.ruleForm.id = ""),
-                  (this.ruleForm.number = ""),
-                  (this.ruleForm.name = ""),
-                  (this.ruleForm.customerId = ""),
-                  (this.ruleForm.customerName = ""),
-                  (this.ruleForm.brandId = ""),
-                  (this.ruleForm.brandName = ""),
-                  (this.ruleForm.clothingLevelId = ""),
-                  (this.ruleForm.clothingLevelName = ""),
-                  (this.ruleForm.createrName = ""),
-                  (this.ruleForm.styleQuantity = ""),
-                  (this.ruleForm.deptName = ""),
-                  (this.ruleForm.createTime = ""),
-                  (this.ruleForm.addingMode = ""),
-                  (this.ruleForm.state = ""),
-                  (this.ruleForm.note = ""),
-                  (this.ruleForm.havePlan = ""),
-                  (this.dialogFormVisible = false);
-                this.$message({
-                  message: "添加成功",
-                  type: "success"
-                });
-              }
-            })
-            .catch(error => {
               this.handleSearch();
+              (this.ruleForm.id = ""),
+                (this.ruleForm.number = ""),
+                (this.ruleForm.name = ""),
+                (this.ruleForm.customerId = ""),
+                (this.ruleForm.customerName = ""),
+                (this.ruleForm.brandId = ""),
+                (this.ruleForm.brandName = ""),
+                (this.ruleForm.clothingLevelId = ""),
+                (this.ruleForm.clothingLevelName = ""),
+                (this.ruleForm.createrName = ""),
+                (this.ruleForm.styleQuantity = ""),
+                (this.ruleForm.deptName = ""),
+                (this.ruleForm.createTime = ""),
+                (this.ruleForm.addingMode = ""),
+                (this.ruleForm.systemCode = ""),
+                (this.ruleForm.season = ""),
+                (this.ruleForm.state = ""),
+                (this.ruleForm.note = ""),
+                (this.ruleForm.havePlan = ""),
+                (this.dialogFormVisible = false);
               this.$message({
-                message: "添加2失败",
-                type: "error"
+                message: "添加成功",
+                type: "success"
               });
-            });
-          console.log("现在要添加啦");
+            })
         } else {
           this.$message({
             message: "请填写必须填写的项！",
@@ -956,24 +851,19 @@ export default {
             this.ruleForm.clothingLevelId = this.ruleForm.clothingLevelName;
           }
           const that = this;
-          this.$axios
-            .post(`${window.$config.HOST}/infoManagement/updateRange`, {
+          request
+            .put(`/info/series/update`, {
               id: this.ruleForm.id,
               name: this.ruleForm.name,
-              // customerId: this.ruleForm.customerId,
               brandId: this.ruleForm.brandId,
-              clothingLevelId: this.ruleForm.clothingLevelId,
-              note: this.ruleForm.note
+              clothesLevelName: this.ruleForm.clothingLevelId,
+              note: this.ruleForm.note,
+              systemCode:this.ruleForm.systemCode,
+              season:this.ruleForm.season
+
             })
             .then(response => {
               this.handleSearch();
-              console.log("成功了");
-
-                if(response.data < 0){
-                  this.$message.error("修改失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo)
-                  console.log("修改失败:"+this.infoManagementErrorCode[-response.data-1].errotInfo);
-                
-              } else {
                 (this.ruleForm.id = ""),
                   (this.ruleForm.number = ""),
                   (this.ruleForm.name = ""),
@@ -994,20 +884,9 @@ export default {
                   (this.ruleForm.options.brandNameOptions = ""),
                   (this.ruleForm.options.rangeNameOption = ""),
                   (this.dialogFormVisible1 = false);
-                this.handleSearch();
-                this.$message({
-                  message: "修改成功",
-                  type: "success"
-                });
-              }
+
+              
             })
-            .catch(error => {
-              this.handleSearch();
-              this.$message({
-                message: "修改失败，没有访问到数据库！",
-                type: "error"
-              });
-            });
         } else {
           this.$message({
             message: "修改失败!",

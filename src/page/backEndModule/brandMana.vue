@@ -47,7 +47,7 @@
               <el-table-column  prop="name" label="品牌名称"  width="120"  ></el-table-column>
               <el-table-column  prop="abbreviation"  label="品牌简称"  width="120"></el-table-column>
               <el-table-column  prop="description"  label="品牌描述"  width="120"></el-table-column>
-              <el-table-column  prop="customerName"  label="所属客户"  show-overflow-tooltip></el-table-column>
+              <el-table-column  prop="clientName"  label="所属客户"  show-overflow-tooltip></el-table-column>
             </el-table>
           <div style="margin-top: 20px">
             <el-button type="info" @click="toggleSelection()">取消选择</el-button>
@@ -331,7 +331,7 @@ import request from "@/utils/request";
         this.editInfoCustomerName = this.multipleSelection[0].clientName;
         this.tmpeditInfoCustomerName = this.multipleSelection[0].clientName;
         this.editInfoDescription = this.multipleSelection[0].description;
-        this.viewname = 'third';
+        this.viewname = 'third';editInfoCustomer
       },
       handleDeleteInfoClick(){
         if(this.multipleSelection.length === 0){

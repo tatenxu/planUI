@@ -40,10 +40,12 @@
 </template>
 
 <script>
+import request from "@/utils/request";
 export default {
   data() {
     return {
       styleIdList: [],
+      
       data: {
         tableData: []
       },
@@ -64,31 +66,25 @@ export default {
     console.log("进入绑定款式组页面");
     var result = {};
     result = that.$route.query;
-    console.log(result)
+    console.log("result:",result)
     if (result.hasOwnProperty("bindData")) {
       console.log("传过来的 绑定数据为" + result["bindData"]);
       that.data.tableData = result["bindData"];
     }
 
     //得到订单款号
-    this.$axios
+    request
       //此处的接口为GET订单款号
-      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
-        customerId: undefined,
-        brandId: undefined,
-        rangeId: that.data.tableData[0].rangeId,
-        clothingLevelId: undefined,
-        id: undefined,
-        startDate: undefined,
-        endDate: undefined
+      .get(`/info/style-group/name`, {
+        params:{
+        seriesId : that.data.tableData[0].seriesId,
+        }
+
       })
       .then(response => {
-        console.log(response.data);
-        this.options.styleGroupNameTypeOptions = response.data;
+        this.options.styleGroupNameTypeOptions = response.result;
       })
-      .catch(error => {
-        console.log("拿款式组出错");
-      });
+
   },
   methods: {
     // 保存按钮点击
@@ -106,48 +102,21 @@ export default {
       that.data.tableData.forEach(element => {
         this.styleIdList.push({
           styleGroupId: this.data.styleGroupName,
-          styleGroupNumber: styleGroupNumber,
-          styleGroupName: styleGroupNames,
-          styleNumber: element.number
+          styleId: element.id,
         });
         console.log(this.styleIdList);
       });
       let list = this.styleIdList;
       console.log(list);
-      this.$axios
+      request
         //此处的接口为GET订单款号
-        .post(`${window.$config.HOST}/infoManagement/bindStyleGroup`, list)
+        .post(`/info/style-group-relation/bind`, list)
         .then(response => {
-          var ok = response.data;
-          if (ok >= 0) {
-            if (ok === this.styleIdList.length) {
-              console.log(ok);
-              this.$message({
-                message: "绑定成功!",
-                type: "success"
-              });
-              that.$router.push({
-                name: `styleManagementIndex`
-              });
-            } else {
-              this.$message({
-                message: this.styleIdList.length - ok + "条数据未添加成功",
-                type: "warning"
-              });
-            }
-          } else {
-            this.$message({
-              message: "绑定失败",
-              type: "warning"
-            });
-          }
+          this.$router.push({
+        name: `styleManagementIndex`
+      });
         })
-        .catch(error => {
-          this.$message({
-            message: "绑定款式失败",
-            type: "warning"
-          });
-        });
+       
     },
     // 取消按钮点击
     cancel() {

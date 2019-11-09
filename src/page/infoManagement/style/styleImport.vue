@@ -118,6 +118,7 @@
 
 <script>
 import XLSX from "xlsx";
+import request from "@/utils/request";
 export default {
   data() {
     return {
@@ -150,64 +151,43 @@ export default {
     };
   },
   created: function() {
-    var that = this;
+
     // //得到客户名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+    request
+      .get(`/backstage/client/name`)
       .then(response => {
-        var CustomerList = response.data;
+        var CustomerList = response.result;
         this.options.customerNameOptions = CustomerList;
       })
-      .catch(error => {
-        this.$message({
-          message: "获取客户名称失败",
-          type: "error"
-        });
-      });
+
+    
   },
   methods: {
     dialogCustomerNameSelectionChange() {
-      var list = {
-        customerId: this.ruleForm.customerName
-      };
-      console.log(list);
-      this.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-          params: list
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.ruleForm.customerName
+          }
         })
         .then(response => {
-          console.log(response.data);
-          this.options.brandNameOptions = response.data;
+          this.options.brandNameOptions = response.result;
         })
-        .catch(error => {
-          this.$message({
-            message: "获取品牌信息失败",
-            type: "error"
-          });
-        });
-
       this.ruleForm.brandName = "";
       this.ruleForm.rangeName = "";
     },
     dialogBrandNameSelectionChange() {
-      var list = {
-        brandId: this.ruleForm.brandName
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
-          params: list
+      request
+        .get(`/info/series/name`, {
+          params: {
+            brandId: this.ruleForm.brandName
+          }
         })
         .then(response => {
-          this.options.rangeNameTypeOptions = response.data;
+          this.options.rangeNameTypeOptions = response.result;
         })
-        .catch(error => {
-          this.$message({
-            message: "获取系列信息失败",
-            type: "error"
-          });
-        });
       this.ruleForm.rangeName = "";
-      // this.ruleForm.number = "";
+
     },
 
     ////////////// methods for xls /////////////
@@ -354,59 +334,26 @@ export default {
     ////////////// methods for xls /////////////
     // 保存按钮点击
     submitForm(formName) {
-      console.log("submitForm")
       const that = this;
       var RangeListAdd = [];
       this.ruleForm.tableData.forEach(element => {
         RangeListAdd.push(
           {
           number: element.styleNumber,
-          rangeId: this.ruleForm.rangeName
+          seriesId: this.ruleForm.rangeName,
+          addMode:"导入"
           }
         );
       });
-
-      RangeListAdd.forEach(element=>{
-        console.log(element);
-      })
-
-      this.$axios
-        //此处的接口为批量导入
-        .post(`${window.$config.HOST}/infoManagement/addStyleList`, 
+      console.log(RangeListAdd)
+      request
+        .post(`/info/style/batch/insert`, 
           RangeListAdd
         )
         .then(response => {
-          console.log("response:" + response.data);
-          var ok = response.data;
-          if (ok >= 0) {
-            if(ok<RangeListAdd.length){
-              this.$message({
-              message: "还有"+(RangeListAdd.length-ok)+"条数据未导入",
-              type: "waring"
-            });
-            }
-            else{
-           this.$message({
-              message: "成功添加",
-              type: "success"
-            });
-            }
-              
- 
-          } else {
-            this.$message({
-              message: "添加失败",
-              type: "warning"
-            });
-          }
-        })
-        .catch(error => {
-          this.$message({
-            message: "添加失败",
-            type: "warning"
-          });
-        });
 
+        })
+       
       that.$router.push({
         name: `styleManagementIndex`
       });
@@ -414,7 +361,6 @@ export default {
     // 取消按钮点击
     cancel() {
       const that = this;
-      console.log("取消按钮点击");
       that.$router.push({
         name: `styleManagementIndex`
       });
