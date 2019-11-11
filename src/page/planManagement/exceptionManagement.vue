@@ -201,6 +201,7 @@ export default {
       })
       .then(response => {
         this.tableData = response.result;
+        this.pagination.total = request.total;
       });
   },
 
@@ -314,6 +315,7 @@ export default {
         })
         .then(response => {
           this.tableData = response.result;
+          this.pagination.total = request.total;
         })
         .catch(error => {
           console.log("异常搜索失败");
