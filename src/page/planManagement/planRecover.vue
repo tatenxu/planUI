@@ -1,19 +1,6 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <!-- <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
-        <el-col :offset="0" :span="2">
-          <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="ReCover">恢复</el-button>
-          </div>
-        </el-col>
-        <el-col :offset="0" :span="2">
-          <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="getWareList">刷新</el-button>
-          </div>
-        </el-col>
-      </el-row>-->
-
       <el-row :gutter="20" style="margin-top: 15px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
@@ -32,7 +19,7 @@
         <el-col :span="6" :offset="4">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName"  clearable>
+            <el-select v-model="searchOptions.searchParams.brandName" clearable>
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -61,13 +48,13 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-select v-model="searchOptions.searchParams.rangeName" >
+            <el-select v-model="searchOptions.searchParams.rangeName">
               <el-option
                 v-for="item in searchOptions.options.rangeNameOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id">
-              </el-option>
+                :value="item.id"
+              ></el-option>
             </el-select>
           </div>
         </el-col>
@@ -131,82 +118,82 @@
 export default {
   data() {
     return {
-      totalTableData:[],
-      tableData: [ ],
-      searchOptions:{
-        searchParams :{
+      totalTableData: [],
+      tableData: [],
+      searchOptions: {
+        searchParams: {
           customerName: "",
           brandName: "",
           rangeName: "",
-          dateRange: "", 
+          dateRange: ""
         },
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
-          rangeNameOptions: [],
+          rangeNameOptions: []
         }
       },
-      
+
       pagination: {
         currentPage: 1,
-        pageSizes: [10,20, 30, 40, 50],
+        pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
       },
       pages: 0,
       tableSelectionData: [],
 
-      planManagementErrorCode:[
+      planManagementErrorCode: [
         {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
+          errorCode: -1,
+          errotInfo: "所需属性值缺失"
         },
         {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
+          errorCode: -2,
+          errotInfo: "计划名称重复"
         },
         {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
+          errorCode: -3,
+          errotInfo: "父计划未下发"
         },
         {
-          errorCode:-4,
-          errotInfo:"系列根计划不存在",
+          errorCode: -4,
+          errotInfo: "系列根计划不存在"
         },
         {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
+          errorCode: -5,
+          errotInfo: "款式组根计划不存在"
         },
         {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
+          errorCode: -6,
+          errotInfo: "根计划已存在"
         },
         {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
+          errorCode: -7,
+          errotInfo: "计划开始结束时间超额"
         },
         {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
+          errorCode: -8,
+          errotInfo: "计划款数超额"
         },
         {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
+          errorCode: -9,
+          errotInfo: "引用预测计划时预测计划不存在"
         },
         {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
+          errorCode: -10,
+          errotInfo: "当前计划状态不允许执行此操作"
         },
         {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
-      ],
+          errorCode: -11,
+          errotInfo: "与已有计划冲突"
+        }
+      ]
     };
   },
-  created: function () {
+  created: function() {
     const that = this;
-    console.log('进入计划回收站页面');
+    console.log("进入计划回收站页面");
     //加载客户名称
     this.$axios
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
@@ -238,37 +225,77 @@ export default {
       });
     //初始化加载删除的计划
     this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-        params:{stage:"delete"}
+      .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+        params: { stage: "delete" }
       })
       .then(response => {
         this.totalTableData = response.data;
         //时间排序
-        this.totalTableData.sort(function(a,b){
-          return Date.parse(b.createTime)-Date.parse(a.createTime);
+        this.totalTableData.sort(function(a, b) {
+          return Date.parse(b.createTime) - Date.parse(a.createTime);
         });
 
         this.pagination.total = this.totalTableData.length;
-        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        var pageEleStart =
+          (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        var pageEleEnd =
+          pageEleStart + this.pagination.pageSize > this.pagination.total
+            ? this.pagination.total
+            : pageEleStart + this.pagination.pageSize;
         this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       })
       .catch(error => {
         console.log("初始化删除计划加载错误");
-        this.totalTableData = [{id:3,number:"JX20190520003",name:"系列计划制定测试计划001的子计划",
-          rangeId:14,type:"系列计划",isRoot:false,parentId:1,parentName:"系列计划制定测试计划001",
-          planObjectId:1,planObject:"新增的系列5-20-1",projectType:"品样",quantity:12,productId:2,
-          productDate:"2019-05-29",productDateType:"出运日期",startDate:"2019-06-11",endDate:"2019-06-20",
-          proposal:"系列计划制定测试计划001",description:"系列计划制定测试计划001",state:"已删除",
-          createrName:"孙博士",deptName:"设计管理部",createTime:"2019-05-20 22:52:05",rejectReason:"款数过多",
-          deleterName:"孙博士",deleteTime:"2019-05-21 09:40:41",haveException:false,note:"系列计划制定测试计划001",
-          rangeNumber:"XL20190520005",rangeName:"系列款号1",brandId:5,brandName:"单独测试品牌",customerId:4,
-          customerName:"单独测试客户",isCompleted:false,clothingLevelId:3,clothingLevelName:"精品"}]
+        this.totalTableData = [
+          {
+            id: 3,
+            number: "JX20190520003",
+            name: "系列计划制定测试计划001的子计划",
+            rangeId: 14,
+            type: "系列计划",
+            isRoot: false,
+            parentId: 1,
+            parentName: "系列计划制定测试计划001",
+            planObjectId: 1,
+            planObject: "新增的系列5-20-1",
+            projectType: "品样",
+            quantity: 12,
+            productId: 2,
+            productDate: "2019-05-29",
+            productDateType: "出运日期",
+            startDate: "2019-06-11",
+            endDate: "2019-06-20",
+            proposal: "系列计划制定测试计划001",
+            description: "系列计划制定测试计划001",
+            state: "已删除",
+            createrName: "孙博士",
+            deptName: "设计管理部",
+            createTime: "2019-05-20 22:52:05",
+            rejectReason: "款数过多",
+            deleterName: "孙博士",
+            deleteTime: "2019-05-21 09:40:41",
+            haveException: false,
+            note: "系列计划制定测试计划001",
+            rangeNumber: "XL20190520005",
+            rangeName: "系列款号1",
+            brandId: 5,
+            brandName: "单独测试品牌",
+            customerId: 4,
+            customerName: "单独测试客户",
+            isCompleted: false,
+            clothingLevelId: 3,
+            clothingLevelName: "精品"
+          }
+        ];
 
-          console.log(this.totalTableData);
+        console.log(this.totalTableData);
         this.pagination.total = this.totalTableData.length;
-        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+        var pageEleStart =
+          (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        var pageEleEnd =
+          pageEleStart + this.pagination.pageSize > this.pagination.total
+            ? this.pagination.total
+            : pageEleStart + this.pagination.pageSize;
         this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
       });
   },
@@ -295,46 +322,49 @@ export default {
     },
     //恢复所有选择的按钮
     ReCoverAll() {
-      if(this.tableSelectionData.length === 0){
-        this.$message.error("请选择要恢复的计划!")
-      }else{
-        this.tableSelectionData.forEach(element=>{
-          console.log("恢复"+element.name);
+      if (this.tableSelectionData.length === 0) {
+        this.$message.error("请选择要恢复的计划!");
+      } else {
+        this.tableSelectionData.forEach(element => {
+          console.log("恢复" + element.name);
           this.ReCover(element);
         });
-      } 
+      }
     },
     // 恢复单个的按钮
     ReCover(row) {
-      var param = {id: row.id};
-      console.log("行恢复:"+row.name);
-       this.$axios
-        .get(`${window.$config.HOST}/planManagement/restorePlan`,{
-          params:param
+      var param = { id: row.id };
+      console.log("行恢复:" + row.name);
+      this.$axios
+        .get(`${window.$config.HOST}/planManagement/restorePlan`, {
+          params: param
         })
-        .then(response=>{
-          if(response.data < 0 ){
-            this.$message.error("恢复失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
+        .then(response => {
+          if (response.data < 0) {
+            this.$message.error(
+              "恢复失败:" +
+                this.planManagementErrorCode[-response.data - 1].errotInfo
+            );
+          } else {
             this.$message({
-              type: 'success',
+              type: "success",
               message: "恢复成功！"
             });
             this.handleSearch();
           }
         })
-        .catch(error=>{
-          this.$message.error(row.number+"恢复失败！");
-        })
+        .catch(error => {
+          this.$message.error(row.number + "恢复失败！");
+        });
     },
     tableSelectionChange(val) {
       this.tableSelectionData = val;
     },
     // 改变日期格式
     changeDate(date) {
-      if(!date){
+      if (!date) {
         return undefined;
-      }else{
+      } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
@@ -349,40 +379,61 @@ export default {
       }
     },
     //搜索按钮
-    handleSearch(){
+    handleSearch() {
       var param;
       param = {
-        customerId : (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName,
-        brandId : (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName,
-        rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,
-        name : undefined,
-        clothingLevelId : undefined,
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
-        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),  
-        stage: "delete",    
+        customerId:
+          this.searchOptions.searchParams.customerName === ""
+            ? undefined
+            : this.searchOptions.searchParams.customerName,
+        brandId:
+          this.searchOptions.searchParams.brandName === ""
+            ? undefined
+            : this.searchOptions.searchParams.brandName,
+        rangeId:
+          this.searchOptions.searchParams.rangeName === ""
+            ? undefined
+            : this.searchOptions.searchParams.rangeName,
+        name: undefined,
+        clothingLevelId: undefined,
+        startDate: this.changeDate(
+          this.searchOptions.searchParams.dateRange
+            ? this.searchOptions.searchParams.dateRange[0]
+            : null
+        ),
+        endDate: this.changeDate(
+          this.searchOptions.searchParams.dateRange
+            ? this.searchOptions.searchParams.dateRange[1]
+            : null
+        ),
+        stage: "delete"
       };
       console.log(param);
 
       this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`,{
-          params:param
+        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+          params: param
         })
         .then(response => {
           this.totalTableData = response.data;
           //时间排序
-          this.totalTableData.sort(function(a,b){
-            return Date.parse(b.createTime)-Date.parse(a.createTime);
+          this.totalTableData.sort(function(a, b) {
+            return Date.parse(b.createTime) - Date.parse(a.createTime);
           });
 
           this.pagination.total = this.totalTableData.length;
-          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
+          var pageEleStart =
+            (this.pagination.currentPage - 1) * this.pagination.pageSize;
+          var pageEleEnd =
+            pageEleStart + this.pagination.pageSize > this.pagination.total
+              ? this.pagination.total
+              : pageEleStart + this.pagination.pageSize;
           this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
         })
         .catch(error => {
           console.log("搜索失败");
         });
-    },
+    }
   }
 };
 </script>
