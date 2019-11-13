@@ -31,42 +31,21 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevel" clearable>
-              <el-option
-                v-for="item in searchOptions.options.clothingLevelOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+            <el-input v-model="searchOptions.searchParams.clothingLevelName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
         <el-col :span="6">
           <div class="bar">
-            <div class="title">系列名称</div>
-            <el-select v-model="searchOptions.searchParams.rangeName" clearable>
-              <el-option
-                v-for="item in searchOptions.options.rangeNameOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+            <div class="title">计划名称</div>
+            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
-            <div class="title">计划名称</div>
-            <el-select v-model="searchOptions.searchParams.name" clearable>
-              <el-option
-                v-for="item in searchOptions.options.planNameOptions"
-                :key="item.name"
-                :label="item.name"
-                :value="item.name"
-              ></el-option>
-            </el-select>
+            <div class="title">系列名称</div>
+            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
         <el-col :span="9">
@@ -90,9 +69,9 @@
     </el-card>
     <el-card class="box-card">
       <el-col :span="3">
-          <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
-        </el-col>
-      
+        <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
+      </el-col>
+
       <el-table
         :data="tableData"
         max-height="400"
@@ -100,10 +79,14 @@
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
       >
-        <el-table-column label="" width="65">
-        <template slot-scope="scope">
-            <el-radio :label="scope.row.id" v-model="templateRadio" @change.native="getTemplateRow(scope.$index,scope.row)">&nbsp</el-radio>
-        </template>
+        <el-table-column label width="65">
+          <template slot-scope="scope">
+            <el-radio
+              :label="scope.row.id"
+              v-model="templateRadio"
+              @change.native="getTemplateRow(scope.$index,scope.row)"
+            >&nbsp</el-radio>
+          </template>
         </el-table-column>
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="id" v-if="false"></el-table-column>
@@ -137,18 +120,6 @@
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
-            <!-- <el-button
-              v-if="isSelfMadePlan"
-              @click.native.prevent="ModifyPlanDetail(scope.row)"
-              type="text"
-              size="small"
-            >修改</el-button>
-            <el-button
-              v-if="isSelfMadePlan"
-              @click.native.prevent="deleteOnePlan(scope.row.id)"
-              type="text"
-              size="small"
-            >删除</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -174,14 +145,16 @@
 </template>
 
 <script>
-import { error } from 'util';
+// import { error } from "util";
+// import { request } from "http";
+import request from "@/utils/request";
 export default {
-  name: 'commitedPlanManagement',
+  name: "commitedPlanManagement",
   data() {
     return {
-      templateRadio:"",
-      lookAllPlans:false,
-      allPlans:[],
+      templateRadio: "",
+      lookAllPlans: false,
+      allPlans: [],
       defaultProps: {
         children: "children",
         label: "name"
@@ -190,20 +163,17 @@ export default {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingLevel: "",
-          rangeName: "",
-          name:"",
+          clothingLevelName: "",
+          seriesName: "",
+          planName: "",
           dateRange: ""
         },
         options: {
           customerNameOptions: [],
-          brandNameOptions: [],
-          clothingLevelOptions: [],
-          rangeNameOptions:[],
-          planNameOptions:[],
+          brandNameOptions: []
         }
       },
-      totalTableData:[],
+      totalTableData: [],
       tableData: [],
       pagination: {
         currentPage: 1,
@@ -211,157 +181,55 @@ export default {
         pageSize: 10,
         total: 0
       },
-      selectedData: [],
-
-      
+      selectedData: []
     };
   },
-  created: function () {
+  created: function() {
     const that = this;
-    console.log('进入计划管理页面');
+    console.log("进入计划管理页面");
 
-    //获取客户名称
-    this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+    //客户名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
-        this.searchOptions.options.customerNameOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化客户选项错误!");
+        this.searchOptions.options.customerNameOptions = response.result;
       });
 
-    //获取服装层次
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getClothingLevelName`)
+    //品牌名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
-        this.searchOptions.options.clothingLevelOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化服装层次加载错误");
-      });
-
-    //品牌名称选择获取
-    this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`,{
-        params:{customerId:""}
-      })
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化品牌名称选择错误");
-      });
-
-    //初始化获取系列
-    this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`,{
-        params:{brandId:""}
-      })
-      .then(response => {
-        this.searchOptions.options.rangeNameOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化系列名称加载错误");
+        this.searchOptions.options.brandNameOptions = response.result;
       });
 
     //默认获取已完成计划列表
-   
-    this.$axios
-      .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`)
-      .then(response=>{
-          response.data.forEach(element=>{
-            this.totalTableData = response.data;
-            this.totalTableData.forEach(element=>{
-              if(element.isRoot){
-                element.parentName = "根计划";
-              }
-            });
-          });
-          this.searchOptions.options.planNameOptions = this.totalTableData;
-
-          //时间排序
-          this.totalTableData.sort(function(a,b){
-            return Date.parse(b.createTime)-Date.parse(a.createTime);
-          });
-
-          this.pagination.total = this.totalTableData.length;
-          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
-          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
-        })
-      .catch(error => {
-        console.log("初始化被下发计划列表获取错误");
+    request
+      .get(`${window.$config.HOST}/plan/find-complete`, {
+        params: {
+          pageNum: this.pagination.currentPage,
+          pageSize: this.pagination.pageSize
+        }
+      })
+      .then(response => {
+        this.tableData = response.result;
+        this.pagination.total = response.total;
       });
   },
-  methods: {   
-    getTemplateRow(index,row){                       
-    this.selectedData = row;
-    console.log(row)
-},
-    lookAllPlan() {
-      let list = {
-        id: this.selectedData.id
-      };
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
-          params: list
-        })
-        .then(response => {
-          this.allPlans = [];
-          this.allPlans.push(response.data);
-          console.log(this.allPlans);
-
-          this.lookAllPlans = true;
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取总计划失败",
-            type: "warning"
-          });
-        });
+  methods: {
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
+      this.handleSearch();
     },
-    changeCheckBoxFun(val) {
-      this.selectedData = val;
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.handleSearch();
     },
-    getPlanDetail(row) {
-      var param={
-        flag: 3,
-        goback: "commitedPlanManagement",
-        customerName: row.customerName,
-        brandName: row.brandName,
-        rangeId:row.rangeId,
-        rangeName: row.rangeName,
-        topPlanId: row.parentId,
-        topPlanName: row.parentName?row.parentName:"根计划",
-        planId:row.id,
-        planType: row.type,
-        planObjectName: row.planObject,
-        planObjectId:row.planObjectId,
-        planName:row.name,
-        projectType:row.projectType,
-        quantity:row.quantity,
-        dateStart:row.startDate,
-        dateEnd:row.endDate,
-        productDate:row.productDate,
-        productDateType:row.productDateType,
-        planProductId:row.productId,
-        planPropose:row.proposal,
-        note:row.note,
-        planDescribe:row.description,
-        files:row.files
-      };
-      console.log(param);
-      this.$router.push({
-        name: "planMakeIndex",
-        params: param
-      });
-    },
-    
     // 改变日期格式
     changeDate(date) {
-      if(!date){
+      if (!date) {
         return undefined;
-      }else{
+      } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
@@ -377,69 +245,117 @@ export default {
       }
     },
     //搜索按钮
-    handleSearch(){
+    handleSearch() {
       var param = {
-        customerId: (this.searchOptions.searchParams.customerName==="")?undefined:this.searchOptions.searchParams.customerName, 
-        brandId: (this.searchOptions.searchParams.brandName==="")?undefined:this.searchOptions.searchParams.brandName, 
-        rangeId: (this.searchOptions.searchParams.rangeName==="")?undefined:this.searchOptions.searchParams.rangeName,  
-        name: (this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
-        clothingLevelId :(this.searchOptions.searchParams.name==="")?undefined:this.searchOptions.searchParams.name, 
-        startDate: this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[0]:null),
-        endDate:this.changeDate(this.searchOptions.searchParams.dateRange?this.searchOptions.searchParams.dateRange[1]:null),
+        clientId:
+          this.searchOptions.searchParams.customerName === ""
+            ? undefined
+            : this.searchOptions.searchParams.customerName,
+        brandId:
+          this.searchOptions.searchParams.brandName === ""
+            ? undefined
+            : this.searchOptions.searchParams.brandName,
+        seriesName:
+          this.searchOptions.searchParams.seriesName === ""
+            ? undefined
+            : this.searchOptions.searchParams.seriesName,
+        name:
+          this.searchOptions.searchParams.planName === ""
+            ? undefined
+            : this.searchOptions.searchParams.planName,
+        createAfter: this.changeDate(
+          this.searchOptions.searchParams.dateRange
+            ? this.searchOptions.searchParams.dateRange[0]
+            : null
+        ),
+        createBefore: this.changeDate(
+          this.searchOptions.searchParams.dateRange
+            ? this.searchOptions.searchParams.dateRange[1]
+            : null
+        ),
+        pageNum: this.pagination.currentPage,
+        pageSize: this.pagination.pageSize
       };
-      
-      console.log(param);
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getCompletedPlanList`,{
-          params:param
-        })
-        .then(response=>{
-          this.totalTableData = response.data;
-          this.totalTableData.forEach(element=>{
-            if(element.isRoot){
-              element.parentName = "根计划";
-            }
-          });
 
-          //时间排序
-          this.totalTableData.sort(function(a,b){
-            return Date.parse(b.createTime)-Date.parse(a.createTime);
-          });
-
-          //分页
-          this.pagination.total = this.totalTableData.length;
-          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
-          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+      console.log("搜索参数：", param);
+      request
+        .get(`${window.$config.HOST}/plan/find-complete`, {
+          params: param
         })
-        .catch(error=>{
-          this.$message.error("搜索失败!");
+        .then(response => {
+          this.tableData = response.result;
+          this.pagination.total = response.total;
         });
     },
-   
-    handleSizeChange(val) {
-      this.pagination.pageSize=val;
-      console.log("每页+"+this.pagination.pageSize)
-      this.handleSearch();
+    getTemplateRow(index, row) {
+      this.selectedData = row;
+      console.log(row);
     },
-    handleCurrentChange(val) {
-      this.pagination.currentPage=val;
-      this.handleSearch();
+    // 查看总计划接口
+    lookAllPlan() {
+      let list = {
+        id: this.selectedData.id
+      };
+      request
+        .get(`${window.$config.HOST}/plan/tree`, {
+          params: list
+        })
+        .then(response => {
+          this.allPlans = [];
+          this.allPlans.push(response.result);
+          // console.log(this.allPlans);
+
+          this.lookAllPlans = true;
+        });
     },
+
+    getPlanDetail(row) {
+      var param = {
+        flag: 3,
+        goback: "commitedPlanManagement",
+        customerName: row.customerName,
+        brandName: row.brandName,
+        rangeId: row.rangeId,
+        rangeName: row.rangeName,
+        topPlanId: row.parentId,
+        topPlanName: row.parentName ? row.parentName : "根计划",
+        planId: row.id,
+        planType: row.type,
+        planObjectName: row.planObject,
+        planObjectId: row.planObjectId,
+        planName: row.name,
+        projectType: row.projectType,
+        quantity: row.quantity,
+        dateStart: row.startDate,
+        dateEnd: row.endDate,
+        productDate: row.productDate,
+        productDateType: row.productDateType,
+        planProductId: row.productId,
+        planPropose: row.proposal,
+        note: row.note,
+        planDescribe: row.description,
+        files: row.files
+      };
+      console.log(param);
+      this.$router.push({
+        name: "planMakeIndex",
+        params: param
+      });
+    }
   },
-  computed:{
-    keepAlives:{
-      get(){
-        return this.$store.getters['baseinfo/keepAliveOptions'];
+  computed: {
+    keepAlives: {
+      get() {
+        return this.$store.getters["baseinfo/keepAliveOptions"];
       },
-      set(value){
-        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      set(value) {
+        return this.$store.commit("baseinfo/keepalive-opt-arr", value);
       }
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'planMakeIndex') {
-      this.keepAlives = ['commitedPlanManagement',];
+    if (to.name === "planMakeIndex") {
+      this.keepAlives = ["commitedPlanManagement"];
     } else {
       this.keepAlives = [];
     }
