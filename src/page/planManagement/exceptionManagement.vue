@@ -121,7 +121,15 @@
             show-overflow-tooltip
           ></el-table-column>
           <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
-          <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
+          <el-table-column fixed="right" label="操作" width="150" align="center">
+            <template slot-scope="scope">
+              <el-button
+                @click.native.prevent="updateExceptionClick(scope.row)"
+                type="text"
+                size="small"
+              >更新</el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="block">
@@ -136,6 +144,75 @@
         ></el-pagination>
       </div>
     </el-card>
+
+    <!-- 弹出框-修改 -->
+    <el-dialog :modal="false" title="款式组信息" :visible.sync="dialogFormVisible">
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="time" prop="time" placeholder="请选择客户名称">
+              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="type" prop="type" placeholder="请选择品牌名称">
+              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="place" prop="place" placeholder="请选择系列名称">
+              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="principal" prop="principal" placeholder="请输入内容">
+              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="handle_option" prop="handle_option" placeholder="请输入内容">
+              <el-input v-model="ruleForm.tmpStyleGroup" clearable placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="handle_result" prop="handle_result" placeholder="请输入内容">
+              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="scope" prop="scope" placeholder="请输入内容">
+              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="state" prop="state" placeholder="请输入内容">
+              <el-input v-model="ruleForm.tmpStyleGroup" clearable placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancel">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -161,6 +238,39 @@ export default {
       tableData: [],
       multipleSelection: [],
       searchDisabled: false,
+
+      dialogFormVisible: false,
+      rules: {
+        content: [{ required: true, message: "请输入", trigger: "change" }],
+        handleOption: [
+          { required: true, message: "请输入", trigger: "change" }
+        ],
+        handleResult: [
+          { required: true, message: "请输入", trigger: "change" }
+        ],
+        place: [{ required: true, message: "请输入", trigger: "change" }],
+        principal: [{ required: true, message: "请输入", trigger: "change" }],
+        scope: [{ required: true, message: "请输入", trigger: "change" }],
+        state: [{ required: true, message: "请输入", trigger: "change" }],
+        time: [{ required: true, message: "请输入", trigger: "change" }],
+        type: [{ required: true, message: "请输入", trigger: "change" }]
+      },
+      ruleForm: {
+        content: "string",
+        handleOption: "string",
+        handleResult: "string",
+        place: "string",
+        principal: "string",
+        scope: "string",
+        state: "string",
+        time: "2019-11-13T07:10:27.475Z",
+        type: "string",
+
+        discover: "string",
+        serialNo: "string",
+        planId: 0,
+        id: 0
+      },
 
       pagination: {
         currentPage: 1,
@@ -196,7 +306,7 @@ export default {
       .get(`${window.$config.HOST}/plan-exception/find`, {
         params: {
           pageNum: this.pagination.currentPage,
-          pageSize: this.pagination.pageSize,
+          pageSize: this.pagination.pageSize
         }
       })
       .then(response => {
@@ -238,12 +348,6 @@ export default {
   methods: {
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,s
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
 
@@ -305,7 +409,7 @@ export default {
             : null
         ),
         pageNum: this.pagination.currentPage,
-        pageSize: this.pagination.pageSize,
+        pageSize: this.pagination.pageSize
       };
       console.log("搜索参数:", param);
 
@@ -323,6 +427,35 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+
+    updateExceptionClick(row) {
+      this.ruleForm.content = row.content;
+      this.ruleForm.handleOption = row.handleOption;
+      this.ruleForm.handleResult = row.handleResult;
+      this.ruleForm.place = row.place;
+      this.ruleForm.principal = row.principal;
+      this.ruleForm.scope = row.scope;
+      this.ruleForm.state = row.state;
+      this.ruleForm.time = row.time;
+      this.ruleForm.type = row.type;
+      this.ruleForm.discover = row.discover;
+      this.ruleForm.serialNo = row.serialNo;
+      this.ruleForm.planId = row.planId;
+      this.ruleForm.id = row.id;
+
+      this.dialogFormVisible = true;
+    },
+    submitForm(formname) {
+      request
+        .post(`/backstage/plan-exception/update`, this.ruleForm)
+        .then(response => {
+          this.handleSearchClick();
+        });
+      this.dialogFormVisible = false;
+    },
+    cancel() {
+      this.dialogFormVisible = false;
     }
   }
 };

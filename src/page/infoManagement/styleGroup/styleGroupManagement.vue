@@ -143,6 +143,7 @@
       </div>
     </el-card>
 
+    <!-- 弹出框-修改 -->
     <el-dialog :modal="false" title="款式组信息" :visible.sync="dialogFormVisible">
       <el-form
         :model="ruleForm"
@@ -389,7 +390,7 @@ export default {
       })
       .then(response => {
         this.totalTableData = response.result;
-        
+
         this.pagination.total = response.total;
       });
 
@@ -576,7 +577,7 @@ export default {
         })
         .then(response => {
           this.totalTableData = response.result;
-         
+
           this.pagination.total = response.total;
 
           //时间排序
@@ -622,7 +623,7 @@ export default {
         })
         .then(response => {
           this.totalTableData = response.result;
-       
+
           this.pagination.total = response.total;
 
           //时间排序

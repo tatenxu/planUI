@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20" style="margin-top: 15px; margin-bottom: 5px;">
+      <el-row :gutter="10" style="margin-top: 15px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
@@ -16,7 +16,7 @@
           </div>
         </el-col>
 
-        <el-col :span="6" :offset="4">
+        <el-col :span="6" :offset="2">
           <div class="bar">
             <div class="title">品牌</div>
             <el-select v-model="searchOptions.searchParams.brandName" clearable>
@@ -29,10 +29,24 @@
             </el-select>
           </div>
         </el-col>
+
+        <el-col :span="6" :offset="2">
+          <div class="bar">
+            <div class="title">计划名称</div>
+            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
+          </div>
+        </el-col>
       </el-row>
 
       <el-row :gutter="20" style="margin-top: 25px; margin-bottom: 5px;">
-        <el-col :span="10">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">系列名称</div>
+            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+          </div>
+        </el-col>
+
+        <el-col :span="10" :offset="2">
           <div class="bar">
             <div class="title">新建时间</div>
             <el-date-picker
@@ -45,21 +59,7 @@
           </div>
         </el-col>
 
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">系列名称</div>
-            <el-select v-model="searchOptions.searchParams.rangeName">
-              <el-option
-                v-for="item in searchOptions.options.rangeNameOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
-
-        <el-col :offset="0" :span="2">
+        <el-col :offset="1" :span="2">
           <div class="bar">
             <el-button type="primary" style="margin-right: 20px" @click="handleSearch">查询</el-button>
           </div>
@@ -81,20 +81,19 @@
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" align="center"></el-table-column>
           <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-          <el-table-column prop="number" label="预测编号" align="center"></el-table-column>
-          <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
+          <el-table-column prop="serialNo" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="planClass" label="计划对象" align="center"></el-table-column>
           <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="删除人" align="center"></el-table-column>
-          <el-table-column prop="deleteTime" label="删除时间" align="center"></el-table-column>
+          <el-table-column prop="deleteName" label="删除人" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="删除时间" align="center"></el-table-column>
 
           <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="ReCover( scope.row)">恢复</el-button>
+              <el-button type="text" size="small" @click="ReCover(scope.row)">恢复</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -124,13 +123,13 @@ export default {
         searchParams: {
           customerName: "",
           brandName: "",
-          rangeName: "",
+          seriesName: "",
+          planName: "",
           dateRange: ""
         },
         options: {
           customerNameOptions: [],
-          brandNameOptions: [],
-          rangeNameOptions: []
+          brandNameOptions: []
         }
       },
 
@@ -194,120 +193,36 @@ export default {
   created: function() {
     const that = this;
     console.log("进入计划回收站页面");
-    //加载客户名称
-    this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
+    //客户名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
-        this.searchOptions.options.customerNameOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化加载客户名称失败!");
+        this.searchOptions.options.customerNameOptions = response.result;
       });
 
-    //加载品牌名称
-    this.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`)
+    //品牌名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
-        this.searchOptions.options.brandNameOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化品牌名称加载错误");
+        this.searchOptions.options.brandNameOptions = response.result;
       });
 
-    //加载系列名称
-    this.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`)
-      .then(response => {
-        this.searchOptions.options.rangeNameOptions = response.data;
-      })
-      .catch(error => {
-        console.log("初始化系列名称加载错误");
-      });
-    //初始化加载删除的计划
-    this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-        params: { stage: "delete" }
+    //加载默认所有的删除计划
+    request
+      .get(`${window.$config.HOST}/plan-delete-info/find`, {
+        params: {
+          pageNum: this.pagination.currentPage,
+          pageSize: this.pagination.pageSize
+        }
       })
       .then(response => {
-        this.totalTableData = response.data;
-        //时间排序
-        this.totalTableData.sort(function(a, b) {
-          return Date.parse(b.createTime) - Date.parse(a.createTime);
-        });
-
-        this.pagination.total = this.totalTableData.length;
-        var pageEleStart =
-          (this.pagination.currentPage - 1) * this.pagination.pageSize;
-        var pageEleEnd =
-          pageEleStart + this.pagination.pageSize > this.pagination.total
-            ? this.pagination.total
-            : pageEleStart + this.pagination.pageSize;
-        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
-      })
-      .catch(error => {
-        console.log("初始化删除计划加载错误");
-        this.totalTableData = [
-          {
-            id: 3,
-            number: "JX20190520003",
-            name: "系列计划制定测试计划001的子计划",
-            rangeId: 14,
-            type: "系列计划",
-            isRoot: false,
-            parentId: 1,
-            parentName: "系列计划制定测试计划001",
-            planObjectId: 1,
-            planObject: "新增的系列5-20-1",
-            projectType: "品样",
-            quantity: 12,
-            productId: 2,
-            productDate: "2019-05-29",
-            productDateType: "出运日期",
-            startDate: "2019-06-11",
-            endDate: "2019-06-20",
-            proposal: "系列计划制定测试计划001",
-            description: "系列计划制定测试计划001",
-            state: "已删除",
-            createrName: "孙博士",
-            deptName: "设计管理部",
-            createTime: "2019-05-20 22:52:05",
-            rejectReason: "款数过多",
-            deleterName: "孙博士",
-            deleteTime: "2019-05-21 09:40:41",
-            haveException: false,
-            note: "系列计划制定测试计划001",
-            rangeNumber: "XL20190520005",
-            rangeName: "系列款号1",
-            brandId: 5,
-            brandName: "单独测试品牌",
-            customerId: 4,
-            customerName: "单独测试客户",
-            isCompleted: false,
-            clothingLevelId: 3,
-            clothingLevelName: "精品"
-          }
-        ];
-
-        console.log(this.totalTableData);
-        this.pagination.total = this.totalTableData.length;
-        var pageEleStart =
-          (this.pagination.currentPage - 1) * this.pagination.pageSize;
-        var pageEleEnd =
-          pageEleStart + this.pagination.pageSize > this.pagination.total
-            ? this.pagination.total
-            : pageEleStart + this.pagination.pageSize;
-        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+        this.tableData = response.result;
+        this.pagination.total = request.total;
       });
   },
   methods: {
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,s
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
 
@@ -319,43 +234,6 @@ export default {
       console.log(`当前页: ${val}`);
       this.pagination.currentPage = val;
       this.handleSearch();
-    },
-    //恢复所有选择的按钮
-    ReCoverAll() {
-      if (this.tableSelectionData.length === 0) {
-        this.$message.error("请选择要恢复的计划!");
-      } else {
-        this.tableSelectionData.forEach(element => {
-          console.log("恢复" + element.name);
-          this.ReCover(element);
-        });
-      }
-    },
-    // 恢复单个的按钮
-    ReCover(row) {
-      var param = { id: row.id };
-      console.log("行恢复:" + row.name);
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/restorePlan`, {
-          params: param
-        })
-        .then(response => {
-          if (response.data < 0) {
-            this.$message.error(
-              "恢复失败:" +
-                this.planManagementErrorCode[-response.data - 1].errotInfo
-            );
-          } else {
-            this.$message({
-              type: "success",
-              message: "恢复成功！"
-            });
-            this.handleSearch();
-          }
-        })
-        .catch(error => {
-          this.$message.error(row.number + "恢复失败！");
-        });
     },
     tableSelectionChange(val) {
       this.tableSelectionData = val;
@@ -382,7 +260,7 @@ export default {
     handleSearch() {
       var param;
       param = {
-        customerId:
+        clientId:
           this.searchOptions.searchParams.customerName === ""
             ? undefined
             : this.searchOptions.searchParams.customerName,
@@ -390,49 +268,64 @@ export default {
           this.searchOptions.searchParams.brandName === ""
             ? undefined
             : this.searchOptions.searchParams.brandName,
-        rangeId:
-          this.searchOptions.searchParams.rangeName === ""
+        clothesLevelName: "",
+        clothesLevelName:
+          this.searchOptions.searchParams.seriesName === ""
             ? undefined
-            : this.searchOptions.searchParams.rangeName,
-        name: undefined,
-        clothingLevelId: undefined,
-        startDate: this.changeDate(
+            : this.searchOptions.searchParams.seriesName,
+        name:
+          this.searchOptions.searchParams.planName === ""
+            ? undefined
+            : this.searchOptions.searchParams.planName,
+        createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]
             : null
         ),
-        endDate: this.changeDate(
+        createBefore: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[1]
             : null
         ),
-        stage: "delete"
+        pageNum: this.pagination.currentPage,
+        pageSize: this.pagination.pageSize
       };
-      console.log(param);
+      console.log("搜索参数", param);
 
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanList`, {
+      request
+        .get(`${window.$config.HOST}/plan-delete-info/find`, {
           params: param
         })
         .then(response => {
-          this.totalTableData = response.data;
-          //时间排序
-          this.totalTableData.sort(function(a, b) {
-            return Date.parse(b.createTime) - Date.parse(a.createTime);
-          });
-
-          this.pagination.total = this.totalTableData.length;
-          var pageEleStart =
-            (this.pagination.currentPage - 1) * this.pagination.pageSize;
-          var pageEleEnd =
-            pageEleStart + this.pagination.pageSize > this.pagination.total
-              ? this.pagination.total
-              : pageEleStart + this.pagination.pageSize;
-          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
-        })
-        .catch(error => {
-          console.log("搜索失败");
+          this.tableData = response.result;
+          this.pagination.total = request.total;
         });
+    },
+    // 恢复单个的按钮
+    ReCover(row) {
+      console.log("单个恢复:" + row.name);
+
+      request
+        .get(`${window.$config.HOST}/plan-delete-info/delete`, {
+          params: {
+            id: row.id,
+            planId: row.planId
+          }
+        })
+        .then(response => {
+          this.handleSearch();
+        });
+    },
+    //恢复所有选择的按钮
+    ReCoverAll() {
+      if (this.tableSelectionData.length === 0) {
+        this.$message.error("请选择要恢复的计划!");
+      } else {
+        this.tableSelectionData.forEach(element => {
+          console.log("恢复: " + element.name);
+          this.ReCover(element);
+        });
+      }
     }
   }
 };
