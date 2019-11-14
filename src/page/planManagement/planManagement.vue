@@ -36,16 +36,16 @@
         </el-col>
         <el-col :span="6">
           <div class="bar">
-            <div class="title">系列名称</div>
-            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            <div class="title">计划名称</div>
+            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
-            <div class="title">计划名称</div>
-            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
+            <div class="title">系列名称</div>
+            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
         <el-col :span="9">
@@ -83,7 +83,7 @@
         </el-col>
       </el-row>
       <el-table
-        :data="tableDataShow"
+        :data="tableData"
         max-height="400"
         @selection-change="changeCheckBoxFun"
         :highlight-current-row="true"
@@ -95,14 +95,14 @@
         <el-table-column prop="id" v-if="false"></el-table-column>
         <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+        <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+        <el-table-column prop="serialNo" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+        <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
-        <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
+        <el-table-column prop="rootPlanName" label="上级计划" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center">
           <template slot-scope="scope">
             <el-popover
@@ -195,8 +195,6 @@ export default {
         children: "children",
         label: "name"
       },
-      subPlanOrderModificationDialogVisible: false,
-      tableDataShow: [],
       isSubmitPlan: false,
       searchOptions: {
         searchParams: {
@@ -209,12 +207,7 @@ export default {
         },
         options: {
           customerNameOptions: [],
-          brandNameOptions: [],
-          clothingLevelOptions: [],
-          rangeNameOptions: [],
-          planNameOptions: [],
-          selfPlanNameOptions: [],
-          distributedPlanNameOptions: []
+          brandNameOptions: []
         }
       },
       tableData: [],
@@ -225,8 +218,6 @@ export default {
         total: 0
       },
       selectedData: [],
-
-      subPlanTableData: [],
 
       planManagementErrorCode: [
         {
@@ -454,6 +445,7 @@ export default {
         });
     },
     //查看异常--跳转
+    // TODO: finish comm to jump
     toSearchException(row) {
       console.log("查看异常" + row.id);
 
@@ -509,6 +501,7 @@ export default {
       this.selectedData = val;
     },
     //查看计划详情--跳转
+    // TODO: finish comm to jump
     getPlanDetail(row) {
       var param = {
         flag: 3,
@@ -545,6 +538,7 @@ export default {
       });
     },
     //修改计划详情--跳转
+    // TODO: finish comm to jump
     ModifyPlanDetail(row) {
       var param = {
         flag: 2,
