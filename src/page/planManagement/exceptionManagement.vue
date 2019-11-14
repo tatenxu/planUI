@@ -448,7 +448,7 @@ export default {
     },
     submitForm(formname) {
       request
-        .post(`/backstage/plan-exception/update`, this.ruleForm)
+        .put(`/backstage/plan-exception/update`, this.ruleForm)
         .then(response => {
           this.handleSearchClick();
         });
