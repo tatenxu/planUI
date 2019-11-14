@@ -93,10 +93,7 @@
         <!-- <el-menu-item index="/range/rangeInfo"><i class="el-icon-document"></i>系列信息</el-menu-item> -->
         <!-- <el-menu-item index="/range/rangeImport"><i class="el-icon-document"></i>导入系列</el-menu-item> -->
 
-        <el-menu-item
-          index="/styleGroup/styleGroupManagement"
-          v-if="styleGroupMana"
-        >
+        <el-menu-item index="/styleGroup/styleGroupManagement" v-if="styleGroupMana">
           <i class="el-icon-document"></i>款式组管理
         </el-menu-item>
         <!-- <el-menu-item index="/styleGroup/styleGroupInfo"><i class="el-icon-document"></i>款式组信息</el-menu-item> -->
@@ -138,15 +135,21 @@
         </el-submenu>
 
         <!-- <el-menu-item index="/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item> -->
-        <el-menu-item index="/planMake/seriesPlanMake" v-if="rangePlan">
-          <i class="el-icon-document"></i>系列计划制定
-        </el-menu-item>
-        <el-menu-item index="/planMake/styleGroupPlanMake" v-if="styleGroupPlan">
-          <i class="el-icon-document"></i>款式组计划制定
-        </el-menu-item>
-        <el-menu-item index="/planMake/stylePlanMake" v-if="stylePlan">
-          <i class="el-icon-document"></i>款式计划制定
-        </el-menu-item>
+        <el-submenu index="rootPlan">
+          <template slot="title">
+            <i class="el-icon-document"></i>
+            根计划
+          </template>
+          <el-menu-item index="/planMake/seriesPlanMake" v-if="rangePlan">
+            <i class="el-icon-document"></i>系列计划制定
+          </el-menu-item>
+          <el-menu-item index="/planMake/styleGroupPlanMake" v-if="styleGroupPlan">
+            <i class="el-icon-document"></i>款式组计划制定
+          </el-menu-item>
+          <el-menu-item index="/planMake/stylePlanMake" v-if="stylePlan">
+            <i class="el-icon-document"></i>款式计划制定
+          </el-menu-item>
+        </el-submenu>
         <el-menu-item index="/planVerify" v-if="planReview">
           <i class="el-icon-document"></i>计划审核管理
         </el-menu-item>
@@ -173,6 +176,7 @@
       <el-menu-item index="/formManagement" v-if="gantt">
         <i class="el-icon-document"></i>报表管理
       </el-menu-item>
+
       <!-- <el-menu-item index="/gantt"><i class="el-icon-document"></i>报表管理</el-menu-item> -->
 
       <el-submenu index="backEnd" v-if="backMana">
@@ -183,7 +187,7 @@
         <el-menu-item index="/backEndModule/planModelManagement">
           <i class="el-icon-document"></i>计划模板管理
         </el-menu-item>
- 
+
         <el-menu-item index="/backEndModule/dictionary/customerMana">
           <i class="el-icon-document"></i>客户管理
         </el-menu-item>
@@ -195,8 +199,7 @@
           <i class="el-icon-document"></i>项目类型——订单
         </el-menu-item>
 
-
-       <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana">
+        <el-menu-item index="/backEndModule/dictionary/dictionaryCateMana">
           <i class="el-icon-document"></i>数据字典管理
         </el-menu-item>
 
@@ -251,27 +254,27 @@ export default {
       // predictMana:false,
       // backMana:false,
 
-      rangeMana:true,
-      styleGroupMana:true,
-      styleMana:true,
-      toDoPredict:true,
-      doingPredict:true,
-      savePredict:true,
-      planMana:true,
-      completedPlanMana:true,
-      rangePlan:true,
-      styleGroupPlan:true,
-      stylePlan:true,
-      planReview:true,
-      planDistribute:true,
-      rangeCompleted:true,
-      planRecover:true,
-      exceptionMana:true,
-      messageMana:true,
-      statistics:true,
-      gantt:true,
-      predictMana:true,
-      backMana:true
+      rangeMana: true,
+      styleGroupMana: true,
+      styleMana: true,
+      toDoPredict: true,
+      doingPredict: true,
+      savePredict: true,
+      planMana: true,
+      completedPlanMana: true,
+      rangePlan: true,
+      styleGroupPlan: true,
+      stylePlan: true,
+      planReview: true,
+      planDistribute: true,
+      rangeCompleted: true,
+      planRecover: true,
+      exceptionMana: true,
+      messageMana: true,
+      statistics: true,
+      gantt: true,
+      predictMana: true,
+      backMana: true
     };
   },
 
@@ -282,8 +285,8 @@ export default {
       .then(response => {
         console.log("role:", response.data);
         response.data.forEach(element => {
-          if(element.chineseName==="计划系统管理员"){
-            this.backMana=true;
+          if (element.chineseName === "计划系统管理员") {
+            this.backMana = true;
           }
           this.roleList.push(element.id);
         });
@@ -291,9 +294,7 @@ export default {
         //获得页面信息
         this.$axios
           .get(
-            `${
-              window.$config.HOST
-            }/authorityManagement/getSystemAuthorityByRole`,
+            `${window.$config.HOST}/authorityManagement/getSystemAuthorityByRole`,
             {
               params: {
                 roleIdList: this.roleList + ""
@@ -305,24 +306,23 @@ export default {
             this.pageList = response.data;
             // console.log(this.pageList.includes("系列管理"))
 
-            if(this.pageList.includes("系列管理")){
-              this.rangeMana=true;
+            if (this.pageList.includes("系列管理")) {
+              this.rangeMana = true;
             }
-            if(this.pageList.includes("款式组管理")){
-              this.styleGroupMana=true;
+            if (this.pageList.includes("款式组管理")) {
+              this.styleGroupMana = true;
             }
-            if(this.pageList.includes("款式管理")){
-              this.styleMana=true;
+            if (this.pageList.includes("款式管理")) {
+              this.styleMana = true;
             }
-            if(this.pageList.includes("进行中计划管理")){
-              this.planMana=true;
+            if (this.pageList.includes("进行中计划管理")) {
+              this.planMana = true;
             }
-            if(this.pageList.includes("已完成计划管理")){
-              this.completedPlanMana=true;
+            if (this.pageList.includes("已完成计划管理")) {
+              this.completedPlanMana = true;
             }
-            if(this.pageList.includes("预测计划管理"))
-            {
-              this.predictMana=true;
+            if (this.pageList.includes("预测计划管理")) {
+              this.predictMana = true;
             }
             // if(this.pageList.includes("未制定计划")){
             //   this.toDoPredict=true;
@@ -333,43 +333,42 @@ export default {
             // if(this.pageList.includes("已保存计划")){
             //   this.savePredict=true;
             // }
-            if(this.pageList.includes("系列计划制定")){
-              this.rangePlan=true;
+            if (this.pageList.includes("系列计划制定")) {
+              this.rangePlan = true;
             }
-            if(this.pageList.includes("款式组计划制定")){
-              this.styleGroupPlan=true;
+            if (this.pageList.includes("款式组计划制定")) {
+              this.styleGroupPlan = true;
             }
-            if(this.pageList.includes("款式计划制定")){
-              this.stylePlan=true;
+            if (this.pageList.includes("款式计划制定")) {
+              this.stylePlan = true;
             }
-            if(this.pageList.includes("计划审核管理")){
-              this.planReview=true;
+            if (this.pageList.includes("计划审核管理")) {
+              this.planReview = true;
             }
-            if(this.pageList.includes("计划下发管理")){
-              this.planDistribute=true;
+            if (this.pageList.includes("计划下发管理")) {
+              this.planDistribute = true;
             }
-            if(this.pageList.includes("系列完成管理")){
-              this.rangeCompleted=true;
+            if (this.pageList.includes("系列完成管理")) {
+              this.rangeCompleted = true;
             }
-            if(this.pageList.includes("计划回收站")){
-              this.planRecover=true;
+            if (this.pageList.includes("计划回收站")) {
+              this.planRecover = true;
             }
-            if(this.pageList.includes("异常管理")){
-              this.exceptionMana=true;
+            if (this.pageList.includes("异常管理")) {
+              this.exceptionMana = true;
             }
-            if(this.pageList.includes("消息管理")){
-              this.messageMana=true;
+            if (this.pageList.includes("消息管理")) {
+              this.messageMana = true;
             }
-            if(this.pageList.includes("查询统计")){
-              this.statistics=true;
+            if (this.pageList.includes("查询统计")) {
+              this.statistics = true;
             }
-            if(this.pageList.includes("报表管理")){
-              this.gantt=true;
+            if (this.pageList.includes("报表管理")) {
+              this.gantt = true;
             }
-            if(this.pageList.includes("后台管理")){
-              this.backMana=true;
+            if (this.pageList.includes("后台管理")) {
+              this.backMana = true;
             }
-
           })
           .catch(error => {
             this.$message({
@@ -384,10 +383,6 @@ export default {
           type: "warning"
         });
       });
-
-
-
-    
   },
   components: {},
   computed: {

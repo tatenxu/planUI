@@ -12,7 +12,7 @@
               <el-option
                 v-for="item in searchOptions.options.roleOptions"
                 :key="item.id"
-                :label="item.chineseName"
+                :label="item.note"
                 :value="item.id"
               ></el-option>
             </el-select>
@@ -25,9 +25,9 @@
             <el-select v-model="pageName" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.pageOptions"
-                :key="item.name"
+                :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -58,7 +58,7 @@
           <el-table-column type="selection" width="50px" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="roleName" width="200" label="角色" align="center"></el-table-column>
-          <el-table-column prop="pageName" width="200" label="页面名" align="center"></el-table-column>
+          <el-table-column prop="menuName" width="200" label="页面名" align="center"></el-table-column>
           <el-table-column label="操作" width="200" min-width="100" align="center">
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
@@ -97,7 +97,7 @@
                 <el-option
                   v-for="item in ruleForm.options.roleOptions"
                   :key="item.id"
-                  :label="item.chineseName"
+                  :label="item.note"
                   :value="item.id"
                 ></el-option>
               </el-select>
@@ -133,6 +133,7 @@
 
 <script>
 import { POINT_CONVERSION_COMPRESSED } from "constants";
+import request from "@/utils/request";
 export default {
   data() {
     return {
@@ -151,91 +152,10 @@ export default {
       searchOptions: {
         options: {
           roleOptions: [],
-          pageOptions: [
-            {
-              name: "系列管理"
-            },
-            {
-              name: "款式组管理"
-            },
-            {
-              name: "款式管理"
-            },
-            {
-              name: "进行中计划管理"
-            },
-            {
-              name: "已完成计划管理"
-            },
-            {
-              name: "预测计划管理"
-            },
-            {
-              name: "系列计划制定"
-            },
-            {
-              name: "款式组计划制定"
-            },
-            {
-              name: "款式计划制定"
-            },
-            {
-              name: "计划审核管理"
-            },
-            {
-              name: "计划下发管理"
-            },
-            {
-              name: "系列完成管理"
-            },
-            {
-              name: "计划回收站"
-            },
-            {
-              name: "异常管理"
-            },
-            {
-              name: "消息管理"
-            },
-            {
-              name: "查询统计"
-            },
-            {
-              name: "报表管理"
-            },
-          {
-            name: "后台管理"
-          }
-          ],
+          pageOptions: [],
           userNameOptions: []
         }
       },
-      baseInfoManagementErrorCode: [
-        {
-          errorCode: 0,
-          errorInfo: "未知错误"
-        },
-        {
-          errorCode: -1,
-          errorInfo: "传送的对象属性中存在null"
-        },
-        {
-          errorCode: -2,
-          errorInfo: "字段重复"
-        },
-        {
-          errorCode: -3,
-          errorInfo: "参数存在不一致"
-        },
-        {
-          errorCode: -4,
-          errorInfo: "当前数据库记录不符合逻辑要求"
-        },
-        {
-          errorCode: -5,
-          errorInfo: "未知错所要查询的数据在数据库中不存在"
-        }
-      ],
       multipleSelection: [],
       rules: {
         roleId: [{ required: true, message: "请选择角色", trigger: "change" }]
@@ -245,62 +165,7 @@ export default {
         roleId: "",
         roleName: "",
         multipleSelection: [],
-        tableData: [
-          {
-            name: "系列管理"
-          },
-          {
-            name: "款式组管理"
-          },
-          {
-            name: "款式管理"
-          },
-          {
-            name: "进行中计划管理"
-          },
-          {
-            name: "已完成计划管理"
-          },
-          {
-            name: "预测计划管理"
-          },
-          {
-            name: "系列计划制定"
-          },
-          {
-            name: "款式组计划制定"
-          },
-          {
-            name: "款式计划制定"
-          },
-          {
-            name: "计划审核管理"
-          },
-          {
-            name: "计划下发管理"
-          },
-          {
-            name: "系列完成管理"
-          },
-          {
-            name: "计划回收站"
-          },
-          {
-            name: "异常管理"
-          },
-          {
-            name: "消息管理"
-          },
-          {
-            name: "查询统计"
-          },
-          {
-            name: "报表管理"
-          },
-          {
-            name: "后台管理"
-          }
-        ],
+        tableData: [],
         options: {
           roleOptions: []
         }
@@ -311,15 +176,11 @@ export default {
   created: function() {
     var that = this;
     //获得角色名字
-    that.$axios
-      .get(`${window.$config.HOST2}/getRoleList`, {
-        params: {
-          need: "all"
-        }
-      })
+    this.$axios
+      .get("http://192.168.1.180:8081/role/find")
       .then(response => {
-        this.searchOptions.options.roleOptions = response.data;
-        this.ruleForm.options.roleOptions = response.data;
+        this.searchOptions.options.roleOptions = response.data.result;
+        this.ruleForm.options.roleOptions = response.data.result;
       })
       .catch(error => {
         this.$message({
@@ -328,32 +189,29 @@ export default {
         });
       });
 
+    request.get("/menu/find").then(response => {
+      this.searchOptions.options.pageOptions = response.result;
+      this.ruleForm.tableData = response.result;
+    });
+
     //获得空搜索
-    this.$axios
-      .get(`${window.$config.HOST}/authorityManagement/getRoleSystemAuthority`)
-      .then(response => {
-        this.tableData = response.data;
-      })
-      .catch(error => {
-        this.tableDate = [];
-      });
+    request.get(`/backstage/role-menu/find`).then(response => {
+      this.tableData = response.result;
+    });
   },
 
   methods: {
     //搜索
     handleSearch() {
-      this.$axios
-        .get(
-          `${window.$config.HOST}/authorityManagement/getRoleSystemAuthority`,
-          {
-            params: {
-              roleId: this.roleId === "" ? undefined : this.roleId,
-              pageName: this.pageName === "" ? undefined : this.pageName
-            }
+      request
+        .get(`/backstage/role-menu/find`, {
+          params: {
+            roleId: this.roleId === "" ? undefined : this.roleId,
+            menuId: this.pageName === "" ? undefined : this.pageName
           }
-        )
+        })
         .then(response => {
-          this.tableData = response.data;
+          this.tableData = response.result;
         })
         .catch(error => {});
     },
@@ -367,38 +225,14 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$axios
-            .delete(
-              `${
-                window.$config.HOST
-              }/authorityManagement/deleteRoleSystemAuthority`,
-              {
-                params: {
-                  roleId: row.roleId,
-                  pageName: row.pageName
-                }
-              }
-            )
-            .then(response => {
-              this.handleSearch();
-              if (response.data < 0) {
-                this.$message.error(
-                  "删除失败:" +
-                    this.baseInfoManagementErrorCode[-response.data].errorInfo
-                );
-              } else {
-                this.$message({
-                  message: "删除成功",
-                  type: "success"
-                });
+          request
+            .delete(`/backstage/role-menu/delete`, {
+              params: {
+                id: row.id
               }
             })
-            .catch(error => {
+            .then(response => {
               this.handleSearch();
-              this.$message({
-                message: "删除失败",
-                type: "error"
-              });
             });
         })
         .catch(() => {
@@ -448,18 +282,12 @@ export default {
                 id: element.id
               };
               console.log(list);
-              this.$axios
-                .delete(
-                  `${
-                    window.$config.HOST
-                  }/authorityManagement/deleteRoleSystemAuthority`,
-                  {
-                    params: {
-                      roleId: element.roleId,
-                      pageName: element.pageName
-                    }
+              request
+                .delete(`/backstage/role-menu/delete`, {
+                  params: {
+                    id: element.id
                   }
-                )
+                })
                 .then(response => {
                   count++;
                   if (count === len) {
@@ -496,7 +324,8 @@ export default {
     // 添加用户
     addUser() {
       const that = this;
-      // (this.ruleForm.multipleSelection = []),
+      
+    
       (this.ruleForm.roleId = ""),
         (this.ruleForm.roleName = ""),
         (this.dialogFormVisible = true);
@@ -510,50 +339,25 @@ export default {
           let roleName;
           this.ruleForm.options.roleOptions.forEach(element => {
             if (element.id === this.ruleForm.roleId) {
-              roleName = element.chineseName;
+              roleName = element.name;
             }
           });
 
-          let pageList = [];
+          let list = [];
+
           this.ruleForm.multipleSelection.forEach(element => {
-            pageList.push(element.name);
-          });
-          this.$axios
-            .post(
-              `${
-                window.$config.HOST
-              }/authorityManagement/addRoleSystemAuthority`,
-              {
-                roleId: this.ruleForm.roleId,
-                roleName: roleName,
-                pageNameList: pageList
-              }
-            )
-            .then(response => {
-              console.log(response.data);
-              if (response.data < 0) {
-                this.$message.error(
-                  "添加失败:" +
-                    this.baseInfoManagementErrorCode[-response.data].errorInfo
-                );
-              } else {
-                this.handleSearch();
-                (this.ruleForm.roleId = ""),
-                  (this.ruleForm.roleName = ""),
-                  (this.dialogFormVisible = false);
-                this.$message({
-                  message: "添加成功",
-                  type: "success"
-                });
-              }
-            })
-            .catch(error => {
-              this.handleSearch();
-              this.$message({
-                message: "添加失败",
-                type: "error"
-              });
+            list.push({
+              roleId: this.ruleForm.roleId,
+              roleName: roleName,
+              menuId: element.id
             });
+          });
+          request.post(`/backstage/role-menu/insert`, list).then(response => {
+            this.handleSearch();
+            (this.ruleForm.roleId = ""),
+              (this.ruleForm.roleName = ""),
+              (this.dialogFormVisible = false);
+          });
         } else {
           this.$message({
             message: "请填写必须填写的项！",
