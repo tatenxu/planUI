@@ -85,12 +85,20 @@
       <el-table
         :data="tableDataShow"
         max-height="400"
-        @selection-change="changeCheckBoxFun"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
-        :row-style="tableRowClassName"
       >
-        <el-table-column width="50" type="selection" align="center"></el-table-column>
+        <el-table-column label width="65">
+          <template slot-scope="scope">
+            <el-radio
+              :label="scope.row.id"
+              v-model="templateRadio"
+              @change.native="getTemplateRow(scope.$index,scope.row)"
+            ></el-radio>
+          </template>
+        </el-table-column>
+        <!-- :row-style="tableRowClassName" -->
+        <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="id" v-if="false"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
@@ -300,15 +308,19 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
+    getTemplateRow(index, row) {
+      this.selectedData.push(row);
+      console.log(this.selectedData);
+    },
     // 行颜色
     tableRowClassName({ row, rowIndex }) {
       if (row.fromTemplate) {
         return "background: oldlace;";
       }
     },
-    changeCheckBoxFun(val) {
-      this.selectedData = val;
-    },
+    // changeCheckBoxFun(val) {
+    //   this.selectedData = val;
+    // },
 
     // 改变日期格式
     changeDate(date) {

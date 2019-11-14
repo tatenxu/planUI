@@ -85,12 +85,20 @@
       <el-table
         :data="tableData"
         max-height="400"
-        @selection-change="changeCheckBoxFun"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
         :row-style="tableRowClassName"
       >
-        <el-table-column width="50" type="selection" align="center"></el-table-column>
+        <el-table-column label width="65">
+          <template slot-scope="scope">
+            <el-radio
+              :label="scope.row.id"
+              v-model="templateRadio"
+              @change.native="getTemplateRow(scope.$index,scope.row)"
+            ></el-radio>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="id" v-if="false"></el-table-column>
         <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
@@ -323,6 +331,10 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
+    getTemplateRow(index, row) {
+      this.selectedData.push(row);
+      console.log(this.selectedData);
+    },
     //行颜色
     tableRowClassName({ row, rowIndex }) {
       if (row.fromTemplate) {
@@ -497,9 +509,10 @@ export default {
     },
 
     // 选择表格中的行数据
-    changeCheckBoxFun(val) {
-      this.selectedData = val;
-    },
+    // changeCheckBoxFun(val) {
+    //   this.selectedData = val;
+    // },
+
     //查看计划详情--跳转
     // TODO: finish comm to jump
     getPlanDetail(row) {
