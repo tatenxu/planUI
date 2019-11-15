@@ -454,6 +454,7 @@ export default {
           this.allPlans = [];
           this.allPlans.push(response.result);
 
+          this.selectedData = [];
           this.lookAllPlans = true;
         });
     },
@@ -496,6 +497,7 @@ export default {
       } else {
         this.selectedData.forEach(element => {
           this.deleteOnePlan(element.id);
+          this.selectedData = [];
         });
       }
     },

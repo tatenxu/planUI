@@ -179,10 +179,76 @@
       <el-button type="primary" @click="subPlanOrderConfirm">确定</el-button>
     </el-dialog>
 
-    <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+    <el-dialog title="查看总计划" :visible.sync="lookAllPlansDialogVisible" :modal="false">
       <div class="body">
         <el-tree :data="allPlans" :props="defaultProps"></el-tree>
       </div>
+    </el-dialog>
+
+    <!-- 弹出框-修改 -->
+    <el-dialog :modal="false" title="添加异常" :visible.sync="addExceptionDialogVisible">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="content" prop="content" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.content" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="type" prop="type" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.type" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="time" prop="time" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.time" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="place" prop="place" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.place" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="principal" prop="principal" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.principal" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="handleOption" prop="handleOption" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.handleOption" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="handleResult" prop="handleResult" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.handleResult" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="scope" prop="scope" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.scope" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="state" prop="state" placeholder="请选择客户名称">
+              <el-input v-model="ruleForm.state" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="confirmAddException('ruleForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancelAddException()">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -195,12 +261,45 @@ export default {
   data() {
     return {
       isCacheFlag: true,
-      lookAllPlans: false,
+      lookAllPlansDialogVisible: false,
       allPlans: [],
       defaultProps: {
         children: "children",
         label: "name"
       },
+      addExceptionDialogVisible: false,
+      rules: {
+        content: [{ required: true, message: "请输入", trigger: "change" }],
+        discover: [{ required: true, message: "请输入", trigger: "change" }],
+        place: [{ required: true, message: "请输入", trigger: "change" }],
+        principal: [{ required: true, message: "请输入", trigger: "change" }],
+        scope: [{ required: true, message: "请输入", trigger: "change" }],
+        state: [{ required: true, message: "请输入", trigger: "change" }],
+        time: [{ required: true, message: "请输入", trigger: "change" }],
+        type: [{ required: true, message: "请输入", trigger: "change" }],
+        handleOption: [
+          { required: false, message: "请输入", trigger: "change" }
+        ],
+        handleResult: [
+          { required: false, message: "请输入", trigger: "change" }
+        ]
+      },
+      ruleForm: {
+        content: "",
+        discover: "",
+        handleOption: "",
+        handleResult: "",
+        id: 0,
+        place: "",
+        planId: 0,
+        principal: "",
+        scope: "",
+        serialNo: "",
+        state: "",
+        time: "",
+        type: ""
+      },
+
       subPlanOrderModificationDialogVisible: false,
       tableDataShow: [],
       isSelfMadePlan: false,
@@ -215,12 +314,7 @@ export default {
         },
         options: {
           customerNameOptions: [],
-          brandNameOptions: [],
-          clothingLevelOptions: [],
-          rangeNameOptions: [],
-          planNameOptions: [],
-          selfPlanNameOptions: [],
-          distributedPlanNameOptions: []
+          brandNameOptions: []
         }
       },
       tableData: [],
@@ -423,7 +517,8 @@ export default {
           this.allPlans = [];
           this.allPlans.push(response.result);
 
-          this.lookAllPlans = true;
+          this.selectedData = [];
+          this.lookAllPlansDialogVisible = true;
         });
     },
 
@@ -453,54 +548,33 @@ export default {
           name: "planMakeIndex",
           params: param
         });
+        this.selectedData = [];
       } else if (this.selectedData.length === 0) {
         this.$message.error("请选择要添加子计划的计划！");
       } else {
         this.$message.error("仅允许对一条计划添加子计划，请重新选择！");
       }
     },
-    // TODO: finish comm to jump
+
     addException() {
       if (this.selectedData.length === 0) {
         this.$message.error("请选择要添加异常的计划！");
       } else {
-        this.$prompt("请输入计划出现的异常", "异常信息添加", {
-          confirmButtonText: "确定",
-          cancelButttonText: "取消",
-          inputPattern: /\S/,
-          inputErrorMessage: "异常内容不得为空"
-        }).then(({ value }) => {
-          console.log(value);
-          this.selectedData.forEach(element => {
-            var params = {
-              planId: element.id,
-              cause: value === "" ? "" : value
-            };
-            // console.log(params);
-            this.$axios
-              .post(
-                `${window.$config.HOST}/planManagement/addException`,
-                params
-              )
-              .then(response => {
-                if (response.data < 0) {
-                  this.$message.error(
-                    "添加异常失败:" +
-                      this.planManagementErrorCode[-response.data - 1].errotInfo
-                  );
-                } else {
-                  this.$message({
-                    type: "success",
-                    message: element.name + "异常添加成功"
-                  });
-                }
-              })
-              .catch(error => {
-                this.$message.error(element.name + "添加异常失败");
-              });
-          });
-        });
+        this.ruleForm = this.selectedData[0];
+        this.addExceptionDialogVisible = true;
       }
+    },
+    confirmAddException() {
+      request
+        .post(`${window.$config.HOST}/plan-exception/insert`, param)
+        .then(response => {
+          this.addExceptionDialogVisible = false;
+          this.selectedData = [];
+          this.handleSearch();
+        });
+    },
+    cancelAddException() {
+      this.addExceptionDialogVisible = false;
     },
 
     // TODO: 查看异常--跳转
@@ -576,6 +650,7 @@ export default {
             this.subPlanTableData.sort(function(a, b) {
               return a.sequence - b.sequence;
             });
+            this.selectedData = [];
           });
         this.subPlanOrderModificationDialogVisible = true;
       } else if (this.selectedData.length === 0) {

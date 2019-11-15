@@ -408,6 +408,7 @@ export default {
           this.allPlans = [];
           this.allPlans.push(response.result);
 
+          this.selectedData = [];
           this.lookAllPlans = true;
         });
     },
@@ -438,6 +439,7 @@ export default {
           name: "planMakeIndex",
           params: param
         });
+        this.selectedData = [];
       } else if (this.selectedData.length === 0) {
         this.$message.error("请选择要添加子计划的计划！");
       } else {
@@ -499,6 +501,7 @@ export default {
             this.subPlanTableData.sort(function(a, b) {
               return a.sequence - b.sequence;
             });
+            this.selectedData = [];
           });
         this.subPlanOrderModificationDialogVisible = true;
       } else if (this.selectedData.length === 0) {

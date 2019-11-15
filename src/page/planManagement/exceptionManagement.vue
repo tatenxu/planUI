@@ -157,17 +157,17 @@
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="time" prop="time" placeholder="请选择客户名称">
-              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+              <el-input v-model="ruleForm.time" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="type" prop="type" placeholder="请选择品牌名称">
-              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+              <el-input v-model="ruleForm.type" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="place" prop="place" placeholder="请选择系列名称">
-              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+              <el-input v-model="ruleForm.place" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -175,17 +175,17 @@
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="principal" prop="principal" placeholder="请输入内容">
-              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+              <el-input v-model="ruleForm.principal" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="handle_option" prop="handle_option" placeholder="请输入内容">
-              <el-input v-model="ruleForm.tmpStyleGroup" clearable placeholder="请输入内容"></el-input>
+            <el-form-item label="handleOption" prop="handleOption" placeholder="请输入内容">
+              <el-input v-model="ruleForm.handleOption" clearable placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="handle_result" prop="handle_result" placeholder="请输入内容">
-              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            <el-form-item label="handleResult" prop="handleResult" placeholder="请输入内容">
+              <el-input v-model="ruleForm.handleResult" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -193,12 +193,17 @@
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="scope" prop="scope" placeholder="请输入内容">
-              <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+              <el-input v-model="ruleForm.scope" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="state" prop="state" placeholder="请输入内容">
-              <el-input v-model="ruleForm.tmpStyleGroup" clearable placeholder="请输入内容"></el-input>
+              <el-input v-model="ruleForm.state" clearable placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="content" prop="content" placeholder="请输入内容">
+              <el-input v-model="ruleForm.content" clearable placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -256,18 +261,18 @@ export default {
         type: [{ required: true, message: "请输入", trigger: "change" }]
       },
       ruleForm: {
-        content: "string",
-        handleOption: "string",
-        handleResult: "string",
-        place: "string",
-        principal: "string",
-        scope: "string",
-        state: "string",
-        time: "2019-11-13T07:10:27.475Z",
-        type: "string",
+        content: "",
+        handleOption: "",
+        handleResult: "",
+        place: "",
+        principal: "",
+        scope: "",
+        state: "",
+        time: "",
+        type: "",
 
-        discover: "string",
-        serialNo: "string",
+        discover: "",
+        serialNo: "",
         planId: 0,
         id: 0
       },
@@ -328,7 +333,8 @@ export default {
         customerId:
           routData.customerName === "" ? undefined : routData.customerName,
         brandId: routData.brandName === "" ? undefined : routData.brandName,
-        rangeId: routData.seriesName === "" ? undefined : routData.seriesName,
+        seriesName:
+          routData.seriesName === "" ? undefined : routData.seriesName,
         startDate: undefined,
         endDate: undefined
       };
