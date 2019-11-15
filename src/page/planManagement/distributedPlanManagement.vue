@@ -577,23 +577,14 @@ export default {
       this.addExceptionDialogVisible = false;
     },
 
-    // TODO: 查看异常--跳转
+    // FIXME: 查看异常--可能有bug
     toSearchException(row) {
-      console.log("查看异常" + row.id);
+      console.log("查看异常：" + row.name);
 
       this.isCacheFlag = true;
       this.$router.push({
         name: "exceptionManagement",
-        params: {
-          planId: row.id,
-          customerId: row.customerId,
-          customerName: row.customerName,
-          brandId: row.brandId,
-          brandName: row.brandName,
-          rangeId: row.rangeId,
-          rangeName: row.rangeName,
-          files: row.files
-        }
+        params: row
       });
     },
     // TODO: 查看详情--跳转

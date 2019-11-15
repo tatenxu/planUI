@@ -447,7 +447,7 @@ export default {
       }
     },
 
-    // TODO: add one dialog to show root plan details
+    // TODO: deprecated by showing in table
     getPlanDetail(row) {
       var param = {
         flag: 3,

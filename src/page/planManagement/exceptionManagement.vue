@@ -324,29 +324,25 @@ export default {
     let routData = this.$route.params;
     console.log("路由参数:" + Object.keys(routData).length);
     if (Object.keys(routData).length) {
-      this.searchOptions.searchParams.customerName = routData.customerName;
+      this.searchOptions.searchParams.clientName = routData.clientName;
       this.searchOptions.searchParams.brandName = routData.brandName;
+      this.searchOptions.searchParams.planName = routData.name;
       this.searchOptions.searchParams.seriesName = routData.seriesName;
       this.searchDisabled = true;
 
       var param = {
-        customerId:
-          routData.customerName === "" ? undefined : routData.customerName,
-        brandId: routData.brandName === "" ? undefined : routData.brandName,
+        planName: routData.name === "" ? undefined : routData.name,
         seriesName:
           routData.seriesName === "" ? undefined : routData.seriesName,
-        startDate: undefined,
-        endDate: undefined
+        pageNum: 1,
+        pageSize: 10
       };
-      console.log(params);
+      console.log("mounted 参数：", param);
 
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getExceptionList`, param)
+      request
+        .get(`${window.$config.HOST}/plan-exception/find`, { params: param })
         .then(response => {
-          this.tableData = response.data;
-        })
-        .catch(error => {
-          console.log("获取异常错误");
+          this.tableData = response.result;
         });
     }
   },

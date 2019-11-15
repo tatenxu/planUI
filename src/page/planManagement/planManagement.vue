@@ -459,23 +459,14 @@ export default {
         });
     },
     //查看异常--跳转
-    // TODO: finish comm to jump
+    // FIXME: 可能有bug
     toSearchException(row) {
-      console.log("查看异常" + row.id);
+      console.log("查看异常" + row.name);
 
       this.isCacheFlag = true;
       this.$router.push({
         name: "exceptionManagement",
-        params: {
-          planId: row.id,
-          customerId: row.customerId,
-          customerName: row.customerName,
-          brandId: row.brandId,
-          brandName: row.brandName,
-          rangeId: row.rangeId,
-          seriesName: row.seriesName,
-          files: row.files
-        }
+        params: row
       });
     },
 
