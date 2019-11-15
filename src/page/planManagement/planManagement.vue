@@ -332,6 +332,7 @@ export default {
       this.handleSearch();
     },
     getTemplateRow(index, row) {
+      this.selectedData = [];
       this.selectedData.push(row);
       console.log(this.selectedData);
     },

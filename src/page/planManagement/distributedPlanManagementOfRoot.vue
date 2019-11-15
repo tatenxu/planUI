@@ -285,7 +285,7 @@ export default {
         this.searchOptions.options.brandNameOptions = response.result;
       });
 
-    //默认获取已提交/未提交计划列表
+    //默认获取下发的根计划列表
     request
       .get(`${window.$config.HOST}/root-plan/find-assign`, {
         params: {
@@ -309,6 +309,7 @@ export default {
       this.handleSearch();
     },
     getTemplateRow(index, row) {
+      this.selectedData = [];
       this.selectedData.push(row);
       console.log(this.selectedData);
     },
