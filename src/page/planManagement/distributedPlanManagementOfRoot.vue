@@ -68,14 +68,23 @@
       </el-row>
     </el-card>
     <el-card class="box-card">
-      <el-col :span="3">
-        <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
-      </el-col>
-
+      <el-row :gutter="20">
+        <el-col :span="3" v-if="!isSelfMadePlan">
+          <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
+        </el-col>
+        <el-col :span="4" v-if="!isSelfMadePlan">
+          <el-button type="primary" size="small" @click="changeSubPlanOrder">下级计划顺序调整</el-button>
+        </el-col>
+        <!-- <el-col :span="3" v-if="!isSelfMadePlan">
+          <el-button type="primary" size="small" @click="addException">添加异常</el-button>
+        </el-col>-->
+        <el-col :span="3">
+          <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
+        </el-col>
+      </el-row>
       <el-table
-        :data="tableData"
+        :data="tableDataShow"
         max-height="400"
-        :stripe="true"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
       >
@@ -88,35 +97,25 @@
             ></el-radio>
           </template>
         </el-table-column>
+        <!-- :row-style="tableRowClassName" -->
+        <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
         <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
         <el-table-column prop="id" v-if="false"></el-table-column>
-        <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+        <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+        <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
+        <el-table-column prop="assignPlanType" label="子计划类型" align="center"></el-table-column>
+        <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="objectName" label="对象名" align="center"></el-table-column>
+        <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+        <el-table-column prop="date" label="日期" align="center"></el-table-column>
+        <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
-        <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center">
-          <template slot-scope="scope">
-            <p v-if="scope.row.isCompleted">已完成</p>
-            <p v-else>未完成</p>
-          </template>
-        </el-table-column>
-        <el-table-column label="异常状态" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="ToSearchException(scope.row)"
-              type="text"
-              size="small"
-              v-if="scope.row.haveException"
-            >有异常，查看</el-button>
-            <p v-else>无异常</p>
-          </template>
-        </el-table-column>
+        <el-table-column prop="startDate" label="开始时间" align="center"></el-table-column>
+        <el-table-column prop="endDate" label="结束时间" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
@@ -135,35 +134,72 @@
           :total="pagination.total"
         ></el-pagination>
       </div>
-      <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
-        <div class="body">
-          <el-tree :data="allPlans" :props="defaultProps"></el-tree>
-        </div>
-      </el-dialog>
     </el-card>
+
+    <el-dialog title="子计划顺序调整" :visible.sync="subPlanOrderModificationDialogVisible" :modal="false">
+      <el-table :data="subPlanTableData" highlight-current-row style="width: 100%">
+        <!-- <el-table-column  type="selection"  width="55px"></el-table-column> -->
+        <el-table-column type="index" label="新顺序" width="70px"></el-table-column>
+        <el-table-column prop="order" label="原顺序" width="70"></el-table-column>
+        <el-table-column prop="name" label="计划名称" width="100px"></el-table-column>
+        <el-table-column prop="startDate" label="开始日期" width="100px"></el-table-column>
+        <el-table-column prop="endDate" label="结束日期" width="100px"></el-table-column>
+        <el-table-column prop="creatorName" label="创建人" width="100px"></el-table-column>
+        <el-table-column prop="deptName" label="部门名称" width="100px"></el-table-column>
+        <el-table-column prop="createTime" label="创建日期" width="100px"></el-table-column>
+        <el-table-column label="操作" width="150px" fixed="right">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              :disabled="scope.$index===0"
+              @click="moveUp(scope.$index,scope.row)"
+            >
+              <i class="el-icon-arrow-up"></i>
+            </el-button>
+            <el-button
+              size="mini"
+              :disabled="scope.$index===(subPlanTableData.length-1)"
+              @click="moveDown(scope.$index,scope.row)"
+            >
+              <i class="el-icon-arrow-down"></i>
+            </el-button>
+            <!-- <el-button type="info" size="mini" round v-if="scope.$index===0">默认</el-button> -->
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-button type="primary" @click="subPlanOrderConfirm">确定</el-button>
+    </el-dialog>
+
+    <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+      <div class="body">
+        <el-tree :data="allPlans" :props="defaultProps"></el-tree>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-// import { error } from "util";
-// import { request } from "http";
 import request from "@/utils/request";
+import consoleSidebarVue from "../../components/layout/consoleSidebar.vue";
 export default {
-  name: "commitedPlanManagement",
+  name: "planManagement",
   data() {
     return {
-      templateRadio: "",
+      isCacheFlag: true,
       lookAllPlans: false,
       allPlans: [],
       defaultProps: {
         children: "children",
         label: "name"
       },
+      subPlanOrderModificationDialogVisible: false,
+      tableDataShow: [],
+      isSelfMadePlan: false,
       searchOptions: {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingLevelName: "",
+          clothinLevelName: "",
           seriesName: "",
           planName: "",
           dateRange: ""
@@ -173,7 +209,6 @@ export default {
           brandNameOptions: []
         }
       },
-      totalTableData: [],
       tableData: [],
       pagination: {
         currentPage: 1,
@@ -181,11 +216,59 @@ export default {
         pageSize: 10,
         total: 0
       },
-      selectedData: []
+      selectedData: [],
+
+      subPlanTableData: [],
+
+      planManagementErrorCode: [
+        {
+          errorCode: -1,
+          errotInfo: "所需属性值缺失"
+        },
+        {
+          errorCode: -2,
+          errotInfo: "计划名称重复"
+        },
+        {
+          errorCode: -3,
+          errotInfo: "父计划未下发"
+        },
+        {
+          errorCode: -4,
+          errotInfo: "系列根计划不存在"
+        },
+        {
+          errorCode: -5,
+          errotInfo: "款式组根计划不存在"
+        },
+        {
+          errorCode: -6,
+          errotInfo: "根计划已存在"
+        },
+        {
+          errorCode: -7,
+          errotInfo: "计划开始结束时间超额"
+        },
+        {
+          errorCode: -8,
+          errotInfo: "计划款数超额"
+        },
+        {
+          errorCode: -9,
+          errotInfo: "引用预测计划时预测计划不存在"
+        },
+        {
+          errorCode: -10,
+          errotInfo: "当前计划状态不允许执行此操作"
+        },
+        {
+          errorCode: -11,
+          errotInfo: "与已有计划冲突"
+        }
+      ]
     };
   },
   created: function() {
-    const that = this;
     console.log("进入计划管理页面");
 
     //客户名称加载
@@ -202,9 +285,9 @@ export default {
         this.searchOptions.options.brandNameOptions = response.result;
       });
 
-    //默认获取已完成计划列表
+    //默认获取下发的根计划列表
     request
-      .get(`${window.$config.HOST}/plan/find-complete`, {
+      .get(`${window.$config.HOST}/root-plan/find-assign`, {
         params: {
           pageNum: this.pagination.currentPage,
           pageSize: this.pagination.pageSize
@@ -225,6 +308,21 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
+    getTemplateRow(index, row) {
+      this.selectedData = [];
+      this.selectedData.push(row);
+      console.log(this.selectedData);
+    },
+    // 行颜色
+    tableRowClassName({ row, rowIndex }) {
+      if (row.fromTemplate) {
+        return "background: oldlace;";
+      }
+    },
+    // changeCheckBoxFun(val) {
+    //   this.selectedData = val;
+    // },
+
     // 改变日期格式
     changeDate(date) {
       if (!date) {
@@ -246,6 +344,7 @@ export default {
     },
     //搜索按钮
     handleSearch() {
+      console.log(this.searchOptions.searchParams.dateRange);
       var param = {
         clientId:
           this.searchOptions.searchParams.customerName === ""
@@ -263,6 +362,10 @@ export default {
           this.searchOptions.searchParams.planName === ""
             ? undefined
             : this.searchOptions.searchParams.planName,
+        clothesLevelName:
+          this.searchOptions.searchParams.clothinLevelName === ""
+            ? undefined
+            : this.searchOptions.searchParams.clothinLevelName,
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]
@@ -276,10 +379,8 @@ export default {
         pageNum: this.pagination.currentPage,
         pageSize: this.pagination.pageSize
       };
-
-      console.log("搜索参数：", param);
       request
-        .get(`${window.$config.HOST}/plan/find-complete`, {
+        .get(`${window.$config.HOST}/root-plan/find-assign`, {
           params: param
         })
         .then(response => {
@@ -287,15 +388,18 @@ export default {
           this.pagination.total = response.total;
         });
     },
-    getTemplateRow(index, row) {
-      this.selectedData = row;
-      console.log(row);
-    },
-    // 查看总计划接口
     lookAllPlan() {
+      if (this.selectedData.length != 1) {
+        this.$message({
+          message: "请选择一项！",
+          type: "warning"
+        });
+        return;
+      }
       let list = {
-        id: this.selectedData.id
+        id: this.selectedData[0].id
       };
+
       request
         .get(`${window.$config.HOST}/plan/tree`, {
           params: list
@@ -303,16 +407,51 @@ export default {
         .then(response => {
           this.allPlans = [];
           this.allPlans.push(response.result);
-          // console.log(this.allPlans);
 
+          this.selectedData = [];
           this.lookAllPlans = true;
         });
     },
 
+    // TODO: finish comm to jump
+    addPlanChild() {
+      if (this.selectedData.length === 1) {
+        let data = this.selectedData[0];
+        var param = {
+          flag: 1,
+          goback: "planManagement",
+          customerName: data.customerName,
+          brandName: data.brandName,
+          rangeId: data.rangeId,
+          rangeName: data.rangeName,
+          planType: data.type,
+          planObjectName: data.planObject,
+          planObjectId: data.planObjectId,
+          topPlanName: data.name ? data.name : "根计划",
+          topPlanId: data.id,
+          quantity: data.quantity
+        };
+
+        console.log(param);
+
+        this.isCacheFlag = true;
+        this.$router.push({
+          name: "planMakeIndex",
+          params: param
+        });
+        this.selectedData = [];
+      } else if (this.selectedData.length === 0) {
+        this.$message.error("请选择要添加子计划的计划！");
+      } else {
+        this.$message.error("仅允许对一条计划添加子计划，请重新选择！");
+      }
+    },
+
+    // TODO: deprecated by showing in table
     getPlanDetail(row) {
       var param = {
         flag: 3,
-        goback: "commitedPlanManagement",
+        goback: "planManagement",
         customerName: row.customerName,
         brandName: row.brandName,
         rangeId: row.rangeId,
@@ -337,10 +476,85 @@ export default {
         files: row.files
       };
       console.log(param);
+
+      this.isCacheFlag = true;
       this.$router.push({
         name: "planMakeIndex",
         params: param
       });
+    },
+
+    //子计划顺序跳转按钮
+    changeSubPlanOrder() {
+      if (this.selectedData.length === 1) {
+        var param = {
+          id: this.selectedData[0].id
+        };
+        console.log("子计划搜索参数：", param);
+        request
+          .get(`${window.$config.HOST}/plan/children`, {
+            params: param
+          })
+          .then(response => {
+            // console.log(response.data);
+            this.subPlanTableData = response.result;
+            this.subPlanTableData.sort(function(a, b) {
+              return a.sequence - b.sequence;
+            });
+            this.selectedData = [];
+          });
+        this.subPlanOrderModificationDialogVisible = true;
+      } else if (this.selectedData.length === 0) {
+        this.$message.error("请选择要调整的计划！");
+      } else {
+        this.$message.error("仅允许对一条计划调整，请重新选择！");
+      }
+    },
+    subPlanOrderConfirm() {
+      var param = [];
+      var len = this.subPlanTableData.length;
+      for (var i = 0; i < len; i++) {
+        param.push({
+          id: this.subPlanTableData[i].id,
+          sequence: i
+        });
+      }
+      console.log("子计划上传顺序：", param);
+      request
+        .put(`${window.$config.HOST}/planManagement/adjustPlanOrder`, param)
+        .then(response => {
+          this.subPlanOrderModificationDialogVisible = false;
+        });
+    },
+
+    //子计划顺序控制函数
+    //上移
+    moveUp(index, row) {
+      var that = this;
+      // console.log('上移',index,row);
+      // console.log(that.subPlanTableData[index]);
+      if (index > 0) {
+        let upDate = that.subPlanTableData[index - 1];
+        that.subPlanTableData.splice(index - 1, 1);
+        that.subPlanTableData.splice(index, 0, upDate);
+      } else {
+        alert("已经是第一条，不可上移");
+      }
+      // console.log(that.subPlanTableData);
+    },
+
+    //下移
+    moveDown(index, row) {
+      var that = this;
+      // console.log('下移',index,row);
+      if (index + 1 === that.subPlanTableData.length) {
+        alert("已经是最后一条，不可下移");
+      } else {
+        console.log(index);
+        let downDate = that.subPlanTableData[index + 1];
+        that.subPlanTableData.splice(index + 1, 1);
+        that.subPlanTableData.splice(index, 0, downDate);
+      }
     }
   },
   computed: {
@@ -354,8 +568,11 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === "planMakeIndex") {
-      this.keepAlives = ["commitedPlanManagement"];
+    if (
+      this.isCacheFlag &&
+      (to.name === "planMakeIndex" || to.name === "exceptionManagement")
+    ) {
+      this.keepAlives = ["planManagement"];
     } else {
       this.keepAlives = [];
     }
@@ -365,6 +582,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
+}
 .Mtitle {
   font-size: 3ch;
   margin-left: 47%;
