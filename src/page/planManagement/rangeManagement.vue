@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-      
+
             <el-select v-model="CustomerValue" :clearable="true">
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
@@ -296,7 +296,7 @@ export default {
       dialogFormVisible: false,
       dialogFormVisible1: false,
       tableData: [],
-      tableDataA:[],
+      tableDataA: [],
       pagination: {
         currentPage: 1,
         pageSizes: [1, 10, 20, 30, 50],
@@ -359,7 +359,6 @@ export default {
       .then(response => {
         console.log("获得品牌信息成功了");
         this.searchOptions.options.brandNameOptions = response.data;
-
       })
       .catch(error => {
         this.$message({
@@ -469,31 +468,33 @@ export default {
         console.log("获得搜索列表成功了");
         var SearchList = response.data;
         this.tableData = SearchList;
-     
-      
-        console.log("size:"+this.pagination.total)
-        this.tableData.forEach(element => {
-          if(element.addingMode===1) element.addingModeName="手动";
-          else element.addingModeName="导入";
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
+        console.log("size:" + this.pagination.total);
+        this.tableData.forEach(element => {
+          if (element.addingMode === 1) element.addingModeName = "手动";
+          else element.addingModeName = "导入";
+
+          if (element.state === 1) element.stateName = "已制定";
+          else if (element.state === 2) element.stateName = "已提交";
+          else if (element.state === 3) element.stateName = "被驳回";
+          else if (element.state === 4) element.stateName = "已审核";
+          else if (element.state === 5) element.stateName = "已下发";
+          else if (element.state === 6) element.stateName = "已删除";
           var d = new Date(element.createTime);
           let time = d.toLocaleString();
           element.createTime = time;
         });
 
-           this.pagination.total=response.data.length;
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
+        this.pagination.total = response.data.length;
+        let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+        this.tableDataA = [];
+
+        for (
+          ;
+          i - k < this.pagination.pageSize && i < this.tableData.length;
+          i++
+        ) {
           this.tableDataA.push(this.tableData[i]);
         }
       })
@@ -506,16 +507,15 @@ export default {
   },
 
   methods: {
-      handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
-        this.handleSearch();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.handleSearch();
-      },
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
+      this.handleSearch();
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.handleSearch();
+    },
     //当弹出框的客户名称改变的时候GET弹出框的品牌信息
     clientSelect2() {
       this.ruleForm.brandName = "";
@@ -565,14 +565,12 @@ export default {
     handleSearch() {
       let startDate;
       let endDate;
-      if(this.dateRange==undefined)
-      {
-        startDate="";
-        endDate="";
-      }
-      else{
-                  startDate= this.changeDate(this.dateRange[0]),
-          endDate=this.changeDate(this.dateRange[1])
+      if (this.dateRange == undefined) {
+        startDate = "";
+        endDate = "";
+      } else {
+        (startDate = this.changeDate(this.dateRange[0])),
+          (endDate = this.changeDate(this.dateRange[1]));
       }
       let list = {
         customerId: this.CustomerValue === "" ? null : this.CustomerValue,
@@ -580,9 +578,9 @@ export default {
         id: this.RangeValue === "" ? null : this.RangeValue,
         clothingLevelId:
           this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
-          dataRange:this.dataRange
+        dataRange: this.dataRange
       };
-    
+
       console.log(list);
       this.$axios
         .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
@@ -591,7 +589,7 @@ export default {
           id: this.RangeValue === "" ? null : this.RangeValue,
           clothingLevelId:
             this.ClothingLevelValue === "" ? null : this.ClothingLevelValue,
-          startDate:startDate,
+          startDate: startDate,
           endDate: endDate
         })
         .then(response => {
@@ -600,32 +598,37 @@ export default {
           // (this.RangeValue = ""),
           // (this.ClothingLevelValue = ""),
           // (this.dateRange = ""),
-          this.pagination.total=response.data.length;
+          this.pagination.total = response.data.length;
           this.tableData = response.data;
-          
+
           this.tableData.forEach(element => {
-              if(element.addingMode===1) element.addingModeName="手动";
-          else element.addingModeName="导入";
+            if (element.addingMode === 1) element.addingModeName = "手动";
+            else element.addingModeName = "导入";
 
-          if(element.state===1) element.stateName="已制定";
-          else if(element.state===2) element.stateName="已提交";
-          else if(element.state===3) element.stateName="被驳回";
-          else if(element.state===4) element.stateName="已审核";
-          else if(element.state===5) element.stateName="已下发";
-          else if(element.state===6) element.stateName="已删除";
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
+            if (element.state === 1) element.stateName = "已制定";
+            else if (element.state === 2) element.stateName = "已提交";
+            else if (element.state === 3) element.stateName = "被驳回";
+            else if (element.state === 4) element.stateName = "已审核";
+            else if (element.state === 5) element.stateName = "已下发";
+            else if (element.state === 6) element.stateName = "已删除";
+            var d = new Date(element.createTime);
+            let time = d.toLocaleString();
+            element.createTime = time;
 
-        let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-        this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
-        console.log(this.tableDataA)
+            let i =
+              (this.pagination.currentPage - 1) * this.pagination.pageSize;
+            let k =
+              (this.pagination.currentPage - 1) * this.pagination.pageSize;
+            this.tableDataA = [];
+
+            for (
+              ;
+              i - k < this.pagination.pageSize && i < this.tableData.length;
+              i++
+            ) {
+              this.tableDataA.push(this.tableData[i]);
+            }
+            console.log(this.tableDataA);
           });
         })
         .catch(error => {

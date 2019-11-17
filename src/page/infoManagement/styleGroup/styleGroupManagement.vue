@@ -110,7 +110,6 @@
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="serialNo" width="150" label="款式组编号" align="center"></el-table-column>
           <el-table-column prop="name" width="150" label="款式组名称" align="center"></el-table-column>
-
           <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="seriesName" width="150" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -118,7 +117,6 @@
           <el-table-column prop="styleQuantity" label="数量" align="center"></el-table-column>
           <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">

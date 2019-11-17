@@ -545,18 +545,6 @@ export default {
         (startDate = this.changeDate(this.dateRange[0])),
           (endDate = this.changeDate(this.dateRange[1]));
       }
-      let list = {
-        clientId: this.CustomerValue === "" ? undefined : this.CustomerValue,
-        brandId: this.BrandValue === "" ? undefined : this.BrandValue,
-        name: this.rangeName === "" ? undefined : this.rangeName,
-        clothesLevelName:
-          this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
-        createAfter: startDate,
-        createBefore: endDate,
-        pageSize: this.pagination.pageSize,
-        pageNum: this.pagination.currentPage
-      };
-      console.log("list:", list);
 
       request
         .get(`${window.$config.HOST}/info/series/find`, {

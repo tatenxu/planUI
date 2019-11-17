@@ -111,6 +111,24 @@
           <i class="el-icon-document"></i>
           计划管理
         </template>
+        <el-submenu index="rootPlan">
+          <template slot="title">
+            <i class="el-icon-document"></i>
+            根计划
+          </template>
+          <el-menu-item index="/planMake/seriesPlanMake" v-if="rangePlan">
+            <i class="el-icon-document"></i>系列制定
+          </el-menu-item>
+          <el-menu-item index="/planMake/styleGroupPlanMake" v-if="styleGroupPlan">
+            <i class="el-icon-document"></i>款式组制定
+          </el-menu-item>
+          <el-menu-item index="/planMake/stylePlanMake" v-if="stylePlan">
+            <i class="el-icon-document"></i>款式制定
+          </el-menu-item>
+          <el-menu-item index="/planMake/rootPlanMake" v-if="stylePlan">
+            <i class="el-icon-document"></i>已制定根计划
+          </el-menu-item>
+        </el-submenu>
 
         <el-menu-item index="/planManagement" v-if="planMana">
           <i class="el-icon-document"></i>制定计划管理
@@ -141,21 +159,7 @@
         </el-submenu>
 
         <!-- <el-menu-item index="/planMake/planMakeIndex"><i class="el-icon-document"></i>计划制定</el-menu-item> -->
-        <el-submenu index="rootPlan">
-          <template slot="title">
-            <i class="el-icon-document"></i>
-            根计划
-          </template>
-          <el-menu-item index="/planMake/seriesPlanMake" v-if="rangePlan">
-            <i class="el-icon-document"></i>系列计划制定
-          </el-menu-item>
-          <el-menu-item index="/planMake/styleGroupPlanMake" v-if="styleGroupPlan">
-            <i class="el-icon-document"></i>款式组计划制定
-          </el-menu-item>
-          <el-menu-item index="/planMake/stylePlanMake" v-if="stylePlan">
-            <i class="el-icon-document"></i>款式计划制定
-          </el-menu-item>
-        </el-submenu>
+    
         <el-menu-item index="/planVerify" v-if="planReview">
           <i class="el-icon-document"></i>计划审核管理
         </el-menu-item>

@@ -1,78 +1,75 @@
 <template>
-  <div class="body">
+  <el-card class="box-card">
     <!-- 搜索条件设置 -->
-    <el-card class="box-card">
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">客户名称</div>
-            <el-select v-model="ClientName" clearable placeholder="请选择">
-              <el-option v-for="item in client" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">品牌</div>
-            <el-select v-model="BrandName" clearable placeholder="请选择">
-              <el-option v-for="item in brand" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">系列名称</div>
-            <el-select v-model="SeriesName" clearable placeholder="请选择">
-              <el-option v-for="item in series" :key="item.id " :label="item.name" :value="item.id"></el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">添加时间</div>
-            <el-date-picker
-              style="margin-left:20px "
-              v-model="Date1"
-              type="daterange"
-              align="right"
-              unlink-panels
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
-          </div>
-        </el-col>
+    <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
+      <el-tab-pane label="系列计划制定" name="first" class="tabPane">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="bar">
+              <div class="title">客户名称</div>
+              <el-select v-model="ClientName" clearable placeholder="请选择">
+                <el-option
+                  v-for="item in client"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <div class="title">品牌</div>
+              <el-select v-model="BrandName" clearable placeholder="请选择">
+                <el-option v-for="item in brand" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <div class="title">系列名称</div>
+              <el-input v-model="SeriesName" placeholder="请输入系列名称" :clearable="true"></el-input>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="bar">
+              <div class="title">添加时间</div>
+              <el-date-picker
+                style="margin-left:20px "
+                v-model="Date1"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              ></el-date-picker>
+            </div>
+          </el-col>
 
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">款式组名称</div>
-            <el-select v-model="SeriesGroupName" clearable placeholder="请选择">
-              <el-option
-                v-for="item in seriesGroup"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="5" class="MinW" style="margin-left:30px">
-          <!-- <el-radio v-model="checked" label="1">未制定</el-radio>
-          <el-radio v-model="checked" label="2">已制定</el-radio>-->
-          <el-switch
-            v-model="checked"
-            @change="planTypeSwitchChange"
-            inactive-color="#13ce66"
-            inactive-text="未制定"
-            active-text="已制定"
-          ></el-switch>
+          <el-col :span="8">
+            <div class="bar">
+              <div class="title">款式组名称</div>
+              <el-input v-model="SeriesGroupName" placeholder="请输入款式组名称" :clearable="true"></el-input>
+            </div>
+          </el-col>
+          <el-col :span="5" class="MinW" style="margin-left:30px">
+            <!-- <el-radio v-model="checked" label="1">未制定</el-radio>
+            <el-radio v-model="checked" label="2">已制定</el-radio>-->
+            <el-switch
+              v-model="checked"
+              @change="planTypeSwitchChange"
+              inactive-color="#13ce66"
+              inactive-text="未制定"
+              active-text="已制定"
+            ></el-switch>
 
-          <el-button type="primary" @click="searchStyleGroup" style="margin-left:50px">搜索</el-button>
-        </el-col>
-      </el-row>
-      <!-- <el-row :gutter="20">
+            <el-button type="primary" @click="searchStyleGroup(1)" style="margin-left:50px">搜索</el-button>
+          </el-col>
+        </el-row>
+        <!-- <el-row :gutter="20">
         <el-col :span="15">
           <div class="bar">
             <div class="title">计划名称</div>
@@ -82,33 +79,45 @@
         <el-col :span="10">
           <el-button type="primary" @click="searchStyleGroup">搜索</el-button>
         </el-col>
-      </el-row>-->
-    </el-card>
+        </el-row>-->
+        <br />
+        <hr />
+        <br />
 
-    <!-- 搜索结果 -->
-    <el-card class="box-card">
-      <el-table :data="tableDataA" style="width: 100%; margin-top: 20px">
-      <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        <el-table-column prop="number" label="款式组编号" align="center"></el-table-column>
-        <el-table-column prop="name" label="款式组名称" align="center" width="100px"></el-table-column>
-        <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
-        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothingLevelName" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="quantity" label="数量" align="center"></el-table-column>
-        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
-        <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="stateName" label="是否制定计划" align="center"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="250" align="center" v-if="checked===false">
-          <template slot-scope="scope">
-            <el-button @click="QuoteSeriesPlan(scope.row)" type="text" size="small" :disabled="true">引用系列计划</el-button>
-            <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定计划</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        <!-- 搜索结果 -->
 
-                      <!-- 分页 -->
+        <el-table :data="tableDataA" style="width: 100%; margin-top: 20px" border>
+          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
+          <el-table-column prop="serialNo" width="150" label="款式组编号" align="center"></el-table-column>
+          <el-table-column prop="name" width="150" label="款式组名称" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="seriesName" width="150" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" label="款式数量" align="center"></el-table-column>
+          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="250"
+            align="center"
+            v-if="checked===false"
+          >
+            <template slot-scope="scope">
+              <!-- <el-button
+                @click="QuoteSeriesPlan(scope.row)"
+                type="text"
+                size="small"
+                :disabled="true"
+              >引用系列计划</el-button>-->
+              <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定根计划</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- 分页 -->
         <div class="block">
           <el-pagination
             @size-change="handleSizeChange"
@@ -120,68 +129,165 @@
             :total="pagination.total"
           ></el-pagination>
         </div>
-    </el-card>
-  </div>
+      </el-tab-pane>
+
+      <el-tab-pane label="制定根计划" name="fourth" v-if="rootPlanMakeFlag">
+        <el-form
+          :model="rootPlanMake"
+          :rules="planMakeRules"
+          ref="rootPlanMake"
+          label-width="120px"
+          class="add-ruleForm"
+        >
+          <el-row :gutter="20">
+            <el-col :span="13">
+              <div class="bar">
+                <el-form-item label="起止时间" prop="planMakeStartEndDate" placeholder="请选择起止时间">
+                  <el-date-picker
+                    :picker-options="pickerOptions0"
+                    style="margin-left:20px"
+                    v-model="rootPlanMake.planMakeStartEndDate"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    range-separator="至"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                  ></el-date-picker>
+                </el-form-item>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <div class="bar">
+                <el-form-item label="根计划名称" prop="planMakeName" placeholder="请输入根计划名称">
+                  <el-input
+                    v-model="rootPlanMake.planMakeName"
+                    clearable
+                    :rows="1"
+                    placeholder="请输入"
+                    style="min-width:240px"
+                  ></el-input>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col :span="3">
+              <div class="bar" style="margin-left: 0px">
+                <el-form-item label="日期类型" prop="planMakeDateType" placeholder="请选择日期类型">
+                  <el-select
+                    v-model="rootPlanMake.planMakeDateType"
+                    clearable
+                    placeholder="请选择"
+                    style="min-width:120px"
+                  >
+                    <el-option
+                      v-for="item in dateTypeOptions"
+                      :key="item.name"
+                      :label="item.name"
+                      :value="item.name"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label prop="productDate" placeholder="请选择日期">
+                <el-date-picker
+                  :picker-options="pickerOptions1"
+                  v-model="rootPlanMake.planMakeDate"
+                  type="date"
+                  placeholder="选择日期"
+                  style="min-width:260px"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="20">
+              <div class="Mbutton">
+                <el-col :span="2">
+                  <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
+                </el-col>
+                <el-col :span="2">
+                  <el-button type="primary" @click="CancelRootPlan()">取消</el-button>
+                </el-col>
+              </div>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
+  </el-card>
 </template>
 
 <script>
+import request from "@/utils/request";
 export default {
-  name:'styleGroupPlanMake',
+  name: "styleGroupPlanMake",
   data() {
     return {
+      pickerOptions0: {
+        disabledDate: time => {
+          var date = new Date();
+
+          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
+      },
+
+      pickerOptions1: {
+        disabledDate: time => {
+          var date = new Date();
+
+          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
+      },
+      seriesOptions: [],
+      dateTypeOptions: [],
+      planMakeRules: {
+        planMakeStartEndDate: [
+          {
+            required: true,
+            message: "请选择日期时间",
+            trigger: "change"
+          }
+        ],
+        // planMakeSeriesId: [
+        //   { required: true, message: "请选择系列名称", trigger: "change" }
+        // ],
+        planMakeName: [
+          { required: true, message: "请输入计划名称", trigger: "blur" }
+        ],
+        planMakeDateType: [
+          { required: true, message: "请选择日期类型", trigger: "change" }
+        ],
+        planMakeDate: [
+          { required: true, message: "请选择日期", trigger: "change" }
+        ]
+      },
+      rootPlanName: "",
+      rootPlanMake: {
+        planMakeStartEndDate: [],
+        planMakeName: "",
+        planMakeSeriesId: "",
+        planMakePlanClass: "",
+        planMakeObjectId: "",
+        planMakeDateType: "",
+        planMakeDate: "",
+        planMakeStartDate: "",
+        planMakeEndDate: ""
+      },
+
+      rootPlanMakeFlag: false,
+      viewname: "first",
       pagination: {
         currentPage: 1,
-        pageSizes: [10, 20, 30, 40,50],
+        pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
       },
-      planManagementErrorCode:[
-        {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
-        },
-        {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
-        },
-        {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
-        },
-        {
-          erorCode:-4,
-          errotInfo:"系列根计划不存在",
-        },
-        {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
-        },
-        {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
-        },
-        {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
-        },
-        {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
-        },
-        {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
-        },
-        {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
-        },
-        {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
-      ],
-      tableDataA:[],
+
+      tableDataA: [],
       checked: 0,
       ClientName: "",
       BrandName: "",
@@ -203,19 +309,19 @@ export default {
       DataEndTime: ""
     };
   },
-  computed:{
-    keepAlives:{
-      get(){
-        return this.$store.getters['baseinfo/keepAliveOptions'];
+  computed: {
+    keepAlives: {
+      get() {
+        return this.$store.getters["baseinfo/keepAliveOptions"];
       },
-      set(value){
-        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      set(value) {
+        return this.$store.commit("baseinfo/keepalive-opt-arr", value);
       }
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'planMakeIndex') {
-      this.keepAlives = ['styleGroupPlanMake',];
+    if (to.name === "planMakeIndex") {
+      this.keepAlives = ["styleGroupPlanMake"];
     } else {
       this.keepAlives = [];
     }
@@ -224,202 +330,150 @@ export default {
 
   created: function() {
     var that = this;
-    //获得系列名称
-    that.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
+    //获得日期类型
+    request
+      .get(`/backstage/dic-property/name`, {
         params: {
-          brandId: ""
+          categoryName: "日期类型"
         }
       })
       .then(response => {
-        this.series = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取系列名称失败",
-          type: "error"
-        });
+        this.dateTypeOptions = response.result;
       });
     //获得品牌名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-        parmas: {
-          customerId: ""
-        }
-      })
-      .then(response => {
-        this.brand = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取品牌名称失败",
-          type: "error"
-        });
-      });
-
-    //获得款式组名称
-    that.$axios
-      .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`, {
-        params: {
-          rangeId: ""
-        }
-      })
-      .then(response => {
-        this.seriesGroup = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取款式组名称失败",
-          type: "error"
-        });
-      });
+    request.get(`/backstage/brand/name`).then(response => {
+      this.brand = response.result;
+    });
 
     //获得客户名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
-      .then(response => {
-        this.client = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取客户名称失败",
-          type: "error"
-        });
-      });
+    request.get(`/backstage/client/name`).then(response => {
+      this.client = response.result;
+    });
 
     //获得初始搜索结果
-    that.$axios
-      .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
-        customerId: null,
-        brandId: null,
-        rangeId: null,
-        clothingLevelId: null,
-        id: null,
-        startDate: null,
-        endDate: null
-      })
-      .then(response => {
-        console.log(response.data)
-       
-        response.data.forEach(element => {
-  if (element.havePlan === true) element.stateName = "已制定";
-            else if (element.havePlan === false) element.stateName = "未制定";
-            if (element.havePredictPlan === true)
-              element.predictState = "已预测";
-            else if (element.havePredictPlan === false)
-              element.predictState = "未预测";
-
-
-
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
-          if(element.havePlan===false) this.tableData.push(element);
-        });
-
-
-
-          this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
+    request
+      .get(`/info/style-group/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 10,
+          haveRootPlan: this.checked
         }
       })
-      .catch(error => {
-        this.$message({
-          message: "获取搜索结果失败",
-          type: "error"
-        });
+      .then(response => {
+        this.tableDataA = response.result;
+        this.pagination.total = response.total;
       });
   },
   methods: {
-
-        handleSizeChange(val) {
-    
-        this.pagination.pageSize=val;
-        console.log("每页+"+this.pagination.pageSize)
-        this.searchStyleGroup();
-      },
-      handleCurrentChange(val) {
-        this.pagination.currentPage=val;
-         this.searchStyleGroup();
-      },
-    planTypeSwitchChange() {
-      console.log("ssssssssss=" + this.checked);
+    addRootPlan(formName) {
       const that = this;
-      this.DataStartTime = that.changeDate(this.Date1[0]);
-      this.DataEndTime = that.changeDate(this.Date1[1]);
-      let list = {
-        id: this.SeriesName === "" ? "" : this.SeriesName,
-        customerId: this.ClientName === "" ? "" : this.ClientName,
-        brandId: this.BrandName === "" ? "" : this.BrandName,
-        clothingLevelId:
-          this.clothingLevelId === "" ? "" : this.clothingLevelId,
-        startDate: this.DataStartTime,
-        endDate: this.DataEndTime
-      };
-      console.log(list);
-      this.$axios
-        .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
-          id: this.SeriesName === "" ? null : this.SeriesName,
-          customerId: this.ClientName === "" ? null : this.ClientName,
-          brandId: this.BrandName === "" ? null : this.BrandName,
-          clothingLevelId:this.clothingLevelId === "" ? null : this.clothingLevelId,
-          startDate: this.DataStartTime,
-          endDate: this.DataEndTime
-        })
-        .then(response => {
-          console.log(response.data)
-          var SearchList = response.data;
-          this.tableData = [];
-          SearchList.forEach(element => {
-            console.log("这次havePlan的值为:" + element.havePlan);
-            var d = new Date(element.createTime);
-            if (element.havePlan === true) element.stateName = "已制定";
-            else if (element.havePlan === false) element.stateName = "未制定";
-            if (element.havePredictPlan === true)
-              element.predictState = "已预测";
-            else if (element.havePredictPlan === false)
-              element.predictState = "未预测";
-            var d = new Date(element.createTime);
-            let time = d.toLocaleString();
-            element.createTime = time;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.rootPlanMake.planMakeStartDate = that.changeDate(
+            this.rootPlanMake.planMakeStartEndDate[0]
+          );
+          this.rootPlanMake.planMakeEndDate = that.changeDate(
+            this.rootPlanMake.planMakeStartEndDate[1]
+          );
 
-            if (this.checked == false && element.havePlan === false) {
-              this.tableData.push(element);
-            } else if (this.checked == true && element.havePlan === true) {
-              this.tableData.push(element);
-            }
+          this.rootPlanMake.planMakeDate = that.changeDate(
+            this.rootPlanMake.planMakeDate
+          );
+          let list = {};
 
+          list = {
+            name: this.rootPlanMake.planMakeName,
+            seriesId: this.rootPlanMake.planMakeSeriesId,
+            planClass: "款式组计划",
+            objectId: this.rootPlanMake.objectId,
+            dateType: this.rootPlanMake.planMakeDateType,
+            date: this.rootPlanMake.planMakeDate,
+            startDate: this.rootPlanMake.planMakeStartDate,
+            endDate: this.rootPlanMake.planMakeEndDate
+          };
 
+          request.post(`/root-plan/insert`, list).then(response => {
+            this.searchStyleGroup(1);
+            this.rootPlanMakeFlag = false;
+            this.viewname = "first";
+            this.rootPlanMake.planMakeStartEndDate = [];
+            this.rootPlanMake.planMakeName = "";
+            this.rootPlanMake.planMakeSeriesId = "";
+            this.rootPlanMake.planMakePlanClass = "";
+            this.rootPlanMake.planMakeObjectId = "";
+            this.rootPlanMake.planMakeDateType = "";
+            this.rootPlanMake.planMakeDate = "";
+            this.rootPlanMake.planMakeStartDate = "";
+            this.rootPlanMake.planMakeEndDate = "";
           });
-
-                       this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
-        })
-        .catch(error => {
+        } else {
           this.$message({
-            message: "获取搜索结果失败",
+            message: "制定根计划失败!",
             type: "error"
           });
+        }
+      });
+    },
+    handleTabClick(tab, event) {
+      console.log(tab, event);
+    },
+    CancelRootPlan() {
+      this.rootPlanMakeFlag = false;
+      this.viewname = "first";
+      this.rootPlanMake.planMakeStartEndDate = [];
+      this.rootPlanMake.planMakeName = "";
+      this.rootPlanMake.planMakeSeriesId = "";
+      this.rootPlanMake.planMakePlanClass = "";
+      this.rootPlanMake.planMakeObjectId = "";
+      this.rootPlanMake.planMakeDateType = "";
+      this.rootPlanMake.planMakeDate = "";
+      this.rootPlanMake.planMakeStartDate = "";
+      this.rootPlanMake.planMakeEndDate = "";
+    },
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      console.log("每页+" + this.pagination.pageSize);
+      this.searchStyleGroup(1);
+    },
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.searchStyleGroup(val);
+    },
+    planTypeSwitchChange() {
+      const that = this;
+      if (this.Date1 != null) {
+        this.DataStartTime = that.changeDate(this.Date1[0]);
+        this.DataEndTime = that.changeDate(this.Date1[1]);
+      } else {
+        this.DataStartTime = null;
+        this.DataEndTime = null;
+      }
+      request
+        .get(`/info/style-group/find`, {
+          params: {
+            seriesName: this.SeriesName === "" ? undefined : this.SeriesName,
+            clientId: this.ClientName === "" ? undefined : this.ClientName,
+            brandId: this.BrandName === "" ? undefined : this.BrandName,
+            clothesLevelName:
+              this.clothingLevelId === "" ? undefined : this.clothingLevelId,
+            createBefore: this.DataEndTime,
+            createAfter: this.DataStartTime,
+            name:
+              this.SeriesGroupName === "" ? undefined : this.SeriesGroupName,
+            haveRootPlan: this.checked,
+            pageNum: 1,
+            pageSize: this.pagination.pageSize
+          }
+        })
+        .then(response => {
+          this.tableDataA = response.result;
+          this.pagination.total = response.total;
         });
     },
     //改变日期格式
     changeDate(date) {
-      console.log(date);
       if (!date) {
-        return NaN;
+        return undefined;
       } else {
         var y = date.getFullYear();
         var m = date.getMonth() + 1;
@@ -431,179 +485,68 @@ export default {
         minute = minute < 10 ? "0" + minute : minute;
         var second = date.getSeconds();
         second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        return y + "-" + m + "-" + d;
       }
     },
-    searchStyleGroup() {
+    searchStyleGroup(currentPageNum) {
       const that = this;
-      this.DataStartTime = that.changeDate(this.Date1[0]);
-      this.DataEndTime = that.changeDate(this.Date1[1]);
+      if (this.Date1 != null) {
+        this.DataStartTime = that.changeDate(this.Date1[0]);
+        this.DataEndTime = that.changeDate(this.Date1[1]);
+      } else {
+        this.DataStartTime = null;
+        this.DataEndTime = null;
+      }
 
-      this.$axios
-        .post(`${window.$config.HOST}/infoManagement/getStyleGroupList`, {
-          customerId: this.ClientName === "" ? null : this.ClientName,
-          brandId: this.BrandName === "" ? null : this.BrandName,
-          rangeId: this.SeriesName === "" ? null : this.SeriesName,
-          clothingLevelId: null,
-          id: this.SeriesGroupName === "" ? null : this.SeriesGroupName,
-          startDate: this.DataStartTime,
-          endDate: this.DataEndTime
+      request
+        .get(`/info/style-group/find`, {
+          params: {
+            seriesName: this.SeriesName === "" ? undefined : this.SeriesName,
+            clientId: this.ClientName === "" ? undefined : this.ClientName,
+            brandId: this.BrandName === "" ? undefined : this.BrandName,
+            clothesLevelName:
+              this.clothingLevelId === "" ? undefined : this.clothingLevelId,
+            createBefore: this.DataEndTime,
+            createAfter: this.DataStartTime,
+            name:
+              this.SeriesGroupName === "" ? undefined : this.SeriesGroupName,
+            haveRootPlan: this.checked,
+            pageNum: currentPageNum,
+            pageSize: this.pagination.pageSize
+          }
         })
         .then(response => {
-          console.log(response.data);
-          console.log("checked=", this.checked);
-          var SearchList = response.data;
-          this.tableData = [];
-          SearchList.forEach(element => {
-            console.log("这次havePlan的值为:" + element.havePlan);
-            var d = new Date(element.createTime);
-             if (element.havePlan === true) element.stateName = "已制定";
-            else if (element.havePlan === false) element.stateName = "未制定";
-            if (element.havePredictPlan === true)
-              element.predictState = "已预测";
-            else if (element.havePredictPlan === false)
-              element.predictState = "未预测";
-    
-            let time = d.toLocaleString();
-            element.createTime = time;
-
-   
-              if (this.checked == false && element.havePlan === false) {
-                this.tableData.push(element);
-              } else if (this.checked == true && element.havePlan === true) {
-                this.tableData.push(element);
-              }
-
-          });
-
-                       this.pagination.total=this.tableData.length;
-          let i = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          let k = (this.pagination.currentPage-1) * this.pagination.pageSize;
-          this.tableDataA=[];
-        
-        for(;i-k<this.pagination.pageSize&&i<this.tableData.length;i++)
-        {
-          this.tableDataA.push(this.tableData[i]);
-        }
-        })
-        .catch(error => {
-          var SearchList = [
-            {
-              id: 475342343,
-              number: "KSZ201901sss01001",
-              name: "款式1组",
-              rangeId: 48674231,
-              rangeNumber: "XL20190101001",
-              rangeName: "Fall-2019(07/08/09)",
-              customerId: 745341,
-              customerName: "Qi-Collection",
-              brandId: 574531423,
-              brandName: "Selkie",
-              clothingLevelId: 575123,
-              clothingLevelName: "时装",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              state: "已下发",
-              havePlan: 1
-            },
-            {
-              id: 475342343,
-              number: "KSZ20190101001",
-              name: "款式1组",
-              rangeId: 48674231,
-              rangeNumber: "XL20190101001",
-              rangeName: "Fall-2019(07/08/09)",
-              customerId: 745341,
-              customerName: "Qi-Collection",
-              brandId: 574531423,
-              brandName: "Selkie",
-              clothingLevelId: 575123,
-              clothingLevelName: "时装",
-              createrName: "刘德华",
-              deptName: "业务1组",
-              createTime: "2019-01-01 10:15:01",
-              state: "已下发",
-              havePlan: 1
-            }
-          ];
-          this.tableData = SearchList;
+          this.tableDataA = response.result;
+          this.pagination.total = response.total;
         });
     },
     ClearChanged(row) {
       this.$refs.singleTable.setCurrentRow(row);
     },
-    QuoteSeriesPlan(row) {
-     const that  =  this;
-      //获得品牌下拉框
-      console.log(row.id)
-      let list = {
-        styleGroupId:row.id ,
-         rangeId: row.rangeId
-      }
-      that.$axios
-        .post(`${window.$config.HOST}/planManagement/quoteRangePlan`, list)
-        .then(response => {
-          console.log("repsonse="+response.data)
-          let ok = response.data;
-          if(response.data < 0 ){
-            console.log("引用失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "引用失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
-            this.$message({
-              type:"success",
-              message: "引用成功!"
-            });
-          }
-        })
-        .catch(error => {
-            console.log("repsonse=")
-          this.$message({
-            message: "引用预测失败！",
-            type: "error"
-          });
-        });
-     
-    },
+    // QuoteSeriesPlan(row) {
+    //   const that = this;
+    //   //获得品牌下拉框
+    //   let list = {
+    //     styleGroupId: row.id,
+    //     rangeId: row.rangeId
+    //   };
+    //   request.post(`/root-plan/quote`, list).then(response => {});
+    // },
     ToPlanForm(row) {
-
-            if (row.havePlan === true) {
-        this.$message({
-          message: "该计划已经被制定",
-          type: "warning"
-        });
-        return;
-      }
-      this.$router.push({
-        name: "planMakeIndex",
-        params: {
-
-          flag: 1, //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
-          goback: "styleGroupPlanMake", //goback 为返回的 name
-          customerName: row.customerName, 
-          brandName: row.brandName,
-          rangeId: row.rangeId,
-          rangeName: row.rangeName,
-          planType: "款式组计划",
-          planObjectName: row.name,
-          planObjectId:row.id,
-          topPlanName: "根计划",
-          topPlanId: 0,
-                    quantity:row.quantity
-        }
-      });
+      this.rootPlanMake.planMakeSeriesId = row.seriesId;
+      this.rootPlanMake.objectId = row.id;
+      this.rootPlanMakeFlag = true;
+      this.viewname = "fourth";
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
-
-
-  .block {
-    padding: 30px 0;
-    text-align: center;
-  }
+.block {
+  padding: 30px 0;
+  text-align: center;
+}
 .title {
   min-width: 100px;
 }
