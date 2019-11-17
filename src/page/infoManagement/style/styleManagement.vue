@@ -786,7 +786,7 @@ export default {
             .post(`/info/style/insert`, {
               number: this.ruleForm.number,
               seriesId: this.ruleForm.rangeName,
-              addMode: "手动"
+              addMode: "SINGLE"
             })
             .then(response => {
               this.handleSearch();

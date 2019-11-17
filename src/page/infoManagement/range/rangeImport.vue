@@ -376,7 +376,7 @@ export default {
           note: element.rangeNote,
           season:this.ruleForm.season,
           systemCode:this.ruleForm.systemCode,
-          addMode:"导入"
+          addMode:"BATCH"
         });
       });
 

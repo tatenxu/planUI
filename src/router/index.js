@@ -30,6 +30,7 @@ const commitedPlanManagement = r => require.ensure([], () => r(require('../page/
 const planCompletionManage = r => require.ensure([], () => r(require('../page/planManagement/planCompletionManage.vue')), 'planCompletionManage');
 const planMakeIndex = r => require.ensure([], () => r(require('../page/planManagement/planMake.vue')), 'planMakeIndex');
 const seriesPlanMake = r => require.ensure([], () => r(require('../page/planManagement/seriesPlanMake.vue')), 'seriesPlanMake');
+const rootPlanMake = r => require.ensure([], () => r(require('../page/planManagement/rootPlanMake.vue')), 'rootPlanMake');
 const styleGroupPlanMake = r => require.ensure([], () => r(require('../page/planManagement/styleGroupPlanMake .vue')), 'styleGroupPlanMake ');
 const stylePlanMake = r => require.ensure([], () => r(require('../page/planManagement/stylePlanMake.vue')), 'stylePlanMake');
 const planVerify = r => require.ensure([], () => r(require('../page/planManagement/planVerify.vue')), 'planVerify');
@@ -249,6 +250,14 @@ export default [
         component: planMakeIndex,
         meta: {
           bcrumd: ['计划制定'],
+        }
+      },
+      {
+        path: '/planMake/rootPlanMake',
+        name: 'rootPlanMake',
+        component: rootPlanMake,
+        meta: {
+          bcrumd: ['计划制定', '系列计划制定'],
         }
       },
       {
