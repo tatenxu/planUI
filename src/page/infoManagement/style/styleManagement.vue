@@ -61,7 +61,7 @@
           </div>
         </el-col>
         <el-col :span="2">
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch(1)">搜索</el-button>
         </el-col>
       </el-row>
     </el-card>
@@ -287,6 +287,39 @@
         </el-row>
       </el-form>
     </el-dialog>
+
+    <el-dialog :modal="false" title="绑定款式组" :visible.sync="bindStyleGroupDialog">
+      <el-form
+        :model="ruleForm1"
+        :rules="rules1"
+        ref="ruleForm1"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="款式组" placeholder="请选择款式组" prop="styleGroupId">
+              <el-select v-model="ruleForm1.styleGroupId" :clearable="true">
+                <el-option
+                  v-for="item in styleGroupIdOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="submitForm2()">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancel1">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -295,6 +328,17 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      styleGroupBindList: [],
+      bindStyleGroupDialog: false,
+      styleGroupIdOptions: [],
+      rules1: {
+        styleGroupId: [
+          { required: true, message: "请选择款式组", trigger: "change" }
+        ]
+      },
+      ruleForm1: {
+        styleGroupId: ""
+      },
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -341,36 +385,7 @@ export default {
         tableData: []
       },
       multipleSelection: [],
-      infoManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "新增的数据数据库中已经存在"
-        },
-        {
-          errorCode: -2,
-          errotInfo: "传入信息的字段缺失"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "已与款式组或款式绑定，不得删除"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "数据不唯一"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "数据库其他错误"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "数据不存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "数据状态错误"
-        }
-      ],
+
       ruleForm: {
         rangeId: "",
         rangeNumber: "",
@@ -437,16 +452,43 @@ export default {
       })
       .then(response => {
         this.tableDataA = response.result;
-        
+
         this.pagination.total = response.total;
       });
   },
 
   methods: {
+    submitForm2() {
+      const that = this;
+      if (this.ruleForm1.styleGroupId === "") {
+        this.$message({
+          type: "error",
+          message: "请选择款式组进行绑定操作！"
+        });
+        return;
+      }
+
+      that.multipleSelection.forEach(element => {
+        this.styleGroupBindList.push({
+          styleGroupId: this.ruleForm1.styleGroupId,
+          styleId: element.id
+        });
+      });
+
+      request
+        //此处的接口为GET订单款号
+        .post(`/info/style-group-relation/bind`, this.styleGroupBindList)
+        .then(response => {
+          this.handleSearch(this.pagination.currentPage);
+          this.bindStyleGroupDialog = false;
+          this.ruleForm1.styleGroupId = "";
+          this.styleGroupBindList = [];
+        });
+    },
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       console.log("每页+" + this.pagination.pageSize);
-      this.handleSearch();
+      this.handleSearch(1);
     },
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
@@ -504,7 +546,7 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
-     pageChanged() {
+    pageChanged() {
       let startDate;
       let endDate;
       if (this.dateRange == null) {
@@ -544,14 +586,13 @@ export default {
         })
         .then(response => {
           this.tableDataA = response.result;
-          
+
           this.pagination.total = response.total;
         });
     },
 
-
     // 搜索按钮点击
-    handleSearch() {
+    handleSearch(currentPageNum) {
       let startDate;
       let endDate;
       if (this.dateRange == null) {
@@ -580,7 +621,7 @@ export default {
             : this.searchOptions.searchParams.number,
         createAfter: startDate,
         createBefore: endDate,
-        pageNum: 1,
+        pageNum: currentPageNum,
         pageSize: this.pagination.pageSize
       };
       console.log(list);
@@ -591,7 +632,7 @@ export default {
         })
         .then(response => {
           this.tableDataA = response.result;
-          
+
           this.pagination.total = response.total;
         });
     },
@@ -653,12 +694,11 @@ export default {
                   }
                 })
                 .then(response => {
-                  this.handleSearch();
+                  this.handleSearch(1);
                 });
             });
           })
           .catch(() => {
-            this.handleSearch();
             this.$message({
               type: "info",
               message: "已取消删除"
@@ -669,19 +709,25 @@ export default {
     // 绑定款式组
     bindStyleGroup() {
       const that = this;
-      console.log("绑定款式组按钮点击");
       if (that.multipleSelection.length === 0) {
         this.$message({
           message: "请选择要绑定款式组的款号",
           type: "warning"
         });
-      } else if (that.multipleSelection.length >= 1) {
+      } 
+      else if (that.multipleSelection.length >= 1) {
         let rangeId = this.multipleSelection[0].seriesId;
         let ok = 0;
         this.multipleSelection.forEach(element => {
+          if (element.state === "绑定") {
+            this.$message({
+              message: "所选择的款式中包含已绑定款式！",
+              type: "error"
+            });
+            ok++ ;
+          }
           if (element.seriesId != rangeId) {
             ok++;
-
             this.$message({
               message: "请选择同一系列下的款式进行绑定！",
               type: "warning"
@@ -689,12 +735,18 @@ export default {
           }
         });
         if (ok === 0) {
-          that.$router.push({
-            name: `bindStyleGroup`,
-            query: {
-              bindData: that.multipleSelection
-            }
-          });
+          //得到款式组下拉框
+          request
+            //此处的接口为GET订单款号
+            .get(`/info/style-group/name`, {
+              params: {
+                seriesId: rangeId
+              }
+            })
+            .then(response => {
+              this.styleGroupIdOptions = response.result;
+              this.bindStyleGroupDialog = true;
+            });
         }
       }
     },
@@ -772,10 +824,8 @@ export default {
             params: list
           })
           .then(response => {
-            this.handleSearch();
-           
-          })
-         
+            this.handleSearch(1);
+          });
       });
     },
     submitForm(formName) {
@@ -789,7 +839,7 @@ export default {
               addMode: "SINGLE"
             })
             .then(response => {
-              this.handleSearch();
+              this.handleSearch(1);
 
               (this.ruleForm.rangeId = ""),
                 (this.ruleForm.rangeNumber = ""),
@@ -837,18 +887,14 @@ export default {
             //此处的接口为GET订单款号
             .put(`/info/style/update`, list)
             .then(response => {
-
-                this.handleSearch();
-                this.ruleForm.customerName = "";
-                this.ruleForm.brandName ="";
-                this.ruleForm.rangeName ="";
-                this.ruleForm.number = "";
-                this.ruleForm.id = "";
-                this.dialogFormVisible1 = false;
-                
-               
-            })
-          
+              this.handleSearch(this.pagination.currentPage);
+              this.ruleForm.customerName = "";
+              this.ruleForm.brandName = "";
+              this.ruleForm.rangeName = "";
+              this.ruleForm.number = "";
+              this.ruleForm.id = "";
+              this.dialogFormVisible1 = false;
+            });
         } else {
           console.log("error submit!!");
           return false;
@@ -869,6 +915,11 @@ export default {
       // }
     },
     // 取消按钮点击
+    cancel1() {
+      this.bindStyleGroupDialog = false;
+      this.ruleForm1.styleGroupId = "";
+      this.styleGroupBindList = [];
+    },
     cancel() {
       const that = this;
       console.log("取消按钮点击");

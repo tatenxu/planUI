@@ -1,155 +1,13 @@
 <template>
-  <el-card class="box-card">
-    <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
-      <el-tab-pane label="根计划" name="first" class="tabPane">
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">客户名称</div>
-              <el-select v-model="ClientName" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in client"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">品牌</div>
-              <el-select v-model="BrandName" clearable placeholder="请选择">
-                <el-option v-for="item in brand" :key="item.id" :label="item.name" :value="item.id"></el-option>
-              </el-select>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">系列名称</div>
-              <el-input v-model="SeriesName" placeholder="请输入系列名称" :clearable="true"></el-input>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">添加时间</div>
-              <el-date-picker
-                style="margin-left:20px "
-                v-model="Date1"
-                type="daterange"
-                align="right"
-                unlink-panels
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              ></el-date-picker>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">服装层次</div>
-
-              <el-select v-model="clothingLevelId" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in type"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
-              </el-select>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <div class="title">根计划名称</div>
-              <el-input v-model="rootPlanName" placeholder="请输入系列名称" :clearable="true"></el-input>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="20">
-            <el-col :span="3">
-              <el-button type="primary" @click="searchSeriesPlan(1)">搜索</el-button>
-            </el-col>
-            <!-- <el-col :span="4">
-              <el-button type="primary" @click="handleClick1()">引用计划模板</el-button>
-            </el-col>-->
-            <el-col :span="5">
-              <el-button type="primary" @click="handleClick2()">存为计划模板</el-button>
-            </el-col>
-            <!-- <el-col :span="5">
-              <el-button type="primary" @click="handleClick3()">制定根计划</el-button>
-            </el-col>-->
-            <el-col :span="8" style="margin-top:10px;margin-left:400px">
-              <el-radio-group v-model="checked" @change="changeState">
-                <el-radio :label="1">系列</el-radio>
-                <el-radio :label="2">款式组</el-radio>
-                <el-radio :label="3">款式</el-radio>
-              </el-radio-group>
-            </el-col>
-          </el-col>
-        </el-row>
-
-        <hr />
-
-        <el-table
-          :data="tableData"
-          style="width: 100%; margin-top: 20px"
-          @selection-change="IsChanged"
-        >
-          <el-table-column w idth="50" type="selection" align="center"></el-table-column>
-          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="objectName" label="款式组名称" align="center" v-if="checked ===2"></el-table-column>
-          <el-table-column prop="objectName" label="款式名称" align="center" v-if="checked ===3"></el-table-column>
-          <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
-          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
-          <el-table-column
-            label="操作"
-            fixed="right"
-            align="center"
-            width="200px"
-            v-if="checked===false"
-          >
-            <template slot-scope="scope">
-              <!-- <el-button size="mini" type="text" @click="ViewDetails=true">查看详情</el-button> -->
-              <el-dialog title="系列详情" :visible.sync="ViewDetails" :modal="false">
-                <el-tree :data="SeriesDetail" :props="defaultProps"></el-tree>
-                <el-button type="primary" @click="ViewDetails=false" style="margin-left:90%">确认</el-button>
-              </el-dialog>
-              <el-button size="mini" @click="QuotePre(scope.row)" type="text" :disabled="true">引用预测</el-button>
-              <el-button size="mini" @click="ToPlanForm(scope.row)" type="text">制定计划</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <!-- 分页 -->
-        <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
-        </div>
-      </el-tab-pane>
-
-      <el-tab-pane label="引用计划模板" name="second" v-if="QuotePlanModel">
-        <el-card>
+  <div class="body">
+    <el-card class="box-card">
+      <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
+        <el-tab-pane label="根计划" name="first" class="tabPane">
           <el-row :gutter="20">
             <el-col :span="8">
               <div class="bar">
                 <div class="title">客户名称</div>
-                <el-select v-model="ClientName2" clearable placeholder="请选择">
+                <el-select v-model="ClientName" clearable placeholder="请选择">
                   <el-option
                     v-for="item in client"
                     :key="item.id"
@@ -162,7 +20,7 @@
             <el-col :span="8">
               <div class="bar">
                 <div class="title">品牌</div>
-                <el-select v-model="BrandName2" clearable placeholder="请选择">
+                <el-select v-model="BrandName" clearable placeholder="请选择">
                   <el-option
                     v-for="item in brand"
                     :key="item.id"
@@ -172,237 +30,459 @@
                 </el-select>
               </div>
             </el-col>
-
             <el-col :span="8">
               <div class="bar">
-                <el-button type="primary" @click="searchTemplate">查询</el-button>
+                <div class="title">系列名称</div>
+                <el-input v-model="SeriesName" placeholder="请输入系列名称" :clearable="true"></el-input>
               </div>
             </el-col>
           </el-row>
-          <br />
-          <hr />
-          <br />
-
           <el-row :gutter="20">
-            <el-col :span="2">
-              <el-button type="primary" size="small" @click="SaveModel()">确认</el-button>
+            <el-col :span="8">
+              <div class="bar">
+                <div class="title">添加时间</div>
+                <el-date-picker
+                  style="margin-left:20px "
+                  v-model="Date1"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                ></el-date-picker>
+              </div>
             </el-col>
-            <el-col :span="2">
-              <el-button type="primary" size="small" @click="CancelModel()">取消</el-button>
+            <el-col :span="8">
+              <div class="bar">
+                <div class="title">服装层次</div>
+
+                <el-select v-model="clothingLevelId" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in type"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="bar">
+                <div class="title">根计划名称</div>
+                <el-input v-model="rootPlanName" placeholder="请输入系列名称" :clearable="true"></el-input>
+              </div>
             </el-col>
           </el-row>
+          <el-row :gutter="20">
+            <el-col :span="20">
+              <el-col :span="3">
+                <el-button type="primary" @click="searchSeriesPlan(1)">搜索</el-button>
+              </el-col>
+              <!-- <el-col :span="4">
+              <el-button type="primary" @click="handleClick1()">引用计划模板</el-button>
+              </el-col>-->
+              <el-col :span="5">
+                <el-button type="primary" @click="handleClick2()">存为计划模板</el-button>
+              </el-col>
+              <!-- <el-col :span="5">
+              <el-button type="primary" @click="handleClick3()">制定根计划</el-button>
+              </el-col>-->
+              <el-col :span="8" style="margin-top:10px;margin-left:400px">
+                <el-radio-group v-model="checked" @change="changeState">
+                  <el-radio :label="1">系列</el-radio>
+                  <el-radio :label="2">款式组</el-radio>
+                  <el-radio :label="3">款式</el-radio>
+                </el-radio-group>
+              </el-col>
+            </el-col>
+          </el-row>
+
+          <hr />
+
           <el-table
-            :data="tableData1"
+            :data="tableData"
             style="width: 100%; margin-top: 20px"
-            @selection-change="IsChanged1"
+            @selection-change="IsChanged"
           >
             <el-table-column w idth="50" type="selection" align="center"></el-table-column>
-            <el-table-column type="index" label="序号" align="center"></el-table-column>
-
-            <el-table-column prop="name" label="模板名称" align="center"></el-table-column>
+            <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
+            <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
             <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
             <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
+            <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+            <el-table-column prop="objectName" label="款式组名称" align="center" v-if="checked ===2"></el-table-column>
+            <el-table-column prop="objectName" label="款式名称" align="center" v-if="checked ===3"></el-table-column>
             <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
-
-            <el-table-column fixed="right" label="操作" width="200">
+            <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+            <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+            <el-table-column label="操作" fixed="right" align="center" width="200px">
               <template slot-scope="scope">
-                <el-button type="text" size="small" @click="toPlanModelPage(scope.row)">查看</el-button>
+                <el-button
+                  size="mini"
+                  @click="assignRootPlan(scope.row)"
+                  v-if="scope.row.state ==='已制定'"
+                  type="text"
+                >下发</el-button>
+                <el-button
+                  size="mini"
+                  @click="assignDetail(scope.row)"
+                  v-if="scope.row.state ==='已下发'"
+                  type="text"
+                >查看下发情况</el-button>
               </template>
             </el-table-column>
           </el-table>
-        </el-card>
-      </el-tab-pane>
+          <!-- 分页 -->
+          <div class="block">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="pagination.currentPage"
+              :page-sizes="pagination.pageSizes"
+              :page-size="pagination.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pagination.total"
+            ></el-pagination>
+          </div>
+        </el-tab-pane>
 
-      <el-tab-pane label="保存计划模版" name="third" v-if="SavePlanModel">
-        <el-card>
-          <el-form
-            :model="ruleForm"
-            :rules="rules"
-            ref="ruleForm"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
+        <el-tab-pane label="引用计划模板" name="second" v-if="QuotePlanModel">
+          <el-card>
             <el-row :gutter="20">
               <el-col :span="8">
                 <div class="bar">
-                  <el-form-item label="客户名称" prop="ClientName3" placeholder="请选择客户名称">
-                    <el-select
-                      v-model="ruleForm.ClientName3"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:250px"
-                    >
-                      <el-option
-                        v-for="item in client"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
+                  <div class="title">客户名称</div>
+                  <el-select v-model="ClientName2" clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in client"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
                 </div>
               </el-col>
               <el-col :span="8">
                 <div class="bar">
-                  <el-form-item label="品牌名称" prop="BrandName3" placeholder="请选择品牌名称">
-                    <el-select
-                      v-model="ruleForm.BrandName3"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:250px"
-                    >
-                      <el-option
-                        v-for="item in brand"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
+                  <div class="title">品牌</div>
+                  <el-select v-model="BrandName2" clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in brand"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </div>
+              </el-col>
+
+              <el-col :span="8">
+                <div class="bar">
+                  <el-button type="primary" @click="searchTemplate">查询</el-button>
                 </div>
               </el-col>
             </el-row>
+            <br />
+            <hr />
+            <br />
 
             <el-row :gutter="20">
-              <el-col :span="8">
-                <div class="bar">
-                  <el-form-item label="模板名称" prop="FormName" placeholder="请输入模板名称">
-                    <el-input
-                      v-model="ruleForm.FormName"
-                      clearable
-                      :rows="1"
-                      style="margin-left: 20px;min-width:250px"
-                      placeholder="请输入"
-                    ></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-
               <el-col :span="2">
-                <div class="bar">
-                  <el-button type="primary" @click="SaveModel2()">保存</el-button>
-                </div>
+                <el-button type="primary" size="small" @click="SaveModel()">确认</el-button>
               </el-col>
-
               <el-col :span="2">
-                <div class="bar">
-                  <el-button type="primary" @click="CancelModel2()">取消</el-button>
-                </div>
+                <el-button type="primary" size="small" @click="CancelModel()">取消</el-button>
               </el-col>
             </el-row>
-          </el-form>
-        </el-card>
-      </el-tab-pane>
+            <el-table
+              :data="tableData1"
+              style="width: 100%; margin-top: 20px"
+              @selection-change="IsChanged1"
+            >
+              <el-table-column w idth="50" type="selection" align="center"></el-table-column>
+              <el-table-column type="index" label="序号" align="center"></el-table-column>
 
-      <el-tab-pane label="制定根计划" name="fourth" v-if="rootPlanMakeFlag">
-        <el-card>
-          <el-form
-            :model="rootPlanMake"
-            :rules="planMakeRules"
-            ref="rootPlanMake"
-            label-width="120px"
-            class="add-ruleForm"
-          >
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <div class="bar">
-                  <el-form-item label="系列名称" prop="planMakeSeriesId" placeholder="请选择系列名称">
-                    <el-select
-                      v-model="rootPlanMake.planMakeSeriesId"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:240px"
-                    >
-                      <el-option
-                        v-for="item in seriesOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="13">
-                <div class="bar">
-                  <el-form-item label="起止时间" prop="date" placeholder="请选择起止时间">
+              <el-table-column prop="name" label="模板名称" align="center"></el-table-column>
+              <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
+              <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
+              <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
+
+              <el-table-column fixed="right" label="操作" width="200">
+                <template slot-scope="scope">
+                  <el-button type="text" size="small" @click="toPlanModelPage(scope.row)">查看</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </el-tab-pane>
+
+        <el-tab-pane label="保存计划模版" name="third" v-if="SavePlanModel">
+          <el-card>
+            <el-form
+              :model="ruleForm"
+              :rules="rules"
+              ref="ruleForm"
+              label-width="100px"
+              class="demo-ruleForm"
+            >
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <div class="bar">
+                    <el-form-item label="客户名称" prop="ClientName3" placeholder="请选择客户名称">
+                      <el-select
+                        v-model="ruleForm.ClientName3"
+                        clearable
+                        placeholder="请选择"
+                        style="min-width:250px"
+                      >
+                        <el-option
+                          v-for="item in client"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        ></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="8">
+                  <div class="bar">
+                    <el-form-item label="品牌名称" prop="BrandName3" placeholder="请选择品牌名称">
+                      <el-select
+                        v-model="ruleForm.BrandName3"
+                        clearable
+                        placeholder="请选择"
+                        style="min-width:250px"
+                      >
+                        <el-option
+                          v-for="item in brand"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        ></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </div>
+                </el-col>
+              </el-row>
+
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <div class="bar">
+                    <el-form-item label="模板名称" prop="FormName" placeholder="请输入模板名称">
+                      <el-input
+                        v-model="ruleForm.FormName"
+                        clearable
+                        :rows="1"
+                        style="margin-left: 20px;min-width:250px"
+                        placeholder="请输入"
+                      ></el-input>
+                    </el-form-item>
+                  </div>
+                </el-col>
+
+                <el-col :span="2">
+                  <div class="bar">
+                    <el-button type="primary" @click="SaveModel2()">保存</el-button>
+                  </div>
+                </el-col>
+
+                <el-col :span="2">
+                  <div class="bar">
+                    <el-button type="primary" @click="CancelModel2()">取消</el-button>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-card>
+        </el-tab-pane>
+
+        <el-tab-pane label="制定根计划" name="fourth" v-if="rootPlanMakeFlag">
+          <el-card>
+            <el-form
+              :model="rootPlanMake"
+              :rules="planMakeRules"
+              ref="rootPlanMake"
+              label-width="120px"
+              class="add-ruleForm"
+            >
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <div class="bar">
+                    <el-form-item label="系列名称" prop="planMakeSeriesId" placeholder="请选择系列名称">
+                      <el-select
+                        v-model="rootPlanMake.planMakeSeriesId"
+                        clearable
+                        placeholder="请选择"
+                        style="min-width:240px"
+                      >
+                        <el-option
+                          v-for="item in seriesOptions"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        ></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="13">
+                  <div class="bar">
+                    <el-form-item label="起止时间" prop="date" placeholder="请选择起止时间">
+                      <el-date-picker
+                        :picker-options="pickerOptions0"
+                        style="margin-left:20px"
+                        v-model="rootPlanMake.planMakeStartEndDate"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始时间"
+                        end-placeholder="结束时间"
+                      ></el-date-picker>
+                    </el-form-item>
+                  </div>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <div class="bar">
+                    <el-form-item label="根计划名称" prop="planMakeName" placeholder="请输入根计划名称">
+                      <el-input
+                        v-model="rootPlanMake.planMakeName"
+                        clearable
+                        :rows="1"
+                        placeholder="请输入"
+                        style="min-width:240px"
+                      ></el-input>
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="3">
+                  <div class="bar" style="margin-left: 0px">
+                    <el-form-item label="日期类型" prop="planMakeDateType" placeholder="请选择日期类型">
+                      <el-select
+                        v-model="rootPlanMake.planMakeDateType"
+                        clearable
+                        placeholder="请选择"
+                        style="min-width:120px"
+                      >
+                        <el-option
+                          v-for="item in dateTypeOptions"
+                          :key="item.name"
+                          :label="item.name"
+                          :value="item.name"
+                        ></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </div>
+                </el-col>
+                <el-col :span="4">
+                  <el-form-item label prop="productDate" placeholder="请选择日期">
                     <el-date-picker
-                      :picker-options="pickerOptions0"
-                      style="margin-left:20px"
-                      v-model="rootPlanMake.planMakeStartEndDate"
-                      type="daterange"
-                      align="right"
-                      unlink-panels
-                      range-separator="至"
-                      start-placeholder="开始时间"
-                      end-placeholder="结束时间"
+                      :picker-options="pickerOptions1"
+                      v-model="rootPlanMake.planMakeDate"
+                      type="date"
+                      placeholder="选择日期"
+                      style="min-width:260px"
                     ></el-date-picker>
                   </el-form-item>
-                </div>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <div class="bar">
-                  <el-form-item label="根计划名称" prop="planMakeName" placeholder="请输入根计划名称">
-                    <el-input
-                      v-model="rootPlanMake.planMakeName"
-                      clearable
-                      :rows="1"
-                      placeholder="请输入"
-                      style="min-width:240px"
-                    ></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="3">
-                <div class="bar" style="margin-left: 0px">
-                  <el-form-item label="日期类型" prop="planMakeDateType" placeholder="请选择日期类型">
-                    <el-select
-                      v-model="rootPlanMake.planMakeDateType"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:120px"
-                    >
-                      <el-option
-                        v-for="item in dateTypeOptions"
-                        :key="item.name"
-                        :label="item.name"
-                        :value="item.name"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item label prop="productDate" placeholder="请选择日期">
-                  <el-date-picker
-                    :picker-options="pickerOptions1"
-                    v-model="rootPlanMake.planMakeDate"
-                    type="date"
-                    placeholder="选择日期"
-                    style="min-width:260px"
-                  ></el-date-picker>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="20">
-                <div class="Mbutton">
-                  <el-col :span="2">
-                    <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
-                  </el-col>
-                  <el-col :span="2">
-                    <el-button type="primary" @click="CancelRootPlan()">取消</el-button>
-                  </el-col>
-                </div>
-              </el-col>
-            </el-row>
-          </el-form>
-        </el-card>
-      </el-tab-pane>
-    </el-tabs>
-  </el-card>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="20">
+                  <div class="Mbutton">
+                    <el-col :span="2">
+                      <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
+                    </el-col>
+                    <el-col :span="2">
+                      <el-button type="primary" @click="CancelRootPlan()">取消</el-button>
+                    </el-col>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-card>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
+    <el-dialog
+      :modal="false"
+      title="根计划下发"
+      :visible.sync="dialogFormVisible1"
+      :before-close="cancel"
+    >
+      <el-row :gutter="20" style="margin-top:-30px;">
+        <el-col :span="6">
+          <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
+        </el-col>
+        <el-col :span="10">
+          <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:15px;">
+        <el-col :span="6">
+          <el-tree :data="productionLine" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        </el-col>
+        <el-col :span="13">
+          <el-table
+            :data="personTable"
+            max-height="400"
+            @selection-change="changeCheckBoxFun2"
+            :stripe="true"
+            :highlight-current-row="true"
+            style="width: 100%; margin-top: 20px;margin-left:30%"
+          >
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
+            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
+              <template slot-scope="scope">
+                <el-select size="medium" v-model="scope.row.assignPlanType">
+                  <el-option
+                    v-for="item in assignPlanTypeOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+    </el-dialog>
+
+    <el-dialog
+      :modal="false"
+      title="下发详情"
+      :visible.sync="dialogFormVisible2"
+      :before-close="cancel"
+    >
+      <el-row :gutter="20">
+        <el-col :span="20">
+          <el-table
+            :data="assignDetailTable"
+            style="width: 100%; margin-top: 20px;margin-left:100px"
+          >
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="executorName" width="150" label="人员" align="center"></el-table-column>
+            <el-table-column prop="createTime" width="150" label="创建时间" align="center"></el-table-column>
+            <el-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></el-table-column>
+            <el-table-column label="操作" align="center" width="100px">
+              <template slot-scope="scope">
+                <el-button size="mini" @click="deleteAssign(scope.row,scope.index)" type="text">撤回</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -411,6 +491,18 @@ export default {
   name: "seriesPlanMake",
   data() {
     return {
+      assignDetailTable: [],
+      dialogFormVisible2: false,
+      deleteAssignId: "",
+      assignPlanTypeOptions: [],
+      assignId: "",
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      productionLine: [],
+      personTable: [],
+      dialogFormVisible1: false,
       pickerOptions0: {
         disabledDate: time => {
           var date = new Date();
@@ -511,20 +603,38 @@ export default {
       AnyChanged: [],
       AnyChanged1: [],
       SeriesDetail: [],
-      defaultProps: {
-        children: "children",
-        label: "label"
-      },
+
       client: [],
       brand: [],
       type: [],
 
       series: [],
       tableData1: [],
-      tableData: []
+      tableData: [],
+      userSelection: [],
+      userSelectionList: []
     };
   },
   created: function() {
+    //获取计划类型
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "计划类型"
+        }
+      })
+      .then(response => {
+        this.assignPlanTypeOptions = response.result;
+      });
+
+    //获取产线
+    request
+      .get(`http://192.168.1.180:8081/product-line/find`)
+      .then(response => {
+        this.productionLine = response.result;
+      });
+
+    //获取模板信息
     request.get(`/plan-template/find`).then(response => {
       this.tableData1 = response.result;
     });
@@ -578,7 +688,7 @@ export default {
           pageNum: 1,
           pageSize: 10,
           planClass: "SERIES",
-          state: "MAKE"
+        
         }
       })
       .then(response => {
@@ -587,6 +697,105 @@ export default {
       });
   },
   methods: {
+    assignDetail(row) {
+      this.dialogFormVisible2 = true;
+      this.deleteAssignId = row.id;
+      this.handleSearch();
+    },
+    handleSearch() {
+      request
+        .get(`/root-plan-assign/find`, {
+          params: {
+            rootPlanId: this.deleteAssignId
+          }
+        })
+        .then(response => {
+          this.assignDetailTable = response.result;
+
+        });
+    },
+    deleteAssign(row) {
+      const that = this;
+      this.$confirm("是否撤回该条计划下发？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        request
+          .delete(`/root-plan-assign/delete`, {
+            params: {
+              id: row.id
+            }
+          })
+          .then(response => {
+            this.handleSearch();
+            this.searchSeriesPlan(this.pagination.currentPage);
+          });
+      });
+    },
+    assignRootPlan(row) {
+      this.assignId = row.id;
+      this.dialogFormVisible1 = true;
+    },
+    assignRoot() {
+      let list = [];
+      this.userSelection.forEach(element => {
+        if(!element.assignPlanType)
+        {
+          this.$message({
+            message: "任意一条勾选的人员都必须选择计划类型!",
+            type: "error"
+          });
+          return ;
+        }
+        list.push({
+          assignPlanType: element.assignPlanType,
+          executorId: element.userId,
+          executorName: element.name,
+          rootPlanId: this.assignId
+        });
+      });
+      request.post(`/root-plan-assign/insert`, list).then(response => {
+        this.searchSeriesPlan(this.pagination.currentPage);
+        this.assignId = "";
+        this.userSelection = [];
+        this.userSelectionList = [];
+        this.personTable = [];
+        this.dialogFormVisible = false;
+        this.dialogFormVisible1 = false;
+      });
+    },
+    cancel() {
+      this.assignId = "";
+      this.userSelection = [];
+      this.userSelectionList = [];
+      this.personTable = [];
+      this.assignDetailTable = [];
+      this.deleteAssignId = "";
+      this.dialogFormVisible = false;
+      this.dialogFormVisible1 = false;
+      this.dialogFormVisible2 = false;
+    },
+    changeCheckBoxFun2(val) {
+      const that = this;
+      that.userSelection = val;
+    },
+    changeCheckBoxFun3(val) {
+      const that = this;
+      that.assignDetailTable = val;
+    },
+    handleNodeClick(data) {
+      console.log(data);
+      request
+        .get(`http://192.168.1.180:8081/user-product-line/find`, {
+          params: {
+            productLineId: data.id
+          }
+        })
+        .then(response => {
+          this.personTable = response.result;
+        });
+    },
     changeState() {
       this.searchSeriesPlan(1);
     },
@@ -694,39 +903,39 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
-    planTypeSwitchChange() {
-      this.pagination.currentPage = 1;
-      const that = this;
-      this.DataStartTime = that.changeDate(this.Date1[0]);
-      this.DataEndTime = that.changeDate(this.Date1[1]);
-      console.log(list);
-      request
-        .get(`/root-plan/find`, {
-          params: {
-            name: this.rootPlanName === "" ? null : this.rootPlanName,
-            seriesName: this.SeriesName === "" ? null : this.SeriesName,
-            clientId: this.ClientName === "" ? null : this.ClientName,
-            brandId: this.BrandName === "" ? null : this.BrandName,
-            clothesLevelName:
-              this.clothingLevelId === "" ? null : this.clothingLevelId,
-            createAfter: this.DataEndTime,
-            createBefore: this.DataStartTime,
-            pageNum: 1,
-            pageSize: this.pagination.pageSize,
-            planClass:
-              this.checked === 1
-                ? "SERIES"
-                : this.checked === 2
-                ? "GROUP"
-                : "STYLE",
-            state: "MAKE"
-          }
-        })
-        .then(response => {
-          this.tableData = reponse.result;
-          this.pagination.total = response.total;
-        });
-    },
+    // planTypeSwitchChange() {
+    //   this.pagination.currentPage = 1;
+    //   const that = this;
+    //   this.DataStartTime = that.changeDate(this.Date1[0]);
+    //   this.DataEndTime = that.changeDate(this.Date1[1]);
+    //   console.log(list);
+    //   request
+    //     .get(`/root-plan/find`, {
+    //       params: {
+    //         name: this.rootPlanName === "" ? null : this.rootPlanName,
+    //         seriesName: this.SeriesName === "" ? null : this.SeriesName,
+    //         clientId: this.ClientName === "" ? null : this.ClientName,
+    //         brandId: this.BrandName === "" ? null : this.BrandName,
+    //         clothesLevelName:
+    //           this.clothingLevelId === "" ? null : this.clothingLevelId,
+    //         createAfter: this.DataEndTime,
+    //         createBefore: this.DataStartTime,
+    //         pageNum: 1,
+    //         pageSize: this.pagination.pageSize,
+    //         planClass:
+    //           this.checked === 1
+    //             ? "SERIES"
+    //             : this.checked === 2
+    //             ? "GROUP"
+    //             : "STYLE",
+    //         state: "MAKE"
+    //       }
+    //     })
+    //     .then(response => {
+    //       this.tableData = reponse.result;
+    //       this.pagination.total = response.total;
+    //     });
+    // },
     //搜索
     searchSeriesPlan(CurrentPageNum) {
       const that = this;
@@ -752,7 +961,7 @@ export default {
                 : this.checked === 2
                 ? "GROUP"
                 : "STYLE",
-            state: "MAKE"
+            
           }
         })
         .then(response => {
@@ -858,15 +1067,7 @@ export default {
       this.viewname = "first";
       return;
     },
-    QuotePre(row) {
-      const that = this;
-      //获得品牌下拉框
-      this.$axios
-        .post(`${window.$config.HOST}/planManagement/quotePredictPlan`, {
-          rangeId: row.id
-        })
-        .then(response => {});
-    },
+
     handleClick2() {
       if (this.AnyChanged.length != 1) {
         this.$message({
