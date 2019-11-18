@@ -1,8 +1,15 @@
 <template>
   <div class="body">
-    <el-backtop target=".box-card"></el-backtop>
+    <el-backtop target=".body"></el-backtop>
 
     <el-card class="box-card">
+      <!-- <el-timeline :reverse="reverse">
+        <el-timeline-item
+          v-for="(activity, index) in activities"
+          :key="index"
+          :timestamp="activity.timestamp"
+        >{{activity.content}}</el-timeline-item>
+      </el-timeline>-->
       <el-form
         :model="ruleForm"
         :rules="rules"
@@ -611,6 +618,22 @@
 export default {
   data() {
     return {
+      // reverse: true,
+      // activities: [
+      //   {
+      //     content: "活动按期开始",
+      //     timestamp: "2018-04-15"
+      //   },
+      //   {
+      //     content: "通过审核",
+      //     timestamp: "2018-04-13"
+      //   },
+      //   {
+      //     content: "创建成功",
+      //     timestamp: "2018-04-11"
+      //   }
+      // ],
+
       fileOperationDialogVisible: false,
       formData: "",
       endStr: "结束时间",
@@ -1268,6 +1291,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
+// .body {
+//   overflow-y: scroll;
+//   height: 100vh;
+//   height: 500px;
+//   overflow: hidden;
+//   overflow-x: hidden;
+// }
 .title {
   min-width: 100px;
 }
