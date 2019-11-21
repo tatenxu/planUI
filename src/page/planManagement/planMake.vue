@@ -22,7 +22,7 @@
                   clearable
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -36,7 +36,7 @@
                   clearable
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -49,7 +49,7 @@
                   v-model="ruleForm.seriesName"
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -64,7 +64,7 @@
                   v-model="ruleForm.clothesLevelName"
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -80,7 +80,7 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                 ></el-input>
               </el-form-item>
             </div>
@@ -95,7 +95,7 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                 ></el-input>
               </el-form-item>
             </div>
@@ -106,20 +106,14 @@
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="根计划" prop="rootPlanName" placeholder="请输入">
-                <el-select
-                  :disabled="!addPlanFlag"
+                <el-input
                   v-model="ruleForm.rootPlanName"
                   clearable
+                  :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                >
-                  <el-option
-                    v-for="item in PlanProductOpt"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
+                  :disabled="!alwaysGreyFlag"
+                ></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -133,7 +127,7 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!addPlanFlag"
+                  :disabled="!alwaysGreyFlag"
                 ></el-input>
               </el-form-item>
             </div>
@@ -142,20 +136,14 @@
           <el-col :span="8">
             <div class="bar" style="margin-left: 0px">
               <el-form-item label="日期类型" prop="dateType" placeholder="请输入">
-                <el-select
-                  :disabled="!addPlanFlag"
+                <el-input
                   v-model="ruleForm.dateType"
                   clearable
+                  :rows="1"
                   placeholder="请选择"
-                  style="min-width:120px"
-                >
-                  <el-option
-                    v-for="item in datemodelOpt"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
+                  style="min-width:240px"
+                  :disabled="!alwaysGreyFlag"
+                ></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -188,7 +176,7 @@
                   style="min-width:240px"
                 >
                   <el-option
-                    v-for="item in PlanProductOpt"
+                    v-for="item in chooseOptions.planTypeOptions"
                     :key="item.name"
                     :label="item.name"
                     :value="item.name"
@@ -201,14 +189,20 @@
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="项目类型" prop="projectType" placeholder="请输入">
-                <el-input
+                <el-select
+                  :disabled="!modifyFlanFlag"
                   v-model="ruleForm.projectType"
                   clearable
-                  :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!modifyFlanFlag"
-                ></el-input>
+                >
+                  <el-option
+                    v-for="item in chooseOptions.projectTypeOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
               </el-form-item>
             </div>
           </el-col>
@@ -227,7 +221,7 @@
                   style="min-width:240px"
                 >
                   <el-option
-                    v-for="item in PlanProductOpt"
+                    v-for="item in chooseOptions.orderStageOptions"
                     :key="item.name"
                     :label="item.name"
                     :value="item.name"
@@ -248,7 +242,7 @@
                   style="min-width:240px"
                 >
                   <el-option
-                    v-for="item in PlanProductOpt"
+                    v-for="item in chooseOptions.productLineOptions"
                     :key="item.name"
                     :label="item.name"
                     :value="item.name"
@@ -327,20 +321,14 @@
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="预测件数" prop="predictPieceQuantity" placeholder="请输入">
-                <el-select
-                  :disabled="!modifyFlanFlag"
+                <el-input
                   v-model="ruleForm.predictPieceQuantity"
                   clearable
+                  :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                >
-                  <el-option
-                    v-for="item in PlanProductOpt"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
+                  :disabled="!modifyFlanFlag"
+                ></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -350,7 +338,7 @@
               <el-form-item label="起止时间" prop="date" placeholder="请输入">
                 <el-date-picker
                   :disabled="!modifyFlanFlag"
-                  :picker-options="pickerOptions0"
+                  :picker-options="chooseOptions.pickerOptions0"
                   style="margin-left:20px"
                   v-model="ruleForm.date"
                   type="daterange"
@@ -507,6 +495,7 @@ import GanttHeader from "gantt-elastic-header";
 import dayjs from "dayjs";
 
 export default {
+  // imported components
   components: {
     "float-icons": FloatIcons,
     GanttElastic,
@@ -516,31 +505,34 @@ export default {
     return {
       drawerVisible: false,
       fileOperationDialogVisible: false,
-      addPlanFlag: false,
+      alwaysGreyFlag: false,
       modifyFlanFlag: true,
 
       formData: "",
       endStr: "结束时间",
       startStr: "开始时间",
 
-      pickerOptions0: {
-        disabledDate: time => {
-          var date = new Date();
-          console.log(date.toLocaleDateString());
-          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+      chooseOptions: {
+        planTypeOptions: {},
+        projectTypeOptions: {},
+        orderStageOptions: {},
+        productLineOptions: {},
+        // 起止时间
+        pickerOptions0: {
+          disabledDate: time => {
+            var date = new Date();
+            console.log(date.toLocaleDateString());
+            return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+          }
         }
       },
 
-      pickerOptions1: {
-        disabledDate: time => {
-          var date = new Date();
-          console.log(date.toLocaleDateString());
-          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
-        }
-      },
       fileList: [],
-      // date: "",
       uploadFileName: [],
+      uploadResult: [],
+
+      flag: 1, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
+      goback: "", //goback 为返回的 page name
 
       rules: {
         clientName: [{ required: true, message: "请输入", trigger: "blur" }],
@@ -566,9 +558,6 @@ export default {
         planDescribe: [{ required: true, message: "请输入", trigger: "blur" }],
         note: [{ required: false, message: "请输入", trigger: "blur" }]
       },
-      flag: 1, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
-      goback: "", //goback 为返回的 name
-
       ruleForm: {
         brandId: 0,
         brandName: "无数据",
@@ -612,19 +601,6 @@ export default {
         type: "无数据"
       },
 
-      uploadResult: [],
-
-      ProjectTypeOpt: [],
-      PlanProductOpt: [],
-      datemodelOpt: [],
-      PlantypeOpt: [],
-      clientOpt: [],
-      brandOpt: [],
-      typeOpt: [],
-      seriesOpt: [],
-      startDate: "",
-      endDate: "",
-
       // gantt related
       ganttTasks: [],
       ganttOptions: {}
@@ -636,85 +612,36 @@ export default {
     this.formData = new FormData();
 
     //获得项目类型下拉框
-    let CategoryId;
-    that.$axios
-      .get(
-        `${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`,
-        {
-          params: {
-            name: "项目类型"
-          }
-        }
-      )
+    request
+      .get(`${window.$config.HOST}/backstage/project-type/find`)
       .then(response => {
-        let isId = response.data;
-        that.$axios
-          .get(
-            `${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,
-            {
-              params: {
-                categoryId: isId
-              }
-            }
-          )
-          .then(response => {
-            console.log("项目类型下拉框:" + response.data);
-            this.ProjectTypeOpt = response.data;
-          })
-          .catch(error => {
-            console.log("项目类型下拉框获取失败");
-          });
-      })
-      .catch(error => {
-        console.log("项目类型字典ID获取失败");
+        this.chooseOptions.projectTypeOptions = response.result;
       });
-
-    //获取日期类型
-    that.$axios
-      .get(
-        `${window.$config.HOST}/dictionaryManagement/getDictionaryCategoryIdByName`,
-        {
-          params: {
-            name: "日期类型"
-          }
-        }
-      )
+    //获取订单阶段下拉框
+    request
+      .get(`${window.$config.HOST}/backstage/order-stage/find`)
       .then(response => {
-        let dataID = response.data;
-        that.$axios
-          .get(
-            `${window.$config.HOST}/dictionaryManagement/getCategoryProperty`,
-            {
-              params: {
-                categoryId: dataID
-              }
-            }
-          )
-          .then(response => {
-            this.datemodelOpt = response.data;
-          })
-          .catch(error => {
-            console.log("项目类型下拉框获取失败");
-          });
-      })
-      .catch(error => {
-        console.log("日期类型字典ID获取失败");
+        this.chooseOptions.orderStageOptions = response.result;
       });
-
-    //获得品牌下拉框
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
+    //获得计划类型下拉框
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
         params: {
-          name: undefined
+          categoryName: "type"
         }
       })
       .then(response => {
-        this.PlanProductOpt = response.data;
-      })
-      .catch(error => {
-        console.log("获取品牌失败");
+        this.chooseOptions.planTypeOptions = response.result;
       });
 
+    // 获得产品线下拉框
+    request
+      .get(`${window.$config.HOST2}/backstage/product-line/find`)
+      .then(response => {
+        this.chooseOptions.productLineOptions = response.result;
+        console.log("产品线：", this.chooseOptions.productLineOptions);
+      });
+    // gantt related
     function getDate(hours) {
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
@@ -730,7 +657,6 @@ export default {
       ).getTime();
       return new Date(timeStamp + hours * 60 * 60 * 1000).getTime();
     }
-    // gantt related
     this.ganttOptions = {
       taskMapping: {
         progress: "quantity"
@@ -1028,23 +954,6 @@ export default {
   },
   mounted() {
     const that = this;
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getProduct`, {
-        params: {
-          name: undefined
-        }
-      })
-      .then(response => {
-        this.PlanProductOpt = response.data;
-        console.log("计划产品下拉框", this.PlanProductOpt);
-        this.PlanProductOpt.forEach(element => {
-          if (element.id === this.ruleForm.planProductId)
-            this.ruleForm.planProductName = element.name;
-        });
-      })
-      .catch(error => {
-        console.log("获取品牌失败");
-      });
     this.init();
   },
   //五个参数控制
@@ -1157,12 +1066,6 @@ export default {
           let time = that.changeDate(this.ruleForm.productDate);
           let productId;
 
-          this.PlanProductOpt.forEach(element => {
-            if (element.name === this.ruleForm.planProductName) {
-              productId = element.id;
-            }
-          });
-
           let list = {
             name: this.ruleForm.planName,
             rangeId: this.ruleForm.rangeId,
@@ -1225,29 +1128,6 @@ export default {
                     }
                   })
                   .catch(error => {});
-
-                // this.formData.append("planId", response.data);
-                // that.$axios
-                //   .post(
-                //     `${window.$config.HOST}/planManagement/addPlanFiles`,
-                //     this.formData
-                //   )
-                //   .then(response => {
-                //     console.log(response.data);
-
-                //     response.data.forEach(element => {
-                //       this.uploadResult.push({
-                //         result: element
-                //       });
-                //     });
-                //     this.fileOperationDialogVisible = true;
-                //   })
-                //   .catch(error => {});
-
-                // this.$router.push({
-                //   name: this.goback,
-                //   params: {}
-                // });
               }
             })
             .catch(error => {
@@ -1276,12 +1156,6 @@ export default {
           this.ruleForm.endDate = that.changeDate(this.ruleForm.date[1]);
           let time = that.changeDate(this.ruleForm.productDate);
           let productId;
-
-          this.PlanProductOpt.forEach(element => {
-            if (element.name === this.ruleForm.planProductName) {
-              productId = element.id;
-            }
-          });
 
           let range;
           this.seriesOpt.forEach(element => {
@@ -1471,7 +1345,7 @@ export default {
         });
       } else if (this.flag === 3) {
         //查看
-        this.addPlanFlag = false;
+        this.alwaysGreyFlag = false;
         this.ruleForm.planId = data.planId;
         this.ruleForm.clientName = data.clientName;
         this.ruleForm.brandName = data.brandName;

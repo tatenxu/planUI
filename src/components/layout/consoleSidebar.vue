@@ -158,9 +158,9 @@
           </el-menu-item>
         </el-submenu>
 
-        <!-- <el-menu-item index="/planMake/planMakeIndex">
+        <el-menu-item index="/planMake/planMakeIndex">
           <i class="el-icon-document"></i>计划制定
-        </el-menu-item>-->
+        </el-menu-item>
 
         <el-menu-item index="/planVerify" v-if="planReview">
           <i class="el-icon-document"></i>计划审核管理
