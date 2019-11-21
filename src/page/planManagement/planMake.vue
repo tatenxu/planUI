@@ -3,13 +3,6 @@
     <el-backtop target=".body"></el-backtop>
 
     <el-card class="box-card">
-      <!-- <el-timeline :reverse="reverse">
-        <el-timeline-item
-          v-for="(activity, index) in activities"
-          :key="index"
-          :timestamp="activity.timestamp"
-        >{{activity.content}}</el-timeline-item>
-      </el-timeline>-->
       <el-form
         :model="ruleForm"
         :rules="rules"
@@ -53,7 +46,7 @@
             <div class="bar">
               <el-form-item label="系列名称" prop="seriesName" placeholder="请选择系列名称">
                 <el-input
-                  v-model="ruleForm.rangeName"
+                  v-model="ruleForm.seriesName"
                   :rows="1"
                   placeholder="请选择"
                   :disabled="true"
@@ -66,9 +59,9 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="服装层次" prop="clothingLevelName" placeholder="请选择计划类型">
+              <el-form-item label="服装层次" prop="clothesLevelName" placeholder="请选择计划类型">
                 <el-input
-                  v-model="ruleForm.planType"
+                  v-model="ruleForm.clothesLevelName"
                   :rows="1"
                   placeholder="请选择"
                   :disabled="true"
@@ -81,7 +74,7 @@
             <div class="bar">
               <el-form-item label="创建人" prop="creatorName" placeholder="请选择计划对象">
                 <el-input
-                  v-model="ruleForm.planObjectName"
+                  v-model="ruleForm.creatorName"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -95,7 +88,7 @@
             <div class="bar" style="margin-left: 4px">
               <el-form-item label="cycle" prop="cycle" placeholder="请选择上级计划">
                 <el-input
-                  v-model="ruleForm.topPlanName"
+                  v-model="ruleForm.cycle"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -113,7 +106,7 @@
               <el-form-item label="计划名称" prop="name" placeholder="请选择客户名称">
                 <el-input
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planName"
+                  v-model="ruleForm.name"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -127,7 +120,7 @@
               <el-form-item label="部门名称" prop="deptName" placeholder="请选择项目类型">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.projectType"
+                  v-model="ruleForm.deptName"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -146,7 +139,7 @@
             <div class="bar">
               <el-form-item label="异常状态" prop="haveException" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.haveException"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -164,7 +157,7 @@
               <el-form-item label="订单阶段" prop="orderStage" placeholder="请选择产品">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planProductName"
+                  v-model="ruleForm.orderStage"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -184,7 +177,7 @@
             <div class="bar">
               <el-form-item label="pieceQuantity" prop="pieceQuantity" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.pieceQuantity"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -199,7 +192,7 @@
             <div class="bar">
               <el-form-item label="计划类别" prop="planClass" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.planClass"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -217,7 +210,7 @@
               <el-form-item label="预测数量" prop="predictPieceQuantity" placeholder="请选择产品">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planProductName"
+                  v-model="ruleForm.predictPieceQuantity"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -237,7 +230,7 @@
             <div class="bar">
               <el-form-item label="预测款式数" prop="predictStyleQuantity" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.predictStyleQuantity"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -252,7 +245,7 @@
             <div class="bar">
               <el-form-item label="产品" prop="product" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.product"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -270,7 +263,7 @@
               <el-form-item label="产品线" prop="productLine" placeholder="请选择产品">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planProductName"
+                  v-model="ruleForm.productLine"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -290,7 +283,7 @@
             <div class="bar">
               <el-form-item label="项目类型" prop="projectType" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.projectType"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -305,7 +298,7 @@
             <div class="bar">
               <el-form-item label="对象名" prop="objectName" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.objectName"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -323,7 +316,7 @@
               <el-form-item label="根计划" prop="rootPlanName" placeholder="请选择产品">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planProductName"
+                  v-model="ruleForm.rootPlanName"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -343,7 +336,7 @@
             <div class="bar">
               <el-form-item label="排序号" prop="sequence" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.sequence"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -358,7 +351,7 @@
             <div class="bar">
               <el-form-item label="系列号" prop="serialNo" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.serialNo"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -376,7 +369,7 @@
               <el-form-item label="状态" prop="state" placeholder="请选择产品">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planProductName"
+                  v-model="ruleForm.state"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -396,7 +389,7 @@
             <div class="bar">
               <el-form-item label="款式数量" prop="styleQuantity" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.styleQuantity"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -411,7 +404,7 @@
             <div class="bar">
               <el-form-item label="父计划" prop="superiorName" placeholder="请选择计划款数">
                 <el-input
-                  v-model="ruleForm.quantity"
+                  v-model="ruleForm.superiorName"
                   clearable
                   :rows="1"
                   placeholder="请选择"
@@ -429,7 +422,7 @@
               <el-form-item label="类型" prop="type" placeholder="请选择产品">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.planProductName"
+                  v-model="ruleForm.type"
                   clearable
                   placeholder="请选择"
                   style="min-width:240px"
@@ -449,7 +442,7 @@
               <el-form-item label="日期类型" prop="dateType" placeholder="请选择日期类型">
                 <el-select
                   :disabled="!lookShowItem"
-                  v-model="ruleForm.productDateType"
+                  v-model="ruleForm.dateType"
                   clearable
                   placeholder="请选择"
                   style="min-width:120px"
@@ -470,7 +463,7 @@
               <el-date-picker
                 :picker-options="pickerOptions1"
                 :disabled="!lookShowItem"
-                v-model="ruleForm.productDate"
+                v-model="ruleForm.createTime"
                 type="date"
                 placeholder="选择日期"
                 style="min-width:260px"
@@ -509,7 +502,7 @@
                   type="textarea"
                   :rows="4"
                   placeholder="请输入内容"
-                  v-model="ruleForm.planPropose"
+                  v-model="ruleForm.proposal"
                   style="margin-left: 26px;width:900px"
                 ></el-input>
               </el-form-item>
@@ -525,7 +518,7 @@
                   type="textarea"
                   :rows="4"
                   placeholder="请输入内容"
-                  v-model="ruleForm.planDescribe"
+                  v-model="ruleForm.description"
                   style="margin-left: 26px;width:900px"
                 ></el-input>
               </el-form-item>
@@ -610,29 +603,46 @@
           <el-table-column prop="result" label="上传结果"></el-table-column>
         </el-table>
       </el-dialog>
+
+      <!-- 悬浮按钮 -->
+      <float-icons class="icons-warp">
+        <!-- <div> -->
+        <el-button icon="el-icon-arrow-up" @click="drawerVisible = true" type="primary">甘特图</el-button>
+        <!-- </div> -->
+      </float-icons>
+      <!-- 抽屉 -->
+      <el-drawer title="甘特图" size="60%" :visible.sync="drawerVisible" direction="btt">
+        <el-card>
+          <gantt-elastic
+            :options="ganttOptions"
+            :tasks="ganttTasks"
+            @tasks-updated="tasksUpdate"
+            @options-updated="optionsUpdate"
+          >
+            <gantt-header slot="header"></gantt-header>
+          </gantt-elastic>
+        </el-card>
+      </el-drawer>
     </el-card>
   </div>
 </template>
 
 <script>
+import request from "@/utils/request";
+import FloatIcons from "@/utils/floaticons";
+import GanttElastic from "gantt-elastic";
+import GanttHeader from "gantt-elastic-header";
+import dayjs from "dayjs";
+
 export default {
+  components: {
+    "float-icons": FloatIcons,
+    GanttElastic,
+    GanttHeader
+  },
   data() {
     return {
-      // reverse: true,
-      // activities: [
-      //   {
-      //     content: "活动按期开始",
-      //     timestamp: "2018-04-15"
-      //   },
-      //   {
-      //     content: "通过审核",
-      //     timestamp: "2018-04-13"
-      //   },
-      //   {
-      //     content: "创建成功",
-      //     timestamp: "2018-04-11"
-      //   }
-      // ],
+      drawerVisible: false,
 
       fileOperationDialogVisible: false,
       formData: "",
@@ -687,29 +697,46 @@ export default {
       goback: "", //goback 为返回的 name
 
       ruleForm: {
-        planId: "无数据",
-        clientName: "无数据",
+        brandId: 0,
         brandName: "无数据",
-        rangeId: "无数据",
-        rangeName: "无数据",
-        planType: "无数据",
-        planObjectName: "无数据",
-        planObjectId: "无数据",
-        topPlanName: "无数据",
-        topPlanId: "无数据",
-        planName: "无数据",
+        clientId: 0,
+        clientName: "无数据",
+        clothesLevelName: "无数据",
+        createTime: "2019-11-17T06:44:17.823Z",
+        creatorId: 0,
+        creatorName: "无数据",
+        cycle: "无数据",
+        date: "无数据",
+        dateType: "无数据",
+        deptName: "无数据",
+        description: "无数据",
+        endDate: "无数据",
+        haveException: "无数据",
+        id: 0,
+        name: "无数据",
+        note: "无数据",
+        objectId: 0,
+        objectName: "无数据",
+        orderStage: "无数据",
+        pieceQuantity: "无数据",
+        planClass: "无数据",
+        predictPieceQuantity: "无数据",
+        predictStyleQuantity: "无数据",
+        product: "无数据",
+        productLine: "无数据",
         projectType: "无数据",
-        quantity: "无数据",
-        date: ["无数据", "无数据"],
-        dateStart: "无数据",
-        dateEnd: "无数据",
-        productDateType: "无数据",
-        productDate: "无数据",
-        planProductName: "无数据",
-        planProductId: "无数据",
-        planPropose: "无数据",
-        planDescribe: "无数据",
-        note: "无数据"
+        proposal: "无数据",
+        rootPlanId: 0,
+        rootPlanName: "无数据",
+        sequence: "无数据",
+        serialNo: "无数据",
+        seriesId: 0,
+        seriesName: "无数据",
+        startDate: "无数据",
+        state: "无数据",
+        styleQuantity: "无数据",
+        superiorName: "无数据",
+        type: "无数据"
       },
 
       uploadResult: [],
@@ -723,7 +750,11 @@ export default {
       typeOpt: [],
       seriesOpt: [],
       startDate: "",
-      endDate: ""
+      endDate: "",
+
+      // gantt related
+      ganttTasks: [],
+      ganttOptions: {}
     };
   },
 
@@ -810,6 +841,317 @@ export default {
       .catch(error => {
         console.log("获取品牌失败");
       });
+
+    function getDate(hours) {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      const currentDay = currentDate.getDate();
+      const timeStamp = new Date(
+        currentYear,
+        currentMonth,
+        currentDay,
+        0,
+        0,
+        0
+      ).getTime();
+      return new Date(timeStamp + hours * 60 * 60 * 1000).getTime();
+    }
+    // gantt related
+    this.ganttOptions = {
+      taskMapping: {
+        progress: "quantity"
+      },
+      maxRows: 100,
+      maxHeight: 500,
+      title: {
+        label: "系列计划时间表",
+        html: false
+      },
+      row: {
+        height: 24
+      },
+      calendar: {
+        hour: {
+          display: true
+        }
+      },
+      chart: {
+        progress: {
+          bar: false
+        },
+        expander: {
+          display: true
+        }
+      },
+      taskList: {
+        expander: {
+          straight: false
+        },
+        columns: [
+          {
+            id: 1,
+            label: "系列计划",
+            value: "name",
+            width: 150,
+            expander: true,
+            html: true,
+            events: {
+              click({ data, column }) {
+                console.log(data.id + "尝试跳转");
+                if (data.isRoot) {
+                  that.$router.push({
+                    name: "subGantt",
+                    params: { rangePlanid: data.id }
+                  });
+                } else {
+                  this.$message({
+                    message: data.name + "不是根计划",
+                    type: "info"
+                  });
+                }
+              }
+            }
+          },
+          {
+            id: 2,
+            label: "创建人",
+            value: "createrName",
+            width: 80,
+            html: true
+          },
+          {
+            id: 3,
+            label: "开始日期",
+            // value: task => dayjs(task.start).format("YYYY-MM-DD"),
+            value: "startDate",
+            width: 78
+          },
+          {
+            id: 4,
+            label: "结束日期",
+            // value: task => dayjs(task.start).format("YYYY-MM-DD"),
+            value: "endDate",
+            width: 78
+          },
+          {
+            id: 5,
+            label: "项目类型",
+            value: "projectType",
+            width: 70
+          },
+          {
+            id: 6,
+            label: "数量",
+            value: "quantity",
+            width: 50
+          }
+        ]
+      },
+      locale: {
+        name: "en",
+        Now: "回到现在",
+        "X-Scale": "X-放大",
+        "Y-Scale": "Y-放大",
+        "Task list width": "侧边栏缩放",
+        "Before/After": "放大",
+        "Display task list": "侧边栏"
+      }
+    };
+    this.ganttTasks = [
+      {
+        id: 1,
+        label: "Make some noise",
+        user:
+          '<a href="https://www.google.com/search?q=John+Doe" target="_blank" style="color:#0077c0;">John Doe</a>',
+        start: getDate(-24 * 5),
+        duration: 15 * 24 * 60 * 60 * 1000,
+        percent: 85,
+        type: "project"
+        //collapsed: true,
+      },
+      {
+        id: 2,
+        label: "With great power comes great responsibility",
+        user:
+          '<a href="https://www.google.com/search?q=Peter+Parker" target="_blank" style="color:#0077c0;">Peter Parker</a>',
+        parentId: 1,
+        start: getDate(-24 * 4),
+        duration: 4 * 24 * 60 * 60 * 1000,
+        percent: 50,
+        type: "milestone",
+        collapsed: true,
+        style: {
+          base: {
+            fill: "#1EBC61",
+            stroke: "#0EAC51"
+          }
+        }
+      },
+      {
+        id: 3,
+        label: "Courage is being scared to death, but saddling up anyway.",
+        user:
+          '<a href="https://www.google.com/search?q=John+Wayne" target="_blank" style="color:#0077c0;">John Wayne</a>',
+        parentId: 2,
+        start: getDate(-24 * 3),
+        duration: 2 * 24 * 60 * 60 * 1000,
+        percent: 100,
+        type: "task"
+      },
+      {
+        id: 4,
+        label: "Put that toy AWAY!",
+        user:
+          '<a href="https://www.google.com/search?q=Clark+Kent" target="_blank" style="color:#0077c0;">Clark Kent</a>',
+        start: getDate(-24 * 2),
+        duration: 2 * 24 * 60 * 60 * 1000,
+        percent: 50,
+        type: "task",
+        dependentOn: [3]
+      },
+      {
+        id: 5,
+        label:
+          "One billion, gajillion, fafillion... shabadylu...mil...shabady......uh, Yen.",
+        user:
+          '<a href="https://www.google.com/search?q=Austin+Powers" target="_blank" style="color:#0077c0;">Austin Powers</a>',
+        parentId: 4,
+        start: getDate(0),
+        duration: 2 * 24 * 60 * 60 * 1000,
+        percent: 10,
+        type: "milestone",
+        style: {
+          base: {
+            fill: "#0287D0",
+            stroke: "#0077C0"
+          }
+        }
+      },
+      {
+        id: 6,
+        label: "Butch Mario and the Luigi Kid",
+        user:
+          '<a href="https://www.google.com/search?q=Mario+Bros" target="_blank" style="color:#0077c0;">Mario Bros</a>',
+        parentId: 5,
+        start: getDate(24),
+        duration: 1 * 24 * 60 * 60 * 1000,
+        percent: 50,
+        type: "task",
+        collapsed: true,
+        style: {
+          base: {
+            fill: "#8E44AD",
+            stroke: "#7E349D"
+          }
+        }
+      },
+      {
+        id: 7,
+        label: "Devon, the old man wanted me, it was his dying request",
+        user:
+          '<a href="https://www.google.com/search?q=Knight+Rider" target="_blank" style="color:#0077c0;">Knight Rider</a>',
+        parentId: 2,
+        dependentOn: [6],
+        start: getDate(24 * 2),
+        duration: 4 * 60 * 60 * 1000,
+        percent: 20,
+        type: "task",
+        collapsed: true
+      },
+      {
+        id: 8,
+        label: "Hey, Baby! Anybody ever tell you I have beautiful eyes?",
+        user:
+          '<a href="https://www.google.com/search?q=Johhny+Bravo" target="_blank" style="color:#0077c0;">Johhny Bravo</a>',
+        parentId: 7,
+        dependentOn: [7],
+        start: getDate(24 * 3),
+        duration: 1 * 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task"
+      },
+      {
+        id: 9,
+        label:
+          "This better be important, woman. You are interrupting my very delicate calculations.",
+        user:
+          '<a href="https://www.google.com/search?q=Dexter\'s+Laboratory" target="_blank" style="color:#0077c0;">Dexter\'s Laboratory</a>',
+        parentId: 8,
+        dependentOn: [8, 7],
+        start: getDate(24 * 4),
+        duration: 4 * 60 * 60 * 1000,
+        percent: 20,
+        type: "task",
+        style: {
+          base: {
+            fill: "#8E44AD",
+            stroke: "#7E349D"
+          }
+        }
+      },
+      {
+        id: 10,
+        label: "current task",
+        user:
+          '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        start: getDate(24 * 5),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task"
+      },
+      {
+        id: 11,
+        label: "test task",
+        user:
+          '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        start: getDate(24 * 6),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task"
+      },
+      {
+        id: 12,
+        label: "test task",
+        user:
+          '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        start: getDate(24 * 7),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task",
+        parentId: 11
+      },
+      {
+        id: 13,
+        label: "test task",
+        user:
+          '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        start: getDate(24 * 8),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task"
+      },
+      {
+        id: 14,
+        label: "test task",
+        user:
+          '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        start: getDate(24 * 9),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task"
+      },
+      {
+        id: 15,
+        label: "test task",
+        user:
+          '<a href="https://www.google.com/search?q=Johnattan+Owens" target="_blank" style="color:#0077c0;">Johnattan Owens</a>',
+        start: getDate(24 * 16),
+        duration: 24 * 60 * 60 * 1000,
+        percent: 0,
+        type: "task"
+      }
+    ];
   },
   mounted() {
     const that = this;
@@ -1285,19 +1627,20 @@ export default {
           });
         });
       }
+    },
+
+    // gantt related
+    tasksUpdate(tasks) {
+      this.ganttTasks = tasks;
+    },
+    optionsUpdate(options) {
+      this.ganttOptions = options;
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
-// .body {
-//   overflow-y: scroll;
-//   height: 100vh;
-//   height: 500px;
-//   overflow: hidden;
-//   overflow-x: hidden;
-// }
 .title {
   min-width: 100px;
 }
