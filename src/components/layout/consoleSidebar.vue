@@ -194,7 +194,7 @@
       <el-submenu index="backEnd" v-if="backMana">
         <template slot="title">
           <i class="el-icon-message"></i>
-          后管理模块
+          后台管理模块
         </template>
         <el-menu-item index="/backEndModule/planModelManagement">
           <i class="el-icon-document"></i>计划模板管理
@@ -224,47 +224,39 @@
         <el-menu-item index="/backEndModule/numberRuleMana">
           <i class="el-icon-message"></i>编号规则管理
         </el-menu-item>
-
-        <!-- <el-submenu index="/quick">
-          <template slot="title">
-            <i class="el-icon-message"></i>
-            系统配置
-          </template>
-          <el-menu-item index="/quick"><i class="el-icon-document"></i>系统配置项</el-menu-item>
-          <el-menu-item index="/quick"><i class="el-icon-document"></i>API管理</el-menu-item>
-        </el-submenu>-->
       </el-submenu>
     </el-menu>
   </div>
 </template>
 <script>
+import request from "@/utils/request";
 export default {
   data() {
     //项目类型，订单阶段  跟数据字典页面类似
     return {
       roleList: [],
       pageList: [],
-      // rangeMana:false,
-      // styleGroupMana:false,
-      // styleMana:false,
-      // toDoPredict:false,
-      // doingPredict:false,
-      // savePredict:false,
-      // planMana:false,
-      // completedPlanMana:false,
-      // rangePlan:false,
-      // styleGroupPlan:false,
-      // stylePlan:false,
-      // planReview:false,
-      // planDistribute:false,
-      // rangeCompleted:false,
-      // planRecover:false,
-      // exceptionMana:false,
-      // messageMana:false,
-      // statistics:false,
-      // gantt:false,
-      // predictMana:false,
-      // backMana:false,
+      // rangeMana: false,
+      // styleGroupMana: false,
+      // styleMana: false,
+      // toDoPredict: false,
+      // doingPredict: false,
+      // savePredict: false,
+      // planMana: false,
+      // completedPlanMana: false,
+      // rangePlan: false,
+      // styleGroupPlan: false,
+      // stylePlan: false,
+      // planReview: false,
+      // planDistribute: false,
+      // rangeCompleted: false,
+      // planRecover: false,
+      // exceptionMana: false,
+      // messageMana: false,
+      // statistics: false,
+      // gantt: false,
+      // predictMana: false,
+      // backMana: false
 
       rangeMana: true,
       styleGroupMana: true,
@@ -292,32 +284,19 @@ export default {
 
   created: function() {
     //获得自己的角色信息
-    this.$axios
-      .get(`${window.$config.HOST2}/getRoleList`, {})
-      .then(response => {
-        console.log("role:", response.data);
-        response.data.forEach(element => {
-          if (element.chineseName === "计划系统管理员") {
-            this.backMana = true;
-          }
-          this.roleList.push(element.id);
-        });
-        console.log(this.roleList);
-        //获得页面信息
-        this.$axios
-          .get(
-            `${window.$config.HOST}/authorityManagement/getSystemAuthorityByRole`,
-            {
-              params: {
-                roleIdList: this.roleList + ""
-              }
+    request.get(`/me`).then(response => {
+      for (let i = 0; i <= response.result.roles.length; i++) {
+        this.roleList.push(response.result.roles[i]);
+        request
+          .get(`/backstage/role-menu/find`, {
+            params: {
+              roleName: response.result.roles[i]
             }
-          )
+          })
           .then(response => {
-            console.log("pageList:", response.data);
-            this.pageList = response.data;
-            // console.log(this.pageList.includes("系列管理"))
-
+            response.result.forEach(element => {
+              this.pageList.push(element.menuName);
+            });
             if (this.pageList.includes("系列管理")) {
               this.rangeMana = true;
             }
@@ -336,15 +315,6 @@ export default {
             if (this.pageList.includes("预测计划管理")) {
               this.predictMana = true;
             }
-            // if(this.pageList.includes("未制定计划")){
-            //   this.toDoPredict=true;
-            // }
-            // if(this.pageList.includes("已制定计划")){
-            //   this.doingPredict=true;
-            // }
-            // if(this.pageList.includes("已保存计划")){
-            //   this.savePredict=true;
-            // }
             if (this.pageList.includes("系列计划制定")) {
               this.rangePlan = true;
             }
@@ -381,20 +351,9 @@ export default {
             if (this.pageList.includes("后台管理")) {
               this.backMana = true;
             }
-          })
-          .catch(error => {
-            this.$message({
-              message: "获取角色信息失败！",
-              type: "warning"
-            });
           });
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取角色信息失败！",
-          type: "warning"
-        });
-      });
+      }
+    });
   },
   components: {},
   computed: {
