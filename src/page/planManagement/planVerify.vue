@@ -67,21 +67,13 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
-            <!-- <el-input v-model="input3" clearable @change="c4"></el-input> -->
-            <el-select v-model="rangeId" clearable>
-              <el-option
-                v-for="item in options4"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+            <el-input v-model="rangeId" placeholder="请输入系列名称" :clearable="true"></el-input>
           </div>
         </el-col>
 
         <el-col :offset="0" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="getWareList">查询</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="getWareList(1)">查询</el-button>
           </div>
         </el-col>
       </el-row>
@@ -91,17 +83,32 @@
       <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
         <el-col :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="VerifyPass" v-if="checked===1">审核通过</el-button>
+            <el-button
+              type="primary"
+              style="margin-right: 20px"
+              @click="VerifyPass"
+              v-if="checked===1"
+            >审核通过</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="VerifyRebut" v-if="checked===1">审核驳回</el-button>
+            <el-button
+              type="primary"
+              style="margin-right: 20px"
+              @click="VerifyRebut"
+              v-if="checked===1"
+            >审核驳回</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="CancelVerify" v-if="checked===2">取消审核</el-button>
+            <el-button
+              type="primary"
+              style="margin-right: 20px"
+              @click="CancelVerify"
+              v-if="checked===2"
+            >取消审核</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
@@ -110,9 +117,9 @@
           </div>
         </el-col>
       </el-row>
-      <br>
-      <hr>
-      <br>
+      <br />
+      <hr />
+      <br />
       <div>
         <el-table
           :data="tableDataA"
@@ -124,18 +131,18 @@
           style="width: 100%; margin-top: 20px"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-          <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
-          <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+          <el-table-column width="50" type="index" label="序号" ></el-table-column>
+          <el-table-column prop="serialNo" label="计划编号" align="center" width="150"></el-table-column>
+          <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="planObject" label="计划对象" align="center"></el-table-column>
+          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="objectName" label="计划对象" align="center"></el-table-column>
           <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
           <el-table-column prop="startDate" label="计划开始" align="center"></el-table-column>
           <el-table-column prop="endDate" label="计划结束" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" align="center" width="150"></el-table-column>
           <el-table-column prop="state" label="审核状态" align="center"></el-table-column>
-
           <el-table-column fixed="right" width="100" label="操作" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
@@ -197,6 +204,7 @@
 </template>
 
 <script>
+import request from "@/utils/request";
 const cityOptions = ["已制定", "未制定", "制定中"];
 export default {
   name: "planVerify",
@@ -235,52 +243,6 @@ export default {
       dataRange: "",
       dataStartTime: "",
       dataEndTime: "",
-            planManagementErrorCode:[
-        {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
-        },
-        {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
-        },
-        {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
-        },
-        {
-          erorCode:-4,
-          errotInfo:"系列根计划不存在",
-        },
-        {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
-        },
-        {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
-        },
-        {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
-        },
-        {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
-        },
-        {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
-        },
-        {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
-        },
-        {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
-      ],
 
       options1: [],
       options2: [],
@@ -314,19 +276,19 @@ export default {
     };
   },
 
-   computed:{
-    keepAlives:{
-      get(){
-        return this.$store.getters['baseinfo/keepAliveOptions'];
+  computed: {
+    keepAlives: {
+      get() {
+        return this.$store.getters["baseinfo/keepAliveOptions"];
       },
-      set(value){
-        return this.$store.commit('baseinfo/keepalive-opt-arr', value);
+      set(value) {
+        return this.$store.commit("baseinfo/keepalive-opt-arr", value);
       }
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === 'planMakeIndex') {
-      this.keepAlives = ['planVerify',];
+    if (to.name === "planMakeIndex") {
+      this.keepAlives = ["planVerify"];
     } else {
       this.keepAlives = [];
     }
@@ -336,80 +298,30 @@ export default {
     var that = this;
 
     //获得品牌下拉框
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-        customerId: undefined
+    request
+      .get(`/backstage/brand/name`, {
+        clientId: undefined
       })
       .then(response => {
-        this.options2 = response.data;
-      })
-      .catch(error => {
-        console.log("获取品牌失败");
+        this.options2 = response.result;
       });
-
-    //获得系列下拉框
-    that.$axios
-      .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
-        brandId: undefined
-      })
-      .then(response => {
-        this.options4 = response.data;
-      })
-      .catch(error => {
-        console.log("获取系列信息失败");
-      });
-
     //获得客户名称下拉框
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
-      .then(response => {
-        this.options1 = response.data;
-      })
-      .catch(error => {
-        console.log("获取客户信息失败");
-      });
-    console.log("到达这里了");
+    request.get(`/backstage/client/name`).then(response => {
+      this.options1 = response.result;
+    });
+
     //获得空集搜索列表
-    let list = {
-      stage: "review",
-      customerId: undefined,
-      brandId: undefined,
-      rangeId: undefined,
-      name: undefined,
-      clothingLevelId: undefined,
-      startDate: undefined,
-      endDate: undefined
-    };
-    console.log(list);
-    that.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-        params: list
+    request
+      .get(`/plan/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 10,
+          state: "SUBMIT"
+        }
       })
       .then(response => {
-        console.log("获取空搜索集成功");
-
-        (this.tableData = []),
-          response.data.forEach(element => {
-            console.log("dsadsa");
-            if (element.state === "已提交") this.tableData.push(element);
-          });
-
-        this.pagination.total = this.tableData.length;
-        let i = (this.pagination.currentPage - 1) * this.pagination.pageSize;
-        let k = (this.pagination.currentPage - 1) * this.pagination.pageSize;
-        this.tableDataA = [];
-
-        for (
-          ;
-          i - k < this.pagination.pageSize && i < this.tableData.length;
-          i++
-        ) {
-          this.tableDataA.push(this.tableData[i]);
-        }
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log("获取空搜索集失败");
+        this.pagination.total = response.total;
+        this.tableDataA = response.result;
       });
   },
   methods: {
@@ -421,39 +333,29 @@ export default {
         });
         return;
       }
-      let list = {
-        id: this.AnyChanged[0].id
-      };
-
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanTree`, {
-          params: list
+      request
+        .get(`/plan/tree`, {
+          params: {
+            id: this.AnyChanged[0].id
+          }
         })
         .then(response => {
           this.allPlans = [];
-          this.allPlans.push(response.data);
-          console.log(this.allPlans);
-
+          this.allPlans.push(response.result);
           this.lookAllPlans = true;
-        })
-        .catch(error => {
-          this.$message({
-            message: "获取总计划失败",
-            type: "warning"
-          });
         });
     },
     changeState() {
-      this.getWareList();
+      this.getWareList(1);
     },
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       console.log("每页+" + this.pagination.pageSize);
-      this.getWareList();
+      this.getWareList(1);
     },
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
-      this.getWareList();
+      this.getWareList(val);
     },
     //查看详情
     searchDetails(row) {
@@ -484,7 +386,7 @@ export default {
           planPropose: row.proposal,
           planDescribe: row.description,
           note: row.note,
-          files:row.files
+          files: row.files
         }
       });
     },
@@ -507,72 +409,40 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
-    getWareList() {
+    getWareList(currentPageNum) {
       const that = this;
-      this.DataStartTime = that.changeDate(this.dataRange[0]);
-      this.DataEndTime = that.changeDate(this.dataRange[1]);
-      let list = {
-        stage: "review",
-        customerId: this.clientId === "" ? undefined : this.clientId,
-        brandId: this.brandId === "" ? undefined : this.brandId,
-        rangeId: this.rangeId === "" ? undefined : this.rangeId,
-        name: undefined,
-        clothingLevelId: undefined,
-        startDate: this.DataStartTime,
-        endDate: this.DataEndTime
-      };
-
-      // let list1 = {
-      //   stage: "distribute",
-      //   customerId: this.clientId === "" ? undefined : this.clientId,
-      //   brandId: this.brandId === "" ? undefined : this.brandId,
-      //   rangeId: this.rangeId === "" ? undefined : this.rangeId,
-      //   name: undefined,
-      //   clothingLevelId: undefined,
-      //   startDate: this.DataStartTime,
-      //   endDate: this.DataEndTime
-      // };
-      console.log(list);
-
-      let stateName;
-      if (this.checked === 1) {
-        stateName = "已提交";
-      } else if (this.checked === 2) {
-        stateName = "已审核";
-      } else if (this.checked === 3) {
-        stateName = "已下发";
+      if (this.dataRange != null) {
+        this.DataStartTime = that.changeDate(this.dataRange[0]);
+        this.DataEndTime = that.changeDate(this.dataRange[1]);
+      } else {
+        this.DataStartTime = null;
+        this.DataEndTime = null;
       }
-        that.$axios
-          .get(`${window.$config.HOST}/planManagement/getPlanList`, {
-            params: list
-          })
-          .then(response => {
-            console.log(response.data);
 
-            (this.tableData = []),
-              response.data.forEach(element => {
-                console.log("dsadsa");
-                if (element.state === stateName) this.tableData.push(element);
-              });
-
-            this.pagination.total = this.tableData.length;
-            let i =
-              (this.pagination.currentPage - 1) * this.pagination.pageSize;
-            let k =
-              (this.pagination.currentPage - 1) * this.pagination.pageSize;
-            this.tableDataA = [];
-
-            for (
-              ;
-              i - k < this.pagination.pageSize && i < this.tableData.length;
-              i++
-            ) {
-              this.tableDataA.push(this.tableData[i]);
-            }
-          })
-
-          .catch(error => {});
-      
+      request
+        .get(`/plan/find`, {
+          params: {
+            state:
+              this.checked === 1
+                ? "SUBMIT"
+                : this.checked === 2
+                ? "CHECK"
+                : "DISTRIBUTE",
+            clientId: this.clientId === "" ? undefined : this.clientId,
+            brandId: this.brandId === "" ? undefined : this.brandId,
+            seriesName: this.rangeId === "" ? undefined : this.rangeId,
+            name: undefined,
+            clothesLevelName: undefined,
+            createAfter: this.DataStartTime,
+            createBefore: this.DataEndTime,
+            pageNum: currentPageNum,
+            pageSize: this.pagination.pageSize
+          }
+        })
+        .then(response => {
+          this.tableDataA = response.result;
+          this.pagination.total = response.total;
+        });
     },
     isChanged(val) {
       this.AnyChanged = val;
@@ -581,35 +451,17 @@ export default {
       this.GoBack = false;
     },
     GoBackConfirm() {
-      //this.$set(this.iptDatas[index], `showAlert`, true)
       this.AnyChanged.forEach(element => {
-        console.log(element);
         let list = {
           id: element.id,
           reason: this.GoBackReason
         };
-        console.log(list);
-        this.$axios
-          .get(`${window.$config.HOST}/planManagement/failPlan`, {
+        request
+          .put(`/plan/fail`, null,{
             params: list
           })
           .then(response => {
-            this.getWareList();
-          if(response.data < 0 ){
-            console.log("驳回失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "驳回失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
-            this.$message({
-              type:"success",
-              message: "驳回成功!"
-            });
-          }
-          })
-          .catch(error => {
-            this.$message({
-              message: "操作失败!",
-              type: "error"
-            });
+            this.getWareList(this.pagination.currentPage);
           });
       });
       this.GoBack = false;
@@ -623,30 +475,13 @@ export default {
         return;
       }
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        this.$axios
-          .get(`${window.$config.HOST}/planManagement/passPlan`, {
-            params: {
-              id: this.AnyChanged[i].id
-            }
-          })
+        request
+          .put(`/plan/pass`, null,
+          {params:{
+            id: this.AnyChanged[i].id
+          }})
           .then(response => {
-            this.getWareList();
-            console.log(response.data);
-          if(response.data < 0 ){
-            console.log("审核失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "审核失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
-            this.$message({
-              type:"success",
-              message: "审核成功!"
-            });
-          }
-          })
-          .catch(error => {
-            this.$message({
-              message: "操作失败!",
-              type: "error"
-            });
+            this.getWareList(1);
           });
       }
     },
@@ -671,29 +506,14 @@ export default {
 
       //this.$set(this.iptDatas[index], `showAlert`, true)
       for (var i = 0; i < this.AnyChanged.length; i++) {
-        this.$axios
-          .get(`${window.$config.HOST}/planManagement/cancelPassPlan`, {
+        request
+          .put(`/plan/cancel`, null,{
             params: {
               id: this.AnyChanged[i].id
             }
           })
           .then(response => {
-            this.getWareList();
-          if(response.data < 0 ){
-            console.log("取消失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-            this.$message.error( "取消失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-          }else{
-            this.$message({
-              type:"success",
-              message: "取消成功!"
-            });
-          }
-          })
-          .catch(error => {
-            this.$message({
-              message: "操作失败!",
-              type: "error"
-            });
+            this.getWareList(1);
           });
       }
     },

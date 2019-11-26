@@ -218,7 +218,7 @@ export default {
       })
       .then(response => {
         this.tableData = response.result;
-        this.pagination.total = request.total;
+        this.pagination.total = response.total;
       });
   },
   methods: {
@@ -299,7 +299,7 @@ export default {
         })
         .then(response => {
           this.tableData = response.result;
-          this.pagination.total = request.total;
+          this.pagination.total = response.total;
         });
     },
     // 恢复单个的按钮

@@ -75,19 +75,14 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="20">
-              <el-col :span="3">
+     
+              <el-col :span="10">
                 <el-button type="primary" @click="searchSeriesPlan(1)">搜索</el-button>
-              </el-col>
-              <!-- <el-col :span="4">
-              <el-button type="primary" @click="handleClick1()">引用计划模板</el-button>
-              </el-col>-->
-              <el-col :span="5">
+
                 <el-button type="primary" @click="handleClick2()">存为计划模板</el-button>
+
+                <el-button type="primary" @click="deleteRootPlan()">删除根计划</el-button>
               </el-col>
-              <!-- <el-col :span="5">
-              <el-button type="primary" @click="handleClick3()">制定根计划</el-button>
-              </el-col>-->
               <el-col :span="8" style="margin-top:10px;margin-left:400px">
                 <el-radio-group v-model="checked" @change="changeState">
                   <el-radio :label="1">系列</el-radio>
@@ -95,7 +90,7 @@
                   <el-radio :label="3">款式</el-radio>
                 </el-radio-group>
               </el-col>
-            </el-col>
+ 
           </el-row>
 
           <hr />
@@ -687,8 +682,7 @@ export default {
         params: {
           pageNum: 1,
           pageSize: 10,
-          planClass: "SERIES",
-        
+          planClass: "SERIES"
         }
       })
       .then(response => {
@@ -711,7 +705,6 @@ export default {
         })
         .then(response => {
           this.assignDetailTable = response.result;
-
         });
     },
     deleteAssign(row) {
@@ -740,13 +733,12 @@ export default {
     assignRoot() {
       let list = [];
       this.userSelection.forEach(element => {
-        if(!element.assignPlanType)
-        {
+        if (!element.assignPlanType) {
           this.$message({
             message: "任意一条勾选的人员都必须选择计划类型!",
             type: "error"
           });
-          return ;
+          return;
         }
         list.push({
           assignPlanType: element.assignPlanType,
@@ -846,6 +838,26 @@ export default {
           });
         }
       });
+    },
+    deleteRootPlan() {
+      if (this.AnyChanged.length < 1) {
+        this.$message({
+          message: "请选择计划进行删除！",
+          type: "error"
+        });
+        return;
+      } else {
+        this.AnyChanged.forEach(element => {
+          request.delete("/root-plan/delete", {
+            params: {
+              id: element.id
+            }
+          })
+          .then(response=>{
+            this.searchSeriesPlan(1);
+          })
+        });
+      }
     },
     handleClick3() {
       (this.rootPlanMakeFlag = true), (this.viewname = "fourth");
@@ -960,8 +972,7 @@ export default {
                 ? "SERIES"
                 : this.checked === 2
                 ? "GROUP"
-                : "STYLE",
-            
+                : "STYLE"
           }
         })
         .then(response => {

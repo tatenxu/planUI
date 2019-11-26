@@ -13,17 +13,16 @@
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" align="center"></el-table-column>
-          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-          <el-table-column prop="number" label="系列编号" align="center"></el-table-column>
-          <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="name" width="180" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="serialNo" width="180" label="系列编号" align="center"></el-table-column>
+          <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothingLevelName" label="服装类型" align="center"></el-table-column>
-          <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
+          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addingModeStr" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="completionState" label="状态" align="center"></el-table-column>
+          <el-table-column prop="addMode" label="添加方式" align="center"></el-table-column>
+          <!-- <el-table-column prop="completionState" label="状态" align="center"></el-table-column> -->
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -49,6 +48,7 @@
 
 <script>
 // import { rename } from 'fs';
+import request from "@/utils/request";
 export default {
   data() {
     return {
@@ -112,46 +112,19 @@ export default {
     };
   },
   created: function () {
-    const that = this;
-    console.log('进入计划完成页面');
-
     //加载默认所有系列
-    this.$axios
-      .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-        customerId: undefined,
-        brandId: undefined,
-        id: undefined,
-        clothingLevelId: undefined,
-        startDate: undefined,
-        endDate: undefined
-      })
+    request
+      .get(`/info/series/find`, {
+        params:{
+          pageNum :1,
+          pageSize :10,
+        }
+      }
+      )
       .then(response => {
-        this.totalTableData = response.data;
-        this.totalTableData.forEach(element => {
-          if(element.completed){
-            element.completionState = "已完成";
-          }else{
-            element.completionState = "未完成";
-          }
-
-          var d = new Date(element.createTime);
-          let time = d.toLocaleString();
-          element.createTime = time;
-        });
-
-        //时间排序
-        this.totalTableData.sort(function(a,b){
-          return Date.parse(b.createTime)-Date.parse(a.createTime);
-        });
-
-        this.pagination.total = this.totalTableData.length;
-        var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-        var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
-        this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+        this.tableData = response.result;
+        this.pagination.total = response.total;
       })
-      .catch(error => {
-        console.log("初始化加载系列失败");
-      });
   },
   methods: {
     // 每页条数改变时触发函数
@@ -174,44 +147,18 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
-    handleSearch(){
-      console.log("开始搜索");
-      this.$axios
-        .post(`${window.$config.HOST}/infoManagement/getRangeList`, {
-          customerId: undefined,
-          brandId: undefined,
-          id: undefined,
-          clothingLevelId: undefined,
-          startDate: undefined,
-          endDate: undefined
+    handleSearch(currentPageNum){
+      request
+        .get(`/info/series/find`, {
+          params: {
+            pageSize: this.pagination.pageSize,
+            pageNum: currentPageNum
+          }
         })
         .then(response => {
-          this.totalTableData = response.data;
-          this.totalTableData.forEach(element => {
-            if(element.completed){
-              element.completionState = "已完成";
-            }else{
-              element.completionState = "未完成";
-            }
-
-            var d = new Date(element.createTime);
-            let time = d.toLocaleString();
-            element.createTime = time;
-          });
-
-          //时间排序
-          this.totalTableData.sort(function(a,b){
-            return Date.parse(b.createTime)-Date.parse(a.createTime);
-          });
-
-          this.pagination.total = this.totalTableData.length;
-          var pageEleStart = (this.pagination.currentPage-1)*this.pagination.pageSize;
-          var pageEleEnd = (pageEleStart+this.pagination.pageSize)> this.pagination.total?this.pagination.total:(pageEleStart+this.pagination.pageSize);
-          this.tableData = this.totalTableData.slice(pageEleStart, pageEleEnd);
+          this.tableData = response.result;
+          this.pagination.total = response.total;
         })
-        .catch(error => {
-          console.log("加载系列失败");
-        });
     },
     //计划完成按钮点击
     handleCompletionClick() {
@@ -221,7 +168,7 @@ export default {
         that.$message.error("请选择要删除的计划！");
       } else {
         this.tableSelectionData.forEach(element => {
-          this.$axios
+          request
             .get(`${window.$config.HOST}/infoManagement/completeRange`,{
               params:{id:element.id}
             })

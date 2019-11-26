@@ -1,14 +1,14 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20" style="margin-top:15px ; margin-bottom:15px">
+      <el-row :gutter="20">
         <el-col :span="8">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">客户名称：</span>
+          <div class="bar">
+            <div class="title">客户名称</div>
             <el-select
               v-model="searchOptions.searchParams.customerName"
               clearable
-              :disabled="searchDisabled"
+              placeholder="请选择"
             >
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
@@ -19,15 +19,10 @@
             </el-select>
           </div>
         </el-col>
-
         <el-col :span="8">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">品牌：</span>
-            <el-select
-              v-model="searchOptions.searchParams.brandName"
-              clearable
-              :disabled="searchDisabled"
-            >
+          <div class="bar">
+            <div class="title">品牌</div>
+            <el-select v-model="searchOptions.searchParams.brandName" clearable placeholder="请选择">
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -37,37 +32,41 @@
             </el-select>
           </div>
         </el-col>
-
         <el-col :span="8">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">系列名称：</span>
-            <!-- <el-select v-model="searchOptions.searchParams.seriesName" :disabled="searchDisabled">
-              <el-option v-for="item in searchOptions.options.seriesNameOptions" :key="item.id" :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select>-->
-            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+          <div class="bar">
+            <div class="title">系列名称</div>
+            <el-input
+              v-model="searchOptions.searchParams.seriesName"
+              placeholder="请输入系列名称"
+              :clearable="true"
+            ></el-input>
           </div>
         </el-col>
       </el-row>
 
-      <el-row :gutter="20" style="margin-top:25px">
+      <el-row :gutter="20">
         <el-col :span="8">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">计划名称：</span>
-            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
+          <div class="bar">
+            <div class="title">计划名称</div>
+            <el-input
+              v-model="searchOptions.searchParams.planName"
+              placeholder="请输入系列名称"
+              :clearable="true"
+            ></el-input>
           </div>
         </el-col>
-        <el-col :span="10">
-          <div class="grid-content bg-purple inputCombineDiv">
-            <span class="inputTag">新建时间：</span>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">添加时间</div>
             <el-date-picker
+              style="margin-left:20px "
               v-model="searchOptions.searchParams.dateRange"
               type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              :default-time="['00:00:00', '23:59:59']"
-              :disabled="searchDisabled"
             ></el-date-picker>
           </div>
         </el-col>
@@ -316,7 +315,7 @@ export default {
       })
       .then(response => {
         this.tableData = response.result;
-        this.pagination.total = request.total;
+        this.pagination.total = response.total;
       });
   },
 
@@ -343,6 +342,7 @@ export default {
         .get(`${window.$config.HOST}/plan-exception/find`, { params: param })
         .then(response => {
           this.tableData = response.result;
+          this.pagination.total = response.total;
         });
     }
   },
@@ -378,7 +378,7 @@ export default {
         minute = minute < 10 ? "0" + minute : minute;
         var second = date.getSeconds();
         second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+        return y + "-" + m + "-" + d;
       }
     },
     //搜索按钮
@@ -421,11 +421,8 @@ export default {
         })
         .then(response => {
           this.tableData = response.result;
-          this.pagination.total = request.total;
+          this.pagination.total = response.total;
         })
-        .catch(error => {
-          console.log("异常搜索失败");
-        });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -465,55 +462,122 @@ export default {
 
 
 <style lang="less" scoped>
-.box-card {
-  margin: 20px 50px;
-  padding: 0 20px;
+.title {
+  min-width: 100px;
 }
-
-.el-row {
-  margin-bottom: 20px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .el-col {
-    border-radius: 4px;
-
-    .inputCombineDiv {
-      display: flex;
-      flex-direction: row;
-
-      .inputTag {
-        min-width: 70px;
-        font-size: 14px;
-        line-height: 40px;
-        text-align: center;
-      }
-
-      .inputTag1 {
-        margin-left: 10px;
-        margin-right: 10px;
-        width: 18px;
-        font-size: 18px;
-      }
+.containerHeaderDiv1 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  // background: black;
+  .containerHeaderDiv2 {
+    position: relative;
+    left: 300px;
+    // margin-right: 100px;
+    // background: white;
+    display: flex;
+    flex-direction: row-reverse;
+    min-width: 500px;
+    .input {
+      min-width: 200px;
+      max-width: 400px;
+    }
+    .inputTag {
+      font-size: 14px;
+      line-height: 40px;
+      min-width: 90px;
     }
   }
 }
 
-.cardBelow {
+.inputCombine {
   margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  min-width: 250px;
+  max-width: 500px;
+  .inputTag {
+    font-size: 14px;
+    line-height: 40px;
+    min-width: 90px;
+  }
 }
 
-.grid-content {
-  border-radius: 4px;
-  min-height: 36px;
+.secondButtonDiv {
+  margin-top: 20px;
+  min-width: 250px;
+  max-width: 500px;
+  // background: black;
+  .save {
+    margin-left: 68%;
+  }
+}
+
+.containerHeaderDiv1 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  // background: black;
+  .containerHeaderDiv2 {
+    position: relative;
+    left: 300px;
+    // margin-right: 100px;
+    // background: white;
+    display: flex;
+    flex-direction: row-reverse;
+    min-width: 500px;
+    .input {
+      min-width: 200px;
+      max-width: 400px;
+    }
+    .inputTag {
+      font-size: 14px;
+      line-height: 40px;
+      min-width: 90px;
+    }
+  }
 }
 .block {
   padding: 30px 0;
   text-align: center;
-  //border-right: solid 1px #EFF2F6;
-  //display: inline-block;
-  //box-sizing: border-box;
+}
+.Mtitle {
+  align-content: center;
+  margin-left: 45%;
+  font-size: 2ch;
+}
+.box-card {
+  margin: 20px 50px;
+  padding: 0 20px;
+  .el-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+    .MinW {
+      min-width: 400px;
+    }
+    .bar {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .title {
+        font-size: 14px;
+        width: 90px;
+
+        text-align: center;
+      }
+      .el-input {
+        width: 70%;
+        min-width: 80px;
+        margin-left: 20px;
+      }
+      .el-select {
+        width: 70%;
+        min-width: 80px;
+        margin-left: 20px;
+      }
+    }
+  }
 }
 </style>

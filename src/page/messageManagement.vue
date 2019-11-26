@@ -1,22 +1,27 @@
 <template>
   <div class="body">
-    <el-tabs v-model="viewname" >
+    <el-tabs v-model="viewname">
       <el-tab-pane label="消息管理" name="first">
         <el-card class="box-card">
           <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
-            <el-col  :span="2">
+            <el-col :span="2">
               <div class="bar pur">
-                <el-button type="primary" style="margin-right: 20px" >全选</el-button>
+                <el-button type="primary" style="margin-right: 20px">全选</el-button>
               </div>
             </el-col>
-            <el-col  :span="2">
+            <el-col :span="2">
               <div class="bar pur">
                 <el-button type="primary" style="margin-right: 20px" @click="sendMessageClick">发送消息</el-button>
               </div>
             </el-col>
-            <el-col  :span="2">
+            <el-col :span="2">
               <div class="bar pur">
                 <el-button type="primary" style="margin-right: 20px" @click="markRead">标记已读</el-button>
+              </div>
+            </el-col>
+            <el-col :span="2">
+              <div class="bar pur">
+                <el-button type="primary" style="margin-right: 20px" @click="deleteMessage">删除消息</el-button>
               </div>
             </el-col>
             <el-col :span="4">
@@ -26,77 +31,92 @@
                 inactive-text="已发送"
                 inactive-color="#13ce66"
                 style="margin-top:10px"
-                @change="switchSendReceiveState">
-              </el-switch>
+                @change="switchSendReceiveState"
+              ></el-switch>
             </el-col>
 
-            <el-col :offset="1" :span="5">
+            <!-- <el-col :offset="1" :span="5">
               <div class="bar pur">
                 <el-date-picker
                   v-model="searchDate"
                   type="daterange"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
-                  :default-time="['00:00:00', '23:59:59']">
-                </el-date-picker>
+                  :default-time="['00:00:00', '23:59:59']"
+                ></el-date-picker>
               </div>
-            </el-col>
+            </el-col>-->
 
-            <el-col  :span="2">
+            <!-- <el-col :span="2">
               <div class="bar pur">
                 <el-button type="primary" style="margin-right: 20px" @click="handleSearch">查询</el-button>
               </div>
-            </el-col>
+            </el-col>-->
           </el-row>
-
         </el-card>
 
         <el-card class="box-card">
           <div>
-            <el-table :data="tableData" @selection-change="tableSelectionChange" max-height="550"  style="width : 100%">
-            <el-table-column type="selection" width="50" align="center"></el-table-column>
-            <el-table-column prop="id" v-if="false"></el-table-column>
-            <el-table-column prop="stateStr" label="是否已读" align="center"></el-table-column>
-            <el-table-column prop="messageDetails" label="消息内容" align="center"></el-table-column>
-            <el-table-column v-if="isRcvMsg" prop="senderName" label="发送人" align="center"></el-table-column>
-            <el-table-column v-if="!isRcvMsg" prop="receiverName" label="接收人" align="center"></el-table-column>
-            <el-table-column prop="createTime" label="发送时间" align="center"></el-table-column>
-            <!-- <el-table-column label="操作" align="center">
+            <el-table
+              :data="tableData"
+              @selection-change="tableSelectionChange"
+              max-height="550"
+              style="width : 100%"
+              border
+            >
+              <el-table-column type="selection" width="50" align="center"></el-table-column>
+              <el-table-column prop="id" v-if="false"></el-table-column>
+              <el-table-column prop="observedStr" label="是否已读" align="center" width="50px"></el-table-column>
+              <el-table-column prop="content" label="消息内容" align="center"></el-table-column>
+              <el-table-column
+                v-if="isRcvMsg"
+                prop="senderName"
+                label="发送人"
+                align="center"
+                width="100px"
+              ></el-table-column>
+              <el-table-column
+                v-if="!isRcvMsg"
+                prop="receiverName"
+                label="接收人"
+                align="center"
+                width="100px"
+              ></el-table-column>
+              <!-- <el-table-column prop="createTime" label="发送时间" align="center"></el-table-column> -->
+              <!-- <el-table-column label="操作" align="center">
               <template slot-scope="scope">
                   <el-button type="text" size="small">删除</el-button>
                 </template>
-            </el-table-column> -->
+              </el-table-column>-->
             </el-table>
           </div>
-          <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total">
-          </el-pagination>
-        </div>
+          <!-- <div class="block">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="pagination.currentPage"
+              :page-sizes="pagination.pageSizes"
+              :page-size="pagination.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="pagination.total"
+            ></el-pagination>
+          </div>-->
         </el-card>
       </el-tab-pane>
-
 
       <el-tab-pane label="发送消息" name="second" v-if="sendShowFlag">
         <el-card class="box-card">
           <el-row :gutter="20" style="margin-top:5px; ">
-            
             <el-col :span="6">
               <div class="bar">
                 <div class="title">接收人员</div>
-                <el-select v-model="rcvUser" clearable >
+                <el-select v-model="rcvUser" clearable>
                   <el-option
                     v-for="item in sendTargetOption"
                     :key="item.id"
-                    :label="item.realName"
-                    :value="item.id">
-                  </el-option>
+                    :label="item.name"
+                    :value="[item.id,item.name]"
+                  ></el-option>
                 </el-select>
               </div>
             </el-col>
@@ -106,10 +126,7 @@
             <el-col :gutter="20" style="margin-top:10px; ">
               <div class="bar">
                 <div class="title">消息内容</div>
-                <el-input type="textarea"
-                  :rows="5"
-                  placeholder="请输入内容"
-                  v-model="msgContent"></el-input>
+                <el-input type="textarea" :rows="5" placeholder="请输入内容" v-model="msgContent"></el-input>
               </div>
             </el-col>
           </el-row>
@@ -129,35 +146,32 @@
         </el-card>
       </el-tab-pane>
       <!-- <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane> -->
+      <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>-->
     </el-tabs>
   </div>
 </template>
 
 
 <script>
-import { error, isRegExp } from 'util';
-import consoleSidebarVue from '../components/layout/consoleSidebar.vue';
+import { error, isRegExp } from "util";
+import request from "@/utils/request";
+import consoleSidebarVue from "../components/layout/consoleSidebar.vue";
 export default {
   name: "warehouseList",
   data() {
     return {
-      isRcvMsg : true,
-      msgContent:"",
-      tableSelectionData:[],
-      viewname:'first',
-      sendShowFlag:false,
+      selfId: "",
+      selfName: "",
+      isRcvMsg: true,
+      msgContent: "",
+      tableSelectionData: [],
+      viewname: "first",
+      sendShowFlag: false,
       checkedCities: [],
-      rcvUser: '',
-      searchDate:'',
-      sendTargetOption: [{
-        id: 1,
-        realName: "人员A"
-      },{
-        value: 4,
-        realName: "系列D"
-      }],
-      
+      rcvUser: [],
+      searchDate: "",
+      sendTargetOption: [],
+
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
@@ -166,16 +180,34 @@ export default {
       },
       tableData: [],
       // checked: true,
-      pages: 0,
-    }
+      pages: 0
+    };
   },
-  created(){
-    this.handleSearch();
+  created() {
+    //获取自己身份
+    request.get(`/me`).then(response => {
+      console.log(response);
+      this.selfId = response.result.id;
+      this.selfName = response.result.name;
+      //获取自己的消息列表
+      request
+        .get(`/message/find`, {
+          params: {
+            receiverId: this.selfId
+          }
+        })
+        .then(response => {
+          this.tableData = response.result;
+          this.tableData.forEach(element => {
+            element.observedStr = element.observed ? "已读" : "未读";
+          });
+          this.pagination.total = response.total;
+        });
+    });
   },
   methods: {
     handleSizeChange(val) {
       this.pagination.pageSize = val;
-      console.log("每页+" + this.pagination.pageSize);
       this.handleSearch();
     },
     handleCurrentChange(val) {
@@ -195,157 +227,100 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
-    handleSearch(){
-      let that=this;
-      if(that.isRcvMsg){
-        that.$axios
-          .post(`${window.$config.HOST}/baseInfoManagement/getReceiveMessageResponse`,{
-            startDate:that.changeDate(that.searchDate ? that.searchDate[0]:null),
-            endDate:that.changeDate(that.searchDate ? that.searchDate[1]:null),
-          })
-          .then(response=>{
-            that.tableData = response.data;
-
-            //时间排序
-            that.tableData.sort(function(a, b) {
-              return Date.parse(b.createTime) - Date.parse(a.createTime);
-            });
-
-            //分页
-            that.pagination.total = response.data.length;
-            let i =
-              (that.pagination.currentPage - 1) * that.pagination.pageSize;
-            let k =
-              (that.pagination.currentPage - 1) * that.pagination.pageSize;
-            that.tableDataShow = [];
-            for (
-              ;
-              i - k < that.pagination.pageSize && i < that.tableData.length;
-              i++
-            ) {
-              that.tableDataShow.push(that.tableData[i]);
-            }
-          })
-          .catch(error=>{
-            console.log("获取消息失败:请检查网络!");
-            that.tableData = [
-              {
-                id:1,
-                stateStr:"未读",
-                messageDetails:"CX2001系列计划已制定，请及时关注并完善款式计划",
-                state:3,
-                senderName:"XX",
-                createTime:"2019-3-28",
-              }
-            ];
-          });
+    handleSearch() {
+      let that = this;
+      let list = {};
+      if (that.isRcvMsg) {
+        list = {
+          receiverId: this.selfId
+        };
       } else {
-        that.$axios
-          .post(`${window.$config.HOST}/baseInfoManagement/getSendMessageResponse `,{
-            startDate:that.changeDate(that.searchDate ? that.searchDate[0]:null),
-            endDate:that.changeDate(that.searchDate ? that.searchDate[1]:null),
-          })
-          .then(response=>{
-            that.tableData = response.data;
-
-            //时间排序
-            that.tableData.sort(function(a, b) {
-              return Date.parse(b.createTime) - Date.parse(a.createTime);
-            });
-
-            //分页
-            that.pagination.total = response.data.length;
-            let i =
-              (that.pagination.currentPage - 1) * that.pagination.pageSize;
-            let k =
-              (that.pagination.currentPage - 1) * that.pagination.pageSize;
-            that.tableDataShow = [];
-            for (
-              ;
-              i - k < that.pagination.pageSize && i < that.tableData.length;
-              i++
-            ) {
-              that.tableDataShow.push(that.tableData[i]);
-            }
-          })
-          .catch(error=>{
-            console.log("获取消息失败:请检查网络!");
-            that.tableData = [
-              {
-                id:1,
-                stateStr:"未读",
-                messageDetails:"CX2001系列计划已制定，请及时关注并完善款式计划",
-                state:3,
-                receiverName:"XasdfasfX",
-                createTime:"2019-3-28",
-              }
-            ];
-          });
+        list = {
+          senderId: this.selfId
+        };
       }
+      request
+        .get(`/message/find`, {
+          params: list
+        })
+        .then(response => {
+          this.tableData = response.result;
+          this.tableData.forEach(element => {
+            element.observedStr = element.observed ? "已读" : "未读";
+          });
+          this.pagination.total = response.total;
+        });
     },
-    switchSendReceiveState(){
-      let that=this;
+    switchSendReceiveState() {
+      let that = this;
       that.tableData = [];
       that.handleSearch();
     },
+    deleteMessage() {
+      let that = this;
+      if (that.tableSelectionData.length === 0) {
+        that.$message({
+          message: "请选择想要删除的消息!",
+          type: "warning"
+        });
+      } else {
+        that.tableSelectionData.forEach(element => {
+          request
+            .delete(`/message/delete`, {
+              params: {
+                receiveDelete: this.isRcvMsg,
+                sendDelete: !this.isRcvMsg,
+                id: element.id
+              }
+            })
+            .then(response => {
+              this.handleSearch();
+            });
+        });
+      }
+    },
     markRead() {
       let that = this;
-      if(that.tableSelectionData.length === 0){
+      if (that.tableSelectionData.length === 0) {
         that.$message({
-          message:"请选择未读的消息!",
-          type:"warning"
+          message: "请选择未读的消息!",
+          type: "warning"
         });
       } else {
         var flag = 1;
-        that.tableSelectionData.forEach(ele=>{
-          if(ele.stateStr === "已读"){
+        that.tableSelectionData.forEach(ele => {
+          if (ele.observedStr === "已读") {
             that.$message({
-              message:"不能选择已读信息,请重新选择!",
-              type:"warning"
+              message: "不能选择已读信息,请重新选择!",
+              type: "warning"
             });
             flag = 0;
           }
         });
-        if(flag===1){
-          that.tableSelectionData.forEach(ele=>{
-            that.$axios
-            .get(`${window.$config.HOST}/baseInfoManagement/updateMessageStateRead`, {
-              params:{id:ele.id}
-            })
-            .then(response=>{
-              if(response.data<0){
-                console.log("标记失败:"+that.planManagementErrorCode[-response.data - 1].errotInfo);
-                that.$message({
-                  message:"标记失败:"+that.planManagementErrorCode[-response.data - 1].errotInfom,
-                  type:"error"
-                });
-              } else {
-                that.$message({
-                  message:"标记成功",
-                  type:"success"
-                });
-              }
-            })
-            .catch(error=>{
-              that.$message({
-                  message:"标记失败:请检查网络",
-                  type:"error"
-                });
-            });
+        if (flag === 1) {
+          let idList = [];
+          that.tableSelectionData.forEach(element => {
+            idList.push(element.id);
+          });
+          request.put(`/message/read`, idList).then(response => {
+            this.handleSearch();
           });
         }
       }
     },
     sendMessageClick() {
-      let that=this;
+      let that = this;
+
       that.$axios
-        .get(`${window.$config.HOST2}/getAllUserName`)
+        .get(`http://192.168.1.180:8081/user/find`, {
+          params: {
+            pageNum: 1,
+            pageSize: 100
+          }
+        })
         .then(response => {
-          that.sendTargetOption = response.data;
-        })
-        .catch(error=>{
-          console.log("发送对象获取错误!")
-        })
+          this.sendTargetOption = response.data.result;
+        });
 
       this.viewname = "second";
       this.sendShowFlag = true;
@@ -355,96 +330,36 @@ export default {
     },
     sendConfirm() {
       let that = this;
-      if(that.rcvUser === "" || that.msgContent===""){
+      if (that.rcvUser === [] || that.msgContent === "") {
         that.$message({
-          type:'warning',
-          message:"请选择接收人,并填写消息内容!"
+          type: "warning",
+          message: "请选择接收人,并填写消息内容!"
         });
       } else {
         var param = {
-            receiverId:that.rcvUser,
-            messageDetails:that.msgContent,
-          };
-        that.sendTargetOption.forEach(ele=>{
-          if(ele.id === that.rcvUser){
-            param.receiverName = ele.realName;
-          }
-        })
-        that.$axios
-          .post(`${window.$config.HOST}/baseInfoManagement/addMessage`, param)
-          .then(response=>{
-            if(response.data < 0){
-              console.log("发送失败:"+that.planManagementErrorCode[-response.data - 1].errotInfo);
-              that.$message({
-                message:"发送失败:"+that.planManagementErrorCode[-response.data - 1].errotInfom,
-                type:"error"
-              });
-            }else{
-              this.viewname = "first";
-              this.sendShowFlag = false;
-              that.$message({
-                message:"发送成功",
-                type:"success"
-              });
-            }
-          })
-          .catch(error=>{
-            that.$message({
-                message:"发送失败:请检查网络!",
-                type:"error"
-              });
-            console.log("发送失败:请检查网络!");
-          })
+          receiverId: that.rcvUser[0],
+          receiverName: that.rcvUser[1],
+          content: that.msgContent,
+          senderName: this.selfName,
+          senderId: this.selfId
+        };
+        request.post(`/message/insert`, param).then(response => {
+          this.viewname = "first";
+          this.sendShowFlag = false;
+          this.handleSearch();
+        });
       }
     },
-    sendCancel(){
+    sendCancel() {
       this.viewname = "first";
       this.sendShowFlag = false;
-    },
-    handleDelete(index, row) {
-      this.$confirm('这将删除该仓库下所有记录信息，是否继续？','提示',{
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        let sendData = {"id": row.id};
-        this.$axios
-          .post(`${window.$config.HOST}/warehouse/base/deleteWarehouse`, sendData)
-          .then(response => {
-            if (response.data > 0) {
-              this.$message({
-              type: 'success',
-              message: '删除成功'
-              });
-              this.tableData.splice(index, 1);
-            } else {
-              this.$message({
-                type: 'info',
-                message: '未在数据库中查到此记录对应信息！'
-              })
-            }
-          })
-          .catch(error => {
-            console.log(error);
-            this.$message({
-              type: 'info',
-              message: '非法操作！'
-            })
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消操作'
-        });
-      });
-    },
-  },
-  
-}
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>
-.body{
+.body {
   min-width: 1500px;
   margin: 20px 50px;
 }
@@ -473,7 +388,7 @@ export default {
       // margin: 5px 10px;
     }
   }
-  .pur{
+  .pur {
     // background: grey;
   }
   .block {
