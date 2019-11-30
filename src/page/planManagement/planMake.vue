@@ -11,8 +11,10 @@
         class="demo-ruleForm"
       >
         <el-row :gutter="20">
-          <span class="Mtitle">计划制定</span>
+          <span class="Mtitle" v-if="isModifyPlanFlag">计划制定</span>
+          <span class="Mtitle" v-else>计划详情</span>
         </el-row>
+        <!-- 第一行 -->
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
@@ -22,7 +24,7 @@
                   clearable
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -36,7 +38,7 @@
                   clearable
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -49,13 +51,15 @@
                   v-model="ruleForm.seriesName"
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
             </div>
           </el-col>
         </el-row>
+
+        <!-- 第二行 -->
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
@@ -64,7 +68,7 @@
                   v-model="ruleForm.clothesLevelName"
                   :rows="1"
                   placeholder="请选择"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -80,7 +84,7 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
                 ></el-input>
               </el-form-item>
             </div>
@@ -95,44 +99,15 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
                 ></el-input>
               </el-form-item>
             </div>
           </el-col>
         </el-row>
 
+        <!-- 第三行 -->
         <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="bar">
-              <el-form-item label="根计划" prop="rootPlanName" placeholder="请输入">
-                <el-input
-                  v-model="ruleForm.rootPlanName"
-                  clearable
-                  :rows="1"
-                  placeholder="请选择"
-                  style="min-width:240px"
-                  :disabled="!alwaysGreyFlag"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-
-          <el-col :span="8">
-            <div class="bar">
-              <el-form-item label="上级计划" prop="superiorName" placeholder="请输入">
-                <el-input
-                  v-model="ruleForm.superiorName"
-                  clearable
-                  :rows="1"
-                  placeholder="请选择"
-                  style="min-width:240px"
-                  :disabled="!alwaysGreyFlag"
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-
           <el-col :span="8">
             <div class="bar" style="margin-left: 0px">
               <el-form-item label="日期类型" prop="dateType" placeholder="请输入">
@@ -142,19 +117,161 @@
                   :rows="1"
                   placeholder="请选择"
                   style="min-width:240px"
-                  :disabled="!alwaysGreyFlag"
+                  :disabled="alwaysGreyFlag"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item v-if="isRootPlanFlag" label="输入点" prop="inputPoint" placeholder="请输入">
+                <el-input
+                  v-model="ruleForm.inputPoint"
+                  clearable
+                  :rows="1"
+                  placeholder="请选择"
+                  style="min-width:240px"
+                  :disabled="alwaysGreyFlag"
+                ></el-input>
+              </el-form-item>
+
+              <el-form-item v-else label="根计划" prop="rootPlanName" placeholder="请输入">
+                <el-input
+                  v-model="ruleForm.rootPlanName"
+                  clearable
+                  :rows="1"
+                  placeholder="请选择"
+                  style="min-width:240px"
+                  :disabled="alwaysGreyFlag"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item
+                v-if="!isRootPlanFlag"
+                label="上级计划"
+                prop="superiorName"
+                placeholder="请输入"
+              >
+                <el-input
+                  v-model="ruleForm.superiorName"
+                  clearable
+                  :rows="1"
+                  placeholder="请选择"
+                  style="min-width:240px"
+                  :disabled="alwaysGreyFlag"
                 ></el-input>
               </el-form-item>
             </div>
           </el-col>
         </el-row>
 
+        <!-- 普通计划独有第一行 -->
+        <el-row :gutter="20" v-if="!isRootPlanFlag">
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="周期" prop="cycle" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.cycle"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="系列编号" prop="serialNo" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.serialNo"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="系列名称" prop="seriesName" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.seriesName"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <!-- 普通计划独有第二行 -->
+        <el-row :gutter="20" v-if="!isRootPlanFlag">
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="计划类型" prop="type" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.type"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="产品" prop="product" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.product"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="产品线" prop="productLine" placeholder="请输入">
+                <el-cascader
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.productLine"
+                  clearable
+                  :placeholder="ruleForm.productLine"
+                  style="min-width:240px"
+                  :options="chooseOptions.productLineOptions"
+                ></el-cascader>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <!-- 第四行 -->
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="计划名称" prop="name" placeholder="请输入">
                 <el-input
-                  :disabled="!modifyFlanFlag"
+                  :disabled="!isModifyPlanFlag"
                   v-model="ruleForm.name"
                   clearable
                   :rows="1"
@@ -167,42 +284,29 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="计划类型" prop="type" placeholder="请输入">
-                <el-select
-                  :disabled="!modifyFlanFlag"
-                  v-model="ruleForm.type"
+              <el-form-item label="下发类型" prop="assignPlanType" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.assignPlanType"
                   clearable
-                  placeholder="请选择"
+                  :rows="1"
+                  placeholder="请输入"
                   style="min-width:240px"
-                >
-                  <el-option
-                    v-for="item in chooseOptions.planTypeOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
+                ></el-input>
               </el-form-item>
             </div>
           </el-col>
-
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="项目类型" prop="projectType" placeholder="请输入">
-                <el-select
-                  :disabled="!modifyFlanFlag"
+                <el-input
+                  :disabled="!isModifyPlanFlag"
                   v-model="ruleForm.projectType"
                   clearable
-                  placeholder="请选择"
+                  :rows="1"
+                  placeholder="请输入"
                   style="min-width:240px"
-                >
-                  <el-option
-                    v-for="item in chooseOptions.projectTypeOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
+                ></el-input>
               </el-form-item>
             </div>
           </el-col>
@@ -212,55 +316,41 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="订单阶段" prop="orderStage" placeholder="请输入">
-                <el-select
-                  :disabled="!modifyFlanFlag"
-                  v-model="ruleForm.orderStage"
-                  clearable
-                  placeholder="请选择"
-                  style="min-width:240px"
-                >
-                  <el-option
-                    v-for="item in chooseOptions.orderStageOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-          </el-col>
-
-          <el-col :span="8">
-            <div class="bar">
-              <el-form-item label="产品线" prop="productLine" placeholder="请输入">
-                <el-select
-                  :disabled="!modifyFlanFlag"
-                  v-model="ruleForm.productLine"
-                  clearable
-                  placeholder="请选择"
-                  style="min-width:240px"
-                >
-                  <el-option
-                    v-for="item in chooseOptions.productLineOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-          </el-col>
-
-          <el-col :span="8">
-            <div class="bar" style="margin-left: 4px">
-              <el-form-item label="周期" prop="cycle" placeholder="请输入">
+              <el-form-item label="部门名称" prop="deptName" placeholder="请输入">
                 <el-input
-                  v-model="ruleForm.cycle"
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.deptName"
                   clearable
                   :rows="1"
                   placeholder="请输入"
-                  :disabled="!modifyFlanFlag"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="订单阶段" prop="orderStage" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.orderStage"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="系统编码" prop="systemCode" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.systemCode"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -272,44 +362,42 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="款数" prop="styleQuantity" placeholder="请输入">
+              <el-form-item label="创建人" prop="creatorName" placeholder="请输入">
                 <el-input
-                  v-model="ruleForm.styleQuantity"
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.creatorName"
                   clearable
                   :rows="1"
-                  placeholder="请选择"
+                  placeholder="请输入"
                   style="min-width:240px"
-                  :disabled="!modifyFlanFlag"
                 ></el-input>
               </el-form-item>
             </div>
           </el-col>
-
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="件数" prop="pieceQuantity" placeholder="请输入">
+              <el-form-item label="创建时间" prop="createTime" placeholder="请输入">
                 <el-input
-                  v-model="ruleForm.pieceQuantity"
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.createTime"
                   clearable
                   :rows="1"
-                  placeholder="请选择"
+                  placeholder="请输入"
                   style="min-width:240px"
-                  :disabled="!modifyFlanFlag"
                 ></el-input>
               </el-form-item>
             </div>
           </el-col>
-
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="预测款数" prop="predictStyleQuantity" placeholder="请输入">
+              <el-form-item label="日期" prop="date" placeholder="请输入">
                 <el-input
-                  v-model="ruleForm.predictStyleQuantity"
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.date"
                   clearable
                   :rows="1"
-                  placeholder="请选择"
+                  placeholder="请输入"
                   style="min-width:240px"
-                  :disabled="!modifyFlanFlag"
                 ></el-input>
               </el-form-item>
             </div>
@@ -320,14 +408,96 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="预测件数" prop="predictPieceQuantity" placeholder="请输入">
+              <el-form-item label="产品数量" prop="pieceQuantity" placeholder="请输入">
                 <el-input
-                  v-model="ruleForm.predictPieceQuantity"
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.name"
                   clearable
                   :rows="1"
-                  placeholder="请选择"
+                  placeholder="请输入"
                   style="min-width:240px"
-                  :disabled="!modifyFlanFlag"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="预测产品数" prop="predictPieceQuantity" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.name"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="款式数" prop="styleQuantity" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.name"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <!-- 第八行 -->
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="预测款数" prop="predictStyleQuantity" placeholder="请输入">
+                <el-input
+                  :disabled="!isModifyPlanFlag"
+                  v-model="ruleForm.name"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  style="min-width:240px"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="13">
+            <div class="bar">
+              <el-form-item label="起止时间" prop="startEndDate" placeholder="请输入">
+                <el-date-picker
+                  :disabled="!isModifyPlanFlag"
+                  :picker-options="chooseOptions.pickerOptions0"
+                  style="margin-left:20px"
+                  v-model="ruleForm.startEndDate"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  range-separator="至"
+                  :start-placeholder="placeHolders.startStr"
+                  :end-placeholder="placeHolders.endStr"
+                ></el-date-picker>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
+        <!-- 普通计划独有第三行 -->
+        <el-row :gutter="20" v-if="!isRootPlanFlag">
+          <el-col :span="8">
+            <div class="bar" style="margin-left: 4px">
+              <el-form-item label="协商延迟" prop="extension" placeholder="请输入">
+                <el-input
+                  v-model="ruleForm.extension"
+                  clearable
+                  :rows="1"
+                  placeholder="请输入"
+                  :disabled="!isModifyPlanFlag"
+                  style="min-width:240px"
                 ></el-input>
               </el-form-item>
             </div>
@@ -335,30 +505,31 @@
 
           <el-col :span="13">
             <div class="bar">
-              <el-form-item label="起止时间" prop="date" placeholder="请输入">
+              <el-form-item label="实际起止" prop="actualStartEndDate" placeholder="请输入">
                 <el-date-picker
-                  :disabled="!modifyFlanFlag"
+                  :disabled="!isModifyPlanFlag"
                   :picker-options="chooseOptions.pickerOptions0"
                   style="margin-left:20px"
-                  v-model="ruleForm.date"
+                  v-model="ruleForm.actualStartEndDate"
                   type="daterange"
                   align="right"
                   unlink-panels
                   range-separator="至"
-                  :start-placeholder="startStr"
-                  :end-placeholder="endStr"
+                  :start-placeholder="placeHolders.actualStartStr"
+                  :end-placeholder="placeHolders.actualEndStr"
                 ></el-date-picker>
               </el-form-item>
             </div>
           </el-col>
         </el-row>
 
-        <el-row :gutter="20">
+        <!-- 计划建议 -->
+        <el-row :gutter="20" v-if="!isRootPlanFlag">
           <el-col :span="20">
             <div class="bar">
               <el-form-item label="计划建议" prop="proposal" placeholder="请输入">
                 <el-input
-                  :disabled="!modifyFlanFlag"
+                  :disabled="!isModifyPlanFlag"
                   type="textarea"
                   :rows="4"
                   placeholder="请输入"
@@ -369,12 +540,14 @@
             </div>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+
+        <!-- 计划描述 -->
+        <el-row :gutter="20" v-if="!isRootPlanFlag">
           <el-col :span="20">
             <div class="bar">
               <el-form-item label="计划描述" prop="description" placeholder="请输入">
                 <el-input
-                  :disabled="!modifyFlanFlag"
+                  :disabled="!isModifyPlanFlag"
                   type="textarea"
                   :rows="4"
                   placeholder="请输入"
@@ -385,12 +558,14 @@
             </div>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+
+        <!-- 计划备注 -->
+        <el-row :gutter="20" v-if="!isRootPlanFlag">
           <el-col :span="20">
             <div class="bar">
               <el-form-item label="计划备注" prop="note" placeholder="请输入">
                 <el-input
-                  :disabled="!modifyFlanFlag"
+                  :disabled="!isModifyPlanFlag"
                   type="textarea"
                   :rows="4"
                   placeholder="请输入"
@@ -401,6 +576,7 @@
             </div>
           </el-col>
         </el-row>
+
         <el-row :gutter="20">
           <el-upload
             v-if="flag===1 || flag===2"
@@ -503,20 +679,128 @@ export default {
   },
   data() {
     return {
+      alwaysGreyFlag: true,
+      isModifyPlanFlag: true,
+      isRootPlanFlag: false,
+
       drawerVisible: false,
       fileOperationDialogVisible: false,
-      alwaysGreyFlag: false,
-      modifyFlanFlag: true,
 
       formData: "",
-      endStr: "结束时间",
-      startStr: "开始时间",
+
+      placeHolders: {
+        startStr: "开始时间",
+        endStr: "结束时间",
+        actualStartStr: "开始时间",
+        actualEndStr: "结束时间"
+      },
 
       chooseOptions: {
         planTypeOptions: {},
-        projectTypeOptions: {},
         orderStageOptions: {},
-        productLineOptions: {},
+        productLineOptions: [
+          {
+            value: "部门1",
+            label: "部门1",
+            disabled: true,
+            children: [
+              {
+                value: "部门1.1",
+                label: "部门1.1",
+                children: [
+                  {
+                    value: "部门1.1.1",
+                    label: "部门1.1.1"
+                  },
+                  {
+                    value: "部门1.1.2",
+                    label: "部门1.1.2"
+                  }
+                ]
+              },
+              {
+                value: "部门1.2",
+                label: "部门1.2",
+                children: [
+                  {
+                    value: "部门1.2.1",
+                    label: "部门1.2.1"
+                  },
+                  {
+                    value: "部门1.2.2",
+                    label: "部门1.2.2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            value: "部门2",
+            label: "部门2",
+            children: [
+              {
+                value: "部门2.1",
+                label: "部门2.1",
+                children: [
+                  {
+                    value: "部门2.1.1",
+                    label: "部门2.1.1"
+                  },
+                  {
+                    value: "部门2.1.2",
+                    label: "部门2.1.2"
+                  }
+                ]
+              },
+              {
+                value: "部门2.2",
+                label: "部门2.2",
+                children: [
+                  {
+                    value: "部门2.2.1",
+                    label: "部门2.2.1"
+                  },
+                  {
+                    value: "部门2.2.2",
+                    label: "部门2.2.2"
+                  }
+                ]
+              },
+              {
+                value: "部门2.3",
+                label: "部门2.3",
+                children: [
+                  {
+                    value: "部门2.3.1",
+                    label: "部门2.3.1"
+                  },
+                  {
+                    value: "部门2.3.2",
+                    label: "部门2.3.2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            value: "部门3",
+            label: "部门3",
+            children: [
+              {
+                value: "部门3.1",
+                label: "部门3.1"
+              },
+              {
+                value: "部门3.2",
+                label: "部门3.2"
+              },
+              {
+                value: "部门3.3",
+                label: "部门3.3"
+              }
+            ]
+          }
+        ],
         // 起止时间
         pickerOptions0: {
           disabledDate: time => {
@@ -531,9 +815,11 @@ export default {
       uploadFileName: [],
       uploadResult: [],
 
+      // TODO: 删除文件操作和flag相关的操作，然后删除掉flag变量
       flag: 1, //flag =  0的时候，为查看详情，flag = 1的时候，为添加修改之类的
       goback: "", //goback 为返回的 page name
 
+      // TODO: 完善必填项，非必填项的控制
       rules: {
         clientName: [{ required: true, message: "请输入", trigger: "blur" }],
         brandName: [{ required: true, message: "请输入", trigger: "blur" }],
@@ -559,25 +845,19 @@ export default {
         note: [{ required: false, message: "请输入", trigger: "blur" }]
       },
       ruleForm: {
-        brandId: 0,
+        assignPlanType: "无数据",
         brandName: "无数据",
-        clientId: 0,
         clientName: "无数据",
         clothesLevelName: "无数据",
         createTime: "2019-11-17T06:44:17.823Z",
-        creatorId: 0,
         creatorName: "无数据",
         cycle: "无数据",
-        date: "无数据",
         dateType: "无数据",
         deptName: "无数据",
         description: "无数据",
-        endDate: "无数据",
         haveException: "无数据",
-        id: 0,
         name: "无数据",
         note: "无数据",
-        objectId: 0,
         objectName: "无数据",
         orderStage: "无数据",
         pieceQuantity: "无数据",
@@ -588,17 +868,17 @@ export default {
         productLine: "无数据",
         projectType: "无数据",
         proposal: "无数据",
-        rootPlanId: 0,
         rootPlanName: "无数据",
-        sequence: "无数据",
         serialNo: "无数据",
-        seriesId: 0,
         seriesName: "无数据",
-        startDate: "无数据",
-        state: "无数据",
         styleQuantity: "无数据",
         superiorName: "无数据",
-        type: "无数据"
+        type: "无数据",
+        systemCode: "无数据",
+        creator: "无数据",
+        extension: "无数据",
+        startEndDate: "无数据",
+        actualStartEndDate: "无数据"
       },
 
       // gantt related
@@ -611,12 +891,6 @@ export default {
     var that = this;
     this.formData = new FormData();
 
-    //获得项目类型下拉框
-    request
-      .get(`${window.$config.HOST}/backstage/project-type/find`)
-      .then(response => {
-        this.chooseOptions.projectTypeOptions = response.result;
-      });
     //获取订单阶段下拉框
     request
       .get(`${window.$config.HOST}/backstage/order-stage/find`)
@@ -1254,126 +1528,56 @@ export default {
       });
     },
     init() {
-      console.log("开始获取");
+      /* 跳转至本页面的参数：
+        ? {
+        ?   name: "this page's router name",
+        ?   params: {
+        ?     goback: source page name
+        ?     isRoot: boolean,
+        ?     isModify: boolean,
+        ?     isCreate: boolean,
+        ?     rowData: the choosen row data
+        ?   }
+        ? }
+      */
+      console.log("开始处理页面跳转参数");
       const that = this;
 
-      //获得品牌下拉框
-      that.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getBrandName`, {
-          customerId: undefined
-        })
-        .then(response => {
-          this.brandOpt = response.data;
-        })
-        .catch(error => {
-          console.log("获取品牌失败");
-        });
-
-      //获得系列下拉框
-      that.$axios
-        .get(`${window.$config.HOST}/infoManagement/getRangeName`, {
-          brandId: undefined
-        })
-        .then(response => {
-          this.seriesOpt = response.data;
-        })
-        .catch(error => {
-          console.log("获取系列信息失败");
-        });
-
-      //获得客户名称下拉框
-      that.$axios
-        .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
-        .then(response => {
-          this.clientOpt = response.data;
-        })
-        .catch(error => {
-          console.log("获取客户信息失败");
-        });
-
-      console.log(this.$route.params);
-      let data = this.$route.params;
+      console.log("路由参数：", that.$route.params);
+      let data = that.$route.params;
       // console.log(data.dateStart)
 
-      this.goback = data.goback; //goback 为返回的 name
-      this.flag = data.flag; //flag = 0的时候，为查看详情，flag = 1的时候，为添加修改之类的
+      that.goback = data.goback; //goback 为返回页面的 name
 
-      if (this.flag === 1) {
-        //1的时候，为添加之类
-
-        this.ruleForm.quantity = data.quantity;
-        this.ruleForm.clientName = data.clientName;
-        this.ruleForm.brandName = data.brandName;
-        this.ruleForm.rangeId = data.rangeId;
-        this.ruleForm.rangeName = data.rangeName;
-        this.ruleForm.planType = data.planType;
-        this.ruleForm.planObjectName = data.planObjectName;
-        this.ruleForm.planObjectId = data.planObjectId;
-        this.ruleForm.topPlanName = data.topPlanName;
-        this.ruleForm.topPlanId = data.topPlanId;
-      } else if (this.flag === 2) {
-        //2的时候，为修改之类
-
-        this.ruleForm.planId = data.planId;
-        this.ruleForm.clientName = data.clientName;
-        this.ruleForm.brandName = data.brandName;
-        this.ruleForm.rangeId = data.rangeId;
-        this.ruleForm.rangeName = data.rangeName;
-        this.ruleForm.planType = data.planType;
-        this.ruleForm.planObjectName = data.planObjectName;
-        this.ruleForm.planObjectId = data.planObjectId;
-        this.ruleForm.topPlanName = data.topPlanName;
-        this.ruleForm.topPlanId = data.topPlanId;
-        this.ruleForm.planName = data.planName;
-        this.ruleForm.projectType = data.projectType;
-        this.ruleForm.quantity = data.quantity;
-
-        this.ruleForm.date = [data.dateStart, data.dateEnd];
-        this.startStr = data.dateStart;
-        this.endStr = data.dateEnd;
-
-        this.ruleForm.productDateType = data.productDateType;
-        this.ruleForm.productDate = data.productDate;
-        this.ruleForm.planProductId = data.planProductId;
-        this.ruleForm.planPropose = data.planPropose;
-        this.ruleForm.planDescribe = data.planDescribe;
-        this.ruleForm.note = data.note;
-        data.files.forEach(element => {
-          this.uploadFileName.push({
-            fileName: element
-          });
-        });
-      } else if (this.flag === 3) {
-        //查看
-        this.alwaysGreyFlag = false;
-        this.ruleForm.planId = data.planId;
-        this.ruleForm.clientName = data.clientName;
-        this.ruleForm.brandName = data.brandName;
-        this.ruleForm.rangeId = data.rangeId;
-        this.ruleForm.rangeName = data.rangeName;
-        this.ruleForm.planType = data.planType;
-        this.ruleForm.planObjectName = data.planObjectName;
-        this.ruleForm.planObjectId = data.planObjectId;
-        this.ruleForm.topPlanName = data.topPlanName;
-        this.ruleForm.topPlanId = data.topPlanId;
-        this.ruleForm.planName = data.planName;
-        this.ruleForm.projectType = data.projectType;
-        this.ruleForm.quantity = data.quantity;
-
-        this.startStr = data.dateStart;
-        this.endStr = data.dateEnd;
-        this.ruleForm.productDateType = data.productDateType;
-        this.ruleForm.productDate = data.productDate;
-        this.ruleForm.planProductId = data.planProductId;
-        this.ruleForm.planPropose = data.planPropose;
-        this.ruleForm.planDescribe = data.planDescribe;
-        this.ruleForm.note = data.note;
-        data.files.forEach(element => {
-          this.uploadFileName.push({
-            fileName: element
-          });
-        });
+      that.isRootPlanFlag = data.isRoot;
+      if (data.isCreate) {
+        // 制定计划
+        that.isModifyPlanFlag = true;
+        // FIXME: 待定
+        that.alwaysGreyFlag = true;
+      } else if (data.isModify) {
+        // 制定计划
+        that.isModifyPlanFlag = true;
+        that.alwaysGreyFlag = true;
+      } else {
+        // 计划详情
+        that.isModifyPlanFlag = false;
+        that.alwaysGreyFlag = true;
       }
+
+      that.ruleForm = data.rowData;
+
+      that.placeHolders.startStr = that.ruleForm.startDate;
+      that.placeHolders.endStr = that.ruleForm.endDate;
+
+      that.placeHolders.actaulStartStr =
+        that.ruleForm.actualStartDate === undefined
+          ? that.placeHolders.actualStartStr
+          : that.ruleForm.actualStartDate;
+      that.placeHolders.actualEndStr =
+        that.ruleForm.actualEndDate === undefined
+          ? that.placeHolders.actualEndStr
+          : that.ruleForm.actualEndDate;
     },
 
     // gantt related
@@ -1397,7 +1601,7 @@ export default {
 .Mtitle {
   align-content: center;
   margin-left: 45%;
-  font-size: 2ch;
+  font-size: 4ch;
 }
 .box-card {
   margin: 20px 50px;

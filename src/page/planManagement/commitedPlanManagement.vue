@@ -1,7 +1,21 @@
 <template>
   <div class="body">
     <el-card class="box-card">
+      <!-- 第一行 -->
       <el-row :gutter="20" style="margin-top:5px;">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">计划类别</div>
+            <el-select v-model="searchOptions.searchParams.brandName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.planClassOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
@@ -28,20 +42,22 @@
             </el-select>
           </div>
         </el-col>
+
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
             <el-input v-model="searchOptions.searchParams.clothingLevelName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
+      </el-row>
+      <!-- 第二行 -->
+      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
             <div class="title">计划名称</div>
             <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
@@ -61,6 +77,18 @@
               clearable
             ></el-date-picker>
           </div>
+        </el-col>
+      </el-row>
+      <!-- 第三行 -->
+      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        <el-col :span="6" :offset="15">
+          <el-switch
+            v-model="isRootPlan"
+            @change="planTypeSwitchChange"
+            inactive-color="#13ce66"
+            active-text="根计划"
+            inactive-text="普通计划"
+          ></el-switch>
         </el-col>
         <el-col :span="2">
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
@@ -145,8 +173,6 @@
 </template>
 
 <script>
-// import { error } from "util";
-// import { request } from "http";
 import request from "@/utils/request";
 export default {
   name: "commitedPlanManagement",
@@ -154,6 +180,7 @@ export default {
     return {
       templateRadio: "",
       lookAllPlans: false,
+      isRootPlan: true,
       allPlans: [],
       defaultProps: {
         children: "children",
@@ -170,7 +197,12 @@ export default {
         },
         options: {
           customerNameOptions: [],
-          brandNameOptions: []
+          brandNameOptions: [],
+          planClassOptions: [
+            { id: 1, name: "款式计划" },
+            { id: 2, name: "款式组计划" },
+            { id: 3, name: "系列计划" }
+          ]
         }
       },
       totalTableData: [],
@@ -216,6 +248,11 @@ export default {
       });
   },
   methods: {
+    planTypeSwitchChange() {
+      this.pagination.currentPage = 1;
+      this.tableData = [];
+      this.handleSearch();
+    },
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       console.log("每页+" + this.pagination.pageSize);

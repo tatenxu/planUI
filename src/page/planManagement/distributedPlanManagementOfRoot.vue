@@ -83,7 +83,7 @@
         </el-col>
       </el-row>
       <el-table
-        :data="tableDataShow"
+        :data="tableData"
         max-height="400"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
@@ -93,14 +93,14 @@
             <el-radio
               :label="scope.row.id"
               v-model="templateRadio"
-              @change.native="getTemplateRow(scope.$index,scope.row)"
-            ></el-radio>
+              @change.native="getTemplateRow(scope.row)"
+            >{{scope.$index+1}}</el-radio>
           </template>
         </el-table-column>
         <!-- :row-style="tableRowClassName" -->
         <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
-        <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        <el-table-column prop="id" v-if="false"></el-table-column>
+        <!-- <el-table-column width="50" type="index" label="序号" align="center"></el-table-column> -->
+        <!-- <el-table-column prop="id" v-if="false"></el-table-column> -->
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -185,6 +185,7 @@ export default {
   name: "planManagement",
   data() {
     return {
+      templateRadio: null,
       isCacheFlag: true,
       lookAllPlans: false,
       allPlans: [],
@@ -193,7 +194,6 @@ export default {
         label: "name"
       },
       subPlanOrderModificationDialogVisible: false,
-      tableDataShow: [],
       isSelfMadePlan: false,
       searchOptions: {
         searchParams: {
@@ -218,54 +218,7 @@ export default {
       },
       selectedData: [],
 
-      subPlanTableData: [],
-
-      planManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "所需属性值缺失"
-        },
-        {
-          errorCode: -2,
-          errotInfo: "计划名称重复"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "父计划未下发"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "系列根计划不存在"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "款式组根计划不存在"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "根计划已存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "计划开始结束时间超额"
-        },
-        {
-          errorCode: -8,
-          errotInfo: "计划款数超额"
-        },
-        {
-          errorCode: -9,
-          errotInfo: "引用预测计划时预测计划不存在"
-        },
-        {
-          errorCode: -10,
-          errotInfo: "当前计划状态不允许执行此操作"
-        },
-        {
-          errorCode: -11,
-          errotInfo: "与已有计划冲突"
-        }
-      ]
+      subPlanTableData: []
     };
   },
   created: function() {
@@ -308,10 +261,10 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
-    getTemplateRow(index, row) {
+    getTemplateRow(row) {
+      this.templateRadio = row.id;
       this.selectedData = [];
       this.selectedData.push(row);
-      console.log(this.selectedData);
     },
     // 行颜色
     tableRowClassName({ row, rowIndex }) {
@@ -413,26 +366,19 @@ export default {
         });
     },
 
-    // TODO: finish comm to jump
     addPlanChild() {
       if (this.selectedData.length === 1) {
         let data = this.selectedData[0];
+
         var param = {
-          flag: 1,
-          goback: "planManagement",
-          customerName: data.customerName,
-          brandName: data.brandName,
-          rangeId: data.rangeId,
-          rangeName: data.rangeName,
-          planType: data.type,
-          planObjectName: data.planObject,
-          planObjectId: data.planObjectId,
-          topPlanName: data.name ? data.name : "根计划",
-          topPlanId: data.id,
-          quantity: data.quantity
+          goback: "distributedPlanManagementOfRoot",
+          isRoot: true,
+          isModify: false,
+          isCreate: true,
+          rowData: data
         };
 
-        console.log(param);
+        console.log("路由参数：", param);
 
         this.isCacheFlag = true;
         this.$router.push({
@@ -447,35 +393,15 @@ export default {
       }
     },
 
-    // TODO: deprecated by showing in table
     getPlanDetail(row) {
       var param = {
-        flag: 3,
-        goback: "planManagement",
-        customerName: row.customerName,
-        brandName: row.brandName,
-        rangeId: row.rangeId,
-        rangeName: row.rangeName,
-        topPlanId: row.parentId,
-        topPlanName: row.parentName ? row.parentName : "根计划",
-        planId: row.id,
-        planType: row.type,
-        planObjectName: row.planObject,
-        planObjectId: row.planObjectId,
-        planName: row.name,
-        projectType: row.projectType,
-        quantity: row.quantity,
-        dateStart: row.startDate,
-        dateEnd: row.endDate,
-        productDate: row.productDate,
-        productDateType: row.productDateType,
-        planProductId: row.productId,
-        planPropose: row.proposal,
-        note: row.note,
-        planDescribe: row.description,
-        files: row.files
+        goback: "distributedPlanManagementOfRoot",
+        isRoot: true,
+        isModify: false,
+        isCreate: false,
+        rowData: row
       };
-      console.log(param);
+      console.log("跳转参数：", param);
 
       this.isCacheFlag = true;
       this.$router.push({
