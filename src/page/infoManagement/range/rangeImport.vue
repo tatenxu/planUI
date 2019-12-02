@@ -11,13 +11,16 @@
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" @change="clientSelect2" style="width:300px">
+              <el-select
+                v-model="ruleForm.customerName"
+                @change="clientSelect2"
+                style="width:300px"
+              >
                 <el-option
                   v-for="item in options.customerNameOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
-                  
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -50,7 +53,12 @@
         <el-row :gutter="20" style="margin-top:25px">
           <el-col :span="8">
             <el-form-item label="系统编号" prop="systemCode" placeholder="请输入系统编号">
-                <el-input v-model="ruleForm.systemCode" clearable placeholder="请输入" style="width:300px"></el-input>
+              <el-input
+                v-model="ruleForm.systemCode"
+                clearable
+                placeholder="请输入"
+                style="width:300px"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -65,7 +73,60 @@
               </el-select>
             </el-form-item>
           </el-col>
-
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="项目类型" prop="projectType">
+              <el-select
+                v-model="ruleForm.projectType"
+                @change="projectTypeChanged"
+                style="min-width:300px"
+              >
+                <el-option
+                  v-for="item in options.projectTypeOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="订单阶段" prop="orderStage">
+              <el-select v-model="ruleForm.orderStage " style="min-width:300px">
+                <el-option
+                  v-for="item in options.orderStageOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="预测款数" prop="predictStyleQuantity">
+              <el-input v-model="ruleForm.predictStyleQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="预测件数" prop="predictPieceQuantity">
+              <el-input v-model="ruleForm.predictPieceQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="实际款数" prop="styleQuantity">
+              <el-input v-model="ruleForm.styleQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="实际件数" prop="pieceQuantity">
+              <el-input v-model="ruleForm.pieceQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="10">
@@ -88,12 +149,11 @@
               </el-button>
             </el-upload>
           </el-col>
-          
         </el-row>
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="示例图片" style="margin-top:20px">
-              <img style="width: 300px; height: 150px" :src="url"></img>
+              <img style="width: 300px; height: 150px" :src="url" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -141,36 +201,60 @@ export default {
         clothingType: [
           { required: true, message: "请选择服装层次", trigger: "change" }
         ],
-        season:[
-           { required: true, message: "请选择季节", trigger: "change" }
+        season: [{ required: true, message: "请选择季节", trigger: "change" }],
+        systemCode: [
+          { required: true, message: "请输入系统编号", trigger: "blur" }
         ],
-        systemCode:[
-           { required: true, message: "请输入系统编号", trigger: "blur" }
+        projectType: [
+          { required: true, message: "请选择项目类型", trigger: "change" }
+        ],
+        orderStage: [
+          { required: true, message: "请选择订单阶段", trigger: "change" }
+        ],
+        predictStyleQuantity: [
+          { required: true, message: "请输入预测款数", trigger: "blur" }
+        ],
+        predictPieceQuantity: [
+          { required: true, message: "请输入预测件数", trigger: "blur" }
+        ],
+        styleQuantity: [
+          { required: false, message: "请输入实际款数", trigger: "blur" }
+        ],
+        pieceQuantity: [
+          { required: false, message: "请输入实际件数", trigger: "blur" }
         ]
       },
       ruleForm: {
-        season:"",
-        systemCode:"",
+        season: "",
+        systemCode: "",
         customerName: "",
         brandName: "",
         clothingType: "",
         filePath: "",
+        projectType: "",
+        orderStage: "",
+        predictStyleQuantity: "",
+        predictPieceQuantity: "",
+        styleQuantity: "",
+        pieceQuantity: "",
         tableData: []
       },
       options: {
-        seasonOptions:[
+        projectTypeOptions: [],
+        orderStageOptions: [],
+        seasonOptions: [
           {
-            name:"春"
+            name: "春"
           },
           {
-            name:"夏"
+            name: "夏"
           },
           {
-            name:"秋"
+            name: "秋"
           },
           {
-            name:"冬"
-          },
+            name: "冬"
+          }
         ],
         customerNameOptions: [],
         brandNameOptions: [],
@@ -181,41 +265,51 @@ export default {
   },
   created: function() {
     var that = this;
-
+    //获得项目类型
+    request.get(`/backstage/project-type/find`).then(response => {
+      this.options.projectTypeOptions = response.result;
+    });
     //获得顾客名称
-    request
-      .get(`/backstage/client/name`)
-      .then(response => {
-        var CustomerList = response.result;
-        this.options.customerNameOptions = CustomerList;
-      })
+    request.get(`/backstage/client/name`).then(response => {
+      var CustomerList = response.result;
+      this.options.customerNameOptions = CustomerList;
+    });
 
     //获得服装层次
     request
-      .get(`/backstage/dic-property/name`,
-      {
-        params:{
-          categoryName :"服装层次"
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "服装层次"
         }
       })
       .then(response => {
         var ClothingList = response.result;
         this.options.clothingTypeOptions = ClothingList;
-      })
-
+      });
   },
   methods: {
+    projectTypeChanged() {
+      request
+        .get(`/backstage/order-stage/name`, {
+          params: {
+            projectTypeName: this.ruleForm.projectType
+          }
+        })
+        .then(response => {
+          this.options.orderStageOptions = response.result;
+        });
+    },
     clientSelect2() {
       this.ruleForm.brandName = "";
       request
         .get(`/backstage/brand/name`, {
           params: {
-            clientId:this.ruleForm.customerName
+            clientId: this.ruleForm.customerName
           }
         })
         .then(response => {
           this.options.brandNameOptions = response.result;
-        })
+        });
     },
 
     ////////////// methods for xls /////////////
@@ -374,22 +468,29 @@ export default {
           brandId: this.ruleForm.brandName,
           clothesLevelName: this.ruleForm.clothingType,
           note: element.rangeNote,
-          season:this.ruleForm.season,
-          systemCode:this.ruleForm.systemCode,
-          addMode:"BATCH"
+          season: this.ruleForm.season,
+          systemCode: this.ruleForm.systemCode,
+          projectType: this.ruleForm.projectType,
+          orderStage: this.ruleForm.orderStage,
+          predictStyleQuantity: this.ruleForm.predictStyleQuantity,
+          predictPieceQuantity: this.ruleForm.predictPieceQuantity,
+          styleQuantity:
+            this.ruleForm.styleQuantity === ""
+              ? undefined
+              : this.ruleForm.styleQuantity,
+          pieceQuantity:
+            this.ruleForm.pieceQuantity === ""
+              ? undefined
+              : this.ruleForm.pieceQuantity,
+          addMode: "导入"
         });
       });
 
-      request
-        .post(
-          `/info/series/batch/insert`,
-          RangeListAdd
-        )
-        .then(response => {
-          this.$router.push({
-            name: `rangeManagement`
-          });
-        })
+      request.post(`/info/series/batch/insert`, RangeListAdd).then(response => {
+        this.$router.push({
+          name: `rangeManagement`
+        });
+      });
     },
     // 取消按钮点击
     cancel() {

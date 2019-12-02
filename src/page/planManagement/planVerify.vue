@@ -131,7 +131,7 @@
           style="width: 100%; margin-top: 20px"
         >
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column width="50" type="index" label="序号" ></el-table-column>
+          <el-table-column width="50" type="index" label="序号"></el-table-column>
           <el-table-column prop="serialNo" label="计划编号" align="center" width="150"></el-table-column>
           <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -363,30 +363,11 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 3,
           goback: "planVerify",
-          planId: row.id,
-          planName: row.name,
-          customerName: row.customerName,
-          brandName: row.brandName,
-          rangeName: row.rangeName,
-          rangeId: row.rangeId,
-          planType: row.type,
-          planObjectName: row.planObject,
-          planObjectId: row.planObjectId,
-          topPlanName: row.isRoot === true ? row.name : row.parentName,
-          topPlanId: row.parentId,
-          projectType: row.projectType,
-          quantity: row.quantity,
-          dateStart: row.startDate,
-          dateEnd: row.endDate,
-          productDateType: row.productDateType,
-          productDate: row.productDate,
-          planProductId: row.productId,
-          planPropose: row.proposal,
-          planDescribe: row.description,
-          note: row.note,
-          files: row.files
+          isRoot: false,
+          isModify: false,
+          isCreate: false,
+          rowData: row
         }
       });
     },
@@ -457,7 +438,7 @@ export default {
           reason: this.GoBackReason
         };
         request
-          .put(`/plan/fail`, null,{
+          .put(`/plan/fail`, null, {
             params: list
           })
           .then(response => {
@@ -476,10 +457,11 @@ export default {
       }
       for (var i = 0; i < this.AnyChanged.length; i++) {
         request
-          .put(`/plan/pass`, null,
-          {params:{
-            id: this.AnyChanged[i].id
-          }})
+          .put(`/plan/pass`, null, {
+            params: {
+              id: this.AnyChanged[i].id
+            }
+          })
           .then(response => {
             this.getWareList(1);
           });
@@ -507,7 +489,7 @@ export default {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       for (var i = 0; i < this.AnyChanged.length; i++) {
         request
-          .put(`/plan/cancel`, null,{
+          .put(`/plan/cancel`, null, {
             params: {
               id: this.AnyChanged[i].id
             }

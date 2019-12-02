@@ -988,33 +988,7 @@ export default {
     IsChanged1(val) {
       this.AnyChanged1 = val;
     },
-    ToPlanForm(row) {
-      if (row.havePlan === true) {
-        this.$message({
-          message: "该计划已经被制定",
-          type: "warning"
-        });
-        return;
-      }
-      console.log("id=" + row.id);
-      this.$router.push({
-        name: "planMakeIndex",
-        params: {
-          flag: 1,
-          goback: "seriesPlanMake", //goback 为返回的 name
-          customerName: row.customerName,
-          brandName: row.brandName,
-          rangeId: row.id,
-          rangeName: row.name,
-          planType: "系列计划",
-          planObjectName: row.name,
-          planObjectId: row.id,
-          topPlanName: "根计划",
-          topPlanId: 0,
-          quantity: row.styleQuantity
-        }
-      });
-    },
+
     handleTabClick(tab, event) {
       console.log(tab, event);
     },

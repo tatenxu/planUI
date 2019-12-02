@@ -401,30 +401,11 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          flag: 3,
           goback: "planVerify",
-          planId: row.id,
-          planName: row.name,
-          customerName: row.customerName,
-          brandName: row.brandName,
-          rangeName: row.rangeName,
-          rangeId: row.rangeId,
-          planType: row.type,
-          planObjectName: row.planObject,
-          planObjectId: row.planObjectId,
-          topPlanName: row.isRoot === true ? row.name : row.parentName,
-          topPlanId: row.parentId,
-          projectType: row.projectType,
-          quantity: row.quantity,
-          dateStart: row.startDate,
-          dateEnd: row.endDate,
-          productDateType: row.productDateType,
-          productDate: row.productDate,
-          planProductId: row.productId,
-          planPropose: row.proposal,
-          planDescribe: row.description,
-          note: row.note,
-          files: row.files
+          isRoot: false,
+          isModify: false,
+          isCreate: false,
+          rowData: row
         }
       });
     },

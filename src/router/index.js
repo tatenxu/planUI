@@ -8,16 +8,14 @@ const Quick = r => require.ensure([], () => r(require('../page/quick/quick')), '
 // -------------------------------------------- 为用户新增代码 --------------------------------------------
 // 系列管理
 const rangeManagement = r => require.ensure([], () => r(require('../page/infoManagement/range/rangeManagement.vue')), 'rangeManagement');
-const rangeInfo = r => require.ensure([], () => r(require('../page/infoManagement/range/rangeInfo.vue')), 'rangeInfo');
 const rangeImport = r => require.ensure([], () => r(require('../page/infoManagement/range/rangeImport.vue')), 'rangeImport');
 
 // 款式组管理
 const styleGroupManagement = r => require.ensure([], () => r(require('../page/infoManagement/styleGroup/styleGroupManagement.vue')), 'styleGroupManagement');
-const styleGroupInfo = r => require.ensure([], () => r(require('../page/infoManagement/styleGroup/styleGroupInfo.vue')), 'styleGroupInfo');
 
 // 款式管理
 const styleManagement = r => require.ensure([], () => r(require('../page/infoManagement/style/styleManagement.vue')), 'styleManagement');
-const styleInfo = r => require.ensure([], () => r(require('../page/infoManagement/style/styleInfo.vue')), 'styleInfo');
+
 const bindStyleGroup = r => require.ensure([], () => r(require('../page/infoManagement/style/bindStyleGroup.vue')), 'bindStyleGroup');
 const styleImport = r => require.ensure([], () => r(require('../page/infoManagement/style/styleImport.vue')), 'styleImport');
 
@@ -135,14 +133,6 @@ export default [
         }
       },
       {
-        path: '/range/rangeInfo',
-        name: 'rangeInfo',
-        component: rangeInfo,
-        meta: {
-          bcrumd: ['系列管理', '系列信息'],
-        }
-      },
-      {
         path: '/range/rangeImport',
         name: 'rangeImport',
         component: rangeImport,
@@ -158,14 +148,7 @@ export default [
           bcrumd: ['款式组管理'],
         }
       },
-      {
-        path: '/styleGroup/styleGroupInfo',
-        name: 'styleGroupInfo',
-        component: styleGroupInfo,
-        meta: {
-          bcrumd: ['款式组管理', '款式组信息'],
-        }
-      },
+
       {
         path: '/style/styleManagement',
         name: 'styleManagementIndex',
@@ -174,14 +157,7 @@ export default [
           bcrumd: ['款式管理'],
         }
       },
-      {
-        path: '/style/styleInfo',
-        name: 'styleInfo',
-        component: styleInfo,
-        meta: {
-          bcrumd: ['款式管理', '款式信息'],
-        }
-      },
+
       {
         path: '/style/bindStyleGroup',
         name: 'bindStyleGroup',

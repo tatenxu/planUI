@@ -5,10 +5,9 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-
-            <el-select v-model="CustomerValue" :clearable="true">
+            <el-select v-model="clientId" :clearable="true">
               <el-option
-                v-for="item in searchOptions.options.customerNameOptions"
+                v-for="item in searchOptions.clientOption"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -19,9 +18,9 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="BrandValue" :clearable="true">
+            <el-select v-model="brandId" :clearable="true">
               <el-option
-                v-for="item in searchOptions.options.brandNameOptions"
+                v-for="item in searchOptions.brandOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -33,16 +32,23 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="rangeName" placeholder="请输入系列名称" :clearable="true"></el-input>
+            <el-autocomplete
+              class="inline-input"
+              v-model="name"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入系列名称"
+              @select="handleSelect"
+              style="min-width:260px"
+            ></el-autocomplete>
           </div>
         </el-col>
 
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="ClothingLevelValue" :clearable="true">
+            <el-select v-model="clothesLevelName" :clearable="true">
               <el-option
-                v-for="item in searchOptions.options.clothingTypeOptions"
+                v-for="item in searchOptions.clothesLevelOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.name"
@@ -67,21 +73,22 @@
           </div>
         </el-col>
         <el-col :span="2">
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch(1)">搜索</el-button>
         </el-col>
       </el-row>
     </el-card>
+
     <el-card class="box-card">
       <div class="table">
         <el-row :gutter="10">
           <el-col :span="3">
-            <el-button type="primary" @click="addRange">添加系列</el-button>
+            <el-button type="primary" @click="addPanel">添加系列</el-button>
           </el-col>
           <el-col :span="3">
             <el-button type="primary" @click="importRange">批量导入</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button type="primary" @click="deleteRange">删除系列</el-button>
+            <el-button type="primary" @click="deleteBatchSeries">删除系列</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -97,10 +104,11 @@
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="serialNo" width="130" label="系列编号" align="center"></el-table-column>
           <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
           <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" label="款数" align="center"></el-table-column>
+          <el-table-column prop="predictStyleQuantity" label="预测款数" align="center"></el-table-column>
+          <el-table-column prop="predictPieceQuantity" label="预测件数" align="center"></el-table-column>
           <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
@@ -109,8 +117,8 @@
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
-              <el-button @click="changeRangeData(scope.row)" type="text" size="small">修改</el-button>
-              <el-button @click="deleteRangeData(scope.row,scope.index)" type="text" size="small">删除</el-button>
+              <el-button @click="updatePanel(scope.row)" type="text" size="small">修改</el-button>
+              <el-button @click="deleteSeries(scope.row)" type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -129,20 +137,20 @@
       </div>
     </el-card>
 
-    <el-dialog :modal="false" title="系列信息" :visible.sync="dialogFormVisible">
+    <el-dialog :modal="false" title="添加系列" :visible.sync="addPanelFlag">
       <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
+        :model="addForm"
+        :rules="addRules"
+        ref="addForm"
         label-width="100px"
         class="demo-ruleForm"
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select v-model="ruleForm.customerName" @change="clientSelect2">
+            <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+              <el-select v-model="addForm.clientId" @change="addClientChanged">
                 <el-option
-                  v-for="item in ruleForm.options.customerNameOptions"
+                  v-for="item in addForm.options.clientOption"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -151,10 +159,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="品牌名称" prop="brandName">
-              <el-select v-model="ruleForm.brandName">
+            <el-form-item label="品牌名称" prop="brandId">
+              <el-select v-model="addForm.brandId">
                 <el-option
-                  v-for="item in ruleForm.options.brandNameOptions"
+                  v-for="item in addForm.options.brandOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -164,16 +172,16 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
-              <el-input v-model="ruleForm.name" clearable placeholder="请输入"></el-input>
+              <el-input v-model="addForm.name" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
-            <el-form-item label="服装层次" prop="clothingLevelName">
-              <el-select v-model="ruleForm.clothingLevelName ">
+            <el-form-item label="服装层次" prop="clothesLevelName">
+              <el-select v-model="addForm.clothesLevelName ">
                 <el-option
-                  v-for="item in ruleForm.options.clothingTypeOptions"
+                  v-for="item in addForm.options.clothesLevelOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.name"
@@ -183,9 +191,9 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="季节" prop="season">
-              <el-select v-model="ruleForm.season ">
+              <el-select v-model="addForm.season ">
                 <el-option
-                  v-for="item in ruleForm.options.seasonOptions"
+                  v-for="item in addForm.options.seasonOptions"
                   :key="item.name"
                   :label="item.name"
                   :value="item.name"
@@ -195,42 +203,92 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系统编码" prop="systemCode">
-              <el-input v-model="ruleForm.systemCode" clearable placeholder="请输入"></el-input>
+              <el-input v-model="addForm.systemCode" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="项目类型" prop="projectType">
+              <el-select v-model="addForm.projectType" @change="addProjectTypeChanged">
+                <el-option
+                  v-for="item in addForm.options.projectTypeOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="订单阶段" prop="orderStage">
+              <el-select v-model="addForm.orderStage ">
+                <el-option
+                  v-for="item in addForm.options.orderStageOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="预测款数" prop="predictStyleQuantity">
+              <el-input v-model="addForm.predictStyleQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="预测件数" prop="predictPieceQuantity">
+              <el-input v-model="addForm.predictPieceQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="实际款数" prop="styleQuantity">
+              <el-input v-model="addForm.styleQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="实际件数" prop="pieceQuantity">
+              <el-input v-model="addForm.pieceQuantity" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
             <el-form-item label="系列备注">
-              <el-input v-model="ruleForm.note " type="textarea" :rows="3" placeholder="请输入"></el-input>
+              <el-input v-model="addForm.note " type="textarea" :rows="3" placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
           <el-col :span="3" :offset="10">
-            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+            <el-button type="primary" @click="submitAddForm('addForm')">保存</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button type="info" @click="cancel">取消</el-button>
+            <el-button type="info" @click="addCancel">取消</el-button>
           </el-col>
         </el-row>
       </el-form>
     </el-dialog>
 
-    <el-dialog :modal="false" title="系列信息" :visible.sync="dialogFormVisible1">
+    <el-dialog :modal="false" title="修改系列" :visible.sync="updatePanelFlag">
       <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
+        :model="updateForm"
+        :rules="updateRules"
+        ref="updateForm"
         label-width="100px"
         class="demo-ruleForm"
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="客户名称" placeholder="请选择客户名称" prop="customerName">
-              <el-select v-model="ruleForm.customerName " @change="clientSelect2">
+            <el-form-item label="客户名称" placeholder="请选择客户名称" prop="clientId">
+              <el-select v-model="updateForm.clientId " @change="updateClientChanged">
                 <el-option
-                  v-for="item in ruleForm.options.customerNameOptions"
+                  v-for="item in updateForm.options.clientOption"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -239,10 +297,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="品牌名称" prop="brandName">
-              <el-select v-model="ruleForm.brandName ">
+            <el-form-item label="品牌名称" prop="brandId">
+              <el-select v-model="updateForm.brandId ">
                 <el-option
-                  v-for="item in ruleForm.options.brandNameOptions"
+                  v-for="item in updateForm.options.brandOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -252,16 +310,16 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
-              <el-input v-model="ruleForm.name" clearable placeholder="请输入"></el-input>
+              <el-input v-model="updateForm.name" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
-            <el-form-item label="服装层次" prop="clothingLevelName">
-              <el-select v-model="ruleForm.clothingLevelName ">
+            <el-form-item label="服装层次" prop="clothesLevelName">
+              <el-select v-model="updateForm.clothesLevelName ">
                 <el-option
-                  v-for="item in ruleForm.options.clothingTypeOptions"
+                  v-for="item in updateForm.options.clothesLevelOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -271,9 +329,9 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="季节" prop="season">
-              <el-select v-model="ruleForm.season ">
+              <el-select v-model="updateForm.season ">
                 <el-option
-                  v-for="item in ruleForm.options.seasonOptions"
+                  v-for="item in updateForm.options.seasonOptions"
                   :key="item.name"
                   :label="item.name"
                   :value="item.name"
@@ -283,23 +341,73 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系统编码" prop="systemCode">
-              <el-input v-model="ruleForm.systemCode" clearable placeholder="请输入"></el-input>
+              <el-input v-model="updateForm.systemCode" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="项目类型" prop="projectType">
+              <el-select v-model="updateForm.projectType" @change="updateProjectTypeChanged">
+                <el-option
+                  v-for="item in updateForm.options.projectTypeOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="订单阶段" prop="orderStage">
+              <el-select v-model="updateForm.orderStage ">
+                <el-option
+                  v-for="item in updateForm.options.orderStageOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="预测款数" prop="predictStyleQuantity">
+              <el-input v-model="updateForm.predictStyleQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="预测件数" prop="predictPieceQuantity">
+              <el-input v-model="updateForm.predictPieceQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="实际款数" prop="styleQuantity">
+              <el-input v-model="updateForm.styleQuantity" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="实际件数" prop="pieceQuantity">
+              <el-input v-model="updateForm.pieceQuantity" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
             <el-form-item label="系列备注">
-              <el-input v-model="ruleForm.note" type="textarea" :rows="3" placeholder="请输入"></el-input>
+              <el-input v-model="updateForm.note" type="textarea" :rows="3" placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
           <el-col :span="3" :offset="10">
-            <el-button type="primary" @click="submitForm1('ruleForm')">保存</el-button>
+            <el-button type="primary" @click="updateSeries('updateForm')">保存</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button type="info" @click="cancel">取消</el-button>
+            <el-button type="info" @click="updateCancel">取消</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -312,102 +420,45 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      //搜索条件部分
+      clientId: "",
+      brandId: "",
+      name: "",
+      nameSuggestions: [],
+      clothesLevelName: "",
       dateRange: "",
-      RangeValue: "",
-      CustomerValue: "",
-      BrandValue: "",
-      ClothingLevelValue: "",
-      RangeValue: "",
-      Data: "",
-      DataStartTime: "",
-      rangeName: "",
-      DataEndTime: "",
-      dialogFormVisible: false,
-      dialogFormVisible1: false,
-      tableData: [],
-      totalTableData: [],
-      infoManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "新增的数据数据库中已经存在"
-        },
-        {
-          errorCode: -2,
-          errotInfo: "传入信息的字段缺失"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "已与款式组或款式绑定，不得删除"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "数据不唯一"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "数据库其他错误"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "数据不存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "数据状态错误"
-        }
-      ],
-      pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
-      },
-
       searchOptions: {
-        options: {
-          customerNameOptions: [],
-          brandNameOptions: [],
-          clothingTypeOptions: [],
-          rangeNameOption: []
-        }
-      },
-      multipleSelection: [],
-      rules: {
-        customerName: [
-          { required: true, message: "请选择客户名称", trigger: "change" }
-        ],
-        season: [{ required: true, message: "请选择季节", trigger: "change" }],
-        systemCode: [
-          { required: true, message: "请输入系统编码", trigger: "blur" }
-        ],
-        brandName: [
-          { required: true, message: "请选择品牌", trigger: "change" }
-        ],
-        clothingLevelName: [
-          { required: true, message: "请选择服装层次", trigger: "change" }
-        ],
-        name: [{ required: true, message: "请输入系列名称", trigger: "blur" }]
-        // rangeAmount: [
-        //   { required: true, message: "请输入系列款数", trigger: "blur" }
-        // ]
+        clientOption: {},
+        brandIdOptions: {},
+        clothesLevelName: {}
       },
 
-      ruleForm: {
+      //表格数据
+      tableData: "",
+      multipleSelection: [],
+
+      //添加系列部分
+      addPanelFlag: false,
+      addForm: {
+        clientId: "",
+        brandId: "",
+        name: "",
+        clothesLevelName: "",
         season: "",
         systemCode: "",
-        brandName: "",
-        brandId: "",
-        customerName: "",
-        customerId: "",
-        name: "",
-        id: "",
-        clothingLevelId: "",
-        clothingLevelName: "",
+        projectType: "",
+        orderStage: "",
+        predictStyleQuantity: "",
+        predictPieceQuantity: "",
+        styleQuantity: "",
+        pieceQuantity: "",
+        note: "",
         options: {
-          customerNameOptions: [],
-          brandNameOptions: [],
-          clothingTypeOptions: [],
-          rangeNameOption: [],
+          clientOptions: {},
+          brandOptions: {},
+          clothingLevelOptions: {},
+          projectTypeOptions: {},
+          orderStageOptions: {},
           seasonOptions: [
             {
               name: "春"
@@ -423,6 +474,118 @@ export default {
             }
           ]
         }
+      },
+      addRules: {
+        clientId: [
+          { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        season: [{ required: true, message: "请选择季节", trigger: "change" }],
+        systemCode: [
+          { required: true, message: "请输入系统编码", trigger: "blur" }
+        ],
+        brandId: [{ required: true, message: "请选择品牌", trigger: "change" }],
+        clothesLevelName: [
+          { required: true, message: "请选择服装层次", trigger: "change" }
+        ],
+        name: [{ required: true, message: "请输入系列名称", trigger: "blur" }],
+        projectType: [
+          { required: true, message: "请选择项目类型", trigger: "change" }
+        ],
+        orderStage: [
+          { required: true, message: "请选择订单阶段", trigger: "change" }
+        ],
+        predictStyleQuantity: [
+          { required: true, message: "请输入预测款数", trigger: "blur" }
+        ],
+        predictPieceQuantity: [
+          { required: true, message: "请输入预测件数", trigger: "blur" }
+        ],
+        styleQuantity: [
+          { required: false, message: "请输入实际款数", trigger: "blur" }
+        ],
+        pieceQuantity: [
+          { required: false, message: "请输入实际件数", trigger: "blur" }
+        ]
+      },
+
+      //修改系列部分
+      updatePanelFlag: false,
+      updateForm: {
+        id: "",
+        clientId: "",
+        brandId: "",
+        name: "",
+        clothesLevelName: "",
+        season: "",
+        systemCode: "",
+        projectType: "",
+        orderStage: "",
+        predictStyleQuantity: "",
+        predictPieceQuantity: "",
+        styleQuantity: "",
+        pieceQuantity: "",
+        note: "",
+        options: {
+          clientOptions: {},
+          brandOptions: {},
+          clothingLevelOptions: {},
+          projectTypeOptions: {},
+          orderStageOptions: {},
+          seasonOptions: [
+            {
+              name: "春"
+            },
+            {
+              name: "夏"
+            },
+            {
+              name: "秋"
+            },
+            {
+              name: "冬"
+            }
+          ]
+        }
+      },
+      updateRules: {
+        clientId: [
+          { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        season: [{ required: true, message: "请选择季节", trigger: "change" }],
+        systemCode: [
+          { required: true, message: "请输入系统编码", trigger: "blur" }
+        ],
+        brandId: [{ required: true, message: "请选择品牌", trigger: "change" }],
+        clothesLevelName: [
+          { required: true, message: "请选择服装层次", trigger: "change" }
+        ],
+        name: [{ required: true, message: "请输入系列名称", trigger: "blur" }],
+        projectType: [
+          { required: true, message: "请选择项目类型", trigger: "change" }
+        ],
+        orderStage: [
+          { required: true, message: "请选择订单阶段", trigger: "change" }
+        ],
+        predictStyleQuantity: [
+          { required: true, message: "请输入预测款数", trigger: "blur" }
+        ],
+        predictPieceQuantity: [
+          { required: true, message: "请输入预测件数", trigger: "blur" }
+        ],
+        styleQuantity: [
+          { required: false, message: "请输入实际款数", trigger: "blur" }
+        ],
+        pieceQuantity: [
+          { required: false, message: "请输入实际件数", trigger: "blur" }
+        ]
+      },
+
+      //页码部分
+      pagination: {
+        currentPage: 1,
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
+        total: 0
       }
     };
   },
@@ -430,22 +593,37 @@ export default {
   created: function() {
     var that = this;
     //获得品牌名字
-    request
-      .get(`${window.$config.HOST}/backstage/brand/find`, {
-        name: undefined
-      })
-      .then(response => {
-        console.log("获得品牌信息成功了");
-        this.searchOptions.options.brandNameOptions = response.result;
-      });
+    request.get(`/backstage/brand/find`).then(response => {
+      this.searchOptions.brandOptions = response.result;
+    });
+
+    //获得项目类型
+    request.get(`/backstage/project-type/find`).then(response => {
+      this.addForm.options.projectTypeOptions = response.result;
+      this.updateForm.options.projectTypeOptions = response.result;
+    });
 
     //获得顾客名称
+    request.get(`/backstage/client/find`).then(response => {
+      this.searchOptions.clientOption = response.result;
+      this.addForm.options.clientOption = response.result;
+      this.updateForm.options.clientOption = response.result;
+    });
+
+    //获得全部系列
     request
-      .get(`${window.$config.HOST}/backstage/client/find`)
+      .get(`/info/series/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 1000000
+        }
+      })
       .then(response => {
-        var CustomerList = response.result;
-        this.searchOptions.options.customerNameOptions = CustomerList;
-        this.ruleForm.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
+        response.result.forEach(element => {
+          this.nameSuggestions.push({
+            value: element.name
+          });
+        });
       });
 
     //获得服装层次
@@ -456,40 +634,93 @@ export default {
         }
       })
       .then(response => {
-        var ClothingList = response.result;
-        this.searchOptions.options.clothingTypeOptions = ClothingList;
-        this.ruleForm.options.clothingTypeOptions = this.searchOptions.options.clothingTypeOptions;
+        this.searchOptions.clothesLevelOptions = response.result;
+        this.addForm.options.clothesLevelOptions = response.result;
+        this.updateForm.options.clothesLevelOptions = response.result;
       });
 
     //获得空搜索集
     request
-      .get(`${window.$config.HOST}/info/series/find`, {
+      .get(`/info/series/find`, {
         params: {
           pageNum: 1,
           pageSize: 10
         }
       })
       .then(response => {
-        console.log(response.result);
         this.tableData = response.result;
-        
         this.pagination.total = response.total;
       });
   },
 
   methods: {
-    //当弹出框的客户名称改变的时候GET弹出框的品牌信息
-    clientSelect2() {
-      this.ruleForm.brandName = "";
-      let list = {
-        clientId: this.ruleForm.customerName
-      };
+    //添加弹窗中的项目类型变化
+    addProjectTypeChanged() {
       request
-        .get(`/backstage/brand/name`, {
-          params: list
+        .get(`/backstage/order-stage/name`, {
+          params: {
+            projectTypeName: this.addForm.projectType
+          }
         })
         .then(response => {
-          this.ruleForm.options.brandNameOptions = response.result;
+          this.addForm.options.orderStageOptions = response.result;
+        });
+    },
+    //修改弹窗中的项目类型变化
+    updateProjectTypeChanged() {
+      request
+        .get(`/backstage/order-stage/name`, {
+          params: {
+            projectTypeName: this.updateForm.projectType
+          }
+        })
+        .then(response => {
+          this.updateForm.options.orderStageOptions = response.result;
+        });
+    },
+    handleSelect(item) {
+      console.log(item);
+    },
+
+    //系列名称搜索的输入建议
+    querySearch(queryString, cb) {
+      var nameSuggestions = this.nameSuggestions;
+      var results = queryString
+        ? nameSuggestions.filter(this.createFilter(queryString))
+        : nameSuggestions;
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    //当弹出框的客户名称改变的时候GET弹出框的品牌信息
+    addClientChanged() {
+      this.addForm.brandId = "";
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.addForm.clientId
+          }
+        })
+        .then(response => {
+          this.addForm.options.brandOptions = response.result;
+        });
+    },
+    updateClientChanged() {
+      this.updateForm.brandId = "";
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.updateForm.clientId
+          }
+        })
+        .then(response => {
+          this.updateForm.options.brandOptions = response.result;
         });
     },
     // 改变日期格式
@@ -512,140 +743,86 @@ export default {
     },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
-      console.log(`每页 ${val} 条`);
-
-      this.pagination.currentPage = 1;
-      this.handleSearch();
+      this.handleSearch(1);
     },
     // 当前页码改变时触发函数
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
       this.pagination.currentPage = val;
-      this.pageChanged();
+      this.handleSearch(val);
     },
     // 选择框改变监控
     changeCheckBoxFun(val) {
-      const that = this;
-      that.multipleSelection = val;
+      this.multipleSelection = val;
     },
-    pageChanged() {
+
+    handleSearch(currentPageNum) {
       let startDate;
       let endDate;
       if (this.dateRange == undefined) {
         startDate = undefined;
         endDate = undefined;
       } else {
-        (startDate = this.changeDate(this.dateRange[0])),
-          (endDate = this.changeDate(this.dateRange[1]));
+        startDate = this.changeDate(this.dateRange[0]);
+        endDate = this.changeDate(this.dateRange[1]);
       }
 
       request
-        .get(`${window.$config.HOST}/info/series/find`, {
+        .get(`/info/series/find`, {
           params: {
-            clientId:
-              this.CustomerValue === "" ? undefined : this.CustomerValue,
-            brandId: this.BrandValue === "" ? undefined : this.BrandValue,
-            name: this.rangeName === "" ? undefined : this.rangeName,
+            clientId: this.clientId === "" ? undefined : this.clientId,
+            brandId: this.brandId === "" ? undefined : this.brandId,
+            name: this.name === "" ? undefined : this.name,
             clothesLevelName:
-              this.ClothingLevelValue === ""
-                ? undefined
-                : this.ClothingLevelValue,
+              this.clothesLevelName === "" ? undefined : this.clothesLevelName,
             createAfter: startDate,
             createBefore: endDate,
             pageSize: this.pagination.pageSize,
-            pageNum: this.pagination.currentPage
+            pageNum: currentPageNum
           }
         })
         .then(response => {
           this.tableData = response.result;
-         
           this.pagination.total = response.total;
-        });
-    },
-    handleSearch() {
-      let startDate;
-      let endDate;
-      if (this.dateRange == undefined) {
-        startDate = undefined;
-        endDate = undefined;
-      } else {
-        (startDate = this.changeDate(this.dateRange[0])),
-          (endDate = this.changeDate(this.dateRange[1]));
-      }
-      let list = {
-        clientId: this.CustomerValue === "" ? undefined : this.CustomerValue,
-        brandId: this.BrandValue === "" ? undefined : this.BrandValue,
-        name: this.rangeName === "" ? undefined : this.rangeName,
-        clothesLevelName:
-          this.ClothingLevelValue === "" ? undefined : this.ClothingLevelValue,
-        createAfter: startDate,
-        createBefore: endDate,
-        pageSize: this.pagination.pageSize,
-        pageNum: this.pagination.currentPage
-      };
-      console.log("list:", list);
-
-      request
-        .get(`${window.$config.HOST}/info/series/find`, {
-          params: {
-            clientId:
-              this.CustomerValue === "" ? undefined : this.CustomerValue,
-            brandId: this.BrandValue === "" ? undefined : this.BrandValue,
-            name: this.rangeName === "" ? undefined : this.rangeName,
-            clothesLevelName:
-              this.ClothingLevelValue === ""
-                ? undefined
-                : this.ClothingLevelValue,
-            createAfter: startDate,
-            createBefore: endDate,
-            pageSize: this.pagination.pageSize,
-            pageNum: 1
-          }
-        })
-        .then(response => {
-          this.tableData = response.result;
-         
-          this.pagination.total = response.total;
+          this.pagination.currentPage = currentPageNum;
         });
     },
 
     // 添加系列
-    addRange() {
-      const that = this;
-      console.log("添加系列按钮点击");
-      // that.$router.push({
-      //   path: `/range/rangeInfo`,
-      //   query: {
-      //     ifRangeAdd: true
-      //   }
-      // });
-      this.dialogFormVisible = true;
+    addPanel() {
+      this.addForm.clientId = "";
+      this.addForm.brandId = "";
+      this.addForm.name = "";
+      this.addForm.clothesLevelName = "";
+      this.addForm.season = "";
+      this.addForm.systemCode = "";
+      this.addForm.projectType = "";
+      this.addForm.orderStage = "";
+      this.addForm.predictStyleQuantity = "";
+      this.addForm.predictPieceQuantity = "";
+      this.addForm.styleQuantity = "";
+      this.addForm.pieceQuantity = "";
+      this.addForm.note = "";
+      this.addForm.options.brandOptions = {};
+      this.addForm.options.orderStageOptions = {};
+      this.addPanelFlag = true;
     },
+
     // 批量导入
     importRange() {
-      const that = this;
-      console.log("批量导入按钮点击");
-      that.$router.push({
+      this.$router.push({
         name: `rangeImport`
       });
     },
     // 删除系列
-    deleteRange() {
+    deleteBatchSeries() {
       const that = this;
       if (that.multipleSelection.length === 0) {
         this.$message({
-          message: "请选择要删除的系列数据",
+          message: "请选择要删除的系列!",
           type: "warning"
         });
       } else if (that.multipleSelection.length >= 1) {
-        console.log("有" + that.multipleSelection.length + "条数据被选中");
         this.$confirm(
           "删除所选的" +
             that.multipleSelection.length +
@@ -659,27 +836,18 @@ export default {
         )
           .then(() => {
             this.multipleSelection.forEach(element => {
-              let list = {
-                id: element.id
-              };
               request
                 .delete(`/info/series/delete`, {
-                  params: list
+                  params: {
+                    id: element.id
+                  }
                 })
                 .then(response => {
-                  this.handleSearch();
-            
-                })
-          
+                  this.handleSearch(1);
+                });
             });
-
-            // this.$message({
-            //   type: "success",
-            //   message: "删除成功!"
-            // });
           })
           .catch(() => {
-            this.handleSearch();
             this.$message({
               type: "info",
               message: "已取消删除"
@@ -688,50 +856,38 @@ export default {
       }
     },
 
-    // 表格中的修改
-    changeRangeData(row) {
-       request
+    // 显示修改系列的面板
+    updatePanel(row) {
+      request
         .get(`/backstage/brand/name`, {
           params: {
-            clientId:row.clientId,
+            clientId: row.clientId
           }
         })
         .then(response => {
-          this.ruleForm.options.brandNameOptions = response.result;
+          this.updateForm.options.brandOptions = response.result;
+          this.updateForm.id = row.id;
+          // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
+          this.updateForm.clientId = parseInt(row.clientId);
+          this.updateForm.brandId = parseInt(row.brandId);
+          this.updateForm.name = row.name;
+          this.updateForm.projectType = row.projectType;
+          this.updateForm.orderStage = row.orderStage;
+          this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
+          this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
+          this.updateForm.styleQuantity = row.styleQuantity;
+          this.updateForm.pieceQuantity = row.pieceQuantity;
+          this.updateForm.clothesLevelName = row.clothesLevelName;
+          this.updateForm.season = row.season;
+          this.updateForm.systemCode = row.systemCode;
+          this.updateForm.note = row.note;
+          this.updatePanelFlag = true;
         });
-        (this.ruleForm.firstCustomerName = row.clientName),
-        (this.ruleForm.firstBrandName = row.brandName),
-        (this.ruleForm.firstRangeName = row.name),
-        (this.ruleForm.firstClothingLevel = row.clothesLevelName),
-        (this.ruleForm.id = row.id),
-        this.ruleForm.systemCode = row.systemCode,
-        this.ruleForm.season=row.season,
-        (this.ruleForm.number = row.number),
-        (this.ruleForm.name = row.name),
-        (this.ruleForm.customerId = row.customerId),
-        (this.ruleForm.customerName = row.clientName),
-        (this.ruleForm.brandId = row.brandId),
-        (this.ruleForm.brandName = row.brandName),
-        (this.ruleForm.clothingLevelId = row.clothingLevelId),
-        (this.ruleForm.clothingLevelName = row.clothesLevelName),
-        (this.ruleForm.createrName = row.createrName),
-        (this.ruleForm.styleQuantity = row.styleQuantity),
-        (this.ruleForm.deptName = row.deptName),
-        (this.ruleForm.createTime = row.createTime),
-        (this.ruleForm.addingMode = row.addingMode),
-        (this.ruleForm.state = row.state),
-        (this.ruleForm.note = row.note),
-        (this.ruleForm.havePlan = row.havePlan),
-        (this.dialogFormVisible1 = true)
     },
-    // 表格中的删除
-    deleteRangeData(row, index) {
+
+    // 表格中的删除操作
+    deleteSeries(row) {
       const that = this;
-      console.log("点击了本行的删除");
-      console.log("当前row=", row.rangeNumber);
-      let list = {
-        id: row.id
-      };
       this.$confirm("是否确认删除该系列？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -741,71 +897,53 @@ export default {
         .then(() => {
           request
             .delete(`/info/series/delete`, {
-              params: list
+              params: {
+                id: row.id
+              }
             })
             .then(response => {
-              this.handleSearch();
-            })
-
-
+              this.handleSearch(this.pagination.currentPage);
+            });
         })
         .catch(() => {
           this.$message({
-            message: "删除失败",
-            type: "error"
+            message: "已取消删除",
+            type: "info"
           });
         });
     },
 
     //添加系列信息
-    submitForm(formName) {
+    submitAddForm(form) {
       const that = this;
-      this.$refs[formName].validate(valid => {
+      this.$refs[form].validate(valid => {
         if (valid) {
           request
             .post(`/info/series/insert`, {
-              name: this.ruleForm.name === "" ? undefined : this.ruleForm.name,
-      
-              brandId:
-                this.ruleForm.brandName === ""
+              name: this.addForm.name,
+              brandId: this.addForm.brandId,
+              clothesLevelName: this.addForm.clothesLevelName,
+              note: this.addForm.note === "" ? undefined : this.addForm.note,
+              season: this.addForm.season,
+              addMode: "手动",
+              systemCode: this.addForm.systemCode,
+              projectType: this.addForm.projectType,
+              orderStage: this.addForm.orderStage,
+              predictStyleQuantity: this.addForm.predictStyleQuantity,
+              predictPieceQuantity: this.addForm.predictPieceQuantity,
+              styleQuantity:
+                this.addForm.styleQuantity === ""
                   ? undefined
-                  : this.ruleForm.brandName,
-              clothesLevelName:
-                this.ruleForm.clothingLevelName === ""
+                  : this.addForm.styleQuantity,
+              pieceQuantity:
+                this.addForm.pieceQuantity === ""
                   ? undefined
-                  : this.ruleForm.clothingLevelName,
-              note: this.ruleForm.note === "" ? undefined : this.ruleForm.note,
-              season :this.ruleForm.season === "" ? undefined : this.ruleForm.season,
-              addMode:"手动",
-              systemCode:this.ruleForm.systemCode === "" ? undefined : this.ruleForm.systemCode,
+                  : this.addForm.pieceQuantity
             })
             .then(response => {
-              this.handleSearch();
-              (this.ruleForm.id = ""),
-                (this.ruleForm.number = ""),
-                (this.ruleForm.name = ""),
-                (this.ruleForm.customerId = ""),
-                (this.ruleForm.customerName = ""),
-                (this.ruleForm.brandId = ""),
-                (this.ruleForm.brandName = ""),
-                (this.ruleForm.clothingLevelId = ""),
-                (this.ruleForm.clothingLevelName = ""),
-                (this.ruleForm.createrName = ""),
-                (this.ruleForm.styleQuantity = ""),
-                (this.ruleForm.deptName = ""),
-                (this.ruleForm.createTime = ""),
-                (this.ruleForm.addingMode = ""),
-                (this.ruleForm.systemCode = ""),
-                (this.ruleForm.season = ""),
-                (this.ruleForm.state = ""),
-                (this.ruleForm.note = ""),
-                (this.ruleForm.havePlan = ""),
-                (this.dialogFormVisible = false);
-              this.$message({
-                message: "添加成功",
-                type: "success"
-              });
-            })
+              this.handleSearch(this.pagination.currentPage);
+              this.addPanelFlag = false;
+            });
         } else {
           this.$message({
             message: "请填写必须填写的项！",
@@ -816,98 +954,85 @@ export default {
     },
 
     //修改系列信息
-    submitForm1(formName) {
+    updateSeries(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          //第一步，将NAME转换为ID
-          if (this.ruleForm.firstCustomerName != this.ruleForm.customerName) {
-            //变了，说明显示的是ID
-            this.ruleForm.customerId = this.ruleForm.customerName; //ID赋值给ID
-          }
-          if (this.ruleForm.firstBrandName != this.ruleForm.brandName) {
-            this.ruleForm.brandId = this.ruleForm.brandName;
-          }
-          // if (this.ruleForm.firstRangeName != this.ruleForm.name) {
-          //   this.ruleForm.id = this.ruleForm.name;
-          //   this.ruleForm.options.rangeNameOption.forEach(element => {
-          //     if (element.id == this.ruleForm.id) this.ruleForm.name = element.name;
-          //   });
-          // }
-          if (
-            this.ruleForm.firstClothingLevel != this.ruleForm.clothingLevelName
-          ) {
-            this.ruleForm.clothingLevelId = this.ruleForm.clothingLevelName;
-          }
-          const that = this;
           request
             .put(`/info/series/update`, {
-              id: this.ruleForm.id,
-              name: this.ruleForm.name,
-              brandId: this.ruleForm.brandId,
-              clothesLevelName: this.ruleForm.clothingLevelId,
-              note: this.ruleForm.note,
-              systemCode:this.ruleForm.systemCode,
-              season:this.ruleForm.season
-
+              id: this.updateForm.id,
+              name: this.updateForm.name,
+              brandId: this.updateForm.brandId,
+              clothesLevelName: this.updateForm.clothesLevelName,
+              note:
+                this.updateForm.note === "" ? undefined : this.updateForm.note,
+              season: this.updateForm.season,
+              addMode: "手动",
+              systemCode: this.updateForm.systemCode,
+              projectType: this.updateForm.projectType,
+              orderStage: this.updateForm.orderStage,
+              predictStyleQuantity: this.updateForm.predictStyleQuantity,
+              predictPieceQuantity: this.updateForm.predictPieceQuantity,
+              styleQuantity:
+                this.updateForm.styleQuantity === ""
+                  ? undefined
+                  : this.updateForm.styleQuantity,
+              pieceQuantity:
+                this.updateForm.pieceQuantity === ""
+                  ? undefined
+                  : this.updateForm.pieceQuantity
             })
             .then(response => {
-              this.handleSearch();
-                (this.ruleForm.id = ""),
-                  (this.ruleForm.number = ""),
-                  (this.ruleForm.name = ""),
-                  (this.ruleForm.customerId = ""),
-                  (this.ruleForm.customerName = ""),
-                  (this.ruleForm.brandId = ""),
-                  (this.ruleForm.brandName = ""),
-                  (this.ruleForm.clothingLevelId = ""),
-                  (this.ruleForm.clothingLevelName = ""),
-                  (this.ruleForm.createrName = ""),
-                  (this.ruleForm.styleQuantity = ""),
-                  (this.ruleForm.deptName = ""),
-                  (this.ruleForm.createTime = ""),
-                  (this.ruleForm.addingMode = ""),
-                  (this.ruleForm.state = ""),
-                  (this.ruleForm.note = ""),
-                  (this.ruleForm.havePlan = ""),
-                  (this.ruleForm.options.brandNameOptions = ""),
-                  (this.ruleForm.options.rangeNameOption = ""),
-                  (this.dialogFormVisible1 = false);
-
-              
-            })
+              this.handleSearch(this.pagination.currentPage);
+              this.updatePanelFlag = false;
+            });
         } else {
           this.$message({
-            message: "修改失败!",
+            message: "请填写必填项!",
             type: "error"
           });
         }
       });
     },
+
     // 取消按钮点击
-    cancel() {
-      const that = this;
-      console.log("取消按钮点击");
-      (this.ruleForm.id = ""),
-        (this.ruleForm.number = ""),
-        (this.ruleForm.name = ""),
-        (this.ruleForm.customerId = ""),
-        (this.ruleForm.customerName = ""),
-        (this.ruleForm.brandId = ""),
-        (this.ruleForm.brandName = ""),
-        (this.ruleForm.clothingLevelId = ""),
-        (this.ruleForm.clothingLevelName = ""),
-        (this.ruleForm.createrName = ""),
-        (this.ruleForm.styleQuantity = ""),
-        (this.ruleForm.deptName = ""),
-        (this.ruleForm.createTime = ""),
-        (this.ruleForm.addingMode = ""),
-        (this.ruleForm.state = ""),
-        (this.ruleForm.note = ""),
-        (this.ruleForm.havePlan = ""),
-        (this.ruleForm.options.brandNameOptions = ""),
-        (this.ruleForm.options.rangeNameOption = ""),
-        (this.dialogFormVisible = false);
-      this.dialogFormVisible1 = false;
+    addCancel() {
+      this.addForm.clientId = "";
+      this.addForm.brandId = "";
+      this.addForm.name = "";
+      this.addForm.clothesLevelName = "";
+      this.addForm.season = "";
+      this.addForm.systemCode = "";
+      this.addForm.projectType = "";
+      this.addForm.orderStage = "";
+      this.addForm.predictStyleQuantity = "";
+      this.addForm.predictPieceQuantity = "";
+      this.addForm.styleQuantity = "";
+      this.addForm.pieceQuantity = "";
+      this.addForm.note = "";
+      this.addForm.options.orderStageOptions = {};
+      this.addForm.options.brandOptions = {};
+      this.addPanelFlag = false;
+    },
+
+    updateCancel() {
+      this.updateForm.id = "";
+      this.updateForm.clientId = "";
+      this.updateForm.brandId = "";
+      this.updateForm.name = "";
+      this.updateForm.clothesLevelName = "";
+      this.updateForm.season = "";
+      this.updateForm.systemCode = "";
+      this.updateForm.note = "";
+      this.updateForm.projectType = "";
+      this.updateForm.orderStage = "";
+      this.updateForm.predictStyleQuantity = "";
+      this.updateForm.predictPieceQuantity = "";
+      this.updateForm.styleQuantity = "";
+      this.updateForm.pieceQuantity = "";
+      this.updateForm.note = "";
+      this.updateForm.options.orderStageOptions = {};
+      this.updateForm.options.brandOptions = {};
+      this.updatePanelFlag = false;
     }
   }
 };
