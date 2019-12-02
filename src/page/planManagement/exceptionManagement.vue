@@ -6,12 +6,13 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select
-              v-model="searchOptions.searchParams.customerName"
+              :disabled="searchDisabled"
+              v-model="searchOptions.searchParams.clientName"
               clearable
               placeholder="请选择"
             >
               <el-option
-                v-for="item in searchOptions.options.customerNameOptions"
+                v-for="item in searchOptions.options.clientNameOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -22,7 +23,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="searchOptions.searchParams.brandName" clearable placeholder="请选择">
+            <el-select
+              :disabled="searchDisabled"
+              v-model="searchOptions.searchParams.brandName"
+              clearable
+              placeholder="请选择"
+            >
               <el-option
                 v-for="item in searchOptions.options.brandNameOptions"
                 :key="item.id"
@@ -36,6 +42,7 @@
           <div class="bar">
             <div class="title">系列名称</div>
             <el-input
+              :disabled="searchDisabled"
               v-model="searchOptions.searchParams.seriesName"
               placeholder="请输入系列名称"
               :clearable="true"
@@ -49,6 +56,7 @@
           <div class="bar">
             <div class="title">计划名称</div>
             <el-input
+              :disabled="searchDisabled"
               v-model="searchOptions.searchParams.planName"
               placeholder="请输入系列名称"
               :clearable="true"
@@ -59,6 +67,7 @@
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
+              :disabled="searchDisabled"
               style="margin-left:20px "
               v-model="searchOptions.searchParams.dateRange"
               type="daterange"
@@ -90,35 +99,30 @@
         >
           <el-table-column type="selection" width="50px"></el-table-column>
           <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
-          <el-table-column prop="id" v-if="false"></el-table-column>
-          <el-table-column prop="number" label="异常编号" width="100px" align="center"></el-table-column>
-          <el-table-column prop="planNumber" label="计划编号" width="100px" align="center"></el-table-column>
+          <el-table-column prop="serialNo" label="异常编号" width="100px" align="center"></el-table-column>
+          <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="clientName" label="客户" width="100px" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" width="100px" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="seriesName" label="系列名称" width="100px" align="center"></el-table-column>
-          <el-table-column prop="planObject" label="计划对象" width="100px" align="center"></el-table-column>
-          <el-table-column prop="content" label="异常内容" width="100px" align="center"></el-table-column>
           <el-table-column prop="discover" label="创建人" width="100px" align="center"></el-table-column>
           <el-table-column prop="handleOption" label="处理意见" width="100px" align="center"></el-table-column>
           <el-table-column prop="handleResult" label="处理结果" width="100px" align="center"></el-table-column>
           <el-table-column prop="place" label="地点" width="100px" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="principal" label="负责人" width="100px" align="center"></el-table-column>
           <el-table-column prop="scope" label="影响范围" width="100px" align="center"></el-table-column>
-          <el-table-column prop="serialNo" label="系列号" width="100px" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="state" label="状态" width="100px" align="center"></el-table-column>
           <el-table-column prop="time" label="时间" width="100px" align="center"></el-table-column>
           <el-table-column prop="type" label="异常类型" width="100px" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" width="100px" align="center"></el-table-column>
           <el-table-column prop="updateTime" label="更新时间" width="100px" align="center"></el-table-column>
           <el-table-column
-            prop="createTime"
-            label="创建时间"
+            prop="content"
+            label="异常内容"
             width="100px"
             align="center"
             show-overflow-tooltip
           ></el-table-column>
+
           <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template slot-scope="scope">
@@ -144,75 +148,90 @@
       </div>
     </el-card>
 
-    <!-- 弹出框-修改 -->
-    <el-dialog :modal="false" title="款式组信息" :visible.sync="dialogFormVisible">
+    <!-- 弹出框-添加异常 -->
+    <el-dialog :modal="false" title="添加异常" :visible.sync="addExceptionDialogVisible">
       <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
+        :model="addExceptionRuleForm"
+        :rules="addExceptionRules"
+        ref="addExceptionRuleForm"
         label-width="100px"
-        class="demo-ruleForm"
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="time" prop="time" placeholder="请选择客户名称">
-              <el-input v-model="ruleForm.time" placeholder="请输入内容"></el-input>
+            <el-form-item label="发现人" prop="discover" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.discover" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item label="异常类型" prop="type" placeholder="请输入内容">
+              <el-select v-model="addExceptionRuleForm.type" clearable>
+                <el-option
+                  v-for="item in addExceptionOptions.exceptionTypeOptions"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="type" prop="type" placeholder="请选择品牌名称">
-              <el-input v-model="ruleForm.type" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="place" prop="place" placeholder="请选择系列名称">
-              <el-input v-model="ruleForm.place" placeholder="请输入内容"></el-input>
+            <el-form-item label="时间" prop="time" placeholder="请输入内容">
+              <el-date-picker
+                style="max-width:110px;"
+                v-model="addExceptionRuleForm.time"
+                type="datetime"
+                placeholder="选择日期时间"
+              ></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
-
-        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="principal" prop="principal" placeholder="请输入内容">
-              <el-input v-model="ruleForm.principal" placeholder="请输入内容"></el-input>
+            <el-form-item label="地点" prop="place" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.place" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="handleOption" prop="handleOption" placeholder="请输入内容">
-              <el-input v-model="ruleForm.handleOption" clearable placeholder="请输入内容"></el-input>
+            <el-form-item label="负责人" prop="principal" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.principal" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="handleResult" prop="handleResult" placeholder="请输入内容">
-              <el-input v-model="ruleForm.handleResult" placeholder="请输入内容"></el-input>
+            <el-form-item label="处理意见" prop="handleOption" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.handleOption" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
-
-        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="scope" prop="scope" placeholder="请输入内容">
-              <el-input v-model="ruleForm.scope" placeholder="请输入内容"></el-input>
+            <el-form-item label="处理结果" prop="handleResult" placeholder="请选择客户名称">
+              <el-input v-model="addExceptionRuleForm.handleResult" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="state" prop="state" placeholder="请输入内容">
-              <el-input v-model="ruleForm.state" clearable placeholder="请输入内容"></el-input>
+            <el-form-item label="影响范围" prop="scope" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.scope" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="content" prop="content" placeholder="请输入内容">
-              <el-input v-model="ruleForm.content" clearable placeholder="请输入内容"></el-input>
+            <el-form-item label="状态" prop="state" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.state" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="内容" prop="content" placeholder="请输入内容">
+              <el-input type="textarea" v-model="addExceptionRuleForm.content" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row style="margin: 50px 0 10px 0">
           <el-col :span="3" :offset="10">
-            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+            <el-button type="primary" @click="submitForm('addExceptionRuleForm')">保存</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button type="info" @click="cancel">取消</el-button>
+            <el-button type="info" @click="cancel()">取消</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -227,14 +246,14 @@ export default {
     return {
       searchOptions: {
         searchParams: {
-          customerName: "",
+          clientName: "",
           brandName: "",
           seriesName: "",
           planName: "",
           dateRange: ""
         },
         options: {
-          customerNameOptions: [],
+          clientNameOptions: [],
           brandNameOptions: [],
           seriesNameOptions: []
         }
@@ -243,38 +262,38 @@ export default {
       multipleSelection: [],
       searchDisabled: false,
 
-      dialogFormVisible: false,
-      rules: {
-        content: [{ required: true, message: "请输入", trigger: "change" }],
+      addExceptionDialogVisible: false,
+      addExceptionRules: {
+        content: [{ required: false, message: "请输入", trigger: "change" }],
+        discover: [{ required: false, message: "请输入", trigger: "change" }],
+        place: [{ required: false, message: "请输入", trigger: "change" }],
+        principal: [{ required: false, message: "请输入", trigger: "change" }],
+        scope: [{ required: false, message: "请输入", trigger: "change" }],
+        state: [{ required: false, message: "请输入", trigger: "change" }],
+        time: [{ required: false, message: "请输入", trigger: "change" }],
+        type: [{ required: false, message: "请输入", trigger: "change" }],
         handleOption: [
-          { required: true, message: "请输入", trigger: "change" }
+          { required: false, message: "请输入", trigger: "change" }
         ],
         handleResult: [
-          { required: true, message: "请输入", trigger: "change" }
+          { required: false, message: "请输入", trigger: "change" }
         ],
-        place: [{ required: true, message: "请输入", trigger: "change" }],
-        principal: [{ required: true, message: "请输入", trigger: "change" }],
-        scope: [{ required: true, message: "请输入", trigger: "change" }],
-        state: [{ required: true, message: "请输入", trigger: "change" }],
-        time: [{ required: true, message: "请输入", trigger: "change" }],
-        type: [{ required: true, message: "请输入", trigger: "change" }]
+        discover: [{ required: false, message: "请输入", trigger: "change" }]
       },
-      ruleForm: {
+      addExceptionRuleForm: {
         content: "",
+        discover: "",
         handleOption: "",
         handleResult: "",
         place: "",
+        planId: 0,
         principal: "",
         scope: "",
         state: "",
         time: "",
-        type: "",
-
-        discover: "",
-        serialNo: "",
-        planId: 0,
-        id: 0
+        type: ""
       },
+      addExceptionOptions: { exceptionTypeOptions: [] },
 
       pagination: {
         currentPage: 1,
@@ -295,7 +314,7 @@ export default {
     request
       .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
-        this.searchOptions.options.customerNameOptions = response.result;
+        this.searchOptions.options.clientNameOptions = response.result;
       });
 
     //品牌名称加载
@@ -303,6 +322,17 @@ export default {
       .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
         this.searchOptions.options.brandNameOptions = response.result;
+      });
+
+    //异常类型选项
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "异常类型"
+        }
+      })
+      .then(response => {
+        this.addExceptionOptions.exceptionTypeOptions = response.result;
       });
 
     //加载默认所有的异常计划
@@ -320,6 +350,20 @@ export default {
   },
 
   mounted() {
+    //异常类型选项
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "异常类型"
+        }
+      })
+      .then(response => {
+        this.addExceptionOptions.exceptionTypeOptions = response.result;
+      });
+
+    /* 路由跳转参数：
+      ? params : row 
+      }; */
     let routData = this.$route.params;
     console.log("路由参数:" + Object.keys(routData).length);
     if (Object.keys(routData).length) {
@@ -381,18 +425,36 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
+    changeTime(time) {
+      if (!time) {
+        return undefined;
+      } else {
+        console.log(time);
+        var y = time.getFullYear();
+        var m = time.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = time.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = time.getHours();
+        var minute = time.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = time.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+      }
+    },
     //搜索按钮
     handleSearchClick() {
       var param = {
         clientId:
-          this.searchOptions.searchParams.customerName === ""
+          this.searchOptions.searchParams.clientName === ""
             ? undefined
-            : this.searchOptions.searchParams.customerName,
+            : this.searchOptions.searchParams.clientName,
         brandId:
           this.searchOptions.searchParams.brandName === ""
             ? undefined
             : this.searchOptions.searchParams.brandName,
-        rangeId:
+        seriesName:
           this.searchOptions.searchParams.seriesName === ""
             ? undefined
             : this.searchOptions.searchParams.seriesName,
@@ -422,39 +484,42 @@ export default {
         .then(response => {
           this.tableData = response.result;
           this.pagination.total = response.total;
-        })
+        });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
 
     updateExceptionClick(row) {
-      this.ruleForm.content = row.content;
-      this.ruleForm.handleOption = row.handleOption;
-      this.ruleForm.handleResult = row.handleResult;
-      this.ruleForm.place = row.place;
-      this.ruleForm.principal = row.principal;
-      this.ruleForm.scope = row.scope;
-      this.ruleForm.state = row.state;
-      this.ruleForm.time = row.time;
-      this.ruleForm.type = row.type;
-      this.ruleForm.discover = row.discover;
-      this.ruleForm.serialNo = row.serialNo;
-      this.ruleForm.planId = row.planId;
-      this.ruleForm.id = row.id;
-
-      this.dialogFormVisible = true;
+      this.addExceptionRuleForm = row;
+      // this.addExceptionRuleForm.planId = row.id;
+      this.addExceptionDialogVisible = true;
     },
     submitForm(formname) {
-      request
-        .put(`/backstage/plan-exception/update`, this.ruleForm)
-        .then(response => {
-          this.handleSearchClick();
-        });
-      this.dialogFormVisible = false;
+      let param = {
+        id: this.addExceptionRuleForm.id,
+        content: this.addExceptionRuleForm.content,
+        type: this.addExceptionRuleForm.type,
+        place: this.addExceptionRuleForm.place,
+        principal: this.addExceptionRuleForm.principal,
+        handleOption: this.addExceptionRuleForm.handleOption,
+        handleResult: this.addExceptionRuleForm.handleResult,
+        scope: this.addExceptionRuleForm.scope,
+        state: this.addExceptionRuleForm.state,
+        time:
+          this.addExceptionRuleForm.time === ""
+            ? ""
+            : this.changeTime(this.addExceptionRuleForm.time)
+      };
+
+      console.log("添加异常参数：", this.addExceptionRuleForm);
+      request.put(`/plan-exception/update`, param).then(response => {
+        this.handleSearchClick();
+      });
+      this.addExceptionDialogVisible = false;
     },
     cancel() {
-      this.dialogFormVisible = false;
+      this.addExceptionDialogVisible = false;
     }
   }
 };

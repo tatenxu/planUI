@@ -163,7 +163,7 @@
           :total="pagination.total"
         ></el-pagination>
       </div>
-      <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+      <el-dialog title="查看总计划" :visible.sync="lookAllPlanDialogVisible" :modal="false">
         <div class="body">
           <el-tree :data="allPlans" :props="defaultProps"></el-tree>
         </div>
@@ -179,7 +179,7 @@ export default {
   data() {
     return {
       templateRadio: "",
-      lookAllPlans: false,
+      lookAllPlanDialogVisible: false,
       isRootPlan: true,
       allPlans: [],
       defaultProps: {
@@ -342,7 +342,7 @@ export default {
           this.allPlans.push(response.result);
           // console.log(this.allPlans);
 
-          this.lookAllPlans = true;
+          this.lookAllPlanDialogVisible = true;
         });
     },
 
