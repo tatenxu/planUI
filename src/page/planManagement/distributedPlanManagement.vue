@@ -1,3 +1,4 @@
+// TODO: 整合被下发计划和被下发根计划页面
 <template>
   <div class="body">
     <el-card class="box-card">
@@ -185,7 +186,7 @@
       </div>
     </el-dialog>
 
-    <!-- 弹出框-修改 -->
+    <!-- 弹出框-添加异常 -->
     <el-dialog :modal="false" title="添加异常" :visible.sync="addExceptionDialogVisible">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
         <el-row :gutter="20" style="margin-top:5px;">

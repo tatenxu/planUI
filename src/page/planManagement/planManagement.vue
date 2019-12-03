@@ -31,7 +31,14 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-input v-model="searchOptions.searchParams.clothingLevelName" placeholder="请输入内容"></el-input>
+            <el-select v-model="searchOptions.searchParams.clothesLevelName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.clothesLevelNameOptions"
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
         <el-col :span="6">
@@ -81,6 +88,9 @@
         <el-col :span="3">
           <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
         </el-col>
+        <el-col :span="3">
+          <el-button type="primary" size="small" @click="addException">添加异常</el-button>
+        </el-col>
       </el-row>
       <el-table
         :data="tableData"
@@ -94,23 +104,24 @@
             <el-radio
               :label="scope.row.id"
               v-model="templateRadio"
-              @change.native="getTemplateRow(scope.$index,scope.row)"
-            ></el-radio>
+              @change.native="getTemplateRow(scope.row)"
+            >{{scope.$index+1}}</el-radio>
           </template>
         </el-table-column>
+        <!-- NOTE: 返回的信息多处一个state字段 -->
         <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
-        <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        <el-table-column prop="id" v-if="false"></el-table-column>
-        <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
+        <!-- <el-table-column width="50" type="index" label="序号" align="center"></el-table-column> -->
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="serialNo" label="系列编号" align="center"></el-table-column>
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
+        <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="serialNo" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
-        <el-table-column prop="rootPlanName" label="上级计划" align="center"></el-table-column>
+        <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center">
           <template slot-scope="scope">
             <el-popover
@@ -186,6 +197,95 @@
         <el-tree :data="allPlans" :props="defaultProps"></el-tree>
       </div>
     </el-dialog>
+
+    <!-- 弹出框-添加异常 -->
+    <el-dialog :modal="false" title="添加异常" :visible.sync="addExceptionDialogVisible">
+      <el-form
+        :model="addExceptionRuleForm"
+        :rules="addExceptionRules"
+        ref="addExceptionRuleForm"
+        label-width="100px"
+      >
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="发现人" prop="discover" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.discover" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item label="异常类型" prop="type" placeholder="请输入内容">
+              <el-select v-model="addExceptionRuleForm.type" clearable>
+                <el-option
+                  v-for="item in addExceptionOptions.exceptionTypeOptions"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="时间" prop="time" placeholder="请输入内容">
+              <el-date-picker
+                style="max-width:110px;"
+                v-model="addExceptionRuleForm.time"
+                type="datetime"
+                placeholder="选择日期时间"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="地点" prop="place" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.place" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="负责人" prop="principal" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.principal" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="处理意见" prop="handleOption" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.handleOption" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="处理结果" prop="handleResult" placeholder="请选择客户名称">
+              <el-input v-model="addExceptionRuleForm.handleResult" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="影响范围" prop="scope" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.scope" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="状态" prop="state" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.state" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="内容" prop="content" placeholder="请输入内容">
+              <el-input type="textarea" v-model="addExceptionRuleForm.content" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="confirmAddException('addExceptionRuleForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="cancelAddException()">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -196,6 +296,7 @@ export default {
   name: "planManagement",
   data() {
     return {
+      templateRadio: null,
       isCacheFlag: true,
       lookAllPlans: false,
       allPlans: [],
@@ -208,14 +309,15 @@ export default {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingLevelName: "",
+          clothesLevelName: "",
           seriesName: "",
           planName: "",
           dateRange: ""
         },
         options: {
           customerNameOptions: [],
-          brandNameOptions: []
+          brandNameOptions: [],
+          clothesLevelNameOptions: []
         }
       },
       tableData: [],
@@ -227,52 +329,38 @@ export default {
       },
       selectedData: [],
 
-      planManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "所需属性值缺失"
-        },
-        {
-          errorCode: -2,
-          errotInfo: "计划名称重复"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "父计划未下发"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "系列根计划不存在"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "款式组根计划不存在"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "根计划已存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "计划开始结束时间超额"
-        },
-        {
-          errorCode: -8,
-          errotInfo: "计划款数超额"
-        },
-        {
-          errorCode: -9,
-          errotInfo: "引用预测计划时预测计划不存在"
-        },
-        {
-          errorCode: -10,
-          errotInfo: "当前计划状态不允许执行此操作"
-        },
-        {
-          errorCode: -11,
-          errotInfo: "与已有计划冲突"
-        }
-      ]
+      addExceptionDialogVisible: false,
+      addExceptionRules: {
+        content: [{ required: false, message: "请输入", trigger: "change" }],
+        discover: [{ required: false, message: "请输入", trigger: "change" }],
+        place: [{ required: false, message: "请输入", trigger: "change" }],
+        principal: [{ required: false, message: "请输入", trigger: "change" }],
+        scope: [{ required: false, message: "请输入", trigger: "change" }],
+        state: [{ required: false, message: "请输入", trigger: "change" }],
+        time: [{ required: false, message: "请输入", trigger: "change" }],
+        type: [{ required: false, message: "请输入", trigger: "change" }],
+        handleOption: [
+          { required: false, message: "请输入", trigger: "change" }
+        ],
+        handleResult: [
+          { required: false, message: "请输入", trigger: "change" }
+        ],
+        discover: [{ required: false, message: "请输入", trigger: "change" }]
+      },
+      addExceptionRuleForm: {
+        content: "",
+        discover: "",
+        handleOption: "",
+        handleResult: "",
+        place: "",
+        planId: 0,
+        principal: "",
+        scope: "",
+        state: "",
+        time: "",
+        type: ""
+      },
+      addExceptionOptions: { exceptionTypeOptions: [] }
     };
   },
   created: function() {
@@ -290,6 +378,27 @@ export default {
       .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
         this.searchOptions.options.brandNameOptions = response.result;
+      });
+
+    //服装层级加载
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "服装层次"
+        }
+      })
+      .then(response => {
+        this.searchOptions.options.clothesLevelNameOptions = response.result;
+      });
+    //异常类型选项
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "异常类型"
+        }
+      })
+      .then(response => {
+        this.addExceptionOptions.exceptionTypeOptions = response.result;
       });
 
     //默认获取已提交/未提交计划列表
@@ -331,7 +440,8 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
-    getTemplateRow(index, row) {
+    getTemplateRow(row) {
+      this.templateRadio = row.id;
       this.selectedData = [];
       this.selectedData.push(row);
       console.log(this.selectedData);
@@ -352,13 +462,26 @@ export default {
         m = m < 10 ? "0" + m : m;
         var d = date.getDate();
         d = d < 10 ? "0" + d : d;
-        // var h = date.getHours();
-        // var minute = date.getMinutes();
-        // minute = minute < 10 ? "0" + minute : minute;
-        // var second = date.getSeconds();
-        // second = minute < 10 ? "0" + second : second;
-        // return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+
         return y + "-" + m + "-" + d;
+      }
+    },
+    changeTime(time) {
+      if (!time) {
+        return undefined;
+      } else {
+        console.log(time);
+        var y = time.getFullYear();
+        var m = time.getMonth() + 1;
+        m = m < 10 ? "0" + m : m;
+        var d = time.getDate();
+        d = d < 10 ? "0" + d : d;
+        var h = time.getHours();
+        var minute = time.getMinutes();
+        minute = minute < 10 ? "0" + minute : minute;
+        var second = time.getSeconds();
+        second = minute < 10 ? "0" + second : second;
+        return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
       }
     },
     //搜索按钮
@@ -382,9 +505,9 @@ export default {
             ? undefined
             : this.searchOptions.searchParams.planName,
         clothesLevelName:
-          this.searchOptions.searchParams.clothingLevelName === ""
+          this.searchOptions.searchParams.clothesLevelName === ""
             ? undefined
-            : this.searchOptions.searchParams.clothingLevelName,
+            : this.searchOptions.searchParams.clothesLevelName,
         seriesName:
           this.searchOptions.searchParams.seriesName === ""
             ? undefined
@@ -511,32 +634,13 @@ export default {
     // TODO: finish comm to jump
     getPlanDetail(row) {
       var param = {
-        flag: 3,
         goback: "planManagement",
-        customerName: row.customerName,
-        brandName: row.brandName,
-        rangeId: row.rangeId,
-        seriesName: row.seriesName,
-        topPlanId: row.parentId,
-        topPlanName: row.parentName ? row.parentName : "根计划",
-        planId: row.id,
-        planType: row.type,
-        planObjectName: row.planObject,
-        planObjectId: row.planObjectId,
-        planName: row.name,
-        projectType: row.projectType,
-        quantity: row.quantity,
-        dateStart: row.startDate,
-        dateEnd: row.endDate,
-        productDate: row.productDate,
-        productDateType: row.productDateType,
-        planProductId: row.productId,
-        planPropose: row.proposal,
-        note: row.note,
-        planDescribe: row.description,
-        files: row.files
+        isRoot: false,
+        isModify: false,
+        isCreate: false,
+        rowData: row
       };
-      console.log(param);
+      console.log("跳转参数：", param);
 
       this.isCacheFlag = true;
       this.$router.push({
@@ -580,6 +684,39 @@ export default {
         name: "planMakeIndex",
         params: param
       });
+    },
+
+    // 添加异常操作
+    addException() {
+      if (this.selectedData.length === 0) {
+        this.$message.error("请选择要添加异常的计划！");
+      } else {
+        this.addExceptionRuleForm.planId = this.selectedData[0].id;
+        this.addExceptionDialogVisible = true;
+      }
+    },
+    confirmAddException() {
+      this.addExceptionRuleForm.time =
+        this.addExceptionRuleForm.time === ""
+          ? ""
+          : this.changeTime(this.addExceptionRuleForm.time);
+
+      console.log("添加异常参数：", this.addExceptionRuleForm);
+
+      request
+        .post(
+          `${window.$config.HOST}/plan-exception/insert`,
+          this.addExceptionRuleForm
+        )
+        .then(response => {
+          this.selectedData = [];
+          this.handleSearch();
+          this.addExceptionDialogVisible = false;
+        });
+    },
+    cancelAddException() {
+      this.addExceptionRuleForm = [];
+      this.addExceptionDialogVisible = false;
     }
   },
   computed: {
