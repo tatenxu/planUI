@@ -5,13 +5,9 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select
-              v-model="searchOptions.searchParams.customerValue"
-              @change="customerNameSelectionChange()"
-              clearable
-            >
+            <el-select v-model="clientId" clearable>
               <el-option
-                v-for="item in searchOptions.options.customerNameOptions"
+                v-for="item in searchOptions.clientOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -22,13 +18,9 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select
-              v-model="searchOptions.searchParams.brandValue"
-              @change="brandSelectionChange()"
-              clearable
-            >
+            <el-select v-model="brandId" clearable>
               <el-option
-                v-for="item in searchOptions.options.brandNameOptions"
+                v-for="item in searchOptions.brandOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -40,14 +32,30 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="searchOptions.searchParams.rangeValue" clearable placeholder="请输入"></el-input>
+            <el-autocomplete
+              class="inline-input"
+              v-model="seriesName"
+              :fetch-suggestions="querySearchSeries"
+              placeholder="请输入系列名称"
+              @select="handleSelect"
+              style="min-width:260px"
+              clearable
+            ></el-autocomplete>
           </div>
         </el-col>
 
         <el-col :span="6">
           <div class="bar">
             <div class="title">款式组名</div>
-            <el-input v-model="searchOptions.searchParams.idValue" clearable placeholder="请输入"></el-input>
+            <el-autocomplete
+              class="inline-input"
+              v-model="name"
+              :fetch-suggestions="querySearchStyleGroup"
+              placeholder="请输入款式组名称"
+              @select="handleSelect"
+              style="min-width:260px"
+              clearable
+            ></el-autocomplete>
           </div>
         </el-col>
       </el-row>
@@ -55,9 +63,9 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-select v-model="searchOptions.searchParams.clothingLevelValue" clearable>
+            <el-select v-model="clothesLevelName" clearable>
               <el-option
-                v-for="item in searchOptions.options.clothingTypeOptions"
+                v-for="item in searchOptions.clothesLevelOptions"
                 :key="item.name"
                 :label="item.name"
                 :value="item.name"
@@ -70,7 +78,7 @@
             <div class="title">添加时间</div>
             <el-date-picker
               class="inputBar"
-              v-model="searchOptions.searchParams.dateRange"
+              v-model="dateRange"
               type="daterange"
               range-separator="至"
               start-placeholde="开始日期"
@@ -80,7 +88,7 @@
           </div>
         </el-col>
         <el-col :span="2">
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch(1)">搜索</el-button>
         </el-col>
       </el-row>
     </el-card>
@@ -98,7 +106,7 @@
           </el-col>
         </el-row>
         <el-table
-          :data="totalTableData"
+          :data="tableData"
           max-height="400"
           border
           @selection-change="changeCheckBoxFun"
@@ -120,9 +128,8 @@
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
-              <!-- <el-button @click="getStyleGroupData(scope.row)" type="text" size="small">查看</el-button> -->
-              <el-button @click="changeStyleGroupData(scope.row)" type="text" size="small">修改</el-button>
-              <el-button @click="deleteStyleGroupRow(scope.row)" type="text" size="small">删除</el-button>
+              <el-button @click="updateStyleGroup(scope.row)" type="text" size="small">修改</el-button>
+              <el-button @click="daleteStyleGroup(scope.row)" type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -140,25 +147,20 @@
         </div>
       </div>
     </el-card>
-
-    <!-- 弹出框-修改 -->
-    <el-dialog :modal="false" title="款式组信息" :visible.sync="dialogFormVisible">
+    <el-dialog :modal="false" title="修改款式组" :visible.sync="updatePanelFlag">
       <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
+        :model="updateForm"
+        :rules="updateRules"
+        ref="updateForm"
         label-width="100px"
-        class="demo-ruleForm"
+        class="demo-updateForm"
       >
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
-            <el-form-item label="客户名称" prop="tmpCustomer" placeholder="请选择客户名称">
-              <el-select
-                v-model="ruleForm.tmpCustomer"
-                @change="dialogCustomerNameSelectionChange()"
-              >
+            <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+              <el-select v-model="updateForm.clientId" @change="updateClientChanged()">
                 <el-option
-                  v-for="item in options.customerNameOptions"
+                  v-for="item in updateForm.options.clientOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -167,10 +169,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="品牌名称" prop="tmpBrand" placeholder="请选择品牌名称">
-              <el-select v-model="ruleForm.tmpBrand" @change="dialogBrandSelectionChange()">
+            <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
+              <el-select v-model="updateForm.brandId" @change="updateBrandChanged()">
                 <el-option
-                  v-for="item in options.brandNameOptions"
+                  v-for="item in updateForm.options.brandOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -178,25 +180,13 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="8">
-            <el-form-item label="服装层次" prop="clothingLevelName" placeholder="请选择服装层次">
-              <el-select v-model="ruleForm.clothingLevelName" >
-                <el-option
-                  v-for="item in options.clothingTypeOptions"
-                  :key="item.id"
-                  :label="item.clothingLevelName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form-item> 
-          </el-col>-->
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
-            <el-form-item label="系列名称" prop="tmpRange" placeholder="请选择系列名称">
-              <el-select v-model="ruleForm.tmpRange">
+            <el-form-item label="系列名称" prop="seriesId" placeholder="请选择系列名称">
+              <el-select v-model="updateForm.seriesId">
                 <el-option
-                  v-for="item in options.rangeNameOptions"
+                  v-for="item in updateForm.options.seriesOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -205,17 +195,81 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="款式组名" prop="tmpStyleGroup" placeholder="请输入款式组名">
-              <el-input v-model="ruleForm.tmpStyleGroup" clearable placeholder="请输入"></el-input>
+            <el-form-item label="款式组名" prop="name" placeholder="请输入款式组名">
+              <el-input v-model="updateForm.name" clearable placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
           <el-col :span="3" :offset="10">
-            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+            <el-button type="primary" @click="updateSubmit('updateForm')">保存</el-button>
           </el-col>
           <el-col :span="3">
-            <el-button type="info" @click="cancel">取消</el-button>
+            <el-button type="info" @click="updateCancel">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog :modal="false" title="增加款式组" :visible.sync="addPanelFlag">
+      <el-form
+        :model="addForm"
+        :rules="addRules"
+        ref="addForm"
+        label-width="100px"
+        class="demo-updateForm"
+      >
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+              <el-select v-model="addForm.clientId" @change="addClientChanged()">
+                <el-option
+                  v-for="item in addForm.options.clientOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
+              <el-select v-model="addForm.brandId" @change="addBrandChanged()">
+                <el-option
+                  v-for="item in addForm.options.brandOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+          <el-col :span="8">
+            <el-form-item label="系列名称" prop="seriesId" placeholder="请选择系列名称">
+              <el-select v-model="addForm.seriesId">
+                <el-option
+                  v-for="item in addForm.options.seriesOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="款式组名" prop="name" placeholder="请输入款式组名">
+              <el-input v-model="addForm.name" clearable placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="margin: 50px 0 10px 0">
+          <el-col :span="3" :offset="10">
+            <el-button type="primary" @click="addSubmit('addForm')">保存</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-button type="info" @click="addCancel">取消</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -224,139 +278,98 @@
 </template>
 
 <script>
-import styleManagementVue from "../style/styleManagement.vue";
 import request from "@/utils/request";
-import { error } from "util";
-import { strictEqual } from "assert";
 export default {
   data() {
     return {
+      //搜索条件部分
+      clientId: "",
+      brandId: "",
+      seriesName: "",
+      name: "",
+      clothesLevelName: "",
+      dateRange: "",
+      searchOptions: {
+        clientOptions: {},
+        brandOptions: {},
+        clothesLevelOptions: {}
+      },
+
+      //表格数据
+      tableData: [],
+      multipleSelection: [],
+      nameSuggestionsSeries: [],
+      nameSuggestionsStyleGroup: [],
+      //添加款式组
+
+      addPanelFlag: false,
+      addForm: {
+        clientId: "",
+        brandId: "",
+        seriesId: "",
+        name: "",
+        options: {
+          clientOptions: {},
+          brandOptions: {},
+          seriesOptions: {}
+        }
+      },
+      addRules: {
+        clientId: [
+          { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        brandId: [
+          { required: true, message: "请选择品牌名称", trigger: "change" }
+        ],
+        seriesId: [
+          { required: true, message: "请选择系列名称", trigger: "change" }
+        ],
+        name: [{ required: true, message: "请输入款式组名称", trigger: "blur" }]
+      },
+
+      //修改款式组
+      updatePanelFlag: false,
+      updateForm: {
+        id: "",
+        clientId: "",
+        brandId: "",
+        seriesId: "",
+        name: "",
+        options: {
+          clientOptions: {},
+          brandOptions: {},
+          seriesOptions: {}
+        }
+      },
+      updateRules: {
+        clientId: [
+          { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        brandId: [
+          { required: true, message: "请选择品牌名称", trigger: "change" }
+        ],
+        seriesId: [
+          { required: true, message: "请选择系列名称", trigger: "change" }
+        ],
+        name: [{ required: true, message: "请输入款式组名称", trigger: "blur" }]
+      },
+
+      //页码部分
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
-      },
-      totalTableData: [],
-      searchOptions: {
-        searchParams: {
-          customerName: "",
-          brandName: "",
-          clothingLevelName: "",
-          rangeName: "",
-          name: "",
-          dateRange: ""
-        },
-        options: {
-          customerNameOptions: [],
-          brandNameOptions: [],
-          clothingTypeOptions: [],
-          rangeNameOptions: [],
-          styleGroupNameOptions: []
-        }
-      },
-      data: {
-        tableData: []
-      },
-      multipleSelection: [],
-      dialogFormVisible: false,
-      rules: {
-        tmpCustomer: [
-          { required: true, message: "请选择客户名称", trigger: "change" }
-        ],
-        tmpBrand: [
-          { required: true, message: "请选择品牌", trigger: "change" }
-        ],
-        clothingLevelName: [
-          { required: true, message: "请选择服装层次", trigger: "change" }
-        ],
-        tmpRange: [
-          { required: true, message: "请选择系列名称", trigger: "change" }
-        ],
-        tmpStyleGroup: [
-          { required: true, message: "请输入款式组名", trigger: "blur" }
-        ]
-      },
-      ruleForm: {
-        tmpCustomer: "",
-        tmpBrand: "",
-        tmpRange: "",
-        tmpStyleGroup: "",
-
-        id: "",
-        number: "",
-        name: "",
-        rangeNumber: "",
-        rangeId: "",
-        rangeName: "",
-        customerName: "",
-        customerId: "",
-        brandName: "",
-        brandId: "",
-        clothingLevelName: "",
-        clothingLevelId: "",
-        createrName: "",
-        deptName: "",
-        createTime: "",
-        state: "",
-        havePlan: ""
-      },
-      options: {
-        customerNameOptions: [],
-        brandNameOptions: [],
-        clothingTypeOptions: [],
-        rangeNameOptions: []
-      },
-      controlData: {
-        ifStyleGroupAdd: false,
-        ifStyleGroupChange: false
-      },
-      infoManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "新增的数据数据库中已经存在"
-        },
-        {
-          errorCode: -2,
-          errotInfo: "传入信息的字段缺失"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "已与款式组或款式绑定，不得删除"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "数据不唯一"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "数据库其他错误"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "数据不存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "数据状态错误"
-        }
-      ]
+      }
     };
   },
   created: function() {
-    const that = this;
-    console.log("进入款式组管理页面");
-
     //获取客户名称
     request.get(`/backstage/client/name`).then(response => {
-      var resData = response.result;
-      resData.forEach(element => {
-        this.searchOptions.options.customerNameOptions.push({
-          id: element.id,
-          name: element.name
-        });
-        this.options.customerNameOptions = this.searchOptions.options.customerNameOptions;
-      });
+      this.searchOptions.clientOptions = response.result;
+      this.addForm.options.clientOptions = response.result;
+      this.updateForm.options.clientOptions = response.result;
+      v;
     });
 
     //获取服装层次
@@ -367,127 +380,173 @@ export default {
         }
       })
       .then(response => {
-        this.searchOptions.options.clothingTypeOptions = response.result;
+        this.searchOptions.clothesLevelOptions = response.result;
       });
 
-    var param = {
-      clientId: undefined,
-      brandId: undefined,
-      seriesName: undefined,
-      clothesLevelName: undefined,
-      name: undefined,
-      createAfter: undefined,
-      createBefore: undefined,
-      pageNum: 1,
-      pageSize: 10
-    };
     //默认获取所有款式组
     request
       .get(`/info/style-group/find`, {
-        params: param
+        params: {
+          pageNum: 1,
+          pageSize: 10
+        }
       })
       .then(response => {
-        this.totalTableData = response.result;
-
+        this.tableData = response.result;
         this.pagination.total = response.total;
+        this.pagination.currentPage = 1;
       });
 
-    //品牌名称选择获取
+    //获取品牌名称
     request
       .get(`/backstage/brand/name`, {
         params: { clientId: undefined }
       })
       .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
-        // this.options.brandNameOptions = this.searchOptions.options.brandNameOptions;
+        this.searchOptions.brandOptions = response.result;
       });
 
-    //获取款式组名
-    // request
-    //   .get(`${window.$config.HOST}/infoManagement/getStyleGroupName`,{
-    //     params:{rangeId:undefined}
-    //   })
-    //   .then(response => {
-    //     if(response.data.errcode < 0){
-    //       console.log("款式组获取错误");
-    //     }else{
-    //       response.data.forEach(element=>{
-    //         this.searchOptions.options.styleGroupNameOptions.push({
-    //           id:element.name,
-    //           name:element.name
-    //         });
-    //       });
-    //     }
-    //   })
+    //获取系列名称
+    request
+      .get(`/info/series/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 100000
+        }
+      })
+      .then(response => {
+        response.result.forEach(element => {
+          this.nameSuggestionsSeries.push({
+            value: element.name
+          });
+        });
+      });
+
+    //获取款式组名称
+    request
+      .get(`/info/style-group/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 100000
+        }
+      })
+      .then(response => {
+        response.result.forEach(element => {
+          this.nameSuggestionsStyleGroup.push({
+            value: element.name
+          });
+        });
+      });
   },
   methods: {
-    //系列选择触发款式组名get
+    //系列名称搜索的输入建议
+    querySearchStyleGroup(queryString, cb) {
+      var nameSuggestions = this.nameSuggestionsStyleGroup;
+      var results = queryString
+        ? nameSuggestions.filter(this.createFilter(queryString))
+        : nameSuggestions;
+      cb(results);
+    },
+    querySearchSeries(queryString, cb) {
+      var nameSuggestions = this.nameSuggestionsSeries;
+      var results = queryString
+        ? nameSuggestions.filter(this.createFilter(queryString))
+        : nameSuggestions;
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    handleSelect(item) {
+      console.log(item);
+    },
 
+    //页码部分
     handleSizeChange(val) {
       this.pagination.pageSize = val;
-      console.log("每页+" + this.pagination.pageSize);
-      this.handleSearch();
+      this.handleSearch(val);
     },
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
-      this.pageChanged();
+      this.handleSearch(1);
     },
-    rangeSelectionChange() {
-      console.log("系列名称选择触发");
-      console.log(this.searchOptions.searchParams.rangeValue);
-      // var param = {
-      //   brandId: this.searchOptions.searchParams.rangeValue,
-      // };
-    },
-    //品牌选择触发系列名称get
-    brandSelectionChange() {
-      console.log("品牌名称选择触发");
-      console.log(this.searchOptions.searchParams.brandValue);
-      // var param = {
-      //   brandId: this.searchOptions.searchParams.brandValue,
-      // };
-    },
+
     //品牌名称选择后触发品牌的get请求
-    dialogBrandSelectionChange() {
-      this.ruleForm.tmpRange = "";
-      this.options.rangeNameOptions = [];
-      //对话框获取系列
+    updateBrandChanged() {
+      this.updateForm.seriesId = "";
+      this.updateForm.options.seriesOptions = [];
+      //下拉提醒获取
       request
         .get(`/info/series/name`, {
           params: {
             brandId:
-              this.ruleForm.brandName === this.ruleForm.tmpBrand
-                ? this.ruleForm.brandId
-                : this.ruleForm.tmpBrand
+              this.updateForm.brandId === ""
+                ? undefined
+                : this.updateForm.brandId
           }
         })
         .then(response => {
-          this.options.rangeNameOptions = response.result;
+          this.updateForm.options.seriesOptions = response.result;
         });
     },
     //客户名称选择后触发品牌的get请求
-    customerNameSelectionChange() {
-      console.log("客户名称选择触发");
-      console.log(this.searchOptions.searchParams.customerValue);
-    },
-    //客户名称选择后触发品牌的get请求
-    dialogCustomerNameSelectionChange() {
-      // consol.log(val);
-      this.ruleForm.tmpBrand = "";
-      this.ruleForm.tmpRange = "";
-      this.options.rangeNameOptions = [];
+    updateClientChanged() {
+      this.updateForm.brandId = "";
+      this.updateForm.seriesId = "";
+      this.updateForm.options.brandOptions = [];
+      this.updateForm.options.seriesOptions = [];
       //品牌名称选择获取
       request
         .get(`/backstage/brand/name`, {
           params: {
             clientId:
-              this.ruleForm.tmpCustomer === this.ruleForm.customerName
-                ? this.ruleForm.customerId
-                : this.ruleForm.tmpCustomer
+              this.updateForm.clientId === ""
+                ? undefined
+                : this.updateForm.clientId
           }
         })
         .then(response => {
-          this.options.brandNameOptions = response.result;
+          this.updateForm.options.brandOptions = response.result;
+        });
+    },
+
+    //品牌名称选择后触发品牌的get请求
+    addBrandChanged() {
+      this.addForm.seriesId = "";
+      this.addForm.options.seriesOptions = [];
+      //下拉提醒获取
+      request
+        .get(`/info/series/name`, {
+          params: {
+            brandId:
+              this.addForm.brandId === "" ? undefined : this.addForm.brandId
+          }
+        })
+        .then(response => {
+          this.addForm.options.seriesOptions = response.result;
+        });
+    },
+    //客户名称选择后触发品牌的get请求
+    addClientChanged() {
+      this.addForm.brandId = "";
+      this.addForm.seriesId = "";
+      this.addForm.options.brandOptions = [];
+      this.addForm.options.seriesOptions = [];
+      //品牌名称选择获取
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId:
+              this.addForm.clientId === "" ? undefined : this.addForm.clientId
+          }
+        })
+        .then(response => {
+          this.addForm.options.brandOptions = response.result;
         });
     },
     // 改变日期格式
@@ -508,141 +567,55 @@ export default {
 
     // 选择框改变监控
     changeCheckBoxFun(val) {
-      const that = this;
-      that.multipleSelection = val;
-      console.log("changeCheckBox所选中的内容如下");
-      console.log(that.multipleSelection);
-      console.log(
-        "changeCheckBox所选中的内容的长度为",
-        that.multipleSelection.length
-      );
-    },
-    // 搜集搜索条件
-    collectSearchOptions() {
-      const that = this;
-      let searchCondition = {};
-      for (let key in that.searchOptions.searchParams) {
-        if (that.searchOptions.searchParams[key] !== "") {
-          if (key == "dateRange") {
-            var dateRange = that.searchOptions.searchParams[key];
-            var DateStart = that.changeDate(dateRange[0]);
-            searchCondition["DateStart"] = DateStart;
-            var DateEnd = that.changeDate(dateRange[1]);
-            searchCondition["DateEnd"] = DateEnd;
-          } else {
-            searchCondition[key] = that.searchOptions.searchParams[key];
-          }
-        }
-      }
-      console.log("当前搜索条件", searchCondition);
-      return searchCondition;
+      this.multipleSelection = val;
     },
     // 搜索按钮点击
-    pageChanged() {
+    handleSearch(currentPageNum) {
+      let startDate;
+      let endDate;
+      if (this.dateRange == undefined) {
+        startDate = undefined;
+        endDate = undefined;
+      } else {
+        startDate = this.changeDate(this.dateRange[0]);
+        endDate = this.changeDate(this.dateRange[1]);
+      }
       request
         .get(`/info/style-group/find`, {
           params: {
-            clientId:
-              this.searchOptions.searchParams.customerValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.customerValue,
-            brandId:
-              this.searchOptions.searchParams.brandValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.brandValue,
+            clientId: this.clientId === "" ? undefined : this.clientId,
+            brandId: this.brandId === "" ? undefined : this.brandId,
             clothesLevelName:
-              this.searchOptions.searchParams.clothingLevelValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.clothingLevelValue,
-            name:
-              this.searchOptions.searchParams.idValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.idValue,
-            createAfter: this.changeDate(
-              this.searchOptions.searchParams.dateRange
-                ? this.searchOptions.searchParams.dateRange[0]
-                : null
-            ),
-            createBefore: this.changeDate(
-              this.searchOptions.searchParams.dateRange
-                ? this.searchOptions.searchParams.dateRange[1]
-                : null
-            ),
-            seriesName: this.searchOptions.searchParams.rangeValue,
-            pageNum: this.pagination.currentPage,
+              this.clothesLevelName === "" ? undefined : this.clothesLevelName,
+            name: this.name === "" ? undefined : this.name,
+            createAfter: startDate,
+            createBefore: endDate,
+            seriesName: this.seriesName === "" ? undefined : this.seriesName,
+            pageNum: currentPageNum,
             pageSize: this.pagination.pageSize
           }
         })
         .then(response => {
-          this.totalTableData = response.result;
-
+          this.tableData = response.result;
+          this.pagination.currentPage = currentPageNum;
           this.pagination.total = response.total;
-
-          //时间排序
-          this.data.tableData.sort(function(a, b) {
-            return Date.parse(b.createTime) - Date.parse(a.createTime);
-          });
         });
     },
-    handleSearch() {
-      request
-        .get(`/info/style-group/find`, {
-          params: {
-            clientId:
-              this.searchOptions.searchParams.customerValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.customerValue,
-            brandId:
-              this.searchOptions.searchParams.brandValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.brandValue,
-            clothesLevelName:
-              this.searchOptions.searchParams.clothingLevelValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.clothingLevelValue,
-            name:
-              this.searchOptions.searchParams.idValue === ""
-                ? undefined
-                : this.searchOptions.searchParams.idValue,
-            createAfter: this.changeDate(
-              this.searchOptions.searchParams.dateRange
-                ? this.searchOptions.searchParams.dateRange[0]
-                : null
-            ),
-            createBefore: this.changeDate(
-              this.searchOptions.searchParams.dateRange
-                ? this.searchOptions.searchParams.dateRange[1]
-                : null
-            ),
-            seriesName: this.searchOptions.searchParams.rangeValue,
-            pageNum: 1,
-            pageSize: this.pagination.pageSize
-          }
-        })
-        .then(response => {
-          this.totalTableData = response.result;
 
-          this.pagination.total = response.total;
-
-          //时间排序
-          this.data.tableData.sort(function(a, b) {
-            return Date.parse(b.createTime) - Date.parse(a.createTime);
-          });
-        });
-    },
     // 添加款式组
     addStyleGroup() {
-      const that = this;
-      console.log("添加款式组按钮点击");
-
-      this.controlData.ifStyleGroupAdd = true;
-
-      this.dialogFormVisible = true;
+      this.addForm.clientId = "";
+      this.addForm.brandId = "";
+      this.addForm.seriesId = "";
+      this.addForm.name = "";
+      this.addForm.options.brandOptions = {};
+      this.addForm.options.seriesOptions = {};
+      this.addPanelFlag = true;
     },
+
     // 删除款式组
     deleteStyleGroup() {
       const that = this;
-      console.log("删除款式组按钮点击");
       if (that.multipleSelection.length === 0) {
         this.$message({
           message: "请选择要删除的款式组",
@@ -662,22 +635,21 @@ export default {
           }
         ).then(() => {
           this.multipleSelection.forEach(element => {
-            // console.log(element);
             request
               .delete(`/info/style-group/delete`, {
                 params: { id: element.id }
               })
               .then(response => {
-                this.handleSearch();
+                this.handleSearch(1);
               });
           });
         });
       }
     },
+
     // 解绑款式组
     unbindStyleGroup() {
       const that = this;
-      console.log("解绑款式组按钮点击");
       if (that.multipleSelection.length === 0) {
         that.$message({
           message: "请选择要解绑的款式组",
@@ -710,7 +682,7 @@ export default {
                         params: { id: element.id }
                       })
                       .then(response => {
-                        this.handleSearch();
+                        this.handleSearch(this.pagination.currentPage);
                       });
                   });
                 })
@@ -723,74 +695,39 @@ export default {
             }
           })
           .catch(error => {
-            console.log("获取款式失败:请检查网络");
             this.$message.error("获取款式失败:请检查网络");
           });
       }
     },
-    /* //查看操作
-    getStyleGroupData(row){
-      this.ruleForm.customerName = row.customerName;
-      this.ruleForm.brandName = row.brandName;
-      this.ruleForm.clothingLevelName = row.clothingLevelName;
-      this.ruleForm.rangeName = row.rangeName;
-      this.ruleForm.name = row.name;
-
-      this.dialogFormVisible = true;
-
-    }, */
     // 表格中的修改
-    changeStyleGroupData(row) {
-      this.controlData.ifStyleGroupChange = true;
+    updateStyleGroup(row) {
+      this.updateForm.id = row.id;
+      this.updateForm.clientId = row.clientId;
+      this.updateForm.brandId = row.brandId;
+      this.updateForm.seriesId = row.seriesId;
+      this.updateForm.name = row.name;
+      this.updatePanelFlag = true;
+      //获取品牌名称
+      request
+        .get(`/backstage/brand/name`, {
+          params: { clientId: row.clientId }
+        })
+        .then(response => {
+          this.updateForm.options.brandOptions = response.result;
+        });
 
-      (this.ruleForm.tmpCustomer = row.clientName),
-        (this.ruleForm.tmpBrand = row.brandName),
-        (this.ruleForm.tmpRange = row.seriesId),
-        (this.ruleForm.tmpStyleGroup = row.name),
-        (this.ruleForm.id = row.id),
-        //对话框品牌名称选择获取
-        request
-          .get(`/backstage/brand/name`, {
-            params: { clientId: row.customerId }
-          })
-          .then(response => {
-            this.options.brandNameOptions = response.result;
-          });
-
-      //对话框获取系列
+      //获取能选择的系列
       request
         .get(`/info/series/name`, {
           params: { brandId: row.brandId }
         })
         .then(response => {
-          this.options.rangeNameOptions = response.result;
+          this.updateForm.options.seriesOptions = response.result;
         });
-
-      this.options.rangeNameOptions = [];
-
-      (this.ruleForm.id = row.id),
-        (this.ruleForm.number = row.number),
-        (this.ruleForm.name = row.name),
-        (this.ruleForm.rangeNumber = row.rangeNumber),
-        (this.ruleForm.rangeId = row.rangeId),
-        (this.ruleForm.rangeName = row.rangeName),
-        (this.ruleForm.customerName = row.customerName),
-        (this.ruleForm.customerId = row.customerId),
-        (this.ruleForm.brandName = row.brandName),
-        (this.ruleForm.brandId = row.brandId),
-        (this.ruleForm.clothingLevelName = row.clothingLevelName),
-        (this.ruleForm.clothingLevelId = row.clothingLevelId),
-        (this.ruleForm.createrName = row.createrName),
-        (this.ruleForm.deptName = row.deptName),
-        (this.ruleForm.createTime = row.createTime),
-        (this.ruleForm.state = row.state),
-        (this.ruleForm.havePlan = row.havePlan),
-        (this.dialogFormVisible = true);
     },
     // 表格中的删除
-    deleteStyleGroupRow(row) {
+    daleteStyleGroup(row) {
       const that = this;
-      console.log("删除" + row.id);
       this.$confirm("是否确认删除该款式组？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -802,7 +739,7 @@ export default {
               params: { id: row.id }
             })
             .then(response => {
-              this.handleSearch();
+              this.handleSearch(this.pagination.currentPage);
             });
         })
         .catch(() => {
@@ -812,67 +749,63 @@ export default {
           });
         });
     },
-    // 保存按钮点击
-    submitForm(formName) {
+    // 修改Form提交
+    updateSubmit(formName) {
       const that = this;
-      if (this.controlData.ifStyleGroupAdd) {
-        this.controlData.ifStyleGroupAdd = false;
-        var param = {
-          seriesId:
-            this.ruleForm.tmpRange === "" ? undefined : this.ruleForm.tmpRange,
-          name:
-            this.ruleForm.tmpStyleGroup === ""
-              ? undefined
-              : this.ruleForm.tmpStyleGroup
-        };
-
-        request.post(`/info/style-group/insert`, param).then(response => {
-          this.handleSearch();
-          this.ruleForm.tmpCustomer = "";
-          this.ruleForm.tmpBrand = "";
-          this.ruleForm.tmpRange = "";
-          this.ruleForm.tmpStyleGroup = "";
-        });
-      } else if (this.controlData.ifStyleGroupChange) {
-        this.controlData.ifStyleGroupChange = false;
-        var param = {
-          id: this.ruleForm.id,
-          name:
-            this.ruleForm.tmpStyleGroup === ""
-              ? undefined
-              : this.ruleForm.tmpStyleGroup,
-          seriesId:
-            this.ruleForm.tmpRange === this.ruleForm.rangeName
-              ? this.ruleForm.rangeId
-              : this.ruleForm.tmpRange
-        };
-        console.log(param);
-        request.put(`/info/style-group/update`, param).then(response => {
-          this.handleSearch();
-        });
-      }
-
-      this.handleSearch();
-      this.options.brandNameOptions = [];
-      this.options.rangeNameOptions = [];
-      this.ruleForm.tmpCustomer = "";
-      this.ruleForm.tmpBrand = "";
-      this.ruleForm.tmpRange = "";
-      this.ruleForm.tmpStyleGroup = "";
-      this.dialogFormVisible = false;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .put(`/info/style-group/update`, {
+              name: this.updateForm.name,
+              seriesId: this.updateForm.seriesId,
+              id: this.updateForm.id
+            })
+            .then(response => {
+              this.handleSearch(this.pagination.currentPage);
+              this.updatePanelFlag = false;
+            });
+        } else {
+          this.$message({
+            message: "请填写必须填写的项！",
+            type: "error"
+          });
+        }
+      });
+    },
+    // 添加Form提交
+    addSubmit(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .post(`/info/style-group/insert`, {
+              name: this.addForm.name,
+              seriesId: this.addForm.seriesId
+            })
+            .then(response => {
+              this.handleSearch(1);
+              this.addPanelFlag = false;
+            });
+        } else {
+          this.$message({
+            message: "请填写必须填写的项！",
+            type: "error"
+          });
+        }
+      });
     },
     // 取消按钮点击
-    cancel() {
-      const that = this;
-      console.log("取消按钮点击");
-      this.ruleForm.tmpCustomer = "";
-      this.ruleForm.tmpBrand = "";
-      this.ruleForm.tmpRange = "";
-      this.ruleForm.tmpStyleGroup = "";
-      /* that.$router.push({
-        path: `/styleGroup/styleGroupManagement`,
-      }); */
-      this.dialogFormVisible = false;
+    addCancel() {
+      this.addForm.clientId = "";
+      this.addForm.brandId = "";
+      this.addForm.seriesId = "";
+      this.addForm.name = "";
+      this.addForm.options.brandOptions = {};
+      this.addForm.options.seriesOptions = {};
+      this.addPanelFlag = false;
+    },
+    updateCancel() {
+      this.updatePanelFlag = false;
     }
   }
 };
