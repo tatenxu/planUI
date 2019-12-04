@@ -251,9 +251,9 @@ export default {
     console.log("进入客户管理");
     // //获取部门信息
     this.$axios
-      .get('http://192.168.1.180:8081/dept/find')
+      .get("http://192.168.1.180:8081/dept/find")
       .then(response => {
-        console.log(response)
+        console.log(response);
         this.selectionData = response.data.result;
       })
       .catch(error => {
@@ -263,11 +263,10 @@ export default {
 
     //加载默认客户信息
     request
-      .get('/backstage/client/find', {
+      .get("/backstage/client/find", {
         params: { name: undefined }
       })
       .then(response => {
-        console.log(response);
         this.tableData = response.result;
       });
   },
@@ -298,14 +297,11 @@ export default {
       console.log("搜索参数" + allFlag);
       console.log(param);
       request
-        .get('/backstage/client/find', {
+        .get("/backstage/client/find", {
           params: param
         })
         .then(response => {
           this.tableData = response.result;
-        })
-        .catch(error => {
-          this.$message.error("加载失败");
         });
     },
     handleNewInfoClick() {
@@ -356,22 +352,8 @@ export default {
               params: { id: element.id }
             })
             .then(response => {
-              if (response.code < 0) {
-                this.$message.error(response.msg);
-                console.log(element.name + "删除失败");
-              } else {
-                console.log(element.name + "删除成功");
-                this.$message({
-                  type: "success",
-                  message: response.msg
-                });
-                var i = this.tableData.indexOf(element);
-                this.tableData.splice(i, 1);
-              }
-            })
-            .catch(error => {
-              this.$message.error(element.name + "删除失败");
-              console.log(element.name + "删除失败");
+              var i = this.tableData.indexOf(element);
+              this.tableData.splice(i, 1);
             });
         });
       }
@@ -401,30 +383,14 @@ export default {
       request
         .post(`${window.$config.HOST}/backstage/client/insert`, param)
         .then(response => {
-          if (response.code < 0) {
-            this.$message.error(response.msg);
-          } else {
-            this.$message({
-              type: "success",
-              message: response.msg
-            });
-            this.handleSearchClick(true);
-
-            this.ruleForm.addInfoName = "";
-            this.ruleForm.addInfoAbbr = "";
-            this.ruleForm.addInfoDescription = "";
-            this.ruleForm.addInfoGroup = [];
-
-            this.newCardShowFlag = false;
-            this.viewname = "first";
-          }
-        })
-        .catch(error => {
-          console.log("添加失败");
-          this.$message.error("添加失败!");
+          this.handleSearchClick(true);
+          this.ruleForm.addInfoName = "";
+          this.ruleForm.addInfoAbbr = "";
+          this.ruleForm.addInfoDescription = "";
+          this.ruleForm.addInfoGroup = [];
+          this.newCardShowFlag = false;
+          this.viewname = "first";
         });
-
-      return;
     },
     handleNewCancelClick() {
       this.newCardShowFlag = false;
@@ -456,32 +422,18 @@ export default {
       request
         .put(`${window.$config.HOST}/backstage/client/update`, param)
         .then(response => {
-          if (response.code < 0) {
-            this.$message.error(response.msg);
-          } else {
-            this.$message({
-              message: response.msg,
-              type: "success"
-            });
-            this.handleSearchClick(true);
+          this.handleSearchClick(true);
 
-            this.editInfoId = "";
-            this.editInfoName = "";
-            this.editInfoAbbr = "";
-            this.editInfoGroup = "";
-            this.editIndoInitGroupId = "";
-            this.tmpeditInfoGroupName = "";
-            this.editInfoDescription = "";
-
-            this.editCardShowFlag = false;
-            this.viewname = "first";
-          }
-        })
-        .catch(error => {
-          this.$message.error("编辑失败");
+          this.editInfoId = "";
+          this.editInfoName = "";
+          this.editInfoAbbr = "";
+          this.editInfoGroup = "";
+          this.editIndoInitGroupId = "";
+          this.tmpeditInfoGroupName = "";
+          this.editInfoDescription = "";
+          this.editCardShowFlag = false;
+          this.viewname = "first";
         });
-
-      return;
     },
     handleEditCancelClick() {
       this.editCardShowFlag = false;

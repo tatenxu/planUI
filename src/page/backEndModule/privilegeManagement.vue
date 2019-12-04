@@ -145,7 +145,12 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :modal="false" title="添加权限" :visible.sync="dialogFormVisible1" :before-close="cancel">
+    <el-dialog
+      :modal="false"
+      title="添加权限"
+      :visible.sync="dialogFormVisible1"
+      :before-close="cancel"
+    >
       <el-row :gutter="20" style="margin-top:-30px;">
         <el-col :span="6">
           <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
@@ -293,12 +298,12 @@ export default {
       });
 
     //获得品牌名字
-    request.get(`/backstage/brand/name`).then(response => {
+    request.get(`/backstage/brand/find`).then(response => {
       this.searchOptions.options.brandNameOptions = response.result;
     });
 
     //获得顾客名称
-    request.get(`/backstage/client/name`).then(response => {
+    request.get(`/backstage/client/find`).then(response => {
       this.searchOptions.options.customerNameOptions = response.result;
       this.ruleForm.options.customerNameOptions = response.result;
     });
@@ -369,7 +374,7 @@ export default {
         return;
       }
       request
-        .get(`/backstage/brand/name`, {
+        .get(`/backstage/brand/find`, {
           params: {
             clientId: this.ruleForm.customerName
           }
@@ -510,7 +515,7 @@ export default {
           this.userSelection.forEach(element1 => {
             this.ruleForm.multipleSelection.forEach(element2 => {
               this.userSelectionList.push({
-                userId: element1.id,
+                userId: element1.userId,
                 userName: element1.username,
                 brandId: element2.id,
                 clientId: this.ruleForm.customerName

@@ -5,25 +5,16 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-input
-              v-if="flag===2"
-              v-model="client"
-              clearable
-              :disabled="true"
-              :rows="1"
-              placeholder
-            ></el-input>
-            <el-select v-model="client" clearable v-else>
+            <el-select v-model="clientId" clearable :disabled="isUpdate||isDetail">
               <el-option
-                v-for="item in clientNameOptions"
+                v-for="item in searchOptions.clientOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
         </el-col>
-
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
@@ -37,7 +28,7 @@
             ></el-input>
             <el-select v-else v-model="brand" clearable>
               <el-option
-                v-for="item in brandNameOptions"
+                v-for="item in searchOptions.brandOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.name"
@@ -151,6 +142,12 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      //页面标识
+      isUpdate: false,
+      isCreate: false,
+      isDetail: false,
+      goback: "",
+
       nowClickName: "",
       gobackA: "",
       flag: 0,
@@ -158,15 +155,15 @@ export default {
       nodeName: "",
       dialogVisible: false,
       modelName: "",
-      client: "",
+      clientId: "",
       brand: "",
-      brandNameOptions: [
+      brandOptions: [
         {
           id: 12,
           name: "324441"
         }
       ],
-      clientNameOptions: [
+      clientOptions: [
         {
           id: 1,
           name: "321"
@@ -191,25 +188,26 @@ export default {
      *     data: row
      *   }
      */
-    let data = this.$route.params;
-    this.flag = data.flag;
-    this.gobackA = data.goback;
 
-    console.log("data", data);
+    let data = this.$route.params;
+    this.isUpdate = data.isUpdate;
+    this.isCreate = data.isCreate;
+    this.isDetail = data.isDetail;
+    this.goback = data.goback;
 
     if (this.flag === 2) {
       //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
       (this.data = []), this.data.push(data.tree);
       console.log("this.data", this.data);
 
-      (this.client = data.customerName),
+      (this.clientId = data.customerName),
         (this.brand = data.brandName),
         (this.modelName = data.name);
     } else if (this.flag === 3) {
       //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
       (this.data = []),
         (this.id = data.id),
-        (this.client = data.customerName),
+        (this.clientId = data.customerName),
         (this.brand = data.brandName),
         (this.modelName = data.name),
         this.data.push(data.tree);
@@ -225,7 +223,7 @@ export default {
       })
       .then(response => {
         console.log("获得品牌信息成功了");
-        this.brandNameOptions = response.data;
+        this.searchOptions.brandOptions = response.data;
       })
       .catch(error => {
         this.$message({
@@ -239,7 +237,7 @@ export default {
       .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
       .then(response => {
         console.log("获得顾客信息成功了");
-        this.clientNameOptions = response.data;
+        this.searchOptions.clientOptions = response.data;
       })
       .catch(error => {
         this.$message({
@@ -269,7 +267,7 @@ export default {
       }
       let list = {
         name: this.modelName,
-        customerName: this.client,
+        customerName: this.clientId,
         brandName: this.brand,
         tree: this.data
       };
@@ -277,7 +275,7 @@ export default {
       this.$axios
         .post(`${window.$config.HOST}/planManagement/addPlanTemplate `, {
           name: this.modelName,
-          customerName: this.client,
+          customerName: this.clientId,
           brandName: this.brand,
           tree: this.data[0]
         })
@@ -317,7 +315,7 @@ export default {
       let list = {
         id: this.id,
         name: this.modelName,
-        customerName: this.client,
+        customerName: this.clientId,
         brandName: this.brand,
         tree: this.data
       };
@@ -326,7 +324,7 @@ export default {
         .post(`${window.$config.HOST}/planManagement/updatePlanTemplate `, {
           id: this.id,
           name: this.modelName,
-          customerName: this.client,
+          customerName: this.clientId,
           brandName: this.brand,
           tree: this.data[0]
         })

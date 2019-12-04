@@ -73,6 +73,20 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
+                <el-select v-model="ruleForm.inputPoint" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in options.inputPointOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
@@ -195,6 +209,9 @@ export default {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
+        inputPoint: [
+          { required: true, message: "请选择投入点", trigger: "change" }
+        ],
         brandName: [
           { required: true, message: "请选择品牌", trigger: "change" }
         ],
@@ -229,6 +246,7 @@ export default {
         systemCode: "",
         customerName: "",
         brandName: "",
+        inputPoint: "",
         clothingType: "",
         filePath: "",
         projectType: "",
@@ -240,6 +258,7 @@ export default {
         tableData: []
       },
       options: {
+        inputPointOptions: [],
         projectTypeOptions: [],
         orderStageOptions: [],
         seasonOptions: [
@@ -265,6 +284,16 @@ export default {
   },
   created: function() {
     var that = this;
+    //获得投入点
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "投入点"
+        }
+      })
+      .then(response => {
+        this.options.inputPointOptions = response.result;
+      });
     //获得项目类型
     request.get(`/backstage/project-type/find`).then(response => {
       this.options.projectTypeOptions = response.result;
@@ -472,6 +501,7 @@ export default {
           systemCode: this.ruleForm.systemCode,
           projectType: this.ruleForm.projectType,
           orderStage: this.ruleForm.orderStage,
+          inputPoint: this.ruleForm.inputPoint,
           predictStyleQuantity: this.ruleForm.predictStyleQuantity,
           predictPieceQuantity: this.ruleForm.predictPieceQuantity,
           styleQuantity:

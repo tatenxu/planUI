@@ -88,7 +88,7 @@
             label-width="100px"
             class="add-ruleForm"
           >
-            <el-form-item label="订单名称:" prop="addProjectTypeName">
+            <el-form-item label="项目类型:" prop="addProjectTypeName">
               <el-input v-model="ruleFormProjectType.addProjectTypeName" placeholder="请输入项目类型名称"></el-input>
             </el-form-item>
             <el-form-item>
@@ -144,7 +144,11 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" class="save" @click="handleAddOrderSaveClick('ruleFormOrder')">保存</el-button>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleAddOrderSaveClick('ruleFormOrder')"
+              >保存</el-button>
               <el-button type="primary" class="cancel" @click="handleAddOrderCancelClick()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -249,7 +253,7 @@ export default {
       orderTable: [],
       editProjectTypeId: "",
       editOrderId: "",
-      lastOrderProjectTypeId:"",
+      lastOrderProjectTypeId: "",
       addProjectTypeShowFlag: false,
       editProjectTypeShowFlag: false,
       addOrderShowFlag: false,
@@ -509,18 +513,17 @@ export default {
     },
 
     handleEditOrderSaveClick() {
-    
       var param = {
         id: this.editOrderId === "" ? null : this.editOrderId,
         name: this.editOrderName === "" ? null : this.editOrderName,
-        projectTypeId: this.underProjectTypeId === "" ? null : this.underProjectTypeId
+        projectTypeId:
+          this.underProjectTypeId === "" ? null : this.underProjectTypeId
       };
-      
+
       request.put(`/backstage/order-stage/update`, param).then(response => {
         this.reSearchOrder(this.lastOrderProjectTypeId);
 
-        this.lastOrderProjectTypeId="",
-        this.editOrderId = "";
+        (this.lastOrderProjectTypeId = ""), (this.editOrderId = "");
         this.editOrderName = "";
         this.underProjectTypeId = "";
 
