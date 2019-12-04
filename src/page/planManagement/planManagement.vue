@@ -158,23 +158,23 @@
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button
-              v-if="isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              v-if="!isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
               @click.native.prevent="ModifyPlanDetail(scope.row)"
               type="text"
               size="small"
             >修改</el-button>
             <el-button
-              v-if="isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
-              @click.native.prevent="submitPlan(scope.row)"
-              type="text"
-              size="small"
-            >提交</el-button>
-            <el-button
-              v-if="isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              v-if="!isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
               @click.native.prevent="deleteOnePlan(scope.row.id)"
               type="text"
               size="small"
             >删除</el-button>
+            <el-button
+              v-if="!isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              @click.native.prevent="submitPlan(scope.row)"
+              type="text"
+              size="small"
+            >提交</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -618,8 +618,10 @@ export default {
     //提交计划
     submitPlan(row) {
       //行提交
-      this.$axios
-        .put(`${window.$config.HOST}/plan/submit`, { id: row.id })
+      request
+        .put(`${window.$config.HOST}/plan/submit`, null, {
+          params: { id: row.id }
+        })
         .then(response => {
           this.handleSearch();
         });
@@ -652,34 +654,15 @@ export default {
     // TODO: finish comm to jump
     ModifyPlanDetail(row) {
       var param = {
-        flag: 2,
         goback: "planManagement",
-        customerName: row.customerName,
-        brandName: row.brandName,
-        rangeId: row.rangeId,
-        seriesName: row.seriesName,
-        topPlanId: row.parentId,
-        topPlanName: row.parentName ? row.parentName : "根计划",
-        planId: row.id,
-        planType: row.type,
-        planObjectName: row.planObject,
-        planObjectId: row.planObjectId,
-        planName: row.name,
-        projectType: row.projectType,
-        quantity: row.quantity,
-        dateStart: row.startDate,
-        dateEnd: row.endDate,
-        productDate: row.productDate,
-        productDateType: row.productDateType,
-        planProductId: row.productId,
-        planPropose: row.proposal,
-        note: row.note,
-        planDescribe: row.description,
-        files: row.files
+        isRoot: false,
+        isModify: true,
+        isCreate: false,
+        rowData: row
       };
-      console.log(param);
+      console.log("跳转参数：", param);
 
-      this.isCacheFlag = false;
+      this.isCacheFlag = true;
       this.$router.push({
         name: "planMakeIndex",
         params: param

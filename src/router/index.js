@@ -23,7 +23,6 @@ const predictPlanMaking = r => require.ensure([], () => r(require('../page/planM
 const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMade.vue')), 'predictPlanMade');
 const planManagement = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'planManagement');
 const distributedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/distributedPlanManagement.vue')), 'distributedPlanManagement');
-const distributedPlanManagementOfRoot = r => require.ensure([], () => r(require('../page/planManagement/distributedPlanManagementOfRoot.vue')), 'distributedPlanManagementOfRoot');
 const commitedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/commitedPlanManagement.vue')), 'commitedPlanManagement');
 const planCompletionManage = r => require.ensure([], () => r(require('../page/planManagement/planCompletionManage.vue')), 'planCompletionManage');
 const planMakeIndex = r => require.ensure([], () => r(require('../page/planManagement/planMake.vue')), 'planMakeIndex');
@@ -201,14 +200,6 @@ export default [
         component: distributedPlanManagement,
         meta: {
           bcrumd: ['被下发计划管理'],
-        }
-      },
-      {
-        path: '/distributedPlanManagementOfRoot',
-        name: 'distributedPlanManagementOfRoot',
-        component: distributedPlanManagementOfRoot,
-        meta: {
-          bcrumd: ['被下发根计划管理'],
         }
       },
       {

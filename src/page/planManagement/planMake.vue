@@ -209,7 +209,7 @@
               <el-form-item label="件数" prop="pieceQuantity" placeholder="请输入">
                 <el-input
                   :disabled="alwaysGreyFlag"
-                  v-model="ruleForm.name"
+                  v-model="ruleForm.pieceQuantity"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -224,7 +224,7 @@
               <el-form-item label="预测件数" prop="predictPieceQuantity" placeholder="请输入">
                 <el-input
                   :disabled="alwaysGreyFlag"
-                  v-model="ruleForm.name"
+                  v-model="ruleForm.predictPieceQuantity"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -242,7 +242,7 @@
               <el-form-item label="款数" prop="styleQuantity" placeholder="请输入">
                 <el-input
                   :disabled="alwaysGreyFlag"
-                  v-model="ruleForm.name"
+                  v-model="ruleForm.styleQuantity"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -257,7 +257,7 @@
               <el-form-item label="预测款数" prop="predictStyleQuantity" placeholder="请输入">
                 <el-input
                   :disabled="alwaysGreyFlag"
-                  v-model="ruleForm.name"
+                  v-model="ruleForm.predictStyleQuantity"
                   clearable
                   :rows="1"
                   placeholder="请输入"
@@ -418,7 +418,6 @@
                   :disabled="!isModifyPlanFlag && !isCreatePlanFlag"
                   v-model="ruleForm.name"
                   clearable
-                  :rows="1"
                   placeholder="请输入"
                   style="min-width:240px"
                 ></el-input>
@@ -453,9 +452,8 @@
               <el-form-item label="周期" prop="cycle" placeholder="请输入">
                 <el-input
                   :disabled="!isModifyPlanFlag && !isCreatePlanFlag"
-                  v-model="ruleForm.cycle"
+                  v-model.number="ruleForm.cycle"
                   clearable
-                  :rows="1"
                   placeholder="请输入"
                   style="min-width:240px"
                 ></el-input>
@@ -524,7 +522,6 @@
                   style="margin-left:20px"
                   v-model="ruleForm.actualStartEndDate"
                   type="daterange"
-                  align="right"
                   unlink-panels
                   range-separator="至"
                   :start-placeholder="placeHolders.actualStartStr"
@@ -730,54 +727,63 @@ export default {
 
       // TODO: 完善必填项类型的控制
       rules: {
-        // assignPlanType: [
-        //   { required: true, message: "请输入", trigger: "blur" }
-        // ],
-        // brandName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // clientName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // clothesLevelName: [
-        //   { required: true, message: "请输入", trigger: "blur" }
-        // ],
-        // createTime: [{ required: true, message: "请输入", trigger: "blur" }],
-        // creatorName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // cycle: [{ required: true, message: "请输入", trigger: "blur" }],
-        // dateType: [{ required: true, message: "请输入", trigger: "blur" }],
-        // deptName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // description: [{ required: true, message: "请输入", trigger: "blur" }],
-        // haveException: [{ required: true, message: "请输入", trigger: "blur" }],
-        // name: [{ required: true, message: "请输入", trigger: "blur" }],
-        // note: [{ required: true, message: "请输入", trigger: "blur" }],
-        // objectName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // orderStage: [{ required: true, message: "请输入", trigger: "blur" }],
-        // pieceQuantity: [{ required: true, message: "请输入", trigger: "blur" }],
-        // planClass: [{ required: true, message: "请输入", trigger: "blur" }],
-        // predictPieceQuantity: [
-        //   { required: true, message: "请输入", trigger: "blur" }
-        // ],
-        // predictStyleQuantity: [
-        //   { required: true, message: "请输入", trigger: "blur" }
-        // ],
-        // product: [{ required: true, message: "请输入", trigger: "blur" }],
-        // productLine: [{ required: true, message: "请输入", trigger: "blur" }],
-        // projectType: [{ required: true, message: "请输入", trigger: "blur" }],
-        // proposal: [{ required: true, message: "请输入", trigger: "blur" }],
-        // rootPlanName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // serialNo: [{ required: true, message: "请输入", trigger: "blur" }],
-        // seriesName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // styleQuantity: [{ required: true, message: "请输入", trigger: "blur" }],
-        // superiorName: [{ required: true, message: "请输入", trigger: "blur" }],
-        // type: [{ required: true, message: "请输入", trigger: "blur" }],
-        // systemCode: [{ required: true, message: "请输入", trigger: "blur" }],
-        // creator: [{ required: true, message: "请输入", trigger: "blur" }],
-        // extension: [{ required: true, message: "请输入", trigger: "blur" }],
-        // startEndDate: [{ required: true, message: "请输入", trigger: "blur" }],
-        // actualStartEndDate: [
-        //   { required: true, message: "请输入", trigger: "blur" }
-        // ],
-
-        name: [{ required: true, message: "请输入", trigger: "blur" }],
-        startEndDate: [{ required: true, message: "请输入", trigger: "blur" }],
+        /* 
+        assignPlanType: [
+          { required: true, message: "请输入", trigger: "blur" }
+        ],
+        brandName: [{ required: true, message: "请输入", trigger: "blur" }],
+        clientName: [{ required: true, message: "请输入", trigger: "blur" }],
+        clothesLevelName: [
+          { required: true, message: "请输入", trigger: "blur" }
+        ],
+        createTime: [{ required: true, message: "请输入", trigger: "blur" }],
+        creatorName: [{ required: true, message: "请输入", trigger: "blur" }],
         cycle: [{ required: true, message: "请输入", trigger: "blur" }],
+        dateType: [{ required: true, message: "请输入", trigger: "blur" }],
+        deptName: [{ required: true, message: "请输入", trigger: "blur" }],
+        description: [{ required: true, message: "请输入", trigger: "blur" }],
+        haveException: [{ required: true, message: "请输入", trigger: "blur" }],
+        name: [{ required: true, message: "请输入", trigger: "blur" }],
+        note: [{ required: true, message: "请输入", trigger: "blur" }],
+        objectName: [{ required: true, message: "请输入", trigger: "blur" }],
+        orderStage: [{ required: true, message: "请输入", trigger: "blur" }],
+        pieceQuantity: [{ required: true, message: "请输入", trigger: "blur" }],
+        planClass: [{ required: true, message: "请输入", trigger: "blur" }],
+        predictPieceQuantity: [
+          { required: true, message: "请输入", trigger: "blur" }
+        ],
+        predictStyleQuantity: [
+          { required: true, message: "请输入", trigger: "blur" }
+        ],
+        product: [{ required: true, message: "请输入", trigger: "blur" }],
+        productLine: [{ required: true, message: "请输入", trigger: "blur" }],
+        projectType: [{ required: true, message: "请输入", trigger: "blur" }],
+        proposal: [{ required: true, message: "请输入", trigger: "blur" }],
+        rootPlanName: [{ required: true, message: "请输入", trigger: "blur" }],
+        serialNo: [{ required: true, message: "请输入", trigger: "blur" }],
+        seriesName: [{ required: true, message: "请输入", trigger: "blur" }],
+        styleQuantity: [{ required: true, message: "请输入", trigger: "blur" }],
+        superiorName: [{ required: true, message: "请输入", trigger: "blur" }],
+        type: [{ required: true, message: "请输入", trigger: "blur" }],
+        systemCode: [{ required: true, message: "请输入", trigger: "blur" }],
+        creator: [{ required: true, message: "请输入", trigger: "blur" }],
+        extension: [{ required: true, message: "请输入", trigger: "blur" }],
+        startEndDate: [{ required: true, message: "请输入", trigger: "blur" }],
+        actualStartEndDate: [
+          { required: true, message: "请输入", trigger: "blur" }
+        ], 
+        */
+
+        name: [{ required: true, message: "请输入", trigger: "change" }],
+        startEndDate: [{ required: true, message: "请输入", trigger: "blur" }],
+        cycle: [
+          {
+            type: "number",
+            required: true,
+            message: "周期应为整数",
+            trigger: "blur"
+          }
+        ],
         product: [{ required: true, message: "请输入", trigger: "blur" }],
         productLine: [{ required: true, message: "请输入", trigger: "blur" }],
         extension: [{ required: false, message: "请输入", trigger: "blur" }],
@@ -821,8 +827,8 @@ export default {
         systemCode: "无数据",
         creator: "无数据",
         extension: "无数据",
-        startEndDate: "无数据",
-        actualStartEndDate: "无数据"
+        startEndDate: [],
+        actualStartEndDate: []
       },
 
       // gantt related
@@ -1163,11 +1169,9 @@ export default {
     ];
   },
   mounted() {
-    const that = this;
-    this.init();
+    let that = this;
+    that.init();
   },
-  //五个参数控制
-  //所有的计划制定的跳转
 
   methods: {
     downloadRow(row) {
@@ -1266,11 +1270,13 @@ export default {
       }
     },
     savePlanForm(formName) {
-      /* name,rootPlanId,
+      /* 
+      name,rootPlanId,
       superiorId,type,productLine,
       product,cycle,startDate,
       endDate,actualStartDate,actualEndDate,
-      extension,proposal,description,note */
+      extension,proposal,description,note 
+      */
       //添加
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -1324,7 +1330,7 @@ export default {
           });
         } else {
           this.$message({
-            message: "制定计划失败!",
+            message: "制定计划失败：请填入必要字段",
             type: "error"
           });
         }
@@ -1332,97 +1338,50 @@ export default {
     },
 
     modifyPlanForm(formName) {
+      /* 
+        id,name,productLine,product,
+        cycle,startDate,endDate,
+        proposal,description,note,extension,
+        actualStartDate, actualEndDate,
+      */
+
       //修改
-      console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log("点击修改按钮：");
-          const that = this;
-          this.ruleForm.startDate = that.changeDate(this.ruleForm.date[0]);
-          this.ruleForm.endDate = that.changeDate(this.ruleForm.date[1]);
-          let time = that.changeDate(this.ruleForm.productDate);
-          let productId;
-
-          let range;
-          this.seriesOpt.forEach(element => {
-            if (element.name === this.ruleForm.rangeName) {
-              range = element.rangeId;
-            }
-          });
-          let list = {
-            id: this.ruleForm.planId,
-            name: this.ruleForm.planName,
-            projectType: this.ruleForm.projectType,
-            quantity: this.ruleForm.quantity,
-            productId: productId,
-            productDate: time,
-            productDateType: this.ruleForm.productDateType,
-            startDate: this.ruleForm.startDate,
-            endDate: this.ruleForm.endDate,
-            proposal: this.ruleForm.planPropose,
-            description: this.ruleForm.planDescribe,
-            note: this.ruleForm.note
+          var param = {
+            id: this.ruleForm.id,
+            creatorId: this.ruleForm.creatorId,
+            rootPlanId: this.ruleForm.rootPlanId,
+            name: this.ruleForm.name,
+            productLine: this.ruleForm.productLine,
+            product: this.ruleForm.product,
+            cycle: this.ruleForm.cycle,
+            startDate: this.changeDate(this.ruleForm.startEndDate[0]),
+            endDate: this.changeDate(this.ruleForm.startEndDate[1]),
+            proposal: this.ruleForm.proposal,
+            description: this.ruleForm.description,
+            note: this.ruleForm.note,
+            extension: this.changeDate(this.ruleForm.extension),
+            actualStartDate: this.changeDate(
+              this.ruleForm.actualStartEndDate[0]
+            ),
+            actualEndDate: this.changeDate(this.ruleForm.actualStartEndDate[1])
           };
 
-          console.log(list);
+          console.log("修改参数：", param);
 
-          that.$axios
-            .post(`${window.$config.HOST}/planManagement/updatePlan`, list)
+          request
+            .put(`${window.$config.HOST}/plan/update`, param)
             .then(response => {
-              if (response.data < 0) {
-                console.log(
-                  "修改失败:" +
-                    this.planManagementErrorCode[-response.data - 1].errotInfo
-                );
-                this.$message.error(
-                  "修改失败:" +
-                    this.planManagementErrorCode[-response.data - 1].errotInfo
-                );
-              } else {
-                this.$message({
-                  type: "success",
-                  message: "修改成功!"
-                });
-
-                this.formData.append("planId", this.ruleForm.planId);
-                that.$axios
-                  .post(
-                    `${window.$config.HOST}/planManagement/addPlanFiles`,
-                    this.formData
-                  )
-                  .then(response => {
-                    console.log(response.data);
-                    let l = [];
-                    if (response.data.length == 0) {
-                      this.$router.push({
-                        name: this.goback,
-                        params: {}
-                      });
-                    } else {
-                      response.data.forEach(element => {
-                        this.uploadResult.push({
-                          result: element
-                        });
-                      });
-                      this.fileOperationDialogVisible = true;
-                    }
-                  })
-                  .catch(error => {});
-                // this.$router.push({
-                //   name: this.goback,
-                //   params: {}
-                // });
-              }
-            })
-            .catch(error => {
-              this.$message({
-                message: "访问数据库失败！",
-                type: "warning"
+              console.log("修改成功");
+              this.$router.push({
+                name: this.goback,
+                params: {}
               });
             });
         } else {
           this.$message({
-            message: "修改计划失败!",
+            message: "修改计划失败：请填入必要信息",
             type: "error"
           });
         }
@@ -1456,49 +1415,70 @@ export default {
       const that = this;
 
       console.log("路由参数：", that.$route.params);
-      let data = that.$route.params;
-      // console.log(data.dateStart)
 
-      that.goback = data.goback; //goback 为返回页面的 name
+      if (Object.getOwnPropertyNames(that.$route.params).length != 0) {
+        let data = that.$route.params;
+        // console.log(data.dateStart)
 
-      if (data.isCreate) {
-        that.isRootPlanFlag = false;
-        that.isModifyPlanFlag = data.isModify;
-        that.isCreatePlanFlag = data.isCreate;
-      } else {
-        that.isRootPlanFlag = data.isRoot;
-        that.isModifyPlanFlag = data.isModify;
-        that.isCreatePlanFlag = data.isCreate;
-      }
+        that.goback = data.goback; //goback 为返回页面的 name
 
-      that.ruleForm = data.rowData;
+        if (data.isCreate) {
+          that.isRootPlanFlag = false;
+          that.isModifyPlanFlag = data.isModify;
+          that.isCreatePlanFlag = data.isCreate;
+        } else {
+          that.isRootPlanFlag = data.isRoot;
+          that.isModifyPlanFlag = data.isModify;
+          that.isCreatePlanFlag = data.isCreate;
+        }
 
-      that.placeHolders.startStr = that.ruleForm.startDate;
-      that.placeHolders.endStr = that.ruleForm.endDate;
+        that.ruleForm = data.rowData;
 
-      that.placeHolders.actaulStartStr =
-        that.ruleForm.actualStartDate === undefined
-          ? that.placeHolders.actualStartStr
-          : that.ruleForm.actualStartDate;
-      that.placeHolders.actualEndStr =
-        that.ruleForm.actualEndDate === undefined
-          ? that.placeHolders.actualEndStr
-          : that.ruleForm.actualEndDate;
+        // that.ruleForm.startEndDate = [
+        //   that.ruleForm.startDate,
+        //   that.ruleForm.endDate
+        // ];
 
-      // 处理是添加子计划时相关属性更改的操作
-      if (that.isCreatePlanFlag) {
-        that.ruleForm.type = data.rowData.assignPlanType;
-        that.ruleForm.superiorId = data.isRoot ? 0 : data.rowData.id;
-        that.ruleForm.superiorName = data.rowData.name;
+        // that.ruleForm.actualStartEndDate = [
+        //   that.ruleForm.actualStartDate,
+        //   that.ruleForm.actualEndDate
+        // ];
 
-        that.ruleForm.rootPlanName =
-          data.rowData.rootPlanName === undefined
-            ? data.rowData.name
-            : data.rowData.rootPlanName;
-        that.ruleForm.rootPlanId =
-          data.rowData.rootPlanId === undefined
-            ? data.rowData.id
-            : data.rowData.rootPlanId;
+        that.placeHolders.startStr = that.ruleForm.startDate;
+        that.placeHolders.endStr = that.ruleForm.endDate;
+
+        that.placeHolders.actualStartStr =
+          that.ruleForm.actualStartDate === undefined
+            ? that.placeHolders.actualStartStr
+            : that.ruleForm.actualStartDate;
+        that.placeHolders.actualEndStr =
+          that.ruleForm.actualEndDate === undefined
+            ? that.placeHolders.actualEndStr
+            : that.ruleForm.actualEndDate;
+
+        // 处理是添加子计划时相关属性更改的操作
+        if (that.isCreatePlanFlag) {
+          // that.ruleForm.name = "";
+          // that.ruleForm.cycle = "";
+          // that.ruleForm.product = "";
+          // that.ruleForm.productLine = "";
+          // that.ruleForm.extension = "";
+          // that.ruleForm.proposal = "";
+          // that.ruleForm.description = "";
+          // that.ruleForm.note = "";
+          that.ruleForm.type = data.rowData.assignPlanType;
+          that.ruleForm.superiorId = data.isRoot ? 0 : data.rowData.id;
+          that.ruleForm.superiorName = data.rowData.name;
+
+          that.ruleForm.rootPlanName =
+            data.rowData.rootPlanName === undefined
+              ? data.rowData.name
+              : data.rowData.rootPlanName;
+          that.ruleForm.rootPlanId =
+            data.rowData.rootPlanId === undefined
+              ? data.rowData.id
+              : data.rowData.rootPlanId;
+        }
       }
     },
 

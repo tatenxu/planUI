@@ -46,7 +46,14 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">服装层次</div>
-            <el-input v-model="searchOptions.searchParams.clothingLevelName" placeholder="请输入内容"></el-input>
+            <el-select v-model="searchOptions.searchParams.clothesLevelName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.clothesLevelNameOptions"
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
       </el-row>
@@ -116,18 +123,17 @@
             ></el-radio>
           </template>
         </el-table-column>
-        <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-        <el-table-column prop="id" v-if="false"></el-table-column>
-        <el-table-column prop="number" label="计划编号" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="rangeNumber" label="系列编号" align="center"></el-table-column>
-        <el-table-column prop="customerName" label="客户名称" align="center"></el-table-column>
+        <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="createrName" label="添加人" align="center"></el-table-column>
+        <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
+        <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
+        <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="serialNo" label="计划编号" align="center"></el-table-column>
+        <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
-        <el-table-column prop="parentName" label="上级计划" align="center"></el-table-column>
+        <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
         <el-table-column prop="state" label="状态" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.isCompleted">已完成</p>
@@ -190,7 +196,7 @@ export default {
         searchParams: {
           customerName: "",
           brandName: "",
-          clothingLevelName: "",
+          clothesLevelName: "",
           seriesName: "",
           planName: "",
           dateRange: ""
@@ -202,7 +208,8 @@ export default {
             { id: 1, name: "款式计划" },
             { id: 2, name: "款式组计划" },
             { id: 3, name: "系列计划" }
-          ]
+          ],
+          clothesLevelNameOptions: []
         }
       },
       totalTableData: [],
@@ -232,6 +239,17 @@ export default {
       .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
         this.searchOptions.options.brandNameOptions = response.result;
+      });
+
+    //服装层级加载
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "服装层次"
+        }
+      })
+      .then(response => {
+        this.searchOptions.options.clothesLevelNameOptions = response.result;
       });
 
     //默认获取已完成计划列表
