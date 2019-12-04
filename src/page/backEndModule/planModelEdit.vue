@@ -147,6 +147,7 @@
 
 
 <script>
+import request from "@/utils/request";
 export default {
   data() {
     return {
@@ -180,6 +181,16 @@ export default {
   },
 
   mounted() {
+    /*
+     * 其他页面跳转到该页面的参数
+     * params: {
+     *     goback: source page name,
+     *     isUpdate: boolean,
+     *     isCreate: boolean,
+     *     isDetail: boolean,
+     *     data: row
+     *   }
+     */
     let data = this.$route.params;
     this.flag = data.flag;
     this.gobackA = data.goback;
@@ -347,35 +358,30 @@ export default {
       console.log(this.data);
     },
     addNode() {
-      
       (this.dialogVisible = true), (this.nodeName = "");
     },
 
     addNode1() {
       this.dialogVisible = false;
-      if (this.data.length === 0 ) {
-
+      if (this.data.length === 0) {
         this.data.push({
           planName: this.nodeName,
           children: []
         });
-       } else{
-         if(this.nowClickName==="") 
-         {
-           this.$message({
-              type: "error",
-              message: "请选择一个节点再点击添加按钮！"
-            });
-         }
-         else  this.preTree(this.data[0], 0);
-       } 
-   
+      } else {
+        if (this.nowClickName === "") {
+          this.$message({
+            type: "error",
+            message: "请选择一个节点再点击添加按钮！"
+          });
+        } else this.preTree(this.data[0], 0);
+      }
     },
 
     preTree(T, flag) {
-      console.log("1",T.planName)
+      console.log("1", T.planName);
       if (T.planName == this.nowClickName) {
-        console.log("2")
+        console.log("2");
         T.children.push({
           planName: this.nodeName,
           children: []

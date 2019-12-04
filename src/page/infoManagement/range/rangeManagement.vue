@@ -39,6 +39,7 @@
               placeholder="请输入系列名称"
               @select="handleSelect"
               style="min-width:260px"
+              clearable
             ></el-autocomplete>
           </div>
         </el-col>
@@ -107,8 +108,6 @@
           <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
           <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="predictStyleQuantity" label="预测款数" align="center"></el-table-column>
-          <el-table-column prop="predictPieceQuantity" label="预测件数" align="center"></el-table-column>
           <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
@@ -118,6 +117,7 @@
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
               <el-button @click="updatePanel(scope.row)" type="text" size="small">修改</el-button>
+              <el-button @click="detailPanel(scope.row)" type="text" size="small">查看</el-button>
               <el-button @click="deleteSeries(scope.row)" type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
@@ -232,6 +232,20 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
+                <el-select v-model="addForm.inputPoint" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in addForm.options.inputPointOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
@@ -286,7 +300,11 @@
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" placeholder="请选择客户名称" prop="clientId">
-              <el-select v-model="updateForm.clientId " @change="updateClientChanged">
+              <el-select
+                v-model="updateForm.clientId "
+                @change="updateClientChanged"
+                :disabled="detailFlag===true"
+              >
                 <el-option
                   v-for="item in updateForm.options.clientOption"
                   :key="item.id"
@@ -298,7 +316,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandId">
-              <el-select v-model="updateForm.brandId ">
+              <el-select v-model="updateForm.brandId " :disabled="detailFlag===true">
                 <el-option
                   v-for="item in updateForm.options.brandOptions"
                   :key="item.id"
@@ -310,14 +328,19 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
-              <el-input v-model="updateForm.name" clearable placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.name"
+                clearable
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="服装层次" prop="clothesLevelName">
-              <el-select v-model="updateForm.clothesLevelName ">
+              <el-select v-model="updateForm.clothesLevelName " :disabled="detailFlag===true">
                 <el-option
                   v-for="item in updateForm.options.clothesLevelOptions"
                   :key="item.id"
@@ -329,7 +352,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="季节" prop="season">
-              <el-select v-model="updateForm.season ">
+              <el-select v-model="updateForm.season " :disabled="detailFlag===true">
                 <el-option
                   v-for="item in updateForm.options.seasonOptions"
                   :key="item.name"
@@ -341,14 +364,23 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="系统编码" prop="systemCode">
-              <el-input v-model="updateForm.systemCode" clearable placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.systemCode"
+                clearable
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="项目类型" prop="projectType">
-              <el-select v-model="updateForm.projectType" @change="updateProjectTypeChanged">
+              <el-select
+                v-model="updateForm.projectType"
+                @change="updateProjectTypeChanged"
+                :disabled="detailFlag===true"
+              >
                 <el-option
                   v-for="item in updateForm.options.projectTypeOptions"
                   :key="item.id"
@@ -360,7 +392,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="订单阶段" prop="orderStage">
-              <el-select v-model="updateForm.orderStage ">
+              <el-select v-model="updateForm.orderStage " :disabled="detailFlag===true">
                 <el-option
                   v-for="item in updateForm.options.orderStageOptions"
                   :key="item.id"
@@ -370,35 +402,80 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
+                <el-select
+                  v-model="updateForm.inputPoint"
+                  clearable
+                  placeholder="请选择"
+                  :disabled="detailFlag===true"
+                >
+                  <el-option
+                    v-for="item in updateForm.options.inputPointOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="预测款数" prop="predictStyleQuantity">
-              <el-input v-model="updateForm.predictStyleQuantity" clearable placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.predictStyleQuantity"
+                clearable
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="预测件数" prop="predictPieceQuantity">
-              <el-input v-model="updateForm.predictPieceQuantity" clearable placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.predictPieceQuantity"
+                clearable
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="实际款数" prop="styleQuantity">
-              <el-input v-model="updateForm.styleQuantity" clearable placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.styleQuantity"
+                clearable
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="实际件数" prop="pieceQuantity">
-              <el-input v-model="updateForm.pieceQuantity" clearable placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.pieceQuantity"
+                clearable
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
             <el-form-item label="系列备注">
-              <el-input v-model="updateForm.note" type="textarea" :rows="3" placeholder="请输入"></el-input>
+              <el-input
+                v-model="updateForm.note"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入"
+                :disabled="detailFlag===true"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -433,8 +510,11 @@ export default {
         clothesLevelName: {}
       },
 
+      //查看和修改区别标记字段
+      detailFlag: false,
+
       //表格数据
-      tableData: "",
+      tableData: [],
       multipleSelection: [],
 
       //添加系列部分
@@ -447,6 +527,7 @@ export default {
         season: "",
         systemCode: "",
         projectType: "",
+        inputPoint: "",
         orderStage: "",
         predictStyleQuantity: "",
         predictPieceQuantity: "",
@@ -459,6 +540,7 @@ export default {
           clothingLevelOptions: {},
           projectTypeOptions: {},
           orderStageOptions: {},
+          inputPointOptions: {},
           seasonOptions: [
             {
               name: "春"
@@ -478,6 +560,9 @@ export default {
       addRules: {
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        inputPoint: [
+          { required: true, message: "请选择投入点", trigger: "change" }
         ],
         season: [{ required: true, message: "请选择季节", trigger: "change" }],
         systemCode: [
@@ -514,6 +599,7 @@ export default {
         id: "",
         clientId: "",
         brandId: "",
+        inputPoint: "",
         name: "",
         clothesLevelName: "",
         season: "",
@@ -528,6 +614,7 @@ export default {
         options: {
           clientOptions: {},
           brandOptions: {},
+          inputPointOptions: {},
           clothingLevelOptions: {},
           projectTypeOptions: {},
           orderStageOptions: {},
@@ -550,6 +637,9 @@ export default {
       updateRules: {
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        inputPoint: [
+          { required: true, message: "请选择投入点", trigger: "change" }
         ],
         season: [{ required: true, message: "请选择季节", trigger: "change" }],
         systemCode: [
@@ -593,9 +683,21 @@ export default {
   created: function() {
     var that = this;
     //获得品牌名字
-    request.get(`/backstage/brand/find`).then(response => {
+    request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
     });
+
+    //获得投入点
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "投入点"
+        }
+      })
+      .then(response => {
+        this.addForm.options.inputPointOptions = response.result;
+        this.updateForm.options.inputPointOptions = response.result;
+      });
 
     //获得项目类型
     request.get(`/backstage/project-type/find`).then(response => {
@@ -604,7 +706,7 @@ export default {
     });
 
     //获得顾客名称
-    request.get(`/backstage/client/find`).then(response => {
+    request.get(`/backstage/client/name`).then(response => {
       this.searchOptions.clientOption = response.result;
       this.addForm.options.clientOption = response.result;
       this.updateForm.options.clientOption = response.result;
@@ -650,6 +752,7 @@ export default {
       .then(response => {
         this.tableData = response.result;
         this.pagination.total = response.total;
+        this.pagination.currentPage = 1;
       });
   },
 
@@ -798,6 +901,7 @@ export default {
       this.addForm.systemCode = "";
       this.addForm.projectType = "";
       this.addForm.orderStage = "";
+      this.addForm.inputPoint = "";
       this.addForm.predictStyleQuantity = "";
       this.addForm.predictPieceQuantity = "";
       this.addForm.styleQuantity = "";
@@ -866,13 +970,54 @@ export default {
         })
         .then(response => {
           this.updateForm.options.brandOptions = response.result;
+          request
+            .get(`/backstage/order-stage/name`, {
+              params: {
+                projectTypeName: row.projectType
+              }
+            })
+            .then(response => {
+              this.updateForm.id = row.id;
+              // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
+              this.updateForm.clientId = parseInt(row.clientId);
+              this.updateForm.brandId = parseInt(row.brandId);
+              this.updateForm.name = row.name;
+              this.updateForm.projectType = row.projectType;
+              this.updateForm.orderStage = parseInt(row.orderStage);
+              this.updateForm.inputPoint = row.inputPoint;
+              this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
+              this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
+              this.updateForm.styleQuantity = row.styleQuantity;
+              this.updateForm.pieceQuantity = row.pieceQuantity;
+              this.updateForm.clothesLevelName = row.clothesLevelName;
+              this.updateForm.season = row.season;
+              this.updateForm.systemCode = row.systemCode;
+              this.updateForm.note = row.note;
+              this.detailFlag = false;
+              this.updatePanelFlag = true;
+              this.updateForm.options.orderStageOptions = response.result;
+            });
+        });
+    },
+
+    // 显示修改系列的面板
+    detailPanel(row) {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: row.clientId
+          }
+        })
+        .then(response => {
+          this.updateForm.options.brandOptions = response.result;
           this.updateForm.id = row.id;
           // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
           this.updateForm.clientId = parseInt(row.clientId);
           this.updateForm.brandId = parseInt(row.brandId);
           this.updateForm.name = row.name;
           this.updateForm.projectType = row.projectType;
-          this.updateForm.orderStage = row.orderStage;
+          this.updateForm.orderStage = parseInt(row.orderStage);
+          this.updateForm.inputPoint = row.inputPoint;
           this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
           this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
           this.updateForm.styleQuantity = row.styleQuantity;
@@ -881,6 +1026,7 @@ export default {
           this.updateForm.season = row.season;
           this.updateForm.systemCode = row.systemCode;
           this.updateForm.note = row.note;
+          this.detailFlag = true;
           this.updatePanelFlag = true;
         });
     },
@@ -929,6 +1075,7 @@ export default {
               systemCode: this.addForm.systemCode,
               projectType: this.addForm.projectType,
               orderStage: this.addForm.orderStage,
+              inputPoint: this.addForm.inputPoint,
               predictStyleQuantity: this.addForm.predictStyleQuantity,
               predictPieceQuantity: this.addForm.predictPieceQuantity,
               styleQuantity:
@@ -970,6 +1117,7 @@ export default {
               systemCode: this.updateForm.systemCode,
               projectType: this.updateForm.projectType,
               orderStage: this.updateForm.orderStage,
+              inputPoint: this.updateForm.inputPoint,
               predictStyleQuantity: this.updateForm.predictStyleQuantity,
               predictPieceQuantity: this.updateForm.predictPieceQuantity,
               styleQuantity:
@@ -1004,6 +1152,7 @@ export default {
       this.addForm.systemCode = "";
       this.addForm.projectType = "";
       this.addForm.orderStage = "";
+      this.addForm.inputPoint = "";
       this.addForm.predictStyleQuantity = "";
       this.addForm.predictPieceQuantity = "";
       this.addForm.styleQuantity = "";
@@ -1025,6 +1174,7 @@ export default {
       this.updateForm.note = "";
       this.updateForm.projectType = "";
       this.updateForm.orderStage = "";
+      this.updateForm.inputPoint = "";
       this.updateForm.predictStyleQuantity = "";
       this.updateForm.predictPieceQuantity = "";
       this.updateForm.styleQuantity = "";

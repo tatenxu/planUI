@@ -15,8 +15,6 @@ const styleGroupManagement = r => require.ensure([], () => r(require('../page/in
 
 // 款式管理
 const styleManagement = r => require.ensure([], () => r(require('../page/infoManagement/style/styleManagement.vue')), 'styleManagement');
-
-const bindStyleGroup = r => require.ensure([], () => r(require('../page/infoManagement/style/bindStyleGroup.vue')), 'bindStyleGroup');
 const styleImport = r => require.ensure([], () => r(require('../page/infoManagement/style/styleImport.vue')), 'styleImport');
 
 // 计划管理
@@ -154,15 +152,6 @@ export default [
         component: styleManagement,
         meta: {
           bcrumd: ['款式管理'],
-        }
-      },
-
-      {
-        path: '/style/bindStyleGroup',
-        name: 'bindStyleGroup',
-        component: bindStyleGroup,
-        meta: {
-          bcrumd: ['款式管理', '导入款式'],
         }
       },
       {
