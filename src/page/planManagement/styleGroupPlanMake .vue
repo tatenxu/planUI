@@ -158,25 +158,6 @@
                   </el-form-item>
                 </div>
               </el-col>
-              <el-col :span="8">
-                <div class="bar">
-                  <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
-                    <el-select
-                      v-model="rootPlanMake.inputPoint"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:260px"
-                    >
-                      <el-option
-                        v-for="item in rootPlanMake.options.inputPointOptions"
-                        :key="item.name"
-                        :label="item.name"
-                        :value="item.name"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="10">
@@ -269,14 +250,13 @@ export default {
       rootPlanMakeFlag: false,
       rootPlanMake: {
         planMakeStartEndDate: "",
-        inputPoint: "",
+
         seriesId: "",
         objectId: "",
         name: "",
         dateType: "",
         date: "",
         options: {
-          inputPointOptions: {},
           dateTypeOptions: {}
         }
       },
@@ -284,9 +264,7 @@ export default {
         planMakeStartEndDate: [
           { required: true, message: "请选择起止时间", trigger: "change" }
         ],
-        inputPoint: [
-          { required: true, message: "请选择投入点", trigger: "change" }
-        ],
+
         name: [{ required: true, message: "请输入根计划名", trigger: "blur" }],
         dateType: [
           { required: true, message: "请选择日期类型", trigger: "change" }
@@ -340,16 +318,6 @@ export default {
 
   created: function() {
     var that = this;
-    //获得投入点
-    request
-      .get(`/backstage/dic-property/name`, {
-        params: {
-          categoryName: "投入点"
-        }
-      })
-      .then(response => {
-        this.rootPlanMake.options.inputPointOptions = response.result;
-      });
     //获得日期类型
     request
       .get(`/backstage/dic-property/name`, {
@@ -472,7 +440,7 @@ export default {
               this.rootPlanMakeFlag = false;
               this.viewname = "first";
               this.rootPlanMake.planMakeStartEndDate = "";
-              this.rootPlanMake.inputPoint = "";
+
               this.rootPlanMake.name = "";
               this.rootPlanMake.dateType = "";
               this.rootPlanMake.date = "";
@@ -495,7 +463,7 @@ export default {
       this.rootPlanMakeFlag = false;
       this.viewname = "first";
       this.rootPlanMake.planMakeStartEndDate = "";
-      this.rootPlanMake.inputPoint = "";
+
       this.rootPlanMake.name = "";
       this.rootPlanMake.dateType = "";
       this.rootPlanMake.date = "";
@@ -565,7 +533,7 @@ export default {
     },
     ToPlanForm(row) {
       this.rootPlanMake.planMakeStartEndDate = "";
-      this.rootPlanMake.inputPoint = "";
+
       this.rootPlanMake.seriesId = row.seriesId;
       this.rootPlanMake.objectId = row.id;
       this.rootPlanMake.name = "";

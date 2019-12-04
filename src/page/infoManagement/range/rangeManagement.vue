@@ -232,6 +232,20 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
+                <el-select v-model="addForm.inputPoint" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in addForm.options.inputPointOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
@@ -388,6 +402,25 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
+                <el-select
+                  v-model="updateForm.inputPoint"
+                  clearable
+                  placeholder="请选择"
+                  :disabled="detailFlag===true"
+                >
+                  <el-option
+                    v-for="item in updateForm.options.inputPointOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
@@ -494,6 +527,7 @@ export default {
         season: "",
         systemCode: "",
         projectType: "",
+        inputPoint: "",
         orderStage: "",
         predictStyleQuantity: "",
         predictPieceQuantity: "",
@@ -506,6 +540,7 @@ export default {
           clothingLevelOptions: {},
           projectTypeOptions: {},
           orderStageOptions: {},
+          inputPointOptions: {},
           seasonOptions: [
             {
               name: "春"
@@ -525,6 +560,9 @@ export default {
       addRules: {
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        inputPoint: [
+          { required: true, message: "请选择投入点", trigger: "change" }
         ],
         season: [{ required: true, message: "请选择季节", trigger: "change" }],
         systemCode: [
@@ -561,6 +599,7 @@ export default {
         id: "",
         clientId: "",
         brandId: "",
+        inputPoint: "",
         name: "",
         clothesLevelName: "",
         season: "",
@@ -575,6 +614,7 @@ export default {
         options: {
           clientOptions: {},
           brandOptions: {},
+          inputPointOptions: {},
           clothingLevelOptions: {},
           projectTypeOptions: {},
           orderStageOptions: {},
@@ -597,6 +637,9 @@ export default {
       updateRules: {
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        inputPoint: [
+          { required: true, message: "请选择投入点", trigger: "change" }
         ],
         season: [{ required: true, message: "请选择季节", trigger: "change" }],
         systemCode: [
@@ -643,6 +686,18 @@ export default {
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
     });
+
+    //获得投入点
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "投入点"
+        }
+      })
+      .then(response => {
+        this.addForm.options.inputPointOptions = response.result;
+        this.updateForm.options.inputPointOptions = response.result;
+      });
 
     //获得项目类型
     request.get(`/backstage/project-type/find`).then(response => {
@@ -846,6 +901,7 @@ export default {
       this.addForm.systemCode = "";
       this.addForm.projectType = "";
       this.addForm.orderStage = "";
+      this.addForm.inputPoint = "";
       this.addForm.predictStyleQuantity = "";
       this.addForm.predictPieceQuantity = "";
       this.addForm.styleQuantity = "";
@@ -914,23 +970,33 @@ export default {
         })
         .then(response => {
           this.updateForm.options.brandOptions = response.result;
-          this.updateForm.id = row.id;
-          // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
-          this.updateForm.clientId = parseInt(row.clientId);
-          this.updateForm.brandId = parseInt(row.brandId);
-          this.updateForm.name = row.name;
-          this.updateForm.projectType = row.projectType;
-          this.updateForm.orderStage = row.orderStage;
-          this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
-          this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
-          this.updateForm.styleQuantity = row.styleQuantity;
-          this.updateForm.pieceQuantity = row.pieceQuantity;
-          this.updateForm.clothesLevelName = row.clothesLevelName;
-          this.updateForm.season = row.season;
-          this.updateForm.systemCode = row.systemCode;
-          this.updateForm.note = row.note;
-          this.detailFlag = true;
-          this.updatePanelFlag = true;
+          request
+            .get(`/backstage/order-stage/name`, {
+              params: {
+                projectTypeName: row.projectType
+              }
+            })
+            .then(response => {
+              this.updateForm.id = row.id;
+              // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
+              this.updateForm.clientId = parseInt(row.clientId);
+              this.updateForm.brandId = parseInt(row.brandId);
+              this.updateForm.name = row.name;
+              this.updateForm.projectType = row.projectType;
+              this.updateForm.orderStage = parseInt(row.orderStage);
+              this.updateForm.inputPoint = row.inputPoint;
+              this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
+              this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
+              this.updateForm.styleQuantity = row.styleQuantity;
+              this.updateForm.pieceQuantity = row.pieceQuantity;
+              this.updateForm.clothesLevelName = row.clothesLevelName;
+              this.updateForm.season = row.season;
+              this.updateForm.systemCode = row.systemCode;
+              this.updateForm.note = row.note;
+              this.detailFlag = false;
+              this.updatePanelFlag = true;
+              this.updateForm.options.orderStageOptions = response.result;
+            });
         });
     },
 
@@ -950,7 +1016,8 @@ export default {
           this.updateForm.brandId = parseInt(row.brandId);
           this.updateForm.name = row.name;
           this.updateForm.projectType = row.projectType;
-          this.updateForm.orderStage = row.orderStage;
+          this.updateForm.orderStage = parseInt(row.orderStage);
+          this.updateForm.inputPoint = row.inputPoint;
           this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
           this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
           this.updateForm.styleQuantity = row.styleQuantity;
@@ -1008,6 +1075,7 @@ export default {
               systemCode: this.addForm.systemCode,
               projectType: this.addForm.projectType,
               orderStage: this.addForm.orderStage,
+              inputPoint: this.addForm.inputPoint,
               predictStyleQuantity: this.addForm.predictStyleQuantity,
               predictPieceQuantity: this.addForm.predictPieceQuantity,
               styleQuantity:
@@ -1049,6 +1117,7 @@ export default {
               systemCode: this.updateForm.systemCode,
               projectType: this.updateForm.projectType,
               orderStage: this.updateForm.orderStage,
+              inputPoint: this.updateForm.inputPoint,
               predictStyleQuantity: this.updateForm.predictStyleQuantity,
               predictPieceQuantity: this.updateForm.predictPieceQuantity,
               styleQuantity:
@@ -1083,6 +1152,7 @@ export default {
       this.addForm.systemCode = "";
       this.addForm.projectType = "";
       this.addForm.orderStage = "";
+      this.addForm.inputPoint = "";
       this.addForm.predictStyleQuantity = "";
       this.addForm.predictPieceQuantity = "";
       this.addForm.styleQuantity = "";
@@ -1104,6 +1174,7 @@ export default {
       this.updateForm.note = "";
       this.updateForm.projectType = "";
       this.updateForm.orderStage = "";
+      this.updateForm.inputPoint = "";
       this.updateForm.predictStyleQuantity = "";
       this.updateForm.predictPieceQuantity = "";
       this.updateForm.styleQuantity = "";

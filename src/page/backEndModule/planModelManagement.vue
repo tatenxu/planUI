@@ -5,12 +5,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="customer" clearable style="min-width:260px">
+            <el-select v-model="clientId" clearable style="min-width:260px">
               <el-option
-                v-for="item in customerNameOptions"
+                v-for="item in searchOptions.clientOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -19,12 +19,12 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="brand" clearable style="min-width:260px">
+            <el-select v-model="brandId" clearable style="min-width:260px">
               <el-option
-                v-for="item in brandNameOptions"
+                v-for="item in searchOptions.brandOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -34,7 +34,7 @@
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
-              v-model="dateStart"
+              v-model="dateRange"
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -76,40 +76,27 @@
                 <el-button type="primary" @click="addTemplate">添加模板</el-button>
               </div>
             </el-col>
-
-            <el-col :span="11">
-              <div class="grid-content bg-purple"></div>
-            </el-col>
-
-            <!-- <el-col :span="2">
-              <div class="grid-content bg-purple">
-                <el-button type="primary">新建模板</el-button>
-              </div>
-            </el-col>-->
           </el-row>
         </el-header>
-
         <el-main>
           <div>
             <el-table
               ref="multipleTable"
-              :data="modelDisplayData"
+              :data="tableData"
               tooltip-effect="dark"
               style="width: 100%"
+              border
               @selection-change="handleSelectionChange"
             >
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column type="index" label="序号" width="50">
-                <!-- <template slot-scope="scope">{{ scope.row.date }}</template> -->
-              </el-table-column>
-              <!-- <el-table-column prop="id" label="模板编号" width="120"></el-table-column> -->
-              <el-table-column prop="name" label="模板名称" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="customerName" label="客户名称" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="brandName" label="品牌" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="createrName" label="添加人" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="publicName" label="是否通用" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="createTime" label="添加时间" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column label="操作" show-overflow-tooltip>
+              <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+              <el-table-column prop="name" label="模板名称" width="120" align="center"></el-table-column>
+              <el-table-column prop="clientName" label="客户名称" width="120" align="center"></el-table-column>
+              <el-table-column prop="brandName" label="品牌名称" width="120" align="center"></el-table-column>
+              <el-table-column prop="creatorName" label="添加人" width="120" align="center"></el-table-column>
+              <el-table-column prop="publicUseFlag" label="是否通用" width="120" align="center"></el-table-column>
+              <el-table-column prop="createTime" label="添加时间" width="220" align="center"></el-table-column>
+              <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
                   <el-button type="text" size="small" @click="ViewModel(scope.row)">查看</el-button>
                   <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
@@ -127,110 +114,56 @@
 
 
 <script>
+import request from "@/utils/request";
 export default {
-  name:'planModelManagement',
+  name: "planModelManagement",
   data() {
     return {
-      customer: "",
-      brand: "",
-      clothingLevel: "",
-      modelType: "",
-      modelName: "",
-      dateStart: "",
-      modelDisplayData: [
+      //搜索部分参数
+      clientId: "",
+      brandId: "",
+      dateRange: "",
 
-      ],
-      customerNameOptions: [
-       
-      ],
-      brandNameOptions: [
-      
-      ],
-     
-     
-
-
+      searchOptions: {
+        clientOptions: [],
+        brandOptions: []
+      },
+      //表格数据
+      tableData: [],
       multipleSelection: []
     };
   },
   created: function() {
-    var that = this;
     //获得品牌名字
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName `, {
-        customerId: ""
-      })
-      .then(response => {
-        console.log("获得品牌信息成功了");
-        this.brandNameOptions = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取品牌信息失败",
-          type: "error"
-        });
-      });
-
-   
+    request.get(`/backstage/brand/name`).then(response => {
+      this.searchOptions.brandOptions = response.result;
+    });
 
     //获得顾客名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
-      .then(response => {
-        console.log(response.data);
-        this.customerNameOptions = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取顾客信息失败",
-          type: "error"
-        });
+    request.get(`/backstage/client/name`).then(response => {
+      this.searchOptions.clientOptions = response.result;
+    });
+
+    //获取初始搜索信息
+    request.get(`/plan-template/find`).then(response => {
+      this.tableData = response.result;
+      this.tableData.forEach(element => {
+        if (element.publicUse === true) element.publicUseFlag = "是";
+        else element.publicUseFlag = "否";
       });
-     
-
-
-
-    this.$axios
-      .get(`${window.$config.HOST}/planManagement/getPlanTemplate`)
-      .then(response => {
-        this.modelDisplayData = response.data;
-        this.modelDisplayData.forEach(element=>{
-          if(element.public) element.publicName="是"
-          else element.publicName="否"
-        })
-      })
-      .catch(error => {
-        this.$message({
-          message: "搜索失败！",
-          type: "error"
-        });
-      });
+    });
   },
-  // computed:{
-  //   keepAlives:{
-  //     get(){
-  //       return this.$store.getters['baseinfo/keepAliveOptions'];
-  //     },
-  //     set(value){
-  //       return this.$store.commit('baseinfo/keepalive-opt-arr', value);
-  //     }
-  //   }
-  // },
-  // beforeRouteLeave(to, from, next) {
-  //   if (to.name === 'bePlanModelEdit') {
-  //     this.keepAlives = ['planModelManagement',];
-  //   } else {
-  //     this.keepAlives = [];
-  //   }
-  //   next();
-  // },
+
   methods: {
     addTemplate() {
       this.$router.push({
         name: "bePlanModelEdit",
         params: {
-          flag: 1,
-          goback:'bePlanModelManagement',
+          isCreate: true,
+          isUpdate: false,
+          isDetail: false,
+          data: row,
+          goback: "bePlanModelManagement"
         }
       });
     },
@@ -250,248 +183,154 @@ export default {
       }
     },
     searchModelList() {
-      let list = {
-        customerName: this.customer===""?undefined: this.customer,
-        brandName: this.brand===""?undefined: this.brand,
-        startDate: this.changeDate(this.dateStart?this.dateStart[0]:undefined),
-        endDate: this.changeDate(this.dateStart?this.dateStart[1]:undefined)
-      };
-
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getPlanTemplate`, {
-          params: list
+      request
+        .get(`/plan-template/find`, {
+          params: {
+            clientId: this.clientId === "" ? undefined : this.clientId,
+            brandId: this.brandId === "" ? undefined : this.brandId,
+            createAfter: this.changeDate(
+              this.dateRange ? this.dateRange[0] : undefined
+            ),
+            createBefore: this.changeDate(
+              this.dateRange ? this.dateRange[1] : undefined
+            )
+          }
         })
         .then(response => {
-          this.modelDisplayData = response.data;
-           this.modelDisplayData.forEach(element=>{
-          if(element.public) element.publicName="是"
-          else element.publicName="否"
-        })
-        })
-        .catch(error => {
-          this.$message({
-            message: "搜索失败！",
-            type: "error"
+          this.tableData = response.result;
+          this.tableData.forEach(element => {
+            if (element.publicUse === true) element.publicUseFlag = "是";
+            else element.publicUseFlag = "否";
           });
         });
-
-      console.log(list);
     },
+    //查看模板
     ViewModel(row) {
-      console.log("model tree:", row);
       this.$router.push({
         name: "bePlanModelEdit",
         params: {
-          flag: 2,
-          id: row.id,
-          name: row.name,
-          customerName: row.customerName,
-          brandName: row.brandName,
-          tree: row.tree,
-          goback:'bePlanModelManagement'
+          isCreate: false,
+          isUpdate: false,
+          isDetail: true,
+          data: row,
+          goback: "bePlanModelManagement"
         }
       });
     },
-
+    //编辑模板
     handleEdit(row) {
-      console.log("model id:", row.id);
       this.$router.push({
         name: "bePlanModelEdit",
         params: {
-          flag: 3,
-          id: row.id,
-          name: row.name,
-          customerName: row.customerName,
-          brandName: row.brandName,
-          tree: row.tree,
-          goback:'bePlanModelManagement'
+          isCreate: false,
+          isUpdate: true,
+          isDetail: false,
+          data: row,
+          goback: "bePlanModelManagement"
         }
       });
     },
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
+    //表格选中
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
+    //设为通用
     handleSetUniverseClick() {
       if (this.multipleSelection.length === 0) {
         this.$message({
           message: "请选择一个模板!",
           type: "warning"
         });
-        return;
-      }
-      this.$confirm("是否确认将所选模板设为通用?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-
-          
-      //       this.multipleSelection.forEach(element=>{
-      //   if(element.public === true)
-      //   {
-      //       this.$message({
-      //     message: "请选择私有模板设置为通用!",
-      //     type: "warning"
-      //   });
-      //           return ;
-      //   }
-      // })
-          this.multipleSelection.forEach(element => {
-            this.$axios
-              .post(
-                `${window.$config.HOST}/planManagement/changePlanTemplateState `,
-                {
-                  id: element.id,
-                  public: true
-                }
-              )
-              .then(response => {
-                if (response.data > 0) {
-                  this.searchModelList(),
-                  this.$message({
-                    message: "设置成功!",
-                    type: "success"
-                  });
-                } else {
-                  this.$message({
-                    message: "设置失败!",
-                    type: "error"
-                  });
-                }
-              })
-              .catch(error => {
-                this.$message({
-                  message: "搜索失败！",
-                  type: "error"
-                });
-              });
-          });
-        })
-        .catch(() => {
-          this.$message({
-            message: "取消设置!",
-            type: "info"
-          });
+      } else {
+        let allPrivate = 0;
+        this.multipleSelection.forEach(element => {
+          if (element.publicUse != false) {
+            allPrivate = 1;
+            this.$message({
+              message: "请仅选择现状态为私有的模板!",
+              type: "error"
+            });
+            return;
+          }
         });
-      // console.log(confirm("是否确认将所选模板设为通用?"));
+        if (allPrivate === 0) {
+          this.$confirm("是否将所选模板的权限设为通用！", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+            .then(() => {
+              request.put(
+                `/plan-template/authority`,
+
+                this.multipleSelection
+              );
+            })
+            .catch(() => {
+              this.$message({
+                message: "取消设置!",
+                type: "info"
+              });
+            });
+        }
+      }
     },
+
+    //设为私有
     handleSetPrivateClick() {
       if (this.multipleSelection.length === 0) {
         this.$message({
           message: "请选择一个模板!",
           type: "warning"
         });
-        return;
-      }
+      } else {
+        let allPrivate = 0;
+        this.multipleSelection.forEach(element => {
+          if (element.publicUse != true) {
+            allPrivate = 1;
+            this.$message({
+              message: "请仅选择现状态为通用的模板!",
+              type: "error"
+            });
+            return;
+          }
+        });
+        if (allPrivate === 0) {
+          this.$confirm("是否将所选模板的权限设为私有！", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+            .then(() => {
+              request.put(
+                `/plan-template/authority`,
 
-
-      this.$confirm("是否确认将所选模板设为私有?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          
-      // this.multipleSelection.forEach(element=>{
-      //   if(element.public === false)
-      //   {
-      //       this.$message({
-      //     message: "请选择通用模板设置为私有!",
-      //     type: "warning"
-      //   });
-      //           return ; 
-      //   }
-      // })
-          this.multipleSelection.forEach(element=>{
-             this.$axios
-            .post(
-              `${window.$config.HOST}/planManagement/changePlanTemplateState `,
-              {
-                id: element.id,
-                public: false
-              }
-            )
-            .then(response => {
-              if (response.data > 0) {
-                this.searchModelList(),
-                this.$message({
-                  message: "设置成功!",
-                  type: "success"
-                });
-              } else {
-                this.$message({
-                  message: "设置失败!",
-                  type: "error"
-                });
-              }
+                this.multipleSelection
+              );
             })
-            .catch(error => {
+            .catch(() => {
               this.$message({
-                message: "搜索失败！",
-                type: "error"
+                message: "取消设置!",
+                type: "info"
               });
             });
-          })
-          
-        })
-        .catch(() => {
-          this.$message({
-            message: "取消设置!",
-            type: "info"
-          });
-        });
-      // console.log(confirm("是否确认将所选模板设为私有?"));
+        }
+      }
     },
+    //删除模板
     handleDeleteModelClick(row) {
       const that = this;
-      // console.log("点击了本行的删除");
-      // console.log("当前row=", row);
-      var thisIndex = row.modelCode;
-      this.$confirm("是否确认删除该系列？", "提示", {
+      this.$confirm("是否确认删除该模板？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$axios
-            .delete(
-              `${window.$config.HOST}/planManagement/deletePlanTemplate`,
-              {
-                params: {
-                  id: row.id
-                }
-              }
-            )
-            .then(response => {
-              if (response.data > 0) {
-                this.searchModelList(),
-                this.$message({
-                  message: "删除成功！",
-                  type: "success"
-                });
-              } else {
-                this.$message({
-                  message: "删除失败！",
-                  type: "error"
-                });
-              }
-            })
-            .catch(error => {
-              this.$message({
-                message: "删除遇到未知错误！",
-                type: "error"
-              });
-            });
+          request.delete("/plan-template/delete", {
+            params: {
+              id: row.id
+            }
+          });
         })
         .catch(() => {
           this.$message({
