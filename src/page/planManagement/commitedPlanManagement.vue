@@ -194,20 +194,21 @@ export default {
       },
       searchOptions: {
         searchParams: {
-          customerName: "",
-          brandName: "",
-          clothesLevelName: "",
-          seriesName: "",
-          planName: "",
-          dateRange: ""
+          customerName: undefined,
+          brandName: undefined,
+          clothesLevelName: undefined,
+          planClassNmae: undefined,
+          seriesName: undefined,
+          planName: undefined,
+          dateRange: undefined
         },
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
           planClassOptions: [
-            { id: 1, name: "款式计划" },
-            { id: 2, name: "款式组计划" },
-            { id: 3, name: "系列计划" }
+            { label: "STYLE", name: "款式计划" },
+            { label: "GROUP", name: "款式组计划" },
+            { label: "SERIES", name: "系列计划" }
           ],
           clothesLevelNameOptions: []
         }
@@ -302,22 +303,10 @@ export default {
     //搜索按钮
     handleSearch() {
       var param = {
-        clientId:
-          this.searchOptions.searchParams.customerName === ""
-            ? undefined
-            : this.searchOptions.searchParams.customerName,
-        brandId:
-          this.searchOptions.searchParams.brandName === ""
-            ? undefined
-            : this.searchOptions.searchParams.brandName,
-        seriesName:
-          this.searchOptions.searchParams.seriesName === ""
-            ? undefined
-            : this.searchOptions.searchParams.seriesName,
-        name:
-          this.searchOptions.searchParams.planName === ""
-            ? undefined
-            : this.searchOptions.searchParams.planName,
+        clientId: this.searchOptions.searchParams.customerName,
+        brandId: this.searchOptions.searchParams.brandName,
+        seriesName: this.searchOptions.searchParams.seriesName,
+        name: this.searchOptions.searchParams.planName,
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]

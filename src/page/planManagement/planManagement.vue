@@ -582,7 +582,6 @@ export default {
         });
     },
     //查看异常--跳转
-    // FIXME: 可能有bug
     toSearchException(row) {
       console.log("查看异常" + row.name);
 
@@ -633,7 +632,6 @@ export default {
     // },
 
     //查看计划详情--跳转
-    // TODO: finish comm to jump
     getPlanDetail(row) {
       var param = {
         goback: "planManagement",
@@ -651,7 +649,6 @@ export default {
       });
     },
     //修改计划详情--跳转
-    // TODO: finish comm to jump
     ModifyPlanDetail(row) {
       var param = {
         goback: "planManagement",
