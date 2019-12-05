@@ -19,9 +19,13 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName" clearable>
+            <el-select
+              v-model="searchOptions.searchParams.clientName"
+              @change="clientNameChange"
+              clearable
+            >
               <el-option
-                v-for="item in searchOptions.options.customerNameOptions"
+                v-for="item in searchOptions.options.clientNameOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -194,7 +198,7 @@ export default {
       },
       searchOptions: {
         searchParams: {
-          customerName: undefined,
+          clientName: undefined,
           brandName: undefined,
           clothesLevelName: undefined,
           planClassName: "STYLE",
@@ -203,7 +207,7 @@ export default {
           dateRange: undefined
         },
         options: {
-          customerNameOptions: [],
+          clientNameOptions: [],
           brandNameOptions: [],
           planClassOptions: [
             { id: "STYLE", name: "款式计划" },
@@ -232,14 +236,7 @@ export default {
     request
       .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
-        this.searchOptions.options.customerNameOptions = response.result;
-      });
-
-    //品牌名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/brand/name`)
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
+        this.searchOptions.options.clientNameOptions = response.result;
       });
 
     //服装层级加载
@@ -268,6 +265,16 @@ export default {
       });
   },
   methods: {
+    clientNameChange() {
+      //品牌名称跟随加载
+      request
+        .get(`${window.$config.HOST}/backstage/brand/name`, {
+          params: { clientId: this.searchOptions.searchParams.clientName }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+        });
+    },
     planTypeSwitchChange() {
       this.pagination.currentPage = 1;
       this.tableData = [];
@@ -304,7 +311,7 @@ export default {
     //搜索按钮
     handleSearch() {
       var param = {
-        clientId: this.searchOptions.searchParams.customerName,
+        clientId: this.searchOptions.searchParams.clientName,
         brandId: this.searchOptions.searchParams.brandName,
         seriesName: this.searchOptions.searchParams.seriesName,
         name: this.searchOptions.searchParams.planName,
@@ -370,7 +377,7 @@ export default {
       var param = {
         flag: 3,
         goback: "commitedPlanManagement",
-        customerName: row.customerName,
+        clientName: row.clientName,
         brandName: row.brandName,
         rangeId: row.rangeId,
         rangeName: row.rangeName,
