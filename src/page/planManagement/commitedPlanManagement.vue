@@ -6,7 +6,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">计划类别</div>
-            <el-select v-model="searchOptions.searchParams.brandName" clearable>
+            <el-select v-model="searchOptions.searchParams.planClassName">
               <el-option
                 v-for="item in searchOptions.options.planClassOptions"
                 :key="item.id"
@@ -197,7 +197,7 @@ export default {
           customerName: undefined,
           brandName: undefined,
           clothesLevelName: undefined,
-          planClassNmae: undefined,
+          planClassName: "STYLE",
           seriesName: undefined,
           planName: undefined,
           dateRange: undefined
@@ -206,9 +206,9 @@ export default {
           customerNameOptions: [],
           brandNameOptions: [],
           planClassOptions: [
-            { label: "STYLE", name: "款式计划" },
-            { label: "GROUP", name: "款式组计划" },
-            { label: "SERIES", name: "系列计划" }
+            { id: "STYLE", name: "款式计划" },
+            { id: "GROUP", name: "款式组计划" },
+            { id: "SERIES", name: "系列计划" }
           ],
           clothesLevelNameOptions: []
         }
@@ -253,10 +253,11 @@ export default {
         this.searchOptions.options.clothesLevelNameOptions = response.result;
       });
 
-    //默认获取已完成计划列表
+    //默认获取已完成系列根计划计划列表
     request
-      .get(`${window.$config.HOST}/plan/find-complete`, {
+      .get(`${window.$config.HOST}/root-plan/find-complete`, {
         params: {
+          planClass: "STYLE",
           pageNum: this.pagination.currentPage,
           pageSize: this.pagination.pageSize
         }
@@ -307,6 +308,7 @@ export default {
         brandId: this.searchOptions.searchParams.brandName,
         seriesName: this.searchOptions.searchParams.seriesName,
         name: this.searchOptions.searchParams.planName,
+        planClass: this.searchOptions.searchParams.planClassNmae,
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]
@@ -322,14 +324,25 @@ export default {
       };
 
       console.log("搜索参数：", param);
-      request
-        .get(`${window.$config.HOST}/plan/find-complete`, {
-          params: param
-        })
-        .then(response => {
-          this.tableData = response.result;
-          this.pagination.total = response.total;
-        });
+      if (this.isRootPlan) {
+        request
+          .get(`${window.$config.HOST}/root-plan/find-complete`, {
+            params: param
+          })
+          .then(response => {
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/find-complete`, {
+            params: param
+          })
+          .then(response => {
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+          });
+      }
     },
     getTemplateRow(index, row) {
       this.selectedData = row;
