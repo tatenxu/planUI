@@ -194,11 +194,25 @@ export default {
           seriesStateMaps: {
             wanjie: "订单完结",
             yunxing: "订单运行"
+          },
+          timeLineMaps: {
+            quannian: "全年投放计划",
+            xiasanyue: "下三月投放计划",
+            benyue: "当月投放计划",
+            xiazhou: "下周投放计划",
+            benzhou: "本周投放计划"
+          },
+          deliverStateMaps: {
+            quannian: "全年交付计划",
+            xiasanyue: "下三月交付计划",
+            benyue: "当月交付计划",
+            xiazhou: "下周交付计划",
+            benzhou: "本周交付计划"
           }
         }
       },
 
-      originGetData: {},
+      originSeriesGetData: {},
       tasks: [],
       options: {}
     };
@@ -425,9 +439,9 @@ export default {
           params: param
         })
         .then(response => {
-          this.originGetData = response.result;
           this.tasks = [];
-          // console.log(response.data);
+          this.originSeriesGetData = [];
+
           response.result.forEach(element => {
             if (
               (this.searchOptions.searchParams.planStateName === "" ||
@@ -455,12 +469,22 @@ export default {
                 element.parentId = element.superiorId;
               }
 
+              element.startTimeLine = this.searchOptions.maps.timeLineMaps[
+                this.searchOptions.searchParams.timeLineName
+              ];
+              element.endTimeLine = this.searchOptions.maps.deliverStateMaps[
+                this.searchOptions.searchParams.deliverStateName
+              ];
+
               if (!(element.startDate === null || element.endDate === null)) {
                 var dateObj1 = new Date(element.startDate);
                 var dateObj2 = new Date(element.endDate);
                 element.start = dateObj1.getTime();
                 element.duration = dateObj2.getTime() - dateObj1.getTime();
                 this.tasks.push(element);
+              } else {
+                // 不显示的系列
+                this.originSeriesGetData.push(element);
               }
             }
           });
@@ -469,23 +493,51 @@ export default {
 
     exportExcel() {
       import("@/utils/Export2Excel").then(excel => {
-        const tHeader = ["Id", "Title", "Author", "Readings", "Date"];
+        const tHeader = [
+          "系统编码",
+          "项目类型",
+          "订单阶段",
+          "预测款数",
+          "预测件数",
+          "实际款数",
+          "实际件数",
+          "投入点",
+          "计划开始",
+          "计划完成",
+          "异常",
+          "客户延误",
+          "实际开始",
+          "协商延迟",
+          "实际出清",
+          "计划状态",
+          "系列状态",
+          "TIMELINE远近",
+          "交付远近",
+          "系列更新提醒"
+        ];
         const filterVal = [
-          "id",
-          "title",
-          "author",
-          "pageviews",
-          "display_time"
+          "systemCode",
+          "projectType",
+          "orderStage",
+          "predictStyleQuantity",
+          "predictPieceQuantity",
+          "styleQuantity",
+          "pieceQuantity",
+          "inputPoint",
+          "startDate",
+          "endDate",
+          "exceptionContent",
+          "clientDelay",
+          "actualStartDate",
+          "extension",
+          "actualEndDate",
+          "planState",
+          "seriesState",
+          "startTimeLine",
+          "endTimeLine",
+          "seriesRemind"
         ];
-        const list = [
-          {
-            id: 1,
-            title: "afa",
-            author: "adfads",
-            pageviews: 56,
-            display_time: "2017-02-05"
-          }
-        ];
+        const list = this.originSeriesGetData.concat(this.tasks);
         const data = this.formatJson(filterVal, list);
         excel.export_json_to_excel({
           header: tHeader,
