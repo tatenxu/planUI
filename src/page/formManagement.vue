@@ -104,7 +104,11 @@
           </div>
         </el-col>
 
-        <el-col :span="2" :offset="3">
+        <el-col :span="2" :offset="2">
+          <el-button type="primary" @click="exportExcel">导出</el-button>
+        </el-col>
+
+        <el-col :span="2">
           <el-button type="primary" @click="handleSearch">搜索</el-button>
         </el-col>
       </el-row>
@@ -244,7 +248,7 @@ export default {
       },
       calendar: {
         hour: {
-          display: true
+          display: false
         }
       },
       chart: {
@@ -270,17 +274,6 @@ export default {
             events: {
               click({ data, column }) {
                 console.log(data.name, "尝试跳转");
-                // if (data.isRoot) {
-                //   that.$router.push({
-                //     name: "subGantt",
-                //     params: { rangePlanid: data.id }
-                //   });
-                // } else {
-                //   that.$message({
-                //     message: data.name + "不是根计划",
-                //     type: "info"
-                //   });
-                // }
               }
             }
           },
@@ -472,6 +465,37 @@ export default {
             }
           });
         });
+    },
+
+    exportExcel() {
+      import("@/utils/Export2Excel").then(excel => {
+        const tHeader = ["Id", "Title", "Author", "Readings", "Date"];
+        const filterVal = [
+          "id",
+          "title",
+          "author",
+          "pageviews",
+          "display_time"
+        ];
+        const list = [
+          {
+            id: 1,
+            title: "afa",
+            author: "adfads",
+            pageviews: 56,
+            display_time: "2017-02-05"
+          }
+        ];
+        const data = this.formatJson(filterVal, list);
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename
+        });
+      });
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   },
   computed: {
