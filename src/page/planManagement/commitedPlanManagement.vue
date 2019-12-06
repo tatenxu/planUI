@@ -138,23 +138,7 @@
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center">
-          <template slot-scope="scope">
-            <p v-if="scope.row.isCompleted">已完成</p>
-            <p v-else>未完成</p>
-          </template>
-        </el-table-column>
-        <el-table-column label="异常状态" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="ToSearchException(scope.row)"
-              type="text"
-              size="small"
-              v-if="scope.row.haveException"
-            >有异常，查看</el-button>
-            <p v-else>无异常</p>
-          </template>
-        </el-table-column>
+
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
@@ -375,32 +359,15 @@ export default {
 
     getPlanDetail(row) {
       var param = {
-        flag: 3,
         goback: "commitedPlanManagement",
-        clientName: row.clientName,
-        brandName: row.brandName,
-        rangeId: row.rangeId,
-        rangeName: row.rangeName,
-        topPlanId: row.parentId,
-        topPlanName: row.parentName ? row.parentName : "根计划",
-        planId: row.id,
-        planType: row.type,
-        planObjectName: row.planObject,
-        planObjectId: row.planObjectId,
-        planName: row.name,
-        projectType: row.projectType,
-        quantity: row.quantity,
-        dateStart: row.startDate,
-        dateEnd: row.endDate,
-        productDate: row.productDate,
-        productDateType: row.productDateType,
-        planProductId: row.productId,
-        planPropose: row.proposal,
-        note: row.note,
-        planDescribe: row.description,
-        files: row.files
+        isRoot: this.isRootPlan,
+        isModify: false,
+        isCreate: false,
+        rowData: row
       };
-      console.log(param);
+      console.log("跳转参数：", param);
+
+      this.isCacheFlag = true;
       this.$router.push({
         name: "planMakeIndex",
         params: param

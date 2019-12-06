@@ -194,6 +194,7 @@ export default {
         }
       },
 
+      originGetData: {},
       tasks: [],
       options: {}
     };
@@ -431,6 +432,7 @@ export default {
           params: param
         })
         .then(response => {
+          this.originGetData = response.result;
           this.tasks = [];
           // console.log(response.data);
           response.result.forEach(element => {
@@ -444,14 +446,13 @@ export default {
                   this.searchOptions.searchParams.seriesStateName
                 ] === element.seriesState)
             ) {
-              if (!element.haveException) {
-                element.style = {
-                  base: {
-                    fill: "GREEN",
-                    stroke: "YELLOW"
-                  }
-                };
-              }
+              element.style = {
+                base: {
+                  fill: element.colorCode,
+                  stroke: "YELLOW"
+                }
+              };
+
               element.type = "task";
 
               if (element.superiorId === 0) {
@@ -461,12 +462,13 @@ export default {
                 element.parentId = element.superiorId;
               }
 
-              var dateObj1 = new Date(element.startDate);
-              var dateObj2 = new Date(element.endDate);
-              element.start = dateObj1.getTime();
-              element.duration = dateObj2.getTime() - dateObj1.getTime();
-
-              this.tasks.push(element);
+              if (!(element.startDate === null || element.endDate === null)) {
+                var dateObj1 = new Date(element.startDate);
+                var dateObj2 = new Date(element.endDate);
+                element.start = dateObj1.getTime();
+                element.duration = dateObj2.getTime() - dateObj1.getTime();
+                this.tasks.push(element);
+              }
             }
           });
         });

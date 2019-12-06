@@ -930,7 +930,7 @@
       <!-- 悬浮按钮 -->
       <float-icons class="icons-warp">
         <!-- <div> -->
-        <el-button icon="el-icon-arrow-up" @click="ganttDrawerVisible = true" type="primary">甘特图</el-button>
+        <el-button icon="el-icon-arrow-up" @click="ganttVisualButtonClick" type="primary">甘特图</el-button>
         <!-- </div> -->
       </float-icons>
       <!-- 抽屉 -->
@@ -939,8 +939,8 @@
           <gantt-elastic
             :options="ganttOptions"
             :tasks="ganttTasks"
-            @tasks-updated="tasksUpdate"
-            @options-updated="optionsUpdate"
+            @tasks-updated="ganttTaskUpdate"
+            @options-updated="ganttOptionsUpdate"
           >
             <gantt-header slot="header"></gantt-header>
           </gantt-elastic>
@@ -993,7 +993,6 @@ export default {
         pickerOptions0: {
           disabledDate: time => {
             var date = new Date();
-            console.log(date.toLocaleDateString());
             return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
           }
         }
@@ -1066,9 +1065,76 @@ export default {
       fileOperationDialogVisible: false,
 
       // 甘特图
+      ganttWatch: {
+        ganttWatchPlanNameOrigin: "",
+        ganttWatchPlanStartDateOrigin: "",
+        ganttWatchPlanEndDateOrigin: ""
+      },
       ganttDrawerVisible: false,
       ganttTasks: [],
-      ganttOptions: {}
+      ganttOptions: {
+        taskMapping: {
+          progress: "quantity"
+        },
+        maxRows: 100,
+        maxHeight: 500,
+        title: {
+          label: "系列计划时间表",
+          html: false
+        },
+        row: {
+          height: 24
+        },
+        calendar: {
+          hour: {
+            display: false
+          }
+        },
+        chart: {
+          progress: {
+            bar: false
+          },
+          expander: {
+            display: true
+          }
+        },
+        taskList: {
+          expander: {
+            straight: false
+          },
+          columns: [
+            {
+              id: 1,
+              label: "计划名称",
+              value: "name",
+              width: 150,
+              expander: true,
+              html: true,
+              events: {
+                click({ data, column }) {
+                  console.log(data.id + "尝试跳转");
+                }
+              }
+            },
+            {
+              id: 2,
+              label: "创建人",
+              value: "creatorName",
+              width: 80,
+              html: true
+            }
+          ]
+        },
+        locale: {
+          name: "en",
+          Now: "回到现在",
+          "X-Scale": "X-放大",
+          "Y-Scale": "Y-放大",
+          "Task list width": "侧边栏缩放",
+          "Before/After": "放大",
+          "Display task list": "侧边栏"
+        }
+      }
     };
   },
 
@@ -1090,10 +1156,14 @@ export default {
     // 获得产品线下拉框
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
       that.chooseOptions.productLineOptions = response.result;
-      console.log("产品线：", this.chooseOptions.productLineOptions);
     });
+  },
+  mounted() {
+    let that = this;
+    that.init();
+
     // gantt related
-    function getDate(hours) {
+    function ganttGetDate(hours) {
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
       const currentMonth = currentDate.getMonth();
@@ -1108,152 +1178,44 @@ export default {
       ).getTime();
       return new Date(timeStamp + hours * 60 * 60 * 1000).getTime();
     }
-    this.ganttOptions = {
-      taskMapping: {
-        progress: "quantity"
-      },
-      maxRows: 100,
-      maxHeight: 500,
-      title: {
-        label: "系列计划时间表",
-        html: false
-      },
-      row: {
-        height: 24
-      },
-      calendar: {
-        hour: {
-          display: true
+    request
+      .get(`${window.$config.HOST}/root-plan/find-gantt`, {
+        params: {
+          id: this.isRootPlanFlag ? this.ruleForm.id : this.ruleForm.rootPlanId
         }
-      },
-      chart: {
-        progress: {
-          bar: false
-        },
-        expander: {
-          display: true
-        }
-      },
-      taskList: {
-        expander: {
-          straight: false
-        },
-        columns: [
-          {
-            id: 1,
-            label: "系列计划",
-            value: "name",
-            width: 150,
-            expander: true,
-            html: true,
-            events: {
-              click({ data, column }) {
-                console.log(data.id + "尝试跳转");
-                if (data.isRoot) {
-                  that.$router.push({
-                    name: "subGantt",
-                    params: { rangePlanid: data.id }
-                  });
-                } else {
-                  this.$message({
-                    message: data.name + "不是根计划",
-                    type: "info"
-                  });
-                }
-              }
+      })
+      .then(response => {
+        this.ganttTasks = [];
+        // console.log(response.data);
+        response.result.forEach(element => {
+          element.style = {
+            base: {
+              fill: element.colorCode,
+              stroke: "YELLOW"
             }
-          },
-          {
-            id: 2,
-            label: "创建人",
-            value: "createrName",
-            width: 80,
-            html: true
-          },
-          {
-            id: 3,
-            label: "开始日期",
-            // value: task => dayjs(task.start).format("YYYY-MM-DD"),
-            value: "startDate",
-            width: 78
-          },
-          {
-            id: 4,
-            label: "结束日期",
-            // value: task => dayjs(task.start).format("YYYY-MM-DD"),
-            value: "endDate",
-            width: 78
-          },
-          {
-            id: 5,
-            label: "项目类型",
-            value: "projectType",
-            width: 70
-          },
-          {
-            id: 6,
-            label: "数量",
-            value: "quantity",
-            width: 50
+          };
+
+          element.type = "task";
+
+          if (element.id === 0) {
+            element.parentId = undefined;
+            element.callaped = true;
+          } else {
+            element.parentId = element.superiorId;
           }
-        ]
-      },
-      locale: {
-        name: "en",
-        Now: "回到现在",
-        "X-Scale": "X-放大",
-        "Y-Scale": "Y-放大",
-        "Task list width": "侧边栏缩放",
-        "Before/After": "放大",
-        "Display task list": "侧边栏"
-      }
-    };
-    this.ganttTasks = [
-      {
-        id: 1,
-        label: "Make some noise",
-        user:
-          '<a href="https://www.google.com/search?q=John+Doe" target="_blank" style="color:#0077c0;">John Doe</a>',
-        start: getDate(-24 * 5),
-        duration: 15 * 24 * 60 * 60 * 1000,
-        percent: 85,
-        type: "project"
-        //collapsed: true,
-      },
-      {
-        id: 2,
-        label: "With great power comes great responsibility",
-        user:
-          '<a href="https://www.google.com/search?q=Peter+Parker" target="_blank" style="color:#0077c0;">Peter Parker</a>',
-        parentId: 1,
-        start: getDate(-24 * 4),
-        duration: 4 * 24 * 60 * 60 * 1000,
-        percent: 50,
-        type: "milestone",
-        collapsed: true,
-        style: {
-          base: {
-            fill: "#1EBC61",
-            stroke: "#0EAC51"
+
+          if (!(element.startDate === null || element.endDate === null)) {
+            var dateObj1 = new Date(element.startDate);
+            var dateObj2 = new Date(element.endDate);
+            element.start = dateObj1.getTime();
+            element.duration = dateObj2.getTime() - dateObj1.getTime();
+            this.ganttTasks.push(element);
           }
-        }
-      },
-      {
-        id: 3,
-        label: "Courage is being scared to death, but saddling up anyway.",
-        user:
-          '<a href="https://www.google.com/search?q=John+Wayne" target="_blank" style="color:#0077c0;">John Wayne</a>',
-        parentId: 2,
-        start: getDate(-24 * 3),
-        duration: 2 * 24 * 60 * 60 * 1000,
-        percent: 100,
-        type: "task"
-      }
-    ];
-  },
-  mounted() {
-    let that = this;
-    that.init();
+        });
+      })
+      .catch(error => {
+        console.log("错误的根计划id");
+      });
   },
 
   methods: {
@@ -1303,7 +1265,6 @@ export default {
             }
             i = i + 1;
           });
-          console.log("删除后: ", this.uploadFileNameList);
         })
         .catch(error => {});
     },
@@ -1517,7 +1478,13 @@ export default {
           that.isCreatePlanFlag = data.isCreate;
         }
 
-        that.ruleForm = data.rowData;
+        // 深拷贝变量，不然只是引用
+        that.ruleForm = JSON.parse(JSON.stringify(data.rowData));
+
+        // 甘特图监控变量
+        that.ganttWatch.ganttWatchPlanNameOrigin = that.ruleForm.name;
+        that.ganttWatch.ganttWatchPlanStartDateOrigin = that.ruleForm.startDate;
+        that.ganttWatch.ganttWatchPlanEndDateOrigin = that.ruleForm.endDate;
 
         // that.ruleForm.startEndDate = [
         //   that.ruleForm.startDate,
@@ -1549,7 +1516,6 @@ export default {
           .then(response => {
             response.result.forEach(ele => {
               that.uploadFileNameList.push({ fileName: ele });
-              console.log(that.uploadFileNameList);
             });
           });
 
@@ -1557,27 +1523,64 @@ export default {
         if (that.isCreatePlanFlag) {
           that.ruleForm.name = "";
 
-          that.ruleForm.type = data.rowData.assignPlanType;
-          that.ruleForm.superiorId = data.isRoot ? 0 : data.rowData.id;
-          that.ruleForm.superiorName = data.rowData.name;
+          that.ruleForm.type = that.ruleForm.assignPlanType;
+          that.ruleForm.superiorId = data.isRoot ? 0 : that.ruleForm.id;
+          that.ruleForm.superiorName = that.ruleForm.name;
 
           that.ruleForm.rootPlanName =
-            data.rowData.rootPlanName === undefined
-              ? data.rowData.name
-              : data.rowData.rootPlanName;
+            that.ruleForm.rootPlanName === undefined
+              ? that.ruleForm.name
+              : that.ruleForm.rootPlanName;
           that.ruleForm.rootPlanId =
-            data.rowData.rootPlanId === undefined
-              ? data.rowData.id
-              : data.rowData.rootPlanId;
+            that.ruleForm.rootPlanId === undefined
+              ? that.ruleForm.id
+              : that.ruleForm.rootPlanId;
         }
       }
     },
 
     // gantt related
-    tasksUpdate(tasks) {
+    ganttVisualButtonClick() {
+      if (
+        !(
+          this.ganttWatch.ganttWatchPlanNameOrigin === this.ruleForm.name &&
+          this.ruleForm.startEndDate === undefined
+        )
+      ) {
+        // 有更新
+        this.ganttTasks.forEach(ele => {
+          if (
+            ele.id === this.ruleForm.id ||
+            (this.isRootPlanFlag && ele.id === 0)
+          ) {
+            // 是当前ele,普通计划不可能为0
+            ele.name = this.ruleForm.name;
+            ele.startDate =
+              this.ruleForm.startEndDate === undefined
+                ? this.ruleForm.startDate
+                : this.changeDate(this.ruleForm.startEndDate[0]);
+            ele.endDate =
+              this.ruleForm.startEndDate === undefined
+                ? this.ruleForm.endDate
+                : this.changeDate(this.ruleForm.startEndDate[1]);
+
+            var dateObj1 = new Date(ele.startDate);
+            var dateObj2 = new Date(ele.endDate);
+            ele.start = dateObj1.getTime();
+            ele.duration = dateObj2.getTime() - dateObj1.getTime();
+
+            console.log(ele.start, ele.duration);
+          }
+        });
+        this.ganttTaskUpdate(this.ganttTasks);
+      }
+
+      this.ganttDrawerVisible = true;
+    },
+    ganttTaskUpdate(tasks) {
       this.ganttTasks = tasks;
     },
-    optionsUpdate(options) {
+    ganttOptionsUpdate(options) {
       this.ganttOptions = options;
     }
   }
