@@ -5,42 +5,25 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-input
-              v-if="flag===2"
-              v-model="client"
-              clearable
-              :disabled="true"
-              :rows="1"
-              placeholder
-            ></el-input>
-            <el-select v-model="client" clearable v-else>
+            <el-select v-model="clientId" clearable :disabled="isDetail">
               <el-option
-                v-for="item in clientNameOptions"
+                v-for="item in options.clientOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
         </el-col>
-
         <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-input
-              v-if="flag===2"
-              v-model="brand"
-              clearable
-              :disabled="true"
-              :rows="1"
-              placeholder
-            ></el-input>
-            <el-select v-else v-model="brand" clearable>
+            <el-select v-model="brandId" clearable :disabled="isDetail">
               <el-option
-                v-for="item in brandNameOptions"
+                v-for="item in options.brandOptions"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -49,51 +32,38 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">模板名称</div>
-            <el-input
-              v-if="flag===2"
-              v-model="modelName"
-              clearable
-              :disabled="true"
-              :rows="1"
-              placeholder
-            ></el-input>
-            <el-input v-else v-model="modelName" clearable :rows="1" placeholder></el-input>
+            <el-input :disabled="isDetail" v-model="name" clearable :rows="1" placeholder></el-input>
           </div>
         </el-col>
-        <!-- <el-col :span="2">
-          <div class="bar">
-            <el-button type="primary">搜索</el-button>
-          </div>
-        </el-col>-->
       </el-row>
     </el-card>
 
     <el-card class="box-card">
       <el-row :gutter="20">
-        <el-col :span="3">
+        <el-col :span="3" v-if="!isDetail">
           <div class="bar">
-            <el-button type="primary" @click="addNode" v-if="flag!=2">添加一个结点</el-button>
+            <el-button type="primary" @click="addOneNode">添加一个结点</el-button>
           </div>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="3" v-if="isCreate">
           <div class="bar">
-            <el-button type="primary" @click="addTemplate" v-if="flag===1">保存</el-button>
+            <el-button type="primary" @click="saveTemplate">保存</el-button>
+          </div>
+        </el-col>
+
+        <el-col :span="3" v-if="isUpdate">
+          <div class="bar">
+            <el-button type="primary" @click="updateTemplate">更新</el-button>
           </div>
         </el-col>
 
         <el-col :span="3">
           <div class="bar">
-            <el-button type="primary" @click="updateTemplate" v-if="flag===3">更新</el-button>
+            <el-button type="primary" @click="gobackPage">返回</el-button>
           </div>
         </el-col>
 
-        <el-col :span="3">
-          <div class="bar">
-            <el-button type="primary" @click="goback" v-if="flag===2">返回</el-button>
-          </div>
-        </el-col>
-
-        <el-col :span="8">
+        <el-col :span="8" v-if="!isDetail">
           <div class="bar">
             <div class="title" style="font-size:14px;color:red">注意：只能保留一个根节点,否则会保存失败！</div>
           </div>
@@ -121,7 +91,7 @@
         @click="() => append(data)"
       ></el-tree>
 
-      <el-dialog :modal="false" title="添加结点" :visible.sync="dialogVisible" width="30%">
+      <el-dialog :modal="false" title="添加结点" :visible.sync="addNodeFlag" width="30%">
         <el-row :gutter="20">
           <el-col :span="6">
             <div class="bar">
@@ -137,8 +107,8 @@
         </el-row>
 
         <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addNode1">确 定</el-button>
+          <el-button type="primary" @click="addNodeFlag = false">取 消</el-button>
+          <el-button type="primary" @click="addNode">确 定</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -151,28 +121,27 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      nowClickName: "",
-      gobackA: "",
-      flag: 0,
+      //页面标识
+      isUpdate: false,
+      isCreate: false,
+      isDetail: false,
+      goback: "",
+
+      //属性参数
       id: "",
+      clientId: "",
+      brandId: "",
+      name: "",
+      options: {
+        clientOptions: {},
+        brandOptions: {}
+      },
+
+      //添加节点弹窗
+      addNodeFlag: false,
+      nowClickName: "", //用于新增节点的时候作为父节点标记
+      data: [], //树数据
       nodeName: "",
-      dialogVisible: false,
-      modelName: "",
-      client: "",
-      brand: "",
-      brandNameOptions: [
-        {
-          id: 12,
-          name: "324441"
-        }
-      ],
-      clientNameOptions: [
-        {
-          id: 1,
-          name: "321"
-        }
-      ],
-      data: [],
       defaultProps: {
         children: "children",
         label: "planName"
@@ -191,178 +160,96 @@ export default {
      *     data: row
      *   }
      */
+
     let data = this.$route.params;
-    this.flag = data.flag;
-    this.gobackA = data.goback;
+    console.log("data:", data);
+    this.isUpdate = data.isUpdate;
+    this.isCreate = data.isCreate;
+    this.isDetail = data.isDetail;
+    this.goback = data.goback;
 
-    console.log("data", data);
-
-    if (this.flag === 2) {
-      //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
-      (this.data = []), this.data.push(data.tree);
-      console.log("this.data", this.data);
-
-      (this.client = data.customerName),
-        (this.brand = data.brandName),
-        (this.modelName = data.name);
-    } else if (this.flag === 3) {
-      //flag为1时候，添加！ flag为2的时候查看！flag为3的时候，更新
-      (this.data = []),
-        (this.id = data.id),
-        (this.client = data.customerName),
-        (this.brand = data.brandName),
-        (this.modelName = data.name),
-        this.data.push(data.tree);
+    if (this.isUpdate || this.isDetail) {
+      this.id = data.data.id;
+      this.clientId = parseInt(data.data.clientId);
+      this.brandId = parseInt(data.data.brandId);
+      this.name = data.data.name;
+      this.data.push(data.data.templateTree);
     }
   },
 
   created: function() {
     var that = this;
     //获得品牌名字
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getBrandName `, {
-        customerId: ""
-      })
-      .then(response => {
-        console.log("获得品牌信息成功了");
-        this.brandNameOptions = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取品牌信息失败",
-          type: "error"
-        });
-      });
-
-    //获得顾客名称
-    that.$axios
-      .get(`${window.$config.HOST}/baseInfoManagement/getCustomerName`)
-      .then(response => {
-        console.log("获得顾客信息成功了");
-        this.clientNameOptions = response.data;
-      })
-      .catch(error => {
-        this.$message({
-          message: "获取顾客信息失败",
-          type: "error"
-        });
-      });
+    request.get(`/backstage/brand/name`).then(response => {
+      this.options.brandOptions = response.result;
+    });
+    //获得客户名称
+    request.get(`/backstage/client/name`).then(response => {
+      this.options.clientOptions = response.result;
+    });
   },
   methods: {
     handleCheck(data, node) {
       this.nowClickName = data.planName;
     },
-
-    goback() {
+    gobackPage() {
       this.$router.push({
-        name: this.gobackA,
+        name: this.goback,
         params: {}
       });
     },
-    addTemplate() {
+    //添加模板
+    saveTemplate() {
       if (this.data.length > 1) {
         this.$message({
           type: "error",
           message: "只能保留一个根节点，请重试!"
         });
-        retrun;
+        return;
+      } else {
+        request
+          .post(`/plan-template/insert`, {
+            name: this.name,
+            clientId: this.clientId,
+            brandId: this.brandId,
+            templateTree: this.data[0]
+          })
+          .then(response => {
+            this.gobackPage();
+          });
       }
-      let list = {
-        name: this.modelName,
-        customerName: this.client,
-        brandName: this.brand,
-        tree: this.data
-      };
-      console.log(list);
-      this.$axios
-        .post(`${window.$config.HOST}/planManagement/addPlanTemplate `, {
-          name: this.modelName,
-          customerName: this.client,
-          brandName: this.brand,
-          tree: this.data[0]
-        })
-        .then(response => {
-          if (response.data > 0) {
-            this.$message({
-              type: "success",
-              message: "添加成功!"
-            });
-            this.$router.push({
-              name: this.gobackA,
-              params: {}
-            });
-          } else if (response.data === -11) {
-            this.$message({
-              type: "error",
-              message: "该模板与已有模板冲突!"
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: "出现了未知的错误!"
-            });
-          }
-        })
-        .catch(error => {});
     },
 
+    //修改模板
     updateTemplate() {
       if (this.data.length > 1) {
         this.$message({
           type: "error",
           message: "只能保留一个根节点，请重试!"
         });
-        retrun;
+        return;
+      } else {
+        request
+          .put(`/plan-template/update`, {
+            id: this.id,
+            name: this.name,
+            clientId: this.clientId,
+            brandId: this.brandId,
+            templateTree: this.data[0]
+          })
+          .then(response => {
+            this.gobackPage();
+          });
       }
-      let list = {
-        id: this.id,
-        name: this.modelName,
-        customerName: this.client,
-        brandName: this.brand,
-        tree: this.data
-      };
-      console.log(list);
-      this.$axios
-        .post(`${window.$config.HOST}/planManagement/updatePlanTemplate `, {
-          id: this.id,
-          name: this.modelName,
-          customerName: this.client,
-          brandName: this.brand,
-          tree: this.data[0]
-        })
-        .then(response => {
-          if (response.data > 0) {
-            this.$message({
-              type: "success",
-              message: "添加成功!"
-            });
-            this.$router.push({
-              name: this.gobackA,
-              params: {}
-            });
-          } else if (response.data === -1) {
-            this.$message({
-              type: "error",
-              message: "属性有缺失!"
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: "出现了未知的错误!"
-            });
-          }
-        })
-        .catch(error => {});
     },
-    saveTree() {
-      console.log(this.data);
+    //添加节点唤出弹窗
+    addOneNode() {
+      this.addNodeFlag = true;
+      this.nodeName = "";
     },
+    //添加节点
     addNode() {
-      (this.dialogVisible = true), (this.nodeName = "");
-    },
-
-    addNode1() {
-      this.dialogVisible = false;
+      this.addNodeFlag = false;
       if (this.data.length === 0) {
         this.data.push({
           planName: this.nodeName,
@@ -378,21 +265,24 @@ export default {
       }
     },
 
+    //遍历树
     preTree(T, flag) {
-      console.log("1", T.planName);
+      if (flag === 1) {
+        return flag;
+      }
       if (T.planName == this.nowClickName) {
-        console.log("2");
         T.children.push({
           planName: this.nodeName,
           children: []
         });
-        flag = 1;
-        return flag;
+        return 1;
       } else {
         T.children.forEach(child => {
-          flag = this.preTree(child, flag);
+          flag = this.preTree(child);
+          if (flag === 1) return flag;
         });
       }
+      return flag;
     },
 
     handleDragStart(node, ev) {

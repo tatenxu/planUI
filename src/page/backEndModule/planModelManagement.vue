@@ -90,11 +90,11 @@
             >
               <el-table-column type="selection" width="55"></el-table-column>
               <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-              <el-table-column prop="name" label="模板名称" width="120" align="center"></el-table-column>
-              <el-table-column prop="clientName" label="客户名称" width="120" align="center"></el-table-column>
-              <el-table-column prop="brandName" label="品牌名称" width="120" align="center"></el-table-column>
+              <el-table-column prop="name" label="模板名称" width="250" align="center"></el-table-column>
+              <el-table-column prop="clientName" label="客户名称" width="180" align="center"></el-table-column>
+              <el-table-column prop="brandName" label="品牌名称" width="180" align="center"></el-table-column>
               <el-table-column prop="creatorName" label="添加人" width="120" align="center"></el-table-column>
-              <el-table-column prop="publicUseFlag" label="是否通用" width="120" align="center"></el-table-column>
+              <el-table-column prop="publicUseFlag" label="是否通用" width="100" align="center"></el-table-column>
               <el-table-column prop="createTime" label="添加时间" width="220" align="center"></el-table-column>
               <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
@@ -162,7 +162,7 @@ export default {
           isCreate: true,
           isUpdate: false,
           isDetail: false,
-          data: row,
+          data: [],
           goback: "bePlanModelManagement"
         }
       });
@@ -260,11 +260,18 @@ export default {
             type: "warning"
           })
             .then(() => {
-              request.put(
-                `/plan-template/authority`,
-
-                this.multipleSelection
-              );
+              let templateList = [];
+              this.multipleSelection.forEach(element => {
+                templateList.push({
+                  id: element.id,
+                  publicUse: !element.publicUse
+                });
+              });
+              request
+                .put(`/plan-template/authority`, templateList)
+                .then(response => {
+                  this.searchModelList();
+                });
             })
             .catch(() => {
               this.$message({
@@ -302,11 +309,18 @@ export default {
             type: "warning"
           })
             .then(() => {
-              request.put(
-                `/plan-template/authority`,
-
-                this.multipleSelection
-              );
+              let templateList = [];
+              this.multipleSelection.forEach(element => {
+                templateList.push({
+                  id: element.id,
+                  publicUse: !element.publicUse
+                });
+              });
+              request
+                .put(`/plan-template/authority`, templateList)
+                .then(response => {
+                  this.searchModelList();
+                });
             })
             .catch(() => {
               this.$message({
@@ -326,11 +340,15 @@ export default {
         type: "warning"
       })
         .then(() => {
-          request.delete("/plan-template/delete", {
-            params: {
-              id: row.id
-            }
-          });
+          request
+            .delete("/plan-template/delete", {
+              params: {
+                id: row.id
+              }
+            })
+            .then(response => {
+              this.searchModelList();
+            });
         })
         .catch(() => {
           this.$message({

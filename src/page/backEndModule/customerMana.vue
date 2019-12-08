@@ -10,7 +10,6 @@
                   <el-button type="primary" @click="handleNewInfoClick()">新增信息</el-button>
                 </div>
               </el-col>
-
               <el-col :span="2">
                 <div>
                   <el-button type="primary" @click="handleEditInfoClick()">编辑信息</el-button>
@@ -105,15 +104,15 @@
       <el-tab-pane label="编辑客户信息" name="third" v-if="editCardShowFlag">
         <el-card>
           <div class="inputCombine">
-            <span class="inputTag">客户名称:</span>
+            <span class="inputTag">客户名称</span>
             <el-input v-model="editInfoName" class="input" placeholder="请输入客户名称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">客户简称:</span>
+            <span class="inputTag">客户简称</span>
             <el-input v-model="editInfoAbbr" class="input" placeholder="请输入客户简称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">所属业务组:</span>
+            <span class="inputTag">所属业务组</span>
             <el-cascader
               expand-trigger="hover"
               :options="selectionData"
@@ -124,7 +123,7 @@
             ></el-cascader>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">客户描述:</span>
+            <span class="inputTag">客户描述</span>
             <el-input
               class="inputArea"
               type="textarea"
@@ -142,6 +141,272 @@
     </el-tabs>
   </el-card>
 </template>
+
+<script>
+import { error } from "util";
+import request from "@/utils/request";
+export default {
+  data() {
+    return {
+      deptToCascaderProps: {
+        value: "name",
+        label: "name",
+        children: "children"
+      },
+      viewname: "first",
+      searchInput: "",
+      tableData: [],
+      selectionData: [],
+      multipleSelection: [],
+
+      editInfoId: "",
+      editInfoDescription: "",
+      editInfoName: "",
+      editInfoAbbr: "",
+      editInfoGroup: [],
+      editInfoGroupPlaceHolder: "",
+      editIndoInitGroupId: "",
+      tmpeditInfoGroupName: "",
+
+      ruleForm: {
+        addInfoDescription: "",
+        addInfoName: "",
+        addInfoAbbr: "",
+        addInfoGroup: []
+      },
+      rules: {
+        addInfoDescription: [
+          { required: false, message: "请输入客描述", trigger: "blur" }
+        ],
+        addInfoName: [
+          { required: true, message: "请输入客户名称", trigger: "blur" }
+        ],
+        addInfoAbbr: [
+          { required: true, message: "请输入客户简称", trigger: "blur" }
+        ],
+        addInfoGroup: [
+          { required: true, message: "请选择业务组", trigger: "blur" }
+        ]
+      },
+
+      newCardShowFlag: false,
+      editCardShowFlag: false
+    };
+  },
+  created: function() {
+    console.log("进入客户管理");
+    // //获取部门信息
+    this.$axios
+      .get("http://192.168.1.111:8081/dept/find")
+      .then(response => {
+        console.log(response);
+        this.selectionData = response.data.result;
+      })
+      .catch(error => {
+        this.$message.error("部门信息加载失败!");
+        console.log("部门信息加载失败!");
+      });
+
+    //加载默认客户信息
+    request
+      .get("/backstage/client/find", {
+        params: { name: undefined }
+      })
+      .then(response => {
+        this.tableData = response.result;
+      });
+  },
+  methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handleSearchClick(allFlag) {
+      var param = { name: undefined };
+      if (!allFlag) {
+        /* if(this.searchInput === ""){
+            this.$message.error("请输入客户名称");
+            return;
+          } */
+        param = {
+          name: this.searchInput === "" ? undefined : this.searchInput
+        };
+      }
+      console.log("搜索参数" + allFlag);
+      console.log(param);
+      request
+        .get("/backstage/client/find", {
+          params: param
+        })
+        .then(response => {
+          this.tableData = response.result;
+        });
+    },
+    handleNewInfoClick() {
+      this.newCardShowFlag = true;
+      this.viewname = "second";
+      console.log(this.viewname);
+    },
+    handleEditInfoClick() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          message: "请选择一个客户信息",
+          type: "warning"
+        });
+        return;
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          message: "只能选择一个信息进行编辑",
+          type: "warning"
+        });
+        return;
+      }
+      this.editCardShowFlag = true;
+      console.log(this.multipleSelection[0]);
+      this.editInfoId = this.multipleSelection[0].id;
+      this.editInfoName = this.multipleSelection[0].name;
+      this.editInfoAbbr = this.multipleSelection[0].abbreviation;
+
+      this.editInfoGroupPlaceHolder = this.multipleSelection[0].deptName;
+      this.tmpeditInfoGroupName = this.multipleSelection[0].deptName;
+
+      this.editInfoGroup = [this.multipleSelection[0].deptName];
+      this.editIndoInitGroupId = this.multipleSelection[0].groupId;
+      this.editInfoDescription = this.multipleSelection[0].description;
+      this.viewname = "third";
+    },
+    handleDeleteInfoClick() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          message: "至少选择一个客户",
+          type: "warning"
+        });
+        return;
+      } else {
+        this.multipleSelection.forEach(element => {
+          request
+            .delete(`${window.$config.HOST}/backstage/client/delete`, {
+              params: { id: element.id }
+            })
+            .then(response => {
+              var i = this.tableData.indexOf(element);
+              this.tableData.splice(i, 1);
+            });
+        });
+      }
+
+      // this.tableData = this.multipleSelection;
+    },
+    handleNewSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          var param = {
+            name:
+              this.ruleForm.addInfoName === ""
+                ? undefined
+                : this.ruleForm.addInfoName,
+            abbreviation:
+              this.ruleForm.addInfoAbbr === ""
+                ? undefined
+                : this.ruleForm.addInfoAbbr,
+            description:
+              this.ruleForm.addInfoDescription === ""
+                ? undefined
+                : this.ruleForm.addInfoDescription,
+            deptName:
+              this.ruleForm.addInfoGroup.length === 0
+                ? undefined
+                : this.ruleForm.addInfoGroup[
+                    this.ruleForm.addInfoGroup.length - 1
+                  ]
+          };
+          console.log(param);
+          request
+            .post(`${window.$config.HOST}/backstage/client/insert`, param)
+            .then(response => {
+              this.handleSearchClick(true);
+              this.ruleForm.addInfoName = "";
+              this.ruleForm.addInfoAbbr = "";
+              this.ruleForm.addInfoDescription = "";
+              this.ruleForm.addInfoGroup = [];
+              this.newCardShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    handleNewCancelClick() {
+      this.newCardShowFlag = false;
+      this.viewname = "first";
+
+      this.$message({
+        message: "取消新增!",
+        type: "info"
+      });
+      return;
+    },
+    handleEditSaveClick() {
+      var tmpGroupName =
+        this.editInfoGroup === [this.tmpeditInfoGroupName]
+          ? this.tmpeditInfoGroupName
+          : this.editInfoGroup[this.editInfoGroup.length - 1];
+      var param = {
+        id: this.editInfoId === "" ? undefined : this.editInfoId,
+        name: this.editInfoName === "" ? undefined : this.editInfoName,
+        abbreviation: this.editInfoAbbr === "" ? undefined : this.editInfoAbbr,
+        description:
+          this.editInfoDescription === ""
+            ? undefined
+            : this.editInfoDescription,
+        deptName: tmpGroupName === "" ? undefined : tmpGroupName
+      };
+      console.log(param);
+
+      request
+        .put(`${window.$config.HOST}/backstage/client/update`, param)
+        .then(response => {
+          this.handleSearchClick(true);
+
+          this.editInfoId = "";
+          this.editInfoName = "";
+          this.editInfoAbbr = "";
+          this.editInfoGroup = "";
+          this.editIndoInitGroupId = "";
+          this.tmpeditInfoGroupName = "";
+          this.editInfoDescription = "";
+          this.editCardShowFlag = false;
+          this.viewname = "first";
+        });
+    },
+    handleEditCancelClick() {
+      this.editCardShowFlag = false;
+      this.viewname = "first";
+      this.$message({
+        message: "取消编辑!",
+        type: "info"
+      });
+      return;
+    }
+  }
+};
+</script>
+
+
 
 <style lang="less" scoped>
 .box-card {
@@ -195,303 +460,3 @@
 }
 </style>
 
-
-<script>
-import { error } from "util";
-import request from "@/utils/request";
-export default {
-  data() {
-    return {
-      deptToCascaderProps: {
-        value: "name",
-        label: "name",
-        children: "children"
-      },
-      viewname: "first",
-      searchInput: "",
-      tableData: [],
-      selectionData: [],
-      multipleSelection: [],
-
-      editInfoId: "",
-      editInfoDescription: "",
-      editInfoName: "",
-      editInfoAbbr: "",
-      editInfoGroup: [],
-      editInfoGroupPlaceHolder: "",
-      editIndoInitGroupId: "",
-      tmpeditInfoGroupName: "",
-
-      ruleForm: {
-        addInfoDescription: "",
-        addInfoName: "",
-        addInfoAbbr: "",
-        addInfoGroup: []
-      },
-      rules: {
-        addInfoDescription: [
-          { required: true, message: "请输入客描述", trigger: "blur" }
-        ],
-        addInfoName: [
-          { required: true, message: "请输入客户名称", trigger: "blur" }
-        ],
-        addInfoAbbr: [
-          { required: true, message: "请输入客户简称", trigger: "blur" }
-        ],
-        addInfoGroup: [
-          { required: true, message: "请选择业务组", trigger: "blur" }
-        ]
-      },
-
-      newCardShowFlag: false,
-      editCardShowFlag: false
-    };
-  },
-  created: function() {
-    console.log("进入客户管理");
-    // //获取部门信息
-    this.$axios
-      .get('http://192.168.1.180:8081/dept/find')
-      .then(response => {
-        console.log(response)
-        this.selectionData = response.data.result;
-      })
-      .catch(error => {
-        this.$message.error("部门信息加载失败!");
-        console.log("部门信息加载失败!");
-      });
-
-    //加载默认客户信息
-    request
-      .get('/backstage/client/find', {
-        params: { name: undefined }
-      })
-      .then(response => {
-        console.log(response);
-        this.tableData = response.result;
-      });
-  },
-  methods: {
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    handleSearchClick(allFlag) {
-      var param = { name: undefined };
-      if (!allFlag) {
-        /* if(this.searchInput === ""){
-            this.$message.error("请输入客户名称");
-            return;
-          } */
-        param = {
-          name: this.searchInput === "" ? undefined : this.searchInput
-        };
-      }
-      console.log("搜索参数" + allFlag);
-      console.log(param);
-      request
-        .get('/backstage/client/find', {
-          params: param
-        })
-        .then(response => {
-          this.tableData = response.result;
-        })
-        .catch(error => {
-          this.$message.error("加载失败");
-        });
-    },
-    handleNewInfoClick() {
-      this.newCardShowFlag = true;
-      this.viewname = "second";
-      console.log(this.viewname);
-    },
-    handleEditInfoClick() {
-      if (this.multipleSelection.length === 0) {
-        this.$message({
-          message: "请选择一个客户信息",
-          type: "warning"
-        });
-        return;
-      }
-      if (this.multipleSelection.length > 1) {
-        this.$message({
-          message: "只能选择一个信息进行编辑",
-          type: "warning"
-        });
-        return;
-      }
-      this.editCardShowFlag = true;
-      console.log(this.multipleSelection[0]);
-      this.editInfoId = this.multipleSelection[0].id;
-      this.editInfoName = this.multipleSelection[0].name;
-      this.editInfoAbbr = this.multipleSelection[0].abbreviation;
-
-      this.editInfoGroupPlaceHolder = this.multipleSelection[0].deptName;
-      this.tmpeditInfoGroupName = this.multipleSelection[0].deptName;
-
-      this.editInfoGroup = [this.multipleSelection[0].deptName];
-      this.editIndoInitGroupId = this.multipleSelection[0].groupId;
-      this.editInfoDescription = this.multipleSelection[0].description;
-      this.viewname = "third";
-    },
-    handleDeleteInfoClick() {
-      if (this.multipleSelection.length === 0) {
-        this.$message({
-          message: "至少选择一个客户",
-          type: "warning"
-        });
-        return;
-      } else {
-        this.multipleSelection.forEach(element => {
-          request
-            .delete(`${window.$config.HOST}/backstage/client/delete`, {
-              params: { id: element.id }
-            })
-            .then(response => {
-              if (response.code < 0) {
-                this.$message.error(response.msg);
-                console.log(element.name + "删除失败");
-              } else {
-                console.log(element.name + "删除成功");
-                this.$message({
-                  type: "success",
-                  message: response.msg
-                });
-                var i = this.tableData.indexOf(element);
-                this.tableData.splice(i, 1);
-              }
-            })
-            .catch(error => {
-              this.$message.error(element.name + "删除失败");
-              console.log(element.name + "删除失败");
-            });
-        });
-      }
-
-      // this.tableData = this.multipleSelection;
-    },
-    handleNewSaveClick() {
-      var param = {
-        name:
-          this.ruleForm.addInfoName === ""
-            ? undefined
-            : this.ruleForm.addInfoName,
-        abbreviation:
-          this.ruleForm.addInfoAbbr === ""
-            ? undefined
-            : this.ruleForm.addInfoAbbr,
-        description:
-          this.ruleForm.addInfoDescription === ""
-            ? undefined
-            : this.ruleForm.addInfoDescription,
-        deptName:
-          this.ruleForm.addInfoGroup.length === 0
-            ? undefined
-            : this.ruleForm.addInfoGroup[this.ruleForm.addInfoGroup.length - 1]
-      };
-      console.log(param);
-      request
-        .post(`${window.$config.HOST}/backstage/client/insert`, param)
-        .then(response => {
-          if (response.code < 0) {
-            this.$message.error(response.msg);
-          } else {
-            this.$message({
-              type: "success",
-              message: response.msg
-            });
-            this.handleSearchClick(true);
-
-            this.ruleForm.addInfoName = "";
-            this.ruleForm.addInfoAbbr = "";
-            this.ruleForm.addInfoDescription = "";
-            this.ruleForm.addInfoGroup = [];
-
-            this.newCardShowFlag = false;
-            this.viewname = "first";
-          }
-        })
-        .catch(error => {
-          console.log("添加失败");
-          this.$message.error("添加失败!");
-        });
-
-      return;
-    },
-    handleNewCancelClick() {
-      this.newCardShowFlag = false;
-      this.viewname = "first";
-
-      this.$message({
-        message: "取消新增!",
-        type: "info"
-      });
-      return;
-    },
-    handleEditSaveClick() {
-      var tmpGroupName =
-        this.editInfoGroup === [this.tmpeditInfoGroupName]
-          ? this.tmpeditInfoGroupName
-          : this.editInfoGroup[this.editInfoGroup.length - 1];
-      var param = {
-        id: this.editInfoId === "" ? undefined : this.editInfoId,
-        name: this.editInfoName === "" ? undefined : this.editInfoName,
-        abbreviation: this.editInfoAbbr === "" ? undefined : this.editInfoAbbr,
-        description:
-          this.editInfoDescription === ""
-            ? undefined
-            : this.editInfoDescription,
-        deptName: tmpGroupName === "" ? undefined : tmpGroupName
-      };
-      console.log(param);
-
-      request
-        .put(`${window.$config.HOST}/backstage/client/update`, param)
-        .then(response => {
-          if (response.code < 0) {
-            this.$message.error(response.msg);
-          } else {
-            this.$message({
-              message: response.msg,
-              type: "success"
-            });
-            this.handleSearchClick(true);
-
-            this.editInfoId = "";
-            this.editInfoName = "";
-            this.editInfoAbbr = "";
-            this.editInfoGroup = "";
-            this.editIndoInitGroupId = "";
-            this.tmpeditInfoGroupName = "";
-            this.editInfoDescription = "";
-
-            this.editCardShowFlag = false;
-            this.viewname = "first";
-          }
-        })
-        .catch(error => {
-          this.$message.error("编辑失败");
-        });
-
-      return;
-    },
-    handleEditCancelClick() {
-      this.editCardShowFlag = false;
-      this.viewname = "first";
-      this.$message({
-        message: "取消编辑!",
-        type: "info"
-      });
-      return;
-    }
-  }
-};
-</script>

@@ -411,7 +411,7 @@ export default {
       .get(`/info/series/find`, {
         params: {
           pageNum: 1,
-          pageSize: 100000
+          pageSize: 1000
         }
       })
       .then(response => {
@@ -427,7 +427,7 @@ export default {
       .get(`/info/style-group/find`, {
         params: {
           pageNum: 1,
-          pageSize: 100000
+          pageSize: 1000
         }
       })
       .then(response => {

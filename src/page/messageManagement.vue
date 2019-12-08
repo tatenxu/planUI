@@ -388,9 +388,7 @@ export default {
       // margin: 5px 10px;
     }
   }
-  .pur {
-    // background: grey;
-  }
+
   .block {
     padding: 30px 0;
     text-align: center;

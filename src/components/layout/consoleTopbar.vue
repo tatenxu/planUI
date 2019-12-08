@@ -9,7 +9,7 @@
   font-size: 12px;
   width: 100%;
   .el-col {
-    background: #09C;
+    background: #09c;
     height: 50px;
     color: #fff;
     font-size: 14px;
@@ -20,14 +20,14 @@
       width: 50px;
       background: #0087b4;
       font-size: 28px;
-      color: #FFF;
+      color: #fff;
       text-align: center;
       height: 50px;
       line-height: 50px;
       overflow: hidden;
       float: left;
       &:before {
-        content: '';
+        content: "";
         position: absolute;
         width: 28px;
         height: 28px;
@@ -93,63 +93,51 @@
     <el-col :xs="12" :sm="12" :md="12" :lg="12">
       <el-dropdown trigger="click" class="topbar-info" @command="handleCommand">
         <a href="javascript:void(0)" class="user-name">
-          {{userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
+          {{userName}}
+          <i class="el-icon-caret-bottom el-icon--right"></i>
         </a>
         <el-dropdown-menu slot="dropdown">
           <!-- <el-dropdown-item>个人中心</el-dropdown-item> -->
           <!-- <el-dropdown-item>重置密码</el-dropdown-item> -->
-          <el-dropdown-item command="signOut" >退出</el-dropdown-item>
+          <el-dropdown-item command="signOut">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>
   </el-row>
 </template>
 <script>
-  // import { Row, Col, Dropdown, Icon, DropdownMenu, DropdownItem } from 'element-ui';
-  export default {
-    components: {
-      // ElRow: Row,
-      // ElCol: Col,
-      // ElDropdown: Dropdown,
-      // ElDropdownMenu: DropdownMenu,
-      // ElDropdownItem: DropdownItem,
-      // Icon: Icon
-    },
-    data () {
-      return {
-        userName:"loading",
-
-      }
-    },
-    created(){
-       //获取账户信息
-        this.$axios
-          .get(
-            `${
-              window.$config.HOST3
-            }/getUserInfo`)
-          .then(response => {
-            this.userName=response.data.realName
-      
-
-          })
-          .catch(error => {
-            this.$message({
-              message: "获取账户信息失败",
-              type: "warning"
-            });
-          });
-    },
-    methods: {
-      // 点击菜单项触发的事件回调
-      handleCommand(command) {
-        const that = this
-        if(command == 'signOut') {
-          sessionStorage.removeItem('token')
-          sessionStorage.removeItem('token-expired')
-          that.$router.push('/login')
-        }
+import request from "@/utils/request";
+// import { Row, Col, Dropdown, Icon, DropdownMenu, DropdownItem } from 'element-ui';
+export default {
+  components: {
+    // ElRow: Row,
+    // ElCol: Col,
+    // ElDropdown: Dropdown,
+    // ElDropdownMenu: DropdownMenu,
+    // ElDropdownItem: DropdownItem,
+    // Icon: Icon
+  },
+  data() {
+    return {
+      userName: "loading"
+    };
+  },
+  created() {
+    //获取账户信息
+    request.get(`/me`).then(response => {
+      this.userName = response.result.name;
+    });
+  },
+  methods: {
+    // 点击菜单项触发的事件回调
+    handleCommand(command) {
+      const that = this;
+      if (command == "signOut") {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("token-expired");
+        that.$router.push("/login");
       }
     }
   }
+};
 </script>

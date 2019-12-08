@@ -503,7 +503,7 @@ export default {
       .get(`/info/series/find`, {
         params: {
           pageNum: 1,
-          pageSize: 100000
+          pageSize: 1000
         }
       })
       .then(response => {
@@ -652,9 +652,11 @@ export default {
       this.$router.push({
         name: "bePlanModelEdit",
         params: {
-          flag: 2,
           goback: "seriesPlanMake",
-          rowData: row
+          isUpdate: false,
+          isCreate: false,
+          isDetail: true,
+          data: row
         }
       });
     },
@@ -826,7 +828,7 @@ export default {
       }
       this.quotePlan.clientId = "";
       this.quotePlan.brandId = "";
-      this.quotePlan.seriesId = this.multipleSelection[0].seriesId;
+      this.quotePlan.seriesId = this.multipleSelection[0].id;
       this.quotePlan.multipleSelection = [];
       this.quotePlanModel = true;
       this.viewname = "second";
