@@ -45,6 +45,7 @@ const bePrivilegeManagement = r => require.ensure([], () => r(require('../page/b
 
 const beRoleManagement = r => require.ensure([], () => r(require('../page/backEndModule/roleManagement.vue')), 'beRoleManagement');
 const brandMana = r => require.ensure([], () => r(require('../page/backEndModule/brandMana.vue')), 'brandMana');
+const colorMana = r => require.ensure([], () => r(require('../page/backEndModule/colorMana.vue')), 'colorMana');
 const customerMana = r => require.ensure([], () => r(require('../page/backEndModule/customerMana.vue')), 'customerMana');
 const productMana = r => require.ensure([], () => r(require('../page/backEndModule/productMana.vue')), 'productMana');
 
@@ -79,6 +80,14 @@ export default [
         component: brandMana,
         meta: {
           bcrumd: ['后台管理模块', '数据字典', '品牌信息管理'],
+        }
+      },
+      {
+        path: '/backEndModule/colorMana',
+        name: 'colorMana',
+        component: colorMana,
+        meta: {
+          bcrumd: ['后台管理模块', '颜色管理'],
         }
       },
       {

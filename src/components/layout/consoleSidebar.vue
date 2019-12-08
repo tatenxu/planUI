@@ -180,6 +180,9 @@
         <el-menu-item index="/backEndModule/dictionary/brandMana">
           <i class="el-icon-document"></i>品牌管理
         </el-menu-item>
+        <el-menu-item index="/backEndModule/colorMana">
+          <i class="el-icon-document"></i>颜色管理
+        </el-menu-item>
 
         <el-menu-item index="/backEndModule/projectType">
           <i class="el-icon-document"></i>项目类型——订单
