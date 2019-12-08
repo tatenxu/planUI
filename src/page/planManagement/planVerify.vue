@@ -437,13 +437,9 @@ export default {
           id: element.id,
           reason: this.GoBackReason
         };
-        request
-          .put(`/plan/fail`, null, {
-            params: list
-          })
-          .then(response => {
-            this.getWareList(this.pagination.currentPage);
-          });
+        request.put(`/plan/fail`, list).then(response => {
+          this.getWareList(this.pagination.currentPage);
+        });
       });
       this.GoBack = false;
     },
@@ -474,8 +470,10 @@ export default {
           type: "warning"
         });
         return;
+      } else {
+        this.GoBack = true;
+        this.GoBackReason = "";
       }
-      this.GoBack = true;
     },
     CancelVerify() {
       if (this.AnyChanged.length === 0) {

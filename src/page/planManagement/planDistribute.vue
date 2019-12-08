@@ -42,7 +42,7 @@
         <el-table-column label width="65">
           <template slot-scope="scope">
             <el-radio
-              :label="scope.row.id"
+              label=" "
               v-model="templateRadio"
               @change.native="getTemplateRow(scope.$index,scope.row)"
             ></el-radio>
@@ -54,7 +54,6 @@
         <el-table-column prop="serialNo" label="计划编号" align="center" width="150px"></el-table-column>
         <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="objectName" label="计划对象" align="center"></el-table-column>
         <el-table-column prop="planClass" label="项目类型" align="center"></el-table-column>
@@ -269,7 +268,7 @@ export default {
       });
     //获取产线
     request
-      .get(`http://192.168.1.180:8081/product-line/find`)
+      .get(`http://192.168.1.111:8081/product-line/find`)
       .then(response => {
         this.productionLine = response.result;
       });
@@ -366,7 +365,7 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       request
-        .get(`http://192.168.1.180:8081/user-product-line/find`, {
+        .get(`http://192.168.1.111:8081/user-product-line/find`, {
           params: {
             productLineId: data.id
           }
@@ -453,7 +452,7 @@ export default {
           params: {
             pageNum: currentPageNum,
             pageSize: this.pagination.pageSize,
-            state: this.isVerifiedPlan ? "CHECK" : "DISTRIBUTE"
+            state: this.isVerifiedPlan ? "CHECK" : "ASSIGN"
           }
         })
         .then(response => {
