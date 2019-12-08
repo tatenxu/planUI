@@ -9,6 +9,7 @@
               :disabled="searchDisabled"
               v-model="searchOptions.searchParams.clientName"
               clearable
+              @change="clientNameChange"
               placeholder="请选择"
             >
               <el-option
@@ -317,13 +318,6 @@ export default {
         this.searchOptions.options.clientNameOptions = response.result;
       });
 
-    //品牌名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/brand/name`)
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
-      });
-
     //异常类型选项
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {
@@ -392,6 +386,16 @@ export default {
   },
 
   methods: {
+    clientNameChange() {
+      //品牌名称跟随加载
+      request
+        .get(`${window.$config.HOST}/backstage/brand/name`, {
+          params: { clientId: this.searchOptions.searchParams.clientName }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+        });
+    },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
       this.pagination.pageSize = val;

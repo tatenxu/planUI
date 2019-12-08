@@ -6,7 +6,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">计划类别</div>
-            <el-select v-model="searchOptions.searchParams.brandName" clearable>
+            <el-select v-model="searchOptions.searchParams.planClassName">
               <el-option
                 v-for="item in searchOptions.options.planClassOptions"
                 :key="item.id"
@@ -19,9 +19,13 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName" clearable>
+            <el-select
+              v-model="searchOptions.searchParams.clientName"
+              @change="clientNameChange"
+              clearable
+            >
               <el-option
-                v-for="item in searchOptions.options.customerNameOptions"
+                v-for="item in searchOptions.options.clientNameOptions"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -134,23 +138,7 @@
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
         <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center">
-          <template slot-scope="scope">
-            <p v-if="scope.row.isCompleted">已完成</p>
-            <p v-else>未完成</p>
-          </template>
-        </el-table-column>
-        <el-table-column label="异常状态" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="ToSearchException(scope.row)"
-              type="text"
-              size="small"
-              v-if="scope.row.haveException"
-            >有异常，查看</el-button>
-            <p v-else>无异常</p>
-          </template>
-        </el-table-column>
+
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
@@ -194,20 +182,21 @@ export default {
       },
       searchOptions: {
         searchParams: {
-          customerName: "",
-          brandName: "",
-          clothesLevelName: "",
-          seriesName: "",
-          planName: "",
-          dateRange: ""
+          clientName: undefined,
+          brandName: undefined,
+          clothesLevelName: undefined,
+          planClassName: "STYLE",
+          seriesName: undefined,
+          planName: undefined,
+          dateRange: undefined
         },
         options: {
-          customerNameOptions: [],
+          clientNameOptions: [],
           brandNameOptions: [],
           planClassOptions: [
-            { id: 1, name: "款式计划" },
-            { id: 2, name: "款式组计划" },
-            { id: 3, name: "系列计划" }
+            { id: "STYLE", name: "款式计划" },
+            { id: "GROUP", name: "款式组计划" },
+            { id: "SERIES", name: "系列计划" }
           ],
           clothesLevelNameOptions: []
         }
@@ -231,14 +220,7 @@ export default {
     request
       .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
-        this.searchOptions.options.customerNameOptions = response.result;
-      });
-
-    //品牌名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/brand/name`)
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
+        this.searchOptions.options.clientNameOptions = response.result;
       });
 
     //服装层级加载
@@ -252,10 +234,11 @@ export default {
         this.searchOptions.options.clothesLevelNameOptions = response.result;
       });
 
-    //默认获取已完成计划列表
+    //默认获取已完成系列根计划计划列表
     request
-      .get(`${window.$config.HOST}/plan/find-complete`, {
+      .get(`${window.$config.HOST}/root-plan/find-complete`, {
         params: {
+          planClass: "STYLE",
           pageNum: this.pagination.currentPage,
           pageSize: this.pagination.pageSize
         }
@@ -266,6 +249,16 @@ export default {
       });
   },
   methods: {
+    clientNameChange() {
+      //品牌名称跟随加载
+      request
+        .get(`${window.$config.HOST}/backstage/brand/name`, {
+          params: { clientId: this.searchOptions.searchParams.clientName }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+        });
+    },
     planTypeSwitchChange() {
       this.pagination.currentPage = 1;
       this.tableData = [];
@@ -302,22 +295,11 @@ export default {
     //搜索按钮
     handleSearch() {
       var param = {
-        clientId:
-          this.searchOptions.searchParams.customerName === ""
-            ? undefined
-            : this.searchOptions.searchParams.customerName,
-        brandId:
-          this.searchOptions.searchParams.brandName === ""
-            ? undefined
-            : this.searchOptions.searchParams.brandName,
-        seriesName:
-          this.searchOptions.searchParams.seriesName === ""
-            ? undefined
-            : this.searchOptions.searchParams.seriesName,
-        name:
-          this.searchOptions.searchParams.planName === ""
-            ? undefined
-            : this.searchOptions.searchParams.planName,
+        clientId: this.searchOptions.searchParams.clientName,
+        brandId: this.searchOptions.searchParams.brandName,
+        seriesName: this.searchOptions.searchParams.seriesName,
+        name: this.searchOptions.searchParams.planName,
+        planClass: this.searchOptions.searchParams.planClassNmae,
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]
@@ -333,14 +315,25 @@ export default {
       };
 
       console.log("搜索参数：", param);
-      request
-        .get(`${window.$config.HOST}/plan/find-complete`, {
-          params: param
-        })
-        .then(response => {
-          this.tableData = response.result;
-          this.pagination.total = response.total;
-        });
+      if (this.isRootPlan) {
+        request
+          .get(`${window.$config.HOST}/root-plan/find-complete`, {
+            params: param
+          })
+          .then(response => {
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/find-complete`, {
+            params: param
+          })
+          .then(response => {
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+          });
+      }
     },
     getTemplateRow(index, row) {
       this.selectedData = row;
@@ -366,32 +359,15 @@ export default {
 
     getPlanDetail(row) {
       var param = {
-        flag: 3,
         goback: "commitedPlanManagement",
-        customerName: row.customerName,
-        brandName: row.brandName,
-        rangeId: row.rangeId,
-        rangeName: row.rangeName,
-        topPlanId: row.parentId,
-        topPlanName: row.parentName ? row.parentName : "根计划",
-        planId: row.id,
-        planType: row.type,
-        planObjectName: row.planObject,
-        planObjectId: row.planObjectId,
-        planName: row.name,
-        projectType: row.projectType,
-        quantity: row.quantity,
-        dateStart: row.startDate,
-        dateEnd: row.endDate,
-        productDate: row.productDate,
-        productDateType: row.productDateType,
-        planProductId: row.productId,
-        planPropose: row.proposal,
-        note: row.note,
-        planDescribe: row.description,
-        files: row.files
+        isRoot: this.isRootPlan,
+        isModify: false,
+        isCreate: false,
+        rowData: row
       };
-      console.log(param);
+      console.log("跳转参数：", param);
+
+      this.isCacheFlag = true;
       this.$router.push({
         name: "planMakeIndex",
         params: param

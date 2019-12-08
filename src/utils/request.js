@@ -43,7 +43,9 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-
+    if (response.headers["content-type"] === "application/force-download") {
+      return res;
+    }
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 200) {
       Message({
@@ -71,7 +73,7 @@ service.interceptors.response.use(
         Message({
           message: res.msg,
           type: 'success',
-          duration: 5*1000
+          duration: 5 * 1000
         })
       }
       return res

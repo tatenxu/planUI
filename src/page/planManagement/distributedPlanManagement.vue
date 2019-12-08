@@ -5,7 +5,11 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="searchOptions.searchParams.customerName" clearable>
+            <el-select
+              v-model="searchOptions.searchParams.customerName"
+              @change="clientNameChange"
+              clearable
+            >
               <el-option
                 v-for="item in searchOptions.options.customerNameOptions"
                 :key="item.id"
@@ -260,13 +264,6 @@ export default {
         this.searchOptions.options.customerNameOptions = response.result;
       });
 
-    //品牌名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/brand/name`)
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
-      });
-
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {
         params: {
@@ -291,6 +288,16 @@ export default {
       });
   },
   methods: {
+    clientNameChange() {
+      //品牌名称跟随加载
+      request
+        .get(`${window.$config.HOST}/backstage/brand/name`, {
+          params: { clientId: this.searchOptions.searchParams.clientName }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+        });
+    },
     planTypeSwitchChange() {
       this.pagination.currentPage = 1;
       this.tableData = [];

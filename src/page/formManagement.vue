@@ -2,38 +2,110 @@
   <div>
     <el-card class="box-card">
       <el-row :gutter="20" style="margin-top:5px; ">
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
-            <div class="title">创建人:</div>
-            <el-select v-model="searchOptions.searchParams.createrName" clearable>
+            <div class="title">计划类别:</div>
+            <el-select v-model="searchOptions.searchParams.planClassName">
               <el-option
-                v-for="item in searchOptions.options.createrNameOptions"
-                :key="item.realName"
-                :label="item.realName"
-                :value="item.realName"
+                v-for="item in searchOptions.options.planClassOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
         </el-col>
 
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
-            <div class="title">计划名称:</div>
-            <el-input v-model="searchOptions.searchParams.planName" />
+            <div class="title">创建人:</div>
+            <el-select v-model="searchOptions.searchParams.creatorName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.creatorOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
           </div>
         </el-col>
 
-        <el-col :span="10">
+        <el-col :span="8">
           <div class="bar">
-            <div class="title">起止时间:</div>
-            <el-date-picker
-              v-model="searchOptions.searchParams.dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
+            <div class="title">计划类型:</div>
+            <el-select v-model="searchOptions.searchParams.planTypeName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.planTypeOptions"
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              ></el-option>
+            </el-select>
           </div>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top:5px; ">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">计划状态:</div>
+            <el-select v-model="searchOptions.searchParams.planStateName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.planStateOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">系列状态:</div>
+            <el-select v-model="searchOptions.searchParams.seriesStateName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.seriesStateOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top:5px; ">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">TimeLine:</div>
+            <el-select v-model="searchOptions.searchParams.timeLineName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.timeLineOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">交付状态:</div>
+            <el-select v-model="searchOptions.searchParams.deliverStateName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.deliverStateOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :span="2" :offset="2">
+          <el-button type="primary" @click="exportExcel">导出</el-button>
         </el-col>
 
         <el-col :span="2">
@@ -59,6 +131,7 @@
 import GanttElastic from "gantt-elastic";
 import GanttHeader from "gantt-elastic-header";
 import dayjs from "dayjs";
+import request from "@/utils/request";
 
 export default {
   name: "formManagement",
@@ -70,15 +143,62 @@ export default {
     return {
       searchOptions: {
         searchParams: {
-          createrName: "",
-          planName: "",
-          dateRange: ""
+          planClassName: "SERIES",
+          creatorName: "",
+          planTypeName: "",
+          timeLineName: "",
+          planStateName: "",
+          seriesStateName: "",
+          deliverStateName: ""
         },
         options: {
-          createrNameOptions: []
+          planClassOptions: [
+            { id: "STYLE", name: "款式计划" },
+            { id: "GROUP", name: "款式组计划" },
+            { id: "SERIES", name: "系列计划" }
+          ],
+          creatorOptions: [],
+          planTypeOptions: [],
+          timeLineOptions: [
+            { id: "quannian", name: "全年投放计划" },
+            { id: "xiasanyue", name: "下三月投放计划" },
+            { id: "benyue", name: "当月投放计划" },
+            { id: "xiazhou", name: "下周投放计划" },
+            { id: "benzhou", name: "本周投放计划" }
+          ],
+          planStateOptions: [
+            { id: "quxiao", name: "计划取消" },
+            { id: "daiding", name: "计划待定" },
+            { id: "chuangjian", name: "计划创建" },
+            { id: "xiajia", name: "计划下架" }
+          ],
+          seriesStateOptions: [
+            { id: "wanjie", name: "订单完结" },
+            { id: "yunxing", name: "订单运行" }
+          ],
+          deliverStateOptions: [
+            { id: "quannian", name: "全年交付计划" },
+            { id: "xiasanyue", name: "下三月交付计划" },
+            { id: "benyue", name: "当月交付计划" },
+            { id: "xiazhou", name: "下周交付计划" },
+            { id: "benzhou", name: "本周交付计划" }
+          ]
+        },
+        maps: {
+          planStateMaps: {
+            quxiao: "计划取消",
+            xiajia: "计划下架",
+            chuangjian: "计划创建",
+            daiding: "计划待定"
+          },
+          seriesStateMaps: {
+            wanjie: "订单完结",
+            yunxing: "订单运行"
+          }
         }
       },
 
+      originGetData: {},
       tasks: [],
       options: {}
     };
@@ -91,10 +211,21 @@ export default {
         if (response.data.errcode < 0) {
           that.$message.error("下发对象加载失败!");
         }
-        this.searchOptions.options.createrNameOptions = response.data;
+        this.searchOptions.options.creatorNameOptions = response.data;
       })
       .catch(error => {
         this.$message.error("下发对象加载失败!");
+      });
+
+    // 计划类型
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "计划类型"
+        }
+      })
+      .then(response => {
+        this.searchOptions.options.planTypeOptions = response.result;
       });
 
     //默认加载所有
@@ -117,7 +248,7 @@ export default {
       },
       calendar: {
         hour: {
-          display: true
+          display: false
         }
       },
       chart: {
@@ -142,25 +273,14 @@ export default {
             html: true,
             events: {
               click({ data, column }) {
-                console.log(data.id + "尝试跳转");
-                if (data.isRoot) {
-                  that.$router.push({
-                    name: "subGantt",
-                    params: { rangePlanid: data.id }
-                  });
-                } else {
-                  this.$message({
-                    message: data.name + "不是根计划",
-                    type: "info"
-                  });
-                }
+                console.log(data.name, "尝试跳转");
               }
             }
           },
           {
             id: 2,
             label: "创建人",
-            value: "createrName",
+            value: "creatorName",
             width: 80,
             html: true
           },
@@ -181,31 +301,9 @@ export default {
           {
             id: 5,
             label: "项目类型",
-            value: "projectType",
+            value: "exceptionContent",
             width: 70
-          },
-          {
-            id: 6,
-            label: "数量",
-            value: "quantity",
-            width: 50
           }
-          // {
-          //   id: 5,
-          //   label: "%",
-          //   value: "progress",
-          //   width: 35,
-          //   style: {
-          //     "task-list-header-label": {
-          //       "text-align": "center",
-          //       width: "100%"
-          //     },
-          //     "task-list-item-value-container": {
-          //       "text-align": "center",
-          //       width: "100%"
-          //     }
-          //   }
-          // }
         ]
       },
       locale: {
@@ -243,62 +341,161 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
-    handleSearch() {
-      var param = {
-        name:
-          this.searchOptions.searchParams.planName === ""
-            ? undefined
-            : this.searchOptions.searchParams.planName,
-        createrName:
-          this.searchOptions.searchParams.createrName === ""
-            ? undefined
-            : this.searchOptions.searchParams.createrName,
-        startDate: this.changeDate(
-          this.searchOptions.searchParams.dateRange
-            ? this.searchOptions.searchParams.dateRange[0]
-            : null
-        ),
-        endDate: this.changeDate(
-          this.searchOptions.searchParams.dateRange
-            ? this.searchOptions.searchParams.dateRange[1]
-            : null
-        )
+    generateDateLists() {
+      var allDates = {};
+      var statesToAddtion = {
+        quannian: [10000, 91],
+        xiasanyue: [90, 32],
+        benyue: [31, 15],
+        xiazhou: [14, 8],
+        benzhou: [7, 1]
       };
-      console.log(param);
-      this.$axios
-        .get(`${window.$config.HOST}/planManagement/getGanttForRangePlan`, {
+
+      var now_ms = Date.parse(new Date()); // millionseconds * 1000
+      // 一天： 8.64e7
+      if (this.searchOptions.searchParams.timeLineName === "") {
+        allDates.startDateBefore = undefined;
+        allDates.startDateAfter = undefined;
+      } else {
+        allDates.startDateBefore = this.changeDate(
+          new Date(
+            now_ms +
+              statesToAddtion[this.searchOptions.searchParams.timeLineName][0] *
+                8.64e7
+          )
+        );
+        allDates.startDateAfter = this.changeDate(
+          new Date(
+            now_ms +
+              statesToAddtion[this.searchOptions.searchParams.timeLineName][1] *
+                8.64e7
+          )
+        );
+      }
+      if (this.searchOptions.searchParams.deliverStateName === "") {
+        allDates.endDateBefore = undefined;
+        allDates.endDateAfter = undefined;
+      } else {
+        allDates.endDateBefore = this.changeDate(
+          new Date(
+            now_ms +
+              statesToAddtion[
+                this.searchOptions.searchParams.deliverStateName
+              ][0] *
+                8.64e7
+          )
+        );
+        allDates.endDateBefore = this.changeDate(
+          new Date(
+            now_ms +
+              statesToAddtion[
+                this.searchOptions.searchParams.deliverStateName
+              ][1] *
+                8.64e7
+          )
+        );
+      }
+      return allDates;
+    },
+    handleSearch() {
+      var allDates = this.generateDateLists();
+      var param = {
+        creatorId:
+          this.searchOptions.searchParams.creatorName === ""
+            ? undefined
+            : this.searchOptions.searchParams.creatorName,
+        type:
+          this.searchOptions.searchParams.planTypeName === ""
+            ? undefined
+            : this.searchOptions.searchParams.planTypeName,
+
+        planClass:
+          this.searchOptions.searchParams.planClassName === ""
+            ? "SERIES"
+            : this.searchOptions.searchParams.planClassName,
+
+        startDateBefore: allDates.startDateBefore,
+        startDateAfter: allDates.startDateAfter,
+        endDateBefore: allDates.endDateBefore,
+        endDateAfter: allDates.endDateAfter
+      };
+      console.log("搜索参数：", param);
+      request
+        .get(`${window.$config.HOST}/plan/find-gantt`, {
           params: param
         })
         .then(response => {
+          this.originGetData = response.result;
           this.tasks = [];
           // console.log(response.data);
-          response.data.forEach(element => {
-            if (element.parentId === 0) {
-              element.parentId = undefined;
-              element.collapsed = true;
-            }
-            if (!element.haveException) {
+          response.result.forEach(element => {
+            if (
+              (this.searchOptions.searchParams.planStateName === "" ||
+                this.searchOptions.maps.planStateMaps[
+                  this.searchOptions.searchParams.planStateName
+                ] === element.planState) &&
+              (this.searchOptions.searchParams.seriesStateName === "" ||
+                this.searchOptions.maps.seriesStateMaps[
+                  this.searchOptions.searchParams.seriesStateName
+                ] === element.seriesState)
+            ) {
               element.style = {
                 base: {
-                  fill: "GREEN",
+                  fill: element.colorCode,
                   stroke: "YELLOW"
                 }
               };
+
+              element.type = "task";
+
+              if (element.superiorId === 0) {
+                element.parentId = undefined;
+                element.callaped = true;
+              } else {
+                element.parentId = element.superiorId;
+              }
+
+              if (!(element.startDate === null || element.endDate === null)) {
+                var dateObj1 = new Date(element.startDate);
+                var dateObj2 = new Date(element.endDate);
+                element.start = dateObj1.getTime();
+                element.duration = dateObj2.getTime() - dateObj1.getTime();
+                this.tasks.push(element);
+              }
             }
-            element.type = "task";
-
-            var dateObj1 = new Date(element.startDate);
-            var dateObj2 = new Date(element.endDate);
-            element.start = dateObj1.getTime();
-            element.duration = dateObj2.getTime() - dateObj1.getTime();
-
-            this.tasks.push(element);
           });
-        })
-        .catch(error => {
-          this.$message.error("搜索失败:请检查网络");
-          console.log("搜索失败:请检查网络");
         });
+    },
+
+    exportExcel() {
+      import("@/utils/Export2Excel").then(excel => {
+        const tHeader = ["Id", "Title", "Author", "Readings", "Date"];
+        const filterVal = [
+          "id",
+          "title",
+          "author",
+          "pageviews",
+          "display_time"
+        ];
+        const list = [
+          {
+            id: 1,
+            title: "afa",
+            author: "adfads",
+            pageviews: 56,
+            display_time: "2017-02-05"
+          }
+        ];
+        const data = this.formatJson(filterVal, list);
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename
+        });
+      });
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   },
   computed: {

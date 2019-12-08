@@ -136,9 +136,6 @@
         <el-menu-item index="/distributedPlanManagement">
           <i class="el-icon-document"></i>被下发计划管理
         </el-menu-item>
-        <!-- <el-menu-item index="/distributedPlanManagementOfRoot">
-          <i class="el-icon-document"></i>被下发根计划管理
-        </el-menu-item>-->
         <el-menu-item index="/commitedPlanManagement" v-if="completedPlanMana">
           <i class="el-icon-document"></i>已完成计划管理
         </el-menu-item>
