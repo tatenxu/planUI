@@ -292,7 +292,7 @@ export default {
     var that = this;
     //获取产线
     request
-      .get(`http://192.168.1.180:8081/product-line/find`)
+      .get(`http://192.168.1.111:8081/product-line/find`)
       .then(response => {
         this.productionLine = response.result;
       });
@@ -341,7 +341,7 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       request
-        .get(`http://192.168.1.180:8081/user-product-line/find`, {
+        .get(`http://192.168.1.111:8081/user-product-line/find`, {
           params: {
             productLineId: data.id
           }

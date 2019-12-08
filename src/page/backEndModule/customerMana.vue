@@ -10,7 +10,6 @@
                   <el-button type="primary" @click="handleNewInfoClick()">新增信息</el-button>
                 </div>
               </el-col>
-
               <el-col :span="2">
                 <div>
                   <el-button type="primary" @click="handleEditInfoClick()">编辑信息</el-button>
@@ -105,15 +104,15 @@
       <el-tab-pane label="编辑客户信息" name="third" v-if="editCardShowFlag">
         <el-card>
           <div class="inputCombine">
-            <span class="inputTag">客户名称:</span>
+            <span class="inputTag">客户名称</span>
             <el-input v-model="editInfoName" class="input" placeholder="请输入客户名称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">客户简称:</span>
+            <span class="inputTag">客户简称</span>
             <el-input v-model="editInfoAbbr" class="input" placeholder="请输入客户简称"></el-input>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">所属业务组:</span>
+            <span class="inputTag">所属业务组</span>
             <el-cascader
               expand-trigger="hover"
               :options="selectionData"
@@ -124,7 +123,7 @@
             ></el-cascader>
           </div>
           <div class="inputCombine">
-            <span class="inputTag">客户描述:</span>
+            <span class="inputTag">客户描述</span>
             <el-input
               class="inputArea"
               type="textarea"
@@ -142,59 +141,6 @@
     </el-tabs>
   </el-card>
 </template>
-
-<style lang="less" scoped>
-.box-card {
-  min-width: 1500px;
-  margin: 20px 50px;
-  padding: 0 20px;
-}
-.add-ruleForm {
-  min-width: 250px;
-  max-width: 500px;
-}
-// background: black;
-.containerHeaderDiv2 {
-  // margin-right: 100px;
-  // background: white;
-  display: flex;
-  flex-direction: row-reverse;
-  min-width: 500px;
-  .nameInput {
-    min-width: 100px;
-    max-width: 200px;
-  }
-  .inputTag {
-    font-size: 14px;
-    line-height: 40px;
-    min-width: 70px;
-  }
-}
-
-.inputCombine {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: row;
-  min-width: 250px;
-  max-width: 500px;
-  .inputTag {
-    font-size: 14px;
-    line-height: 40px;
-    min-width: 90px;
-  }
-}
-
-.secondButtonDiv {
-  margin-top: 20px;
-  min-width: 250px;
-  max-width: 500px;
-  // background: black;
-  .save {
-    margin-left: 68%;
-  }
-}
-</style>
-
 
 <script>
 import { error } from "util";
@@ -230,7 +176,7 @@ export default {
       },
       rules: {
         addInfoDescription: [
-          { required: true, message: "请输入客描述", trigger: "blur" }
+          { required: false, message: "请输入客描述", trigger: "blur" }
         ],
         addInfoName: [
           { required: true, message: "请输入客户名称", trigger: "blur" }
@@ -251,7 +197,7 @@ export default {
     console.log("进入客户管理");
     // //获取部门信息
     this.$axios
-      .get("http://192.168.1.180:8081/dept/find")
+      .get("http://192.168.1.111:8081/dept/find")
       .then(response => {
         console.log(response);
         this.selectionData = response.data.result;
@@ -360,37 +306,49 @@ export default {
 
       // this.tableData = this.multipleSelection;
     },
-    handleNewSaveClick() {
-      var param = {
-        name:
-          this.ruleForm.addInfoName === ""
-            ? undefined
-            : this.ruleForm.addInfoName,
-        abbreviation:
-          this.ruleForm.addInfoAbbr === ""
-            ? undefined
-            : this.ruleForm.addInfoAbbr,
-        description:
-          this.ruleForm.addInfoDescription === ""
-            ? undefined
-            : this.ruleForm.addInfoDescription,
-        deptName:
-          this.ruleForm.addInfoGroup.length === 0
-            ? undefined
-            : this.ruleForm.addInfoGroup[this.ruleForm.addInfoGroup.length - 1]
-      };
-      console.log(param);
-      request
-        .post(`${window.$config.HOST}/backstage/client/insert`, param)
-        .then(response => {
-          this.handleSearchClick(true);
-          this.ruleForm.addInfoName = "";
-          this.ruleForm.addInfoAbbr = "";
-          this.ruleForm.addInfoDescription = "";
-          this.ruleForm.addInfoGroup = [];
-          this.newCardShowFlag = false;
-          this.viewname = "first";
-        });
+    handleNewSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          var param = {
+            name:
+              this.ruleForm.addInfoName === ""
+                ? undefined
+                : this.ruleForm.addInfoName,
+            abbreviation:
+              this.ruleForm.addInfoAbbr === ""
+                ? undefined
+                : this.ruleForm.addInfoAbbr,
+            description:
+              this.ruleForm.addInfoDescription === ""
+                ? undefined
+                : this.ruleForm.addInfoDescription,
+            deptName:
+              this.ruleForm.addInfoGroup.length === 0
+                ? undefined
+                : this.ruleForm.addInfoGroup[
+                    this.ruleForm.addInfoGroup.length - 1
+                  ]
+          };
+          console.log(param);
+          request
+            .post(`${window.$config.HOST}/backstage/client/insert`, param)
+            .then(response => {
+              this.handleSearchClick(true);
+              this.ruleForm.addInfoName = "";
+              this.ruleForm.addInfoAbbr = "";
+              this.ruleForm.addInfoDescription = "";
+              this.ruleForm.addInfoGroup = [];
+              this.newCardShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
     },
     handleNewCancelClick() {
       this.newCardShowFlag = false;
@@ -447,3 +405,58 @@ export default {
   }
 };
 </script>
+
+
+
+<style lang="less" scoped>
+.box-card {
+  min-width: 1500px;
+  margin: 20px 50px;
+  padding: 0 20px;
+}
+.add-ruleForm {
+  min-width: 250px;
+  max-width: 500px;
+}
+// background: black;
+.containerHeaderDiv2 {
+  // margin-right: 100px;
+  // background: white;
+  display: flex;
+  flex-direction: row-reverse;
+  min-width: 500px;
+  .nameInput {
+    min-width: 100px;
+    max-width: 200px;
+  }
+  .inputTag {
+    font-size: 14px;
+    line-height: 40px;
+    min-width: 70px;
+  }
+}
+
+.inputCombine {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  min-width: 250px;
+  max-width: 500px;
+  .inputTag {
+    font-size: 14px;
+    line-height: 40px;
+    min-width: 90px;
+  }
+}
+
+.secondButtonDiv {
+  margin-top: 20px;
+  min-width: 250px;
+  max-width: 500px;
+  // background: black;
+  .save {
+    margin-left: 68%;
+  }
+}
+</style>
+

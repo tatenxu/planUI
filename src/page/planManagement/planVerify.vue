@@ -141,7 +141,7 @@
           <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
           <el-table-column prop="startDate" label="计划开始" align="center"></el-table-column>
           <el-table-column prop="endDate" label="计划结束" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center" width="150"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" align="center" width="180"></el-table-column>
           <el-table-column prop="state" label="审核状态" align="center"></el-table-column>
           <el-table-column fixed="right" width="100" label="操作" align="center">
             <template slot-scope="scope">
