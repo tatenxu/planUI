@@ -470,12 +470,10 @@ export default {
         this.searchOptions.clothesLevelOptions = response.result;
       });
     //获得客户名称下拉框
-    request
-      .get(`/backstage/searchOptions.clientOptions/name`)
-      .then(response => {
-        this.searchOptions.clientOptions = response.result;
-        this.saveModel.options.clientOptions = response.result;
-      });
+    request.get(`/backstage/client/name`).then(response => {
+      this.searchOptions.clientOptions = response.result;
+      this.saveModel.options.clientOptions = response.result;
+    });
 
     //获得空集搜索列表
     request
