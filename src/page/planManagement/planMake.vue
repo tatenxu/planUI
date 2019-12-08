@@ -271,6 +271,42 @@
           </el-col>
         </el-row>
 
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="bar" style="margin-left: 0px">
+              <el-form-item label="日期类型" prop="dateType" placeholder="请输入">
+                <el-select
+                  :disabled="!isModifyPlanFlag && !isCreatePlanFlag"
+                  v-model="ruleForm.dateType"
+                  clearable
+                >
+                  <el-option
+                    v-for="item in chooseOptions.dateTypeOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="日期" prop="date" placeholder="请输入">
+                <el-date-picker
+                  clearable
+                  v-model="ruleForm.date"
+                  type="date"
+                  :disabled="!isModifyPlanFlag && !isCreatePlanFlag"
+                  placeholder="选择日期"
+                  style="min-width:240px"
+                ></el-date-picker>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+
         <!-- 按钮行 -->
         <el-row :gutter="20">
           <el-col :span="20">
@@ -506,14 +542,14 @@
           <el-col :span="8">
             <div class="bar" style="margin-left: 0px">
               <el-form-item label="日期类型" prop="dateType" placeholder="请输入">
-                <el-input
-                  v-model="ruleForm.dateType"
-                  clearable
-                  :rows="1"
-                  placeholder="请选择"
-                  style="min-width:240px"
-                  :disabled="alwaysGreyFlag"
-                ></el-input>
+                <el-select :disabled="alwaysGreyFlag" v-model="ruleForm.dateType" clearable>
+                  <el-option
+                    v-for="item in chooseOptions.dateTypeOptions"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  ></el-option>
+                </el-select>
               </el-form-item>
             </div>
           </el-col>
@@ -521,14 +557,14 @@
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="日期" prop="date" placeholder="请输入">
-                <el-input
-                  :disabled="alwaysGreyFlag"
-                  v-model="ruleForm.date"
+                <el-date-picker
                   clearable
-                  :rows="1"
-                  placeholder="请输入"
+                  v-model="ruleForm.date"
+                  type="date"
+                  :disabled="alwaysGreyFlag"
+                  placeholder="选择日期"
                   style="min-width:240px"
-                ></el-input>
+                ></el-date-picker>
               </el-form-item>
             </div>
           </el-col>
@@ -985,9 +1021,10 @@ export default {
         checkStrictly: true
       },
       chooseOptions: {
-        planTypeOptions: {},
-        orderStageOptions: {},
-        productOptions: {},
+        planTypeOptions: [],
+        orderStageOptions: [],
+        productOptions: [],
+        dateTypeOptions: [],
         productLineOptions: [],
         // 起止时间
         pickerOptions0: {
@@ -1151,6 +1188,17 @@ export default {
       })
       .then(response => {
         that.chooseOptions.productOptions = response.result;
+      });
+
+    // 获取日期类型选择项
+    request
+      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+        params: {
+          categoryName: "日期类型"
+        }
+      })
+      .then(response => {
+        that.chooseOptions.dateTypeOptions = response.result;
       });
 
     // 获得产品线下拉框
@@ -1384,47 +1432,77 @@ export default {
 
     // TODO: zhangzhe根计划更新接口
     modifyPlanForm(formName) {
-      /* 
+      /* 普通计划 
         id,name,productLine,product,
         cycle,startDate,endDate,
         proposal,description,note,extension,
         actualStartDate, actualEndDate,
       */
 
+      /* 根计划
+        id,name,dateType,
+        date,startDate,endDate
+      */
+
       //修改
       this.$refs[formName].validate(valid => {
         if (valid) {
-          var param = {
-            id: this.ruleForm.id,
-            creatorId: this.ruleForm.creatorId,
-            rootPlanId: this.ruleForm.rootPlanId,
-            name: this.ruleForm.name,
-            productLine: this.ruleForm.productLine,
-            product: this.ruleForm.product,
-            cycle: this.ruleForm.cycle,
-            startDate: this.changeDate(this.ruleForm.startEndDate[0]),
-            endDate: this.changeDate(this.ruleForm.startEndDate[1]),
-            proposal: this.ruleForm.proposal,
-            description: this.ruleForm.description,
-            note: this.ruleForm.note,
-            extension: this.changeDate(this.ruleForm.extension),
-            actualStartDate: this.changeDate(
-              this.ruleForm.actualStartEndDate[0]
-            ),
-            actualEndDate: this.changeDate(this.ruleForm.actualStartEndDate[1])
-          };
+          if (this.isRootPlanFlag) {
+            var param = {
+              id: this.ruleForm.id,
+              name: this.ruleForm.name,
+              startDate: this.changeDate(this.ruleForm.startEndDate[0]),
+              endDate: this.changeDate(this.ruleForm.startEndDate[1]),
+              date: this.ruleForm.date,
+              dateType: this.changeDate(this.ruleForm.dateType)
+            };
 
-          console.log("修改参数：", param);
+            console.log("修改参数：", param);
 
-          request
-            .put(`${window.$config.HOST}/plan/update`, param)
-            .then(response => {
-              console.log("修改成功");
-              this.$router.push({
-                name: this.goback ? this.goback : "planManagement",
-                params: {}
+            request
+              .put(`${window.$config.HOST}/root-plan/update`, param)
+              .then(response => {
+                console.log("修改成功");
+                this.$router.push({
+                  name: this.goback ? this.goback : "planManagement",
+                  params: {}
+                });
               });
-            });
+          } else {
+            var param = {
+              id: this.ruleForm.id,
+              creatorId: this.ruleForm.creatorId,
+              rootPlanId: this.ruleForm.rootPlanId,
+              name: this.ruleForm.name,
+              productLine: this.ruleForm.productLine,
+              product: this.ruleForm.product,
+              cycle: this.ruleForm.cycle,
+              startDate: this.changeDate(this.ruleForm.startEndDate[0]),
+              endDate: this.changeDate(this.ruleForm.startEndDate[1]),
+              proposal: this.ruleForm.proposal,
+              description: this.ruleForm.description,
+              note: this.ruleForm.note,
+              extension: this.changeDate(this.ruleForm.extension),
+              actualStartDate: this.changeDate(
+                this.ruleForm.actualStartEndDate[0]
+              ),
+              actualEndDate: this.changeDate(
+                this.ruleForm.actualStartEndDate[1]
+              )
+            };
+
+            console.log("修改参数：", param);
+
+            request
+              .put(`${window.$config.HOST}/plan/update`, param)
+              .then(response => {
+                console.log("修改成功");
+                this.$router.push({
+                  name: this.goback ? this.goback : "planManagement",
+                  params: {}
+                });
+              });
+          }
         } else {
           this.$message({
             message: "修改计划失败：请填入必要信息",
