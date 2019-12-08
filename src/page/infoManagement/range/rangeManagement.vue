@@ -115,9 +115,8 @@
           <!-- <el-table-column prop="stateStr" label="状态" align="center"></el-table-column> -->
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
-              <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->
-              <el-button @click="updatePanel(scope.row)" type="text" size="small">修改</el-button>
               <el-button @click="detailPanel(scope.row)" type="text" size="small">查看</el-button>
+              <el-button @click="updatePanel(scope.row)" type="text" size="small">修改</el-button>
               <el-button @click="deleteSeries(scope.row)" type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
@@ -717,7 +716,7 @@ export default {
       .get(`/info/series/find`, {
         params: {
           pageNum: 1,
-          pageSize: 1000000
+          pageSize: 1000
         }
       })
       .then(response => {
