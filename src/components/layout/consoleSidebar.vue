@@ -82,7 +82,7 @@
         快速入门
       </el-menu-item>
 
-      <el-submenu index="infoManagement">
+      <el-submenu index="infoManagement" v-if="infoMana">
         <template slot="title">
           <i class="el-icon-document"></i>
           信息管理
@@ -106,12 +106,12 @@
         <!-- <el-menu-item index="/style/bindStyleGroup"><i class="el-icon-document"></i>绑定款式组</el-menu-item> -->
       </el-submenu>
 
-      <el-submenu index="planMake">
+      <el-submenu index="planMake" v-if="allPlanMana">
         <template slot="title">
           <i class="el-icon-document"></i>
           计划管理
         </template>
-        <el-submenu index="rootPlan">
+        <el-submenu index="rootPlan" v-if="rootPlan">
           <template slot="title">
             <i class="el-icon-document"></i>
             根计划
@@ -125,45 +125,25 @@
           <el-menu-item index="/planMake/stylePlanMake" v-if="stylePlan">
             <i class="el-icon-document"></i>款式制定
           </el-menu-item>
-          <el-menu-item index="/planMake/rootPlanMake" v-if="stylePlan">
+          <el-menu-item index="/planMake/rootPlanMake" v-if="afterPlanMake">
             <i class="el-icon-document"></i>已制定根计划
           </el-menu-item>
         </el-submenu>
-
+        <el-menu-item index="/distributedPlanManagement" v-if="distributeMana">
+          <i class="el-icon-document"></i>被下发计划管理
+        </el-menu-item>
         <el-menu-item index="/planManagement" v-if="planMana">
           <i class="el-icon-document"></i>制定计划管理
         </el-menu-item>
-        <el-menu-item index="/distributedPlanManagement">
-          <i class="el-icon-document"></i>被下发计划管理
-        </el-menu-item>
-        <el-menu-item index="/commitedPlanManagement" v-if="completedPlanMana">
-          <i class="el-icon-document"></i>已完成计划管理
-        </el-menu-item>
-        <el-submenu index="predictPlanManagement" disabled v-if="predictMana">
-          <template slot="title">
-            <i class="el-icon-document"></i>
-            预测计划管理
-          </template>
-          <el-menu-item index="/predictPlanToBeMake">
-            <i class="el-icon-document"></i>未制定计划
-          </el-menu-item>
-          <el-menu-item index="/predictPlanMaking">
-            <i class="el-icon-document"></i>已制定计划
-          </el-menu-item>
-          <el-menu-item index="/predictPlanMade">
-            <i class="el-icon-document"></i>已保存计划
-          </el-menu-item>
-        </el-submenu>
-
-        <!-- <el-menu-item index="/planMake/planMakeIndex">
-          <i class="el-icon-document"></i>计划制定
-        </el-menu-item>-->
 
         <el-menu-item index="/planVerify" v-if="planReview">
           <i class="el-icon-document"></i>计划审核管理
         </el-menu-item>
         <el-menu-item index="/planDistribute" v-if="planDistribute">
           <i class="el-icon-document"></i>计划下发管理
+        </el-menu-item>
+        <el-menu-item index="/commitedPlanManagement" v-if="completedPlanMana">
+          <i class="el-icon-document"></i>已完成计划管理
         </el-menu-item>
         <el-menu-item index="/planCompletionManage" v-if="rangeCompleted">
           <i class="el-icon-document"></i>系列完成管理
@@ -178,9 +158,6 @@
 
       <el-menu-item index="/messageManagement" v-if="messageMana">
         <i class="el-icon-document"></i>消息管理
-      </el-menu-item>
-      <el-menu-item index="/queryStatistic" v-if="statistics">
-        <i class="el-icon-document"></i>查询统计
       </el-menu-item>
       <el-menu-item index="/formManagement" v-if="gantt">
         <i class="el-icon-document"></i>报表管理
@@ -233,49 +210,75 @@ export default {
     return {
       roleList: [],
       pageList: [],
-      // rangeMana: false,
-      // styleGroupMana: false,
-      // styleMana: false,
-      // toDoPredict: false,
-      // doingPredict: false,
-      // savePredict: false,
-      // planMana: false,
-      // completedPlanMana: false,
-      // rangePlan: false,
-      // styleGroupPlan: false,
-      // stylePlan: false,
-      // planReview: false,
-      // planDistribute: false,
-      // rangeCompleted: false,
-      // planRecover: false,
-      // exceptionMana: false,
-      // messageMana: false,
-      // statistics: false,
-      // gantt: false,
-      // predictMana: false,
-      // backMana: false
+      rangeMana: false,
+      styleGroupMana: false,
+      styleMana: false,
+      toDoPredict: false,
+      doingPredict: false,
+      savePredict: false,
+      planMana: false,
+      completedPlanMana: false,
+      rangePlan: false,
+      styleGroupPlan: false,
+      stylePlan: false,
+      planReview: false,
+      planDistribute: false,
+      rangeCompleted: false,
+      planRecover: false,
+      exceptionMana: false,
+      messageMana: false,
+      statistics: false,
+      gantt: false,
+      predictMana: false,
+      backMana: false,
+      infoMana: false,
+      allPlanMana: false,
+      rootPlan: false,
+      distributeMana: false,
+      modelMana: false,
+      clientMana: false,
+      brandMana: false,
+      typeOrderMana: false,
+      dataMana: false,
+      privilegeMana: false,
+      systemMana: false,
+      numberMana: false,
+      afterPlanMake: false
 
-      rangeMana: true,
-      styleGroupMana: true,
-      styleMana: true,
-      toDoPredict: true,
-      doingPredict: true,
-      savePredict: true,
-      planMana: true,
-      completedPlanMana: true,
-      rangePlan: true,
-      styleGroupPlan: true,
-      stylePlan: true,
-      planReview: true,
-      planDistribute: true,
-      rangeCompleted: true,
-      planRecover: true,
-      exceptionMana: true,
-      messageMana: true,
-      statistics: true,
-      gantt: true,
-      predictMana: true,
-      backMana: true
+      // rangeMana: true,
+      // styleGroupMana: true,
+      // styleMana: true,
+      // toDoPredict: true,
+      // doingPredict: true,
+      // savePredict: true,
+      // planMana: true,
+      // completedPlanMana: true,
+      // rangePlan: true,
+      // styleGroupPlan: true,
+      // stylePlan: true,
+      // planReview: true,
+      // planDistribute: true,
+      // rangeCompleted: true,
+      // planRecover: true,
+      // exceptionMana: true,
+      // messageMana: true,
+      // statistics: true,
+      // gantt: true,
+      // predictMana: true,
+      // backMana: true,
+      // infoMana: true,
+      // allPlanMana: true,
+      // rootPlan: true,
+      // distributeMana: true,
+      // modelMana: true,
+      // clientMana: true,
+      // brandMana: true,
+      // typeOrderMana: true,
+      // dataMana: true,
+      // privilegeMana: true,
+      // systemMana: true,
+      // numberMana: true,
+      // afterPlanMake: true
     };
   },
 
@@ -294,6 +297,9 @@ export default {
             response.result.forEach(element => {
               this.pageList.push(element.menuName);
             });
+            if (this.pageList.includes("信息管理")) {
+              this.infoMana = true;
+            }
             if (this.pageList.includes("系列管理")) {
               this.rangeMana = true;
             }
@@ -303,29 +309,38 @@ export default {
             if (this.pageList.includes("款式管理")) {
               this.styleMana = true;
             }
-            if (this.pageList.includes("进行中计划管理")) {
-              this.planMana = true;
+            if (this.pageList.includes("计划管理")) {
+              this.allPlanMana = true;
             }
-            if (this.pageList.includes("已完成计划管理")) {
-              this.completedPlanMana = true;
+            if (this.pageList.includes("根计划")) {
+              this.rootPlan = true;
             }
-            if (this.pageList.includes("预测计划管理")) {
-              this.predictMana = true;
-            }
-            if (this.pageList.includes("系列计划制定")) {
+            if (this.pageList.includes("系列制定")) {
               this.rangePlan = true;
             }
-            if (this.pageList.includes("款式组计划制定")) {
+            if (this.pageList.includes("款式组制定")) {
               this.styleGroupPlan = true;
             }
-            if (this.pageList.includes("款式计划制定")) {
+            if (this.pageList.includes("款式制定")) {
               this.stylePlan = true;
+            }
+            if (this.pageList.includes("已制定根计划")) {
+              this.afterPlanMake = true;
+            }
+            if (this.pageList.includes("被下发计划管理")) {
+              this.distributeMana = true;
+            }
+            if (this.pageList.includes("制定计划管理")) {
+              this.planMana = true;
             }
             if (this.pageList.includes("计划审核管理")) {
               this.planReview = true;
             }
             if (this.pageList.includes("计划下发管理")) {
               this.planDistribute = true;
+            }
+            if (this.pageList.includes("已完成计划管理")) {
+              this.completedPlanMana = true;
             }
             if (this.pageList.includes("系列完成管理")) {
               this.rangeCompleted = true;
@@ -339,13 +354,10 @@ export default {
             if (this.pageList.includes("消息管理")) {
               this.messageMana = true;
             }
-            if (this.pageList.includes("查询统计")) {
-              this.statistics = true;
-            }
             if (this.pageList.includes("报表管理")) {
               this.gantt = true;
             }
-            if (this.pageList.includes("后台管理")) {
+            if (this.pageList.includes("后台管理模块")) {
               this.backMana = true;
             }
           });
