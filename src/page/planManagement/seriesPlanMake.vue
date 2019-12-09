@@ -107,7 +107,7 @@
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
           <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" label="款数" align="center"></el-table-column>
+          <el-table-column prop="importStyleQuantity" label="导入款数" align="center"></el-table-column>
           <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>

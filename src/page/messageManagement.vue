@@ -312,7 +312,7 @@ export default {
       let that = this;
 
       that.$axios
-        .get(`http://192.168.1.180:8081/user/find`, {
+        .get(`http://192.168.1.111:8081/user/find`, {
           params: {
             pageNum: 1,
             pageSize: 100
