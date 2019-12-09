@@ -207,7 +207,7 @@ export default [
         name: 'commitedPlanManagement',
         component: commitedPlanManagement,
         meta: {
-          bcrumd: ['已提交计划管理'],
+          bcrumd: ['已完成计划管理'],
         }
       },
       {

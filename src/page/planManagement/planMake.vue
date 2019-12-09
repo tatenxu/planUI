@@ -1092,7 +1092,7 @@ export default {
         creator: "无数据",
         extension: "无数据",
         startEndDate: [],
-        actualStartEndDate: " "
+        actualStartEndDate: []
       },
 
       // 文件操作
@@ -1255,7 +1255,7 @@ export default {
           if (!(element.startDate === null || element.endDate === null)) {
             var dateObj1 = new Date(element.startDate);
             var dateObj2 = new Date(element.endDate);
-            element.start = dateObj1.getTime();
+            element.startTime = dateObj1.getTime();
             element.duration = dateObj2.getTime() - dateObj1.getTime();
             this.ganttTasks.push(element);
           }
@@ -1469,6 +1469,21 @@ export default {
                 });
               });
           } else {
+            console.log(this.ruleForm.actualStartEndDate);
+            if (
+              this.ruleForm.actualStartEndDate != undefined &&
+              this.ruleForm.actualStartEndDate.length == 2
+            ) {
+              this.ruleForm.actualStartDate = this.changeDate(
+                this.ruleForm.actualStartEndDate[0]
+              );
+              this.ruleForm.actualEndDate = this.changeDate(
+                this.ruleForm.actualStartEndDate[1]
+              );
+            } else {
+              this.ruleForm.actualStartDate = undefined;
+              this.ruleForm.actualEndDate = undefined;
+            }
             var param = {
               id: this.ruleForm.id,
               creatorId: this.ruleForm.creatorId,
@@ -1483,12 +1498,8 @@ export default {
               description: this.ruleForm.description,
               note: this.ruleForm.note,
               extension: this.changeDate(this.ruleForm.extension),
-              actualStartDate: this.changeDate(
-                this.ruleForm.actualStartEndDate[0]
-              ),
-              actualEndDate: this.changeDate(
-                this.ruleForm.actualStartEndDate[1]
-              )
+              actualStartDate: this.ruleForm.actualStartDate,
+              actualEndDate: this.ruleForm.actualEndDate
             };
 
             console.log("修改参数：", param);
@@ -1644,7 +1655,7 @@ export default {
 
             var dateObj1 = new Date(ele.startDate);
             var dateObj2 = new Date(ele.endDate);
-            ele.start = dateObj1.getTime();
+            ele.startTime = dateObj1.getTime();
             ele.duration = dateObj2.getTime() - dateObj1.getTime();
 
             console.log(ele.start, ele.duration);
