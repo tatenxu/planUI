@@ -903,12 +903,12 @@
           >
             <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
             <!-- 手动上传按钮 -->
-            <el-button
+            <!-- <el-button
               style="margin-left: 10px;"
               size="small"
               type="success"
               @click="submitUpload"
-            >上传到服务器</el-button>
+            >上传到服务器</el-button>-->
           </el-upload>
         </el-row>
         <el-row :gutter="20">
@@ -1336,9 +1336,9 @@ export default {
           console.log("上传结果：", response.result);
         });
     },
-    submitUpload() {
-      this.$refs.upload.submit();
-    },
+    // submitUpload() {
+    //   this.$refs.upload.submit();
+    // },
 
     changeDate(date1) {
       var date = new Date(date1);
@@ -1417,13 +1417,17 @@ export default {
           request
             .post(`${window.$config.HOST}/plan/insert`, param)
             .then(response => {
-              console.log("添加成功");
-            });
+              that.ruleForm.id = response.result;
+              console.log("添加成功:", that.ruleForm.id);
 
-          this.$router.push({
-            name: this.goback ? this.goback : "planManagement",
-            params: {}
-          });
+              // 上传文件
+              this.$refs.upload.submit();
+
+              this.$router.push({
+                name: this.goback ? this.goback : "planManagement",
+                params: {}
+              });
+            });
         } else {
           this.$message({
             message: "制定计划失败：请填入必要字段",
@@ -1549,7 +1553,7 @@ export default {
         ? }
       */
       console.log("开始处理页面跳转参数");
-      const that = this;
+      let that = this;
 
       console.log("路由参数：", that.$route.params);
 
@@ -1569,9 +1573,10 @@ export default {
           that.isCreatePlanFlag = data.isCreate;
 
           // 获取计划的文件列表, 创建子计划时不能获取文件列表
+          console.log("asdfhadjsfhas:", that.ruleForm.id);
           request
             .get(`${window.$config.HOST}/plan-files/find`, {
-              params: { planId: that.ruleForm.id }
+              params: { planId: data.rowData.id }
             })
             .then(response => {
               response.result.forEach(ele => {
@@ -1616,6 +1621,8 @@ export default {
             that.ruleForm.rootPlanId === undefined
               ? that.ruleForm.id
               : that.ruleForm.rootPlanId;
+
+          that.ruleForm.id = undefined;
         }
       }
     },
