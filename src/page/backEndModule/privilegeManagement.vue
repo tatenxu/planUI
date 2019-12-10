@@ -291,11 +291,9 @@ export default {
   created: function() {
     var that = this;
     //获取产线
-    request
-      .get(`http://192.168.1.111:8081/product-line/find`)
-      .then(response => {
-        this.productionLine = response.result;
-      });
+    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
+      this.productionLine = response.result;
+    });
 
     //获得品牌名字
     request.get(`/backstage/brand/find`).then(response => {
@@ -341,7 +339,7 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       request
-        .get(`http://192.168.1.111:8081/user-product-line/find`, {
+        .get(`${window.$config.HOST2}/user-product-line/find`, {
           params: {
             productLineId: data.id
           }

@@ -177,7 +177,7 @@ export default {
     var that = this;
     //获得角色名字
     this.$axios
-      .get("http://192.168.1.111:8081/role/find")
+      .get(`${window.$config.HOST2}/role/find`)
       .then(response => {
         this.searchOptions.options.roleOptions = response.data.result;
         this.ruleForm.options.roleOptions = response.data.result;
@@ -324,8 +324,7 @@ export default {
     // 添加用户
     addUser() {
       const that = this;
-      
-    
+
       (this.ruleForm.roleId = ""),
         (this.ruleForm.roleName = ""),
         (this.dialogFormVisible = true);

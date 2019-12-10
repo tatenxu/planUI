@@ -267,11 +267,9 @@ export default {
         this.assignPlanTypeOptions = response.result;
       });
     //获取产线
-    request
-      .get(`http://192.168.1.111:8081/product-line/find`)
-      .then(response => {
-        this.productionLine = response.result;
-      });
+    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
+      this.productionLine = response.result;
+    });
     //获取所有未下发计划
     request
       .get(`/plan/find`, {
@@ -365,7 +363,7 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       request
-        .get(`http://192.168.1.111:8081/user-product-line/find`, {
+        .get(`${window.$config.HOST2}/user-product-line/find`, {
           params: {
             productLineId: data.id
           }

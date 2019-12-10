@@ -450,11 +450,9 @@ export default {
       });
 
     //获取产线
-    request
-      .get(`http://192.168.1.111:8081/product-line/find`)
-      .then(response => {
-        this.productionLine = response.result;
-      });
+    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
+      this.productionLine = response.result;
+    });
     //获得品牌下拉框
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
@@ -636,7 +634,7 @@ export default {
     },
     handleNodeClick(data) {
       request
-        .get(`http://192.168.1.111:8081/user-product-line/find`, {
+        .get(`${window.$config.HOST2}/user-product-line/find`, {
           params: {
             productLineId: data.id
           }

@@ -226,7 +226,7 @@
                   v-for="item in addForm.options.orderStageOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.name"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -396,7 +396,7 @@
                   v-for="item in updateForm.options.orderStageOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.name"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -540,20 +540,7 @@ export default {
           projectTypeOptions: {},
           orderStageOptions: {},
           inputPointOptions: {},
-          seasonOptions: [
-            {
-              name: "春"
-            },
-            {
-              name: "夏"
-            },
-            {
-              name: "秋"
-            },
-            {
-              name: "冬"
-            }
-          ]
+          seasonOptions: []
         }
       },
       addRules: {
@@ -681,6 +668,17 @@ export default {
 
   created: function() {
     var that = this;
+    //获得季节
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "季节"
+        }
+      })
+      .then(response => {
+        this.updateForm.options.seasonOptions = response.result;
+        this.addForm.options.seasonOptions = response.result;
+      });
     //获得品牌名字
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;

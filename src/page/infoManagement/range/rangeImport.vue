@@ -112,7 +112,7 @@
                   v-for="item in options.orderStageOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.name"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -261,20 +261,7 @@ export default {
         inputPointOptions: [],
         projectTypeOptions: [],
         orderStageOptions: [],
-        seasonOptions: [
-          {
-            name: "春"
-          },
-          {
-            name: "夏"
-          },
-          {
-            name: "秋"
-          },
-          {
-            name: "冬"
-          }
-        ],
+        seasonOptions: [],
         customerNameOptions: [],
         brandNameOptions: [],
         clothingTypeOptions: []
@@ -293,6 +280,16 @@ export default {
       })
       .then(response => {
         this.options.inputPointOptions = response.result;
+      });
+    //获得季节
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "季节"
+        }
+      })
+      .then(response => {
+        this.options.seasonOptions = response.result;
       });
     //获得项目类型
     request.get(`/backstage/project-type/find`).then(response => {

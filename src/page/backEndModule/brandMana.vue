@@ -25,9 +25,9 @@
 
               <el-col :span="6">
                 <div class="containerHeaderDiv2">
-                  <el-button @click="handleSearchClick(false)" type="primary">搜索品牌</el-button>
+                  <el-button @click="handleSearchClick()" type="primary">搜索品牌</el-button>
                   <el-input v-model="searchInput" class="nameInput" placeholder="请输入品牌名称"></el-input>
-                  <span class="inputTag">品牌名称:</span>
+                  <span class="inputTag">品牌名称</span>
                 </div>
               </el-col>
             </el-row>
@@ -50,9 +50,6 @@
               <el-table-column prop="description" label="品牌描述" width="120"></el-table-column>
               <el-table-column prop="clientName" label="所属客户" show-overflow-tooltip></el-table-column>
             </el-table>
-            <div style="margin-top: 20px">
-              <el-button type="info" @click="toggleSelection()">取消选择</el-button>
-            </div>
           </el-main>
         </el-container>
       </el-tab-pane>
@@ -60,39 +57,43 @@
       <el-tab-pane label="新增品牌信息" name="second" v-if="addCardShowFlag">
         <el-card>
           <el-form
-            :model="ruleForm"
-            :rules="rules"
-            ref="ruleForm"
+            :model="addBrandForm"
+            :rules="addBrandRules"
+            ref="addBrandForm"
             label-width="100px"
             class="add-ruleForm"
           >
-            <el-form-item label="品牌名称" prop="addInfoName">
-              <el-input v-model="ruleForm.addInfoName" class="inputStyle" placeholder="请输入品牌名称"></el-input>
+            <el-form-item label="品牌名称" prop="name">
+              <el-input v-model="addBrandForm.name" class="inputStyle" placeholder="请输入品牌名称"></el-input>
             </el-form-item>
-            <el-form-item label="品牌简称" prop="addInfoAbbr">
-              <el-input v-model="ruleForm.addInfoAbbr" class="inputStyle" placeholder="请输入品牌简称"></el-input>
+            <el-form-item label="品牌简称" prop="abbreviation">
+              <el-input
+                v-model="addBrandForm.abbreviation"
+                class="inputStyle"
+                placeholder="请输入品牌简称"
+              ></el-input>
             </el-form-item>
-            <el-form-item label="所属客户" prop="addInfoCustomer">
-              <el-select v-model="ruleForm.addInfoCustomer" placeholder="请选择" class="inputSelector">
+            <el-form-item label="所属客户" prop="clientId">
+              <el-select v-model="addBrandForm.clientId" placeholder="请选择" class="inputSelector">
                 <el-option
-                  v-for="item in selectionData"
+                  v-for="item in addBrandForm.options.clientOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="品牌描述" prop="addInfoDescription">
+            <el-form-item label="品牌描述" prop="description">
               <el-input
                 class="inputArea"
                 type="textarea"
                 :rows="4"
                 placeholder="请输入品牌描述"
-                v-model="ruleForm.addInfoDescription"
+                v-model="addBrandForm.description"
               ></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" class="save" @click="handleNewSaveClick('ruleForm')">保存</el-button>
+              <el-button type="primary" class="save" @click="handleNewSaveClick('addBrandForm')">保存</el-button>
               <el-button type="primary" class="cancel" @click="handleNewCancelClick()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -101,39 +102,51 @@
 
       <el-tab-pane label="编辑品牌信息" name="third" v-if="editCardShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">品牌名称</span>
-            <el-input v-model="editInfoName" class="input" placeholder="请输入品牌名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">品牌简称</span>
-            <el-input v-model="editInfoAbbr" class="input" placeholder="请输入品牌简称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">所属客户</span>
-            <el-select v-model="editInfoCustomer" placeholder="请选择" class="inputSelector">
-              <el-option
-                v-for="item in selectionData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">品牌描述</span>
-            <el-input
-              class="inputArea"
-              type="textarea"
-              :rows="4"
-              placeholder="请输入品牌描述"
-              v-model="editInfoDescription"
-            ></el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" @click="handleEditSaveClick()" class="save">保存</el-button>
-            <el-button type="primary" @click="handleEditCancelClick()" class="cancel">取消</el-button>
-          </div>
+          <el-form
+            :model="updateBrandForm"
+            :rules="updateBrandRules"
+            ref="updateBrandForm"
+            label-width="100px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="品牌名称" prop="name">
+              <el-input v-model="updateBrandForm.name" class="inputStyle" placeholder="请输入品牌名称"></el-input>
+            </el-form-item>
+            <el-form-item label="品牌简称" prop="abbreviation">
+              <el-input
+                v-model="updateBrandForm.abbreviation"
+                class="inputStyle"
+                placeholder="请输入品牌简称"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="所属客户" prop="clientId">
+              <el-select v-model="updateBrandForm.clientId" placeholder="请选择" class="inputSelector">
+                <el-option
+                  v-for="item in updateBrandForm.options.clientOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="品牌描述" prop="description">
+              <el-input
+                class="inputArea"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入品牌描述"
+                v-model="updateBrandForm.description"
+              ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleEditSaveClick('updateBrandForm')"
+              >保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleEditCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -148,135 +161,99 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      viewname: "first",
-      searchInput: "",
       tableData: [],
       multipleSelection: [],
-      selectionData: [],
-
-      editInfoDescription: "",
-      editInfoName: "",
-      editInfoId: "",
-      editInfoAbbr: "",
-      editInfoCustomer: "",
-      editInfoInitCustomerId: "",
-      tmpeditInfoCustomer: "",
-
-      ruleForm: {
-        addInfoCustomer: "",
-        addInfoDescription: "",
-        addInfoName: "",
-        addInfoAbbr: ""
-      },
-      rules: {
-        addInfoCustomer: [
-          { required: true, message: "请选择客户", trigger: "blur" }
-        ],
-        addInfoDescription: {
-          required: false,
-          message: "请输入描述",
-          trigger: "blur"
-        },
-        addInfoName: {
-          required: true,
-          message: "请输入品牌名称",
-          trigger: "blur"
-        },
-        addInfoAbbr: {
-          required: true,
-          message: "请输入品牌简称",
-          trigger: "blur"
+      //添加品牌参数列表
+      addBrandForm: {
+        abbreviation: "",
+        clientId: "",
+        description: "",
+        name: "",
+        options: {
+          clientOptions: []
         }
       },
-
+      addBrandRules: {
+        description: [
+          { required: false, message: "请输入品牌描述", trigger: "blur" }
+        ],
+        name: [{ required: true, message: "请输入品牌名称", trigger: "blur" }],
+        abbreviation: [
+          { required: true, message: "请输入品牌简称", trigger: "blur" }
+        ],
+        clientId: [{ required: true, message: "请选择客户", trigger: "change" }]
+      },
+      //修改客户参数列表
+      updateBrandForm: {
+        id: "",
+        abbreviation: "",
+        clientId: "",
+        description: "",
+        name: "",
+        options: {
+          clientOptions: []
+        }
+      },
+      updateBrandRules: {
+        description: [
+          { required: false, message: "请输入品牌描述", trigger: "blur" }
+        ],
+        name: [{ required: true, message: "请输入品牌名称", trigger: "blur" }],
+        abbreviation: [
+          { required: true, message: "请输入品牌简称", trigger: "blur" }
+        ],
+        clientId: [{ required: true, message: "请选择客户", trigger: "change" }]
+      },
+      //窗口控制
+      viewname: "first",
       addCardShowFlag: false,
       editCardShowFlag: false,
-
-      baseInfoManagementErrorCode: [
-        {
-          errorCode: 0,
-          errorInfo: "未知错误"
-        },
-        {
-          errorCode: -1,
-          errorInfo: "传送的对象属性中存在null"
-        },
-        {
-          errorCode: -2,
-          errorInfo: "字段重复"
-        },
-        {
-          errorCode: -3,
-          errorInfo: "参数存在不一致"
-        },
-        {
-          errorCode: -4,
-          errorInfo: "当前数据库记录不符合逻辑要求"
-        },
-        {
-          errorCode: -5,
-          errorInfo: "未知错所要查询的数据在数据库中不存在"
-        }
-      ]
+      //搜索框
+      searchInput: ""
     };
   },
   created: function() {
-    //加载客户选择信息
-    request
-      .get(`${window.$config.HOST}/backstage/client/find`)
-      .then(response => {
-        this.selectionData = response.result;
-      });
+    //加载客户选择框
+    request.get(`/backstage/client/find`).then(response => {
+      this.addBrandForm.options.clientOptions = response.result;
+      this.updateBrandForm.options.clientOptions = response.result;
+    });
 
-    //加载默认信息
-    request
-      .get(`${window.$config.HOST}/backstage/brand/find`, {
-        params: { name: null }
-      })
-      .then(response => {
-        this.tableData = response.result;
-      });
+    //加载所有品牌
+    request.get(`/backstage/brand/find`).then(response => {
+      this.tableData = response.result;
+    });
   },
   methods: {
     handleTabClick(tab, event) {
       console.log(tab, event);
     },
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
+    //列表选中
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    handleSearchClick(allFlag) {
-      var param = { name: null };
-      if (!allFlag) {
-        /* if(this.searchInput === ""){
-            this.$message.error("请输入品牌名称");
-            return;
-          } */
-        param = { name: this.searchInput === "" ? null : this.searchInput };
-      }
-      console.log("搜索参数");
-      console.log(param);
+    //搜索列表
+    handleSearchClick() {
       request
-        .get(`${window.$config.HOST}/backstage/brand/find`, {
-          params: param
+        .get(`/backstage/brand/find`, {
+          params: {
+            name: this.searchInput
+          }
         })
         .then(response => {
           this.tableData = response.result;
         });
     },
+    //添加品牌信息
     handleNewInfoClick() {
       this.addCardShowFlag = true;
       this.viewname = "second";
-      console.log(this.viewname);
+      this.addBrandForm.abbreviation = "";
+      this.addBrandForm.clientId = "";
+      this.addBrandForm.description = "";
+      this.addBrandForm.name = "";
     },
+    //编辑品牌信息
     handleEditInfoClick() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -284,26 +261,23 @@ export default {
           type: "warning"
         });
         return;
-      }
-      if (this.multipleSelection.length > 1) {
+      } else if (this.multipleSelection.length > 1) {
         this.$message({
           message: "只能选择一个信息进行编辑",
           type: "warning"
         });
         return;
+      } else {
+        this.editCardShowFlag = true;
+        this.updateBrandForm.id = this.multipleSelection[0].id;
+        this.updateBrandForm.name = this.multipleSelection[0].name;
+        this.updateBrandForm.abbreviation = this.multipleSelection[0].abbreviation;
+        this.updateBrandForm.clientId = this.multipleSelection[0].clientId;
+        this.updateBrandForm.description = this.multipleSelection[0].description;
+        this.viewname = "third";
       }
-      this.editCardShowFlag = true;
-      console.log(this.multipleSelection[0]);
-      this.editInfoId = this.multipleSelection[0].id;
-      this.editInfoName = this.multipleSelection[0].name;
-      this.editInfoAbbr = this.multipleSelection[0].abbreviation;
-      this.editInfoCustomer = this.multipleSelection[0].clientId;
-      this.editInfoCustomerName = this.multipleSelection[0].clientName;
-      this.tmpeditInfoCustomerName = this.multipleSelection[0].clientName;
-      this.editInfoDescription = this.multipleSelection[0].description;
-      this.viewname = "third";
-      editInfoCustomer;
     },
+    //删除品牌信息
     handleDeleteInfoClick() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -311,51 +285,48 @@ export default {
           type: "warning"
         });
       } else {
-        this.multipleSelection.forEach(element => {
-          request
-            .delete(`${window.$config.HOST}/backstage/brand/delete`, {
-              params: { id: element.id }
-            })
-            .then(response => {
-              var i = this.tableData.indexOf(element);
-              this.tableData.splice(i, 1);
+        this.$confirm("是否确认选中记录？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            this.multipleSelection.forEach(element => {
+              request
+                .delete(`/backstage/brand/delete`, {
+                  params: { id: element.id }
+                })
+                .then(response => {
+                  this.handleSearchClick();
+                });
             });
-        });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
       }
     },
+    //新增表格提交
     handleNewSaveClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
-          var param = {
-            name:
-              this.ruleForm.addInfoName === ""
-                ? null
-                : this.ruleForm.addInfoName,
-            abbreviation:
-              this.ruleForm.addInfoAbbr === ""
-                ? null
-                : this.ruleForm.addInfoAbbr,
-            description:
-              this.ruleForm.addInfoDescription === ""
-                ? null
-                : this.ruleForm.addInfoDescription,
-            clientId:
-              this.ruleForm.addInfoCustomer === ""
-                ? null
-                : this.ruleForm.addInfoCustomer
-          };
-          console.log(param);
-
           request
-            .post(`${window.$config.HOST}/backstage/brand/insert`, param)
+            .post(`/backstage/brand/insert`, {
+              abbreviation: this.addBrandForm.abbreviation,
+              clientId: this.addBrandForm.clientId,
+              description: this.addBrandForm.description,
+              name: this.addBrandForm.name
+            })
             .then(response => {
-              this.handleSearchClick(true);
-              this.ruleForm.addInfoName = "";
-              this.ruleForm.addInfoAbbr = "";
-              this.ruleForm.addInfoDescription = "";
-              this.ruleForm.addInfoCustomer = "";
-
+              this.handleSearchClick();
+              this.addBrandForm.name = "";
+              this.addBrandForm.abbreviation = "";
+              this.addBrandForm.clientId = "";
+              this.addBrandForm.description = "";
               this.addCardShowFlag = false;
               this.viewname = "first";
             });
@@ -367,57 +338,55 @@ export default {
         }
       });
     },
+    //取消新增
     handleNewCancelClick() {
       this.addCardShowFlag = false;
       this.viewname = "first";
-      this.$message({
-        message: "取消新增!",
-        type: "info"
+      this.addBrandForm.name = "";
+      this.addBrandForm.abbreviation = "";
+      this.addBrandForm.clientId = "";
+      this.addBrandForm.description = "";
+    },
+    //编辑表格提交
+    handleEditSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .put(`/backstage/brand/update`, {
+              abbreviation: this.updateBrandForm.abbreviation,
+              clientId: this.updateBrandForm.clientId,
+              description: this.updateBrandForm.description,
+              name: this.updateBrandForm.name,
+              id: this.updateBrandForm.id
+            })
+            .then(response => {
+              this.handleSearchClick(true);
+              this.updateBrandForm.name = "";
+              this.updateBrandForm.abbreviation = "";
+              this.updateBrandForm.clientId = "";
+              this.updateBrandForm.description = "";
+              this.updateBrandForm.id = "";
+              this.editCardShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
       });
-      return;
     },
-    handleEditSaveClick() {
-      var tmp =
-        this.editInfoCustomer === this.tmpeditInfoCustomer
-          ? this.editInfoInitCustomerId
-          : this.editInfoCustomer;
-      var param = {
-        id: this.editInfoId === "" ? null : this.editInfoId,
-        name: this.editInfoName === "" ? null : this.editInfoName,
-        abbreviation: this.editInfoAbbr === "" ? null : this.editInfoAbbr,
-        description:
-          this.editInfoDescription === "" ? null : this.editInfoDescription,
-        clientId: tmp === "" ? null : tmp
-      };
-      console.log(param);
-
-      request
-        .put(`${window.$config.HOST}/backstage/brand/update`, param)
-        .then(response => {
-          this.handleSearchClick(true);
-
-          this.editInfoId = "";
-          this.editInfoName = "";
-          this.editInfoAbbr = "";
-          this.editInfoCustomer = "";
-          this.editInfoCustomerName = "";
-          this.tmpeditInfoCustomerName = "";
-          this.editInfoDescription = "";
-
-          this.editCardShowFlag = false;
-          this.viewname = "first";
-        });
-
-      return;
-    },
+    //取消编辑
     handleEditCancelClick() {
       this.editCardShowFlag = false;
       this.viewname = "first";
-      this.$message({
-        message: "取消编辑!",
-        type: "info"
-      });
-      return;
+      this.updateBrandForm.name = "";
+      this.updateBrandForm.abbreviation = "";
+      this.updateBrandForm.clientId = "";
+      this.updateBrandForm.description = "";
+      this.updateBrandForm.id = "";
     }
   }
 };
