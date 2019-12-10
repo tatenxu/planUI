@@ -1406,7 +1406,10 @@ export default {
             note: that.ruleForm.note,
             actualStartDate: that.ruleForm.actualStartDate,
             actualEndDate: that.ruleForm.actualEndDate,
-            extension: that.changeDate(that.ruleForm.extension)
+            extension:
+              that.ruleForm.extension === undefined
+                ? undefined
+                : that.changeDate(that.ruleForm.extension)
           };
 
           console.log("添加plan的list: ", param);
@@ -1430,7 +1433,6 @@ export default {
       });
     },
 
-    // TODO: zhangzhe根计划更新接口
     modifyPlanForm(formName) {
       /* 普通计划 
         id,name,productLine,product,
@@ -1565,6 +1567,17 @@ export default {
           that.isRootPlanFlag = data.isRoot;
           that.isModifyPlanFlag = data.isModify;
           that.isCreatePlanFlag = data.isCreate;
+
+          // 获取计划的文件列表, 创建子计划时不能获取文件列表
+          request
+            .get(`${window.$config.HOST}/plan-files/find`, {
+              params: { planId: that.ruleForm.id }
+            })
+            .then(response => {
+              response.result.forEach(ele => {
+                that.uploadFileNameList.push({ fileName: ele });
+              });
+            });
         }
 
         // 深拷贝变量，不然只是引用
@@ -1574,16 +1587,6 @@ export default {
         that.ganttWatch.ganttWatchPlanNameOrigin = that.ruleForm.name;
         that.ganttWatch.ganttWatchPlanStartDateOrigin = that.ruleForm.startDate;
         that.ganttWatch.ganttWatchPlanEndDateOrigin = that.ruleForm.endDate;
-
-        // that.ruleForm.startEndDate = [
-        //   that.ruleForm.startDate,
-        //   that.ruleForm.endDate
-        // ];
-
-        // that.ruleForm.actualStartEndDate = [
-        //   that.ruleForm.actualStartDate,
-        //   that.ruleForm.actualEndDate
-        // ];
 
         that.placeHolders.startStr = that.ruleForm.startDate;
         that.placeHolders.endStr = that.ruleForm.endDate;
@@ -1596,17 +1599,6 @@ export default {
           that.ruleForm.actualEndDate === undefined
             ? that.placeHolders.actualEndStr
             : that.ruleForm.actualEndDate;
-
-        // 获取计划的文件列表
-        request
-          .get(`${window.$config.HOST}/plan-files/find`, {
-            params: { planId: that.ruleForm.id }
-          })
-          .then(response => {
-            response.result.forEach(ele => {
-              that.uploadFileNameList.push({ fileName: ele });
-            });
-          });
 
         // 处理是添加子计划时相关属性更改的操作
         if (that.isCreatePlanFlag) {
