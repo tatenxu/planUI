@@ -903,12 +903,12 @@
           >
             <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
             <!-- 手动上传按钮 -->
-            <el-button
+            <!-- <el-button
               style="margin-left: 10px;"
               size="small"
               type="success"
               @click="submitUpload"
-            >上传到服务器</el-button>
+            >上传到服务器</el-button>-->
           </el-upload>
         </el-row>
         <el-row :gutter="20">
@@ -1092,7 +1092,7 @@ export default {
         creator: "无数据",
         extension: "无数据",
         startEndDate: [],
-        actualStartEndDate: " "
+        actualStartEndDate: []
       },
 
       // 文件操作
@@ -1255,7 +1255,7 @@ export default {
           if (!(element.startDate === null || element.endDate === null)) {
             var dateObj1 = new Date(element.startDate);
             var dateObj2 = new Date(element.endDate);
-            element.start = dateObj1.getTime();
+            element.startTime = dateObj1.getTime();
             element.duration = dateObj2.getTime() - dateObj1.getTime();
             this.ganttTasks.push(element);
           }
@@ -1336,9 +1336,9 @@ export default {
           console.log("上传结果：", response.result);
         });
     },
-    submitUpload() {
-      this.$refs.upload.submit();
-    },
+    // submitUpload() {
+    //   this.$refs.upload.submit();
+    // },
 
     changeDate(date1) {
       var date = new Date(date1);
@@ -1406,7 +1406,10 @@ export default {
             note: that.ruleForm.note,
             actualStartDate: that.ruleForm.actualStartDate,
             actualEndDate: that.ruleForm.actualEndDate,
-            extension: that.changeDate(that.ruleForm.extension)
+            extension:
+              that.ruleForm.extension === undefined
+                ? undefined
+                : that.changeDate(that.ruleForm.extension)
           };
 
           console.log("添加plan的list: ", param);
@@ -1414,13 +1417,17 @@ export default {
           request
             .post(`${window.$config.HOST}/plan/insert`, param)
             .then(response => {
-              console.log("添加成功");
-            });
+              that.ruleForm.id = response.result;
+              console.log("添加成功:", that.ruleForm.id);
 
-          this.$router.push({
-            name: this.goback ? this.goback : "planManagement",
-            params: {}
-          });
+              // 上传文件
+              this.$refs.upload.submit();
+
+              this.$router.push({
+                name: this.goback ? this.goback : "planManagement",
+                params: {}
+              });
+            });
         } else {
           this.$message({
             message: "制定计划失败：请填入必要字段",
@@ -1430,7 +1437,6 @@ export default {
       });
     },
 
-    // TODO: zhangzhe根计划更新接口
     modifyPlanForm(formName) {
       /* 普通计划 
         id,name,productLine,product,
@@ -1469,6 +1475,21 @@ export default {
                 });
               });
           } else {
+            console.log(this.ruleForm.actualStartEndDate);
+            if (
+              this.ruleForm.actualStartEndDate != undefined &&
+              this.ruleForm.actualStartEndDate.length == 2
+            ) {
+              this.ruleForm.actualStartDate = this.changeDate(
+                this.ruleForm.actualStartEndDate[0]
+              );
+              this.ruleForm.actualEndDate = this.changeDate(
+                this.ruleForm.actualStartEndDate[1]
+              );
+            } else {
+              this.ruleForm.actualStartDate = undefined;
+              this.ruleForm.actualEndDate = undefined;
+            }
             var param = {
               id: this.ruleForm.id,
               creatorId: this.ruleForm.creatorId,
@@ -1483,12 +1504,8 @@ export default {
               description: this.ruleForm.description,
               note: this.ruleForm.note,
               extension: this.changeDate(this.ruleForm.extension),
-              actualStartDate: this.changeDate(
-                this.ruleForm.actualStartEndDate[0]
-              ),
-              actualEndDate: this.changeDate(
-                this.ruleForm.actualStartEndDate[1]
-              )
+              actualStartDate: this.ruleForm.actualStartDate,
+              actualEndDate: this.ruleForm.actualEndDate
             };
 
             console.log("修改参数：", param);
@@ -1536,7 +1553,7 @@ export default {
         ? }
       */
       console.log("开始处理页面跳转参数");
-      const that = this;
+      let that = this;
 
       console.log("路由参数：", that.$route.params);
 
@@ -1554,6 +1571,17 @@ export default {
           that.isRootPlanFlag = data.isRoot;
           that.isModifyPlanFlag = data.isModify;
           that.isCreatePlanFlag = data.isCreate;
+
+          // 获取计划的文件列表, 创建子计划时不能获取文件列表
+          request
+            .get(`${window.$config.HOST}/plan-files/find`, {
+              params: { planId: data.rowData.id }
+            })
+            .then(response => {
+              response.result.forEach(ele => {
+                that.uploadFileNameList.push({ fileName: ele });
+              });
+            });
         }
 
         // 深拷贝变量，不然只是引用
@@ -1563,16 +1591,6 @@ export default {
         that.ganttWatch.ganttWatchPlanNameOrigin = that.ruleForm.name;
         that.ganttWatch.ganttWatchPlanStartDateOrigin = that.ruleForm.startDate;
         that.ganttWatch.ganttWatchPlanEndDateOrigin = that.ruleForm.endDate;
-
-        // that.ruleForm.startEndDate = [
-        //   that.ruleForm.startDate,
-        //   that.ruleForm.endDate
-        // ];
-
-        // that.ruleForm.actualStartEndDate = [
-        //   that.ruleForm.actualStartDate,
-        //   that.ruleForm.actualEndDate
-        // ];
 
         that.placeHolders.startStr = that.ruleForm.startDate;
         that.placeHolders.endStr = that.ruleForm.endDate;
@@ -1586,21 +1604,8 @@ export default {
             ? that.placeHolders.actualEndStr
             : that.ruleForm.actualEndDate;
 
-        // 获取计划的文件列表
-        request
-          .get(`${window.$config.HOST}/plan-files/find`, {
-            params: { planId: that.ruleForm.id }
-          })
-          .then(response => {
-            response.result.forEach(ele => {
-              that.uploadFileNameList.push({ fileName: ele });
-            });
-          });
-
         // 处理是添加子计划时相关属性更改的操作
         if (that.isCreatePlanFlag) {
-          that.ruleForm.name = "";
-
           that.ruleForm.type = that.ruleForm.assignPlanType;
           that.ruleForm.superiorId = data.isRoot ? 0 : that.ruleForm.id;
           that.ruleForm.superiorName = that.ruleForm.name;
@@ -1613,44 +1618,107 @@ export default {
             that.ruleForm.rootPlanId === undefined
               ? that.ruleForm.id
               : that.ruleForm.rootPlanId;
+
+          that.ruleForm.id = undefined;
+          that.ruleForm.name = "";
         }
       }
     },
 
     // gantt related
     ganttVisualButtonClick() {
-      if (
-        !(
-          this.ganttWatch.ganttWatchPlanNameOrigin === this.ruleForm.name &&
-          this.ruleForm.startEndDate === undefined
-        )
-      ) {
-        // 有更新
-        this.ganttTasks.forEach(ele => {
-          if (
-            ele.id === this.ruleForm.id ||
-            (this.isRootPlanFlag && ele.id === 0)
-          ) {
-            // 是当前ele,普通计划不可能为0
-            ele.name = this.ruleForm.name;
-            ele.startDate =
-              this.ruleForm.startEndDate === undefined
-                ? this.ruleForm.startDate
-                : this.changeDate(this.ruleForm.startEndDate[0]);
-            ele.endDate =
-              this.ruleForm.startEndDate === undefined
-                ? this.ruleForm.endDate
-                : this.changeDate(this.ruleForm.startEndDate[1]);
+      if (this.isCreatePlanFlag) {
+        //获取账户信息
+        request.get(`/me`).then(response => {
+          var curUserName = null;
+          curUserName = response.result.name;
 
-            var dateObj1 = new Date(ele.startDate);
-            var dateObj2 = new Date(ele.endDate);
-            ele.start = dateObj1.getTime();
-            ele.duration = dateObj2.getTime() - dateObj1.getTime();
+          var newPlan = {
+            creatorName: curUserName,
+            name: this.ruleForm.name,
+            parentId: this.ruleForm.superiorId,
+            type: "task",
+            id: -1
+          };
 
-            console.log(ele.start, ele.duration);
+          // 获取当前日期
+          var date = new Date();
+          // 获取当前月份
+          var nowMonth = date.getMonth() + 1;
+          // 获取当前是几号
+          var strDate = date.getDate();
+          // 添加分隔符“-”
+          var seperator = "-";
+          // 对月份进行处理，1-9月在前面添加一个“0”
+          if (nowMonth >= 1 && nowMonth <= 9) {
+            nowMonth = "0" + nowMonth;
           }
+          // 对月份进行处理，1-9号在前面添加一个“0”
+          if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+          }
+          // 最后拼接字符串，得到一个格式为(yyyy-MM-dd)的日期
+          var nowDate =
+            date.getFullYear() + seperator + nowMonth + seperator + strDate;
+
+          newPlan.startDate =
+            this.ruleForm.startEndDate === undefined
+              ? nowDate
+              : this.changeDate(this.ruleForm.startEndDate[0]);
+          newPlan.endDate =
+            this.ruleForm.startEndDate === undefined
+              ? nowDate
+              : this.changeDate(this.ruleForm.startEndDate[1]);
+
+          var dateObj1 = new Date(newPlan.startDate);
+          var dateObj2 = new Date(newPlan.endDate);
+          newPlan.startTime = dateObj1.getTime();
+          newPlan.duration = dateObj2.getTime() - dateObj1.getTime();
+
+          if (this.ganttTasks[this.ganttTasks.length - 1].id != -1) {
+            this.ganttTasks.push(newPlan);
+          } else {
+            this.ganttTasks.pop();
+            this.ganttTasks.push(newPlan);
+          }
+          console.log(this.ganttTasks);
+
+          this.ganttTaskUpdate(this.ganttTasks);
         });
-        this.ganttTaskUpdate(this.ganttTasks);
+      } else {
+        if (
+          !(
+            this.ganttWatch.ganttWatchPlanNameOrigin === this.ruleForm.name &&
+            this.ruleForm.startEndDate === undefined
+          )
+        ) {
+          // 有更新
+          this.ganttTasks.forEach(ele => {
+            if (
+              ele.id === this.ruleForm.id ||
+              (this.isRootPlanFlag && ele.id === 0)
+            ) {
+              // 是当前ele,普通计划不可能为0
+              ele.name = this.ruleForm.name;
+              ele.startDate =
+                this.ruleForm.startEndDate === undefined
+                  ? this.ruleForm.startDate
+                  : this.changeDate(this.ruleForm.startEndDate[0]);
+              ele.endDate =
+                this.ruleForm.startEndDate === undefined
+                  ? this.ruleForm.endDate
+                  : this.changeDate(this.ruleForm.startEndDate[1]);
+
+              var dateObj1 = new Date(ele.startDate);
+              var dateObj2 = new Date(ele.endDate);
+              ele.startTime = dateObj1.getTime();
+              ele.duration = dateObj2.getTime() - dateObj1.getTime();
+
+              console.log(ele.start, ele.duration);
+            }
+          });
+          this.ganttTaskUpdate(this.ganttTasks);
+        }
       }
 
       this.ganttDrawerVisible = true;

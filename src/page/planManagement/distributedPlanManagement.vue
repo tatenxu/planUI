@@ -117,7 +117,6 @@
         <!-- :row-style="tableRowClassName" -->
         <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
         <!-- <el-table-column width="50" type="index" label="序号" align="center"></el-table-column> -->
-        <!-- <el-table-column prop="id" v-if="false"></el-table-column> -->
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
@@ -317,6 +316,10 @@ export default {
       this.selectedData = [];
       this.selectedData.push(row);
     },
+    // //表格选择变化
+    // tableSelectionChange(val) {
+    //   this.selectedData = val;
+    // },
     // 行颜色
     tableRowClassName({ row, rowIndex }) {
       if (row.fromTemplate) {

@@ -162,19 +162,25 @@
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button
-              v-if="!isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              v-if="!isSubmitPlan && 
+                (scope.row.state === '已制定' || scope.row.state === '被驳回') 
+                && scope.row.creatorId === currentUserId"
               @click.native.prevent="ModifyPlanDetail(scope.row)"
               type="text"
               size="small"
             >修改</el-button>
             <el-button
-              v-if="!isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              v-if="!isSubmitPlan && 
+                (scope.row.state === '已制定' || scope.row.state === '被驳回') 
+                && scope.row.creatorId === currentUserId"
               @click.native.prevent="deleteOnePlan(scope.row.id)"
               type="text"
               size="small"
             >删除</el-button>
             <el-button
-              v-if="!isSubmitPlan && (scope.row.state === '已制定' || scope.row.state === '被驳回')"
+              v-if="!isSubmitPlan && 
+                (scope.row.state === '已制定' || scope.row.state === '被驳回') 
+                && scope.row.creatorId === currentUserId"
               @click.native.prevent="submitPlan(scope.row)"
               type="text"
               size="small"
@@ -300,6 +306,7 @@ export default {
   name: "planManagement",
   data() {
     return {
+      currentUserId: null,
       templateRadio: null,
       isCacheFlag: true,
       lookAllPlans: false,
@@ -369,6 +376,10 @@ export default {
   },
   created: function() {
     console.log("进入计划管理页面");
+    //获取账户信息
+    request.get(`/me`).then(response => {
+      this.currentUserId = response.result.id;
+    });
 
     //客户名称加载
     request
