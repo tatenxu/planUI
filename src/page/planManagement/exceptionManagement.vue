@@ -318,6 +318,13 @@ export default {
         this.searchOptions.options.clientNameOptions = response.result;
       });
 
+    //品牌名称跟随加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
+      .then(response => {
+        this.searchOptions.options.brandNameOptions = response.result;
+      });
+
     //异常类型选项
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {

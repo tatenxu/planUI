@@ -6,7 +6,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select
-              v-model="searchOptions.searchParams.customerName"
+              v-model="searchOptions.searchParams.clientName"
               @change="clientNameChange"
               clearable
             >
@@ -227,7 +227,7 @@ export default {
       isSelfMadePlan: false,
       searchOptions: {
         searchParams: {
-          customerName: "",
+          clientName: "",
           brandName: "",
           clothesLevelName: "",
           seriesName: "",
@@ -261,6 +261,13 @@ export default {
       .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
         this.searchOptions.options.customerNameOptions = response.result;
+      });
+
+    //品牌名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
+      .then(response => {
+        this.searchOptions.options.brandNameOptions = response.result;
       });
 
     request
@@ -352,9 +359,9 @@ export default {
       console.log("搜索日期：", this.searchOptions.searchParams.dateRange);
       var param = {
         clientId:
-          this.searchOptions.searchParams.customerName === ""
+          this.searchOptions.searchParams.clientName === ""
             ? undefined
-            : this.searchOptions.searchParams.customerName,
+            : this.searchOptions.searchParams.clientName,
         brandId:
           this.searchOptions.searchParams.brandName === ""
             ? undefined
