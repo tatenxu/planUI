@@ -98,7 +98,7 @@
           <el-row :gutter="20">
             <el-col :span="10">
               <el-button type="primary" @click="searchRootPlan(1)">搜索</el-button>
-              <el-button type="primary" @click="saveModelPanelOpen()">存为计划模板</el-button>
+              <el-button type="primary" @click="saveModelPanelOpen()" v-if="checked  === 1">存为计划模板</el-button>
               <el-button type="primary" @click="deleteRootPlan()">删除根计划</el-button>
             </el-col>
             <el-col :span="8" style="margin-top:10px;margin-left:400px">
@@ -128,7 +128,7 @@
             <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
             <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
             <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-            <el-table-column label="是否约束" align="center" width="100px">
+            <el-table-column label="是否约束" align="center" width="100px" v-if="checked  === 1">
               <template slot-scope="scope">
                 <el-switch
                   v-model="scope.row.limited"
