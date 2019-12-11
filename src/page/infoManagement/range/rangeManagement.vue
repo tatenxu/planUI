@@ -807,20 +807,13 @@ export default {
     });
 
     //获得全部系列
-    request
-      .get(`/info/series/find`, {
-        params: {
-          pageNum: 1,
-          pageSize: 1000
-        }
-      })
-      .then(response => {
-        response.result.forEach(element => {
-          this.nameSuggestions.push({
-            value: element.name
-          });
+    request.get(`/info/series/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestions.push({
+          value: element.name
         });
       });
+    });
 
     //获得服装层次
     request

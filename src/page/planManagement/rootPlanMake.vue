@@ -440,20 +440,13 @@ export default {
       this.meID = response.result.id;
     });
     //获取系列名称
-    request
-      .get(`/info/series/find`, {
-        params: {
-          pageNum: 1,
-          pageSize: 1000
-        }
-      })
-      .then(response => {
-        response.result.forEach(element => {
-          this.nameSuggestionsSeries.push({
-            value: element.name
-          });
+    request.get(`/info/series/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestionsSeries.push({
+          value: element.name
         });
       });
+    });
 
     //获取根计划名称
     request.get(`/root-plan/name`).then(response => {

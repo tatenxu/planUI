@@ -421,36 +421,22 @@ export default {
       });
 
     //获取系列名称
-    request
-      .get(`/info/series/find`, {
-        params: {
-          pageNum: 1,
-          pageSize: 1000
-        }
-      })
-      .then(response => {
-        response.result.forEach(element => {
-          this.nameSuggestionsSeries.push({
-            value: element.name
-          });
+    request.get(`/info/series/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestionsSeries.push({
+          value: element.name
         });
       });
+    });
 
     //获取款式组名称
-    request
-      .get(`/info/style-group/find`, {
-        params: {
-          pageNum: 1,
-          pageSize: 1000
-        }
-      })
-      .then(response => {
-        response.result.forEach(element => {
-          this.nameSuggestionsStyleGroup.push({
-            value: element.name
-          });
+    request.get(`/info/style-group/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestionsStyleGroup.push({
+          value: element.name
         });
       });
+    });
   },
   methods: {
     //当搜索框的客户名称改变的时候GET弹出框的品牌信息

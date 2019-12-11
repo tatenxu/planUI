@@ -440,20 +440,13 @@ export default {
     });
 
     //获取系列名称
-    request
-      .get(`/info/series/find`, {
-        params: {
-          pageNum: 1,
-          pageSize: 1000
-        }
-      })
-      .then(response => {
-        response.result.forEach(element => {
-          this.nameSuggestionsSeries.push({
-            value: element.name
-          });
+    request.get(`/info/series/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestionsSeries.push({
+          value: element.name
         });
       });
+    });
 
     //得到搜索信息
     request
@@ -476,12 +469,7 @@ export default {
 
     //得到搜索信息
     request
-      .get(`/info/style/find`, {
-        params: {
-          pageNum: 1,
-          pageSize: 1000
-        }
-      })
+      .get(`/info/style/name`)
       .then(response => {
         response.result.forEach(element => {
           this.nameSuggestionsStyle.push({
