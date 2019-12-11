@@ -242,6 +242,18 @@ export default {
         this.searchOptions.options.planTypeOptions = response.result;
       });
 
+    // 加载人员
+    request
+      .get(`${window.$config.HOST2}/user/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 100
+        }
+      })
+      .then(response => {
+        this.searchOptions.options.creatorOptions = response.result;
+      });
+
     //默认加载所有
     this.handleSearch();
 
@@ -314,7 +326,13 @@ export default {
           },
           {
             id: 5,
-            label: "项目类型",
+            label: "异常类型",
+            value: "exceptionType",
+            width: 70
+          },
+          {
+            id: 6,
+            label: "异常内容",
             value: "exceptionContent",
             width: 70
           }
@@ -441,7 +459,7 @@ export default {
         .then(response => {
           this.tasks = [];
           this.originSeriesGetData = [];
-
+          console.log(response.result);
           response.result.forEach(element => {
             if (
               (this.searchOptions.searchParams.planStateName === "" ||
@@ -494,6 +512,11 @@ export default {
     exportExcel() {
       import("@/utils/Export2Excel").then(excel => {
         const tHeader = [
+          "业务组",
+          "业务",
+          "客户",
+          "品牌",
+          "系列名称",
           "系统编码",
           "项目类型",
           "订单阶段",
@@ -516,6 +539,11 @@ export default {
           "系列更新提醒"
         ];
         const filterVal = [
+          "productLine",
+          "creatorName",
+          "clientName",
+          "brandName",
+          "seriesName",
           "systemCode",
           "projectType",
           "orderStage",
