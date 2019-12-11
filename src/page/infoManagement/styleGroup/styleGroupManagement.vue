@@ -678,7 +678,7 @@ export default {
           });
         } else {
           this.$message({
-            message: "请选择要删除的款式组",
+            message: "您没有权限删除其中的某些条目！",
             type: "warning"
           });
         }
