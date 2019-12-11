@@ -28,20 +28,20 @@
         >
           <el-table-column width="50" type="selection" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-          <el-table-column prop="type" width="250" label="类型" align="center"></el-table-column>
+          <el-table-column prop="type" width="350" label="类型" align="center"></el-table-column>
           <el-table-column prop="assignPlanType" label="颜色展示" align="center">
             <template slot-scope="scope">
-              <font :color="scope.row.code">颜色展示：这种类型的数据显示的颜色示例！</font>
+              <div :style="'width:500px;height:30px;background-color:'+scope.row.code"></div>
             </template>
           </el-table-column>
-          <el-table-column label="操作" fixed="right" align="center" width="200px">
+          <el-table-column label="操作" fixed="right" align="center">
             <template slot-scope="scope">
               <el-button size="mini" @click="updateColorPanel(scope.row)" type="text">修改</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="添加/修改颜色(默认增加)" name="second">
+      <el-tab-pane label="添加/修改颜色(默认添加)" name="second">
         <el-card>
           <el-form
             :model="colorData"
@@ -51,6 +51,24 @@
             class="add-ruleForm"
           >
             <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="计划/异常" prop="classification" placeholder="请选择添加类型">
+                  <el-select
+                    v-model="colorData.classification"
+                    clearable
+                    placeholder="请选择"
+                    style="min-width:300px"
+                    @change="typeChanged"
+                  >
+                    <el-option
+                      v-for="item in colorData.options.classificationOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
               <el-col :span="8">
                 <el-form-item label="类型" prop="type" placeholder="请选择添加类型">
                   <el-select
@@ -64,23 +82,6 @@
                       :key="item.name"
                       :label="item.name"
                       :value="item.name"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="计划/异常" prop="classification" placeholder="请选择添加类型">
-                  <el-select
-                    v-model="colorData.classification"
-                    clearable
-                    placeholder="请选择"
-                    style="min-width:300px"
-                  >
-                    <el-option
-                      v-for="item in colorData.options.classificationOptions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"
                     ></el-option>
                   </el-select>
                 </el-form-item>
@@ -133,7 +134,6 @@
                   class="current-color-input"
                   v-model="_currentColor"
                 />
-                <!-- <label for="current-color-text" class="current-color-label">切换</label> -->
               </div>
             </div>
 
@@ -283,6 +283,19 @@ export default {
     this.update();
   },
   methods: {
+    typeChanged() {
+      //获取计划类型
+      request
+        .get(`/backstage/dic-property/name`, {
+          params: {
+            categoryName:
+              this.colorData.classification === "PLAN" ? "计划类型" : "异常类型"
+          }
+        })
+        .then(response => {
+          this.colorData.options.typeOptions = response.result;
+        });
+    },
     //RGBA转换为十六进制
     hexify(color) {
       var values = color
@@ -319,6 +332,17 @@ export default {
       this.colorData.id = row.id;
       this.colorData.type = row.type;
       this.colorData.classification = row.classification;
+      //获取计划类型
+      request
+        .get(`/backstage/dic-property/name`, {
+          params: {
+            categoryName:
+              row.classification === "PLAN" ? "计划类型" : "异常类型"
+          }
+        })
+        .then(response => {
+          this.colorData.options.typeOptions = response.result;
+        });
       this.viewname = "second";
     },
     submitColor(formName) {
@@ -373,6 +397,7 @@ export default {
       this.updateFlag = false;
     },
     addColorPanel() {
+      this.colorData.options.typeOptions = [];
       this.viewname = "second";
       this.updateFlag = false;
     },

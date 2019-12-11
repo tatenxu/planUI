@@ -320,7 +320,7 @@ export default {
     request
       .get(`/backstage/serial-number/find`, {
         params: {
-          type: 1
+          type: "SERIES"
         }
       })
       .then(response => {
@@ -334,7 +334,7 @@ export default {
     request
       .get(`/backstage/serial-number/find`, {
         params: {
-          type: 2
+          type: "STYLE_GROUP"
         }
       })
       .then(response => {
@@ -348,7 +348,7 @@ export default {
     request
       .get(`/backstage/serial-number/find`, {
         params: {
-          type: 4
+          type: "EXCEPTION"
         }
       })
       .then(response => {
@@ -361,7 +361,7 @@ export default {
     request
       .get(`/backstage/serial-number/find`, {
         params: {
-          type: 3
+          type: "PLAN"
         }
       })
       .then(response => {
@@ -406,7 +406,8 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.exceptionRuleNumber = this.numberPrefixException + "2019-01-01-" + ss;
+      this.exceptionRuleNumber =
+        this.numberPrefixException + "2019-01-01-" + ss;
     },
     previewStyleGroup() {
       if (
@@ -441,7 +442,8 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.styleGroupRuleNumber = this.numberPrefixStyleGroup + "2019-01-01-" + ss;
+      this.styleGroupRuleNumber =
+        this.numberPrefixStyleGroup + "2019-01-01-" + ss;
     },
     previewRange() {
       if (

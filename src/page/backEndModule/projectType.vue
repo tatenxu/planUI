@@ -30,7 +30,7 @@
                 <el-main clas="containerMain">
                   <el-table
                     ref="multipleTable"
-                    :data="projectType"
+                    :data="projectType.tableData"
                     tooltip-effect="dark"
                     style="width: 100%"
                     @selection-change="handleProjectSelectionChange"
@@ -63,14 +63,14 @@
                 <el-main clas="containerMain">
                   <el-table
                     ref="multipleTable"
-                    :data="orderTable"
+                    :data="orderStage.tableData"
                     tooltip-effect="dark"
                     style="width: 100%"
-                    @selection-change="handlePropSelectionChange"
+                    @selection-change="handleOrderSelectionChange"
                   >
                     <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="id" label="id" v-if="false" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="name" label="订单" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="name" label="订单阶段" show-overflow-tooltip></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -82,20 +82,20 @@
       <el-tab-pane label="新增项目类型" name="second" v-if="addProjectTypeShowFlag">
         <el-card>
           <el-form
-            :model="ruleFormProjectType"
-            :rules="rulesProjectType"
-            ref="ruleForm1"
+            :model="projectType.addProjectType"
+            :rules="projectType.addProjectTypeRules"
+            ref="projectType.addProjectType"
             label-width="100px"
             class="add-ruleForm"
           >
-            <el-form-item label="项目类型:" prop="addProjectTypeName">
-              <el-input v-model="ruleFormProjectType.addProjectTypeName" placeholder="请输入项目类型名称"></el-input>
+            <el-form-item label="项目类型" prop="name">
+              <el-input v-model="projectType.addProjectType.name" placeholder="请输入项目类型名称"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button
                 type="primary"
                 class="save"
-                @click="handleAddProjectTypeSaveClick('ruleFormProjectType')"
+                @click="handleAddProjectTypeSaveClick('projectType.addProjectType')"
               >保存</el-button>
               <el-button type="primary" class="cancel" @click="handleAddProjectTypeCancelClick()">取消</el-button>
             </el-form-item>
@@ -105,38 +105,53 @@
 
       <el-tab-pane label="编辑项目类型" name="third" v-if="editProjectTypeShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">项目类型名称:</span>
-            <el-input v-model="editProjectTypeName" class="input" placeholder="请输入项目类型名称"></el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleEditProjectTypeSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleEditProjectTypeCancelClick()">取消</el-button>
-          </div>
+          <el-form
+            :model="projectType.updateProjectType"
+            :rules="projectType.updateProjectTypeRules"
+            ref="projectType.updateProjectType"
+            label-width="100px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="项目类型" prop="name">
+              <el-input v-model="projectType.updateProjectType.name" placeholder="请输入项目类型名称"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleEditProjectTypeSaveClick('projectType.updateProjectType')"
+              >保存</el-button>
+              <el-button
+                type="primary"
+                class="cancel"
+                @click="handleEditProjectTypeCancelClick()"
+              >取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
       <el-tab-pane label="新增订单属性" name="fourth" v-if="addOrderShowFlag">
         <el-card>
           <el-form
-            :model="ruleFormOrder"
-            :rules="rulesProp"
-            ref="ruleForm1"
+            :model="orderStage.addOrder"
+            :rules="orderStage.addOrderRules"
+            ref="orderStage.addOrder"
             label-width="130px"
             class="add-ruleForm"
           >
-            <el-form-item label="订单名称:" prop="addOrderName">
-              <el-input v-model="ruleFormOrder.addOrderName" class="input" placeholder="请输入订单属性名称"></el-input>
+            <el-form-item label="订单名称" prop="name">
+              <el-input v-model="orderStage.addOrder.name" class="input" placeholder="请输入订单属性名称"></el-input>
             </el-form-item>
 
-            <el-form-item label="所属项目类型" prop="addOrderProjectTypeId">
+            <el-form-item label="所属项目类型" prop="projectTypeId">
               <el-select
-                v-model="ruleFormOrder.addOrderProjectTypeId"
+                v-model="orderStage.addOrder.projectTypeId"
                 placeholder="请选择"
                 class="inputSelector"
               >
                 <el-option
-                  v-for="item in projectType"
+                  v-for="item in orderStage.addOrder.options.projectTypeOptions"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -147,7 +162,7 @@
               <el-button
                 type="primary"
                 class="save"
-                @click="handleAddOrderSaveClick('ruleFormOrder')"
+                @click="handleAddOrderSaveClick('orderStage.addOrder')"
               >保存</el-button>
               <el-button type="primary" class="cancel" @click="handleAddOrderCancelClick()">取消</el-button>
             </el-form-item>
@@ -157,31 +172,416 @@
 
       <el-tab-pane label="编辑订单属性" name="fifth" v-if="editOrderShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">订单属性名称:</span>
-            <el-input v-model="editOrderName" class="input" placeholder="请输入订单属性名称"></el-input>
-          </div>
+          <el-form
+            :model="orderStage.updateOrder"
+            :rules="orderStage.updateOrderRules"
+            ref="orderStage.updateOrder"
+            label-width="130px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="订单名称" prop="name">
+              <el-input v-model="orderStage.updateOrder.name" class="input" placeholder="请输入订单属性名称"></el-input>
+            </el-form-item>
 
-          <div class="inputCombine">
-            <span class="inputTag">所属订单:</span>
-            <el-select v-model="underProjectTypeId" placeholder="请选择" class="inputSelector">
-              <el-option
-                v-for="item in projectType"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleEditOrderSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleEditOrderCancelClick()">取消</el-button>
-          </div>
+            <el-form-item label="所属项目类型" prop="projectTypeId">
+              <el-select
+                v-model="orderStage.updateOrder.projectTypeId"
+                placeholder="请选择"
+                class="inputSelector"
+              >
+                <el-option
+                  v-for="item in orderStage.updateOrder.options.projectTypeOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleEditOrderSaveClick('orderStage.updateOrder')"
+              >保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleEditOrderCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
+
+<script>
+import request from "@/utils/request";
+export default {
+  data() {
+    return {
+      //项目类型部分参数
+      projectType: {
+        tableData: [],
+        multipleSelection: [],
+        addProjectType: {
+          name: ""
+        },
+        addProjectTypeRules: {
+          name: [
+            { required: true, message: "请输入项目类型名称", trigger: "blur" }
+          ]
+        },
+        updateProjectType: {
+          name: "",
+          id: ""
+        },
+        updateProjectTypeRules: {
+          name: [
+            { required: true, message: "请输入项目类型名称", trigger: "blur" }
+          ]
+        }
+      },
+      //订单阶段部分参数
+      orderStage: {
+        tableData: [],
+        multipleSelection: [],
+        addOrder: {
+          name: "",
+          projectTypeId: "",
+          options: {
+            projectTypeOptions: []
+          }
+        },
+        addOrderRules: {
+          name: [
+            { required: true, message: "请输入订单阶段名称", trigger: "blur" }
+          ],
+          projectTypeId: [
+            { required: true, message: "请选择所属项目类型", trigger: "change" }
+          ]
+        },
+        updateOrder: {
+          id: "",
+          name: "",
+          projectTypeId: "",
+          options: {
+            projectTypeOptions: []
+          }
+        },
+        updateOrderRules: {
+          name: [
+            { required: true, message: "请输入订单阶段名称", trigger: "blur" }
+          ],
+          projectTypeId: [
+            { required: true, message: "请选择所属项目类型", trigger: "change" }
+          ]
+        }
+      },
+      //窗口控制参数
+      addProjectTypeShowFlag: false,
+      editProjectTypeShowFlag: false,
+      addOrderShowFlag: false,
+      editOrderShowFlag: false,
+      viewname: "first"
+    };
+  },
+
+  created: function() {
+    //加载所有的项目类型
+    request.get(`/backstage/project-type/find`).then(response => {
+      this.projectType.tableData = response.result;
+      this.orderStage.addOrder.options.projectTypeOptions = response.result;
+      this.orderStage.updateOrder.options.projectTypeOptions = response.result;
+    });
+  },
+  methods: {
+    //重新搜索订单阶段
+    reSearchOrder(projectTypeId) {
+      request
+        .get(`/backstage/order-stage/find`, {
+          params: { projectTypeId: projectTypeId }
+        })
+        .then(response => {
+          this.orderStage.tableData = response.result;
+        });
+    },
+    //重新搜索项目类型
+    reSearchProjectType() {
+      request.get(`/backstage/project-type/find`).then(response => {
+        this.projectType.tableData = response.result;
+        this.orderStage.addOrder.options.projectTypeOptions = response.result;
+        this.orderStage.updateOrder.options.projectTypeOptions =
+          response.result;
+      });
+    },
+
+    handleViewChange(tab, event) {
+      console.log(tab, event);
+    },
+    //项目类型选择
+    handleProjectSelectionChange(val) {
+      this.projectType.multipleSelection = val;
+      this.orderStage.tableData = [];
+      if (val.length >= 1) {
+        this.reSearchOrder(val[0].id);
+      }
+    },
+    //订单阶段选中
+    handleOrderSelectionChange(val) {
+      this.orderStage.multipleSelection = val;
+    },
+
+    //添加、修改、删除项目类型
+    handleAddProjectTypeClick() {
+      this.addProjectTypeShowFlag = true;
+      this.projectType.addProjectType.name = "";
+      this.viewname = "second";
+    },
+    handleEditProjectTypeClick() {
+      if (this.projectType.multipleSelection.length === 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一个项目类型!"
+        });
+        return;
+      } else if (this.projectType.multipleSelection.length > 1) {
+        this.$message({
+          type: "error",
+          message: "只能选择一个项目类型!"
+        });
+
+        return;
+      } else {
+        this.projectType.updateProjectType.id = this.projectType.multipleSelection[0].id;
+        this.projectType.updateProjectType.name = this.projectType.multipleSelection[0].name;
+        this.editProjectTypeShowFlag = true;
+        this.viewname = "third";
+      }
+    },
+    handleDeleteProjectTypeClick() {
+      if (this.projectType.multipleSelection.length === 0) {
+        this.$message({
+          message: "至少选择一个项目类型",
+          type: "warning"
+        });
+        return;
+      } else {
+        this.$confirm("是否确认删除该记录？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            this.projectType.multipleSelection.forEach(element => {
+              request
+                .delete(`/backstage/project-type/delete`, {
+                  params: { id: element.id }
+                })
+                .then(response => {
+                  this.reSearchProjectType();
+                });
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      }
+    },
+
+    //添加、删除、修改订单阶段
+    handleAddOrderClick() {
+      this.addOrderShowFlag = true;
+      this.orderStage.addOrder.name = "";
+      this.orderStage.addOrder.projectTypeId = "";
+      this.viewname = "fourth";
+    },
+    handleEditOrderClick() {
+      if (this.orderStage.multipleSelection.length === 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一个订单属性!"
+        });
+        return;
+      } else if (this.orderStage.multipleSelection.length > 1) {
+        this.$message({
+          type: "error",
+          message: "只能选择一个订单属性!"
+        });
+        return;
+      } else {
+        this.orderStage.updateOrder.id = this.orderStage.multipleSelection[0].id;
+        this.orderStage.updateOrder.name = this.orderStage.multipleSelection[0].name;
+        this.orderStage.updateOrder.projectTypeId = this.orderStage.multipleSelection[0].projectTypeId;
+        this.editOrderShowFlag = true;
+        this.viewname = "fifth";
+      }
+    },
+    handleDeleteOrderClick() {
+      if (this.orderStage.multipleSelection.length === 0) {
+        this.$message({
+          message: "至少选择一个订单属性",
+          type: "warning"
+        });
+        return;
+      } else {
+        this.$confirm("是否确认删除该记录？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            this.orderStage.multipleSelection.forEach(element => {
+              request
+                .delete(`/backstage/order-stage/delete`, {
+                  params: { id: element.id }
+                })
+                .then(response => {
+                  this.reSearchOrder(element.projectTypeId);
+                });
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      }
+    },
+
+    //添加项目类型提交
+    handleAddProjectTypeSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .post(`/backstage/project-type/insert`, {
+              name: this.projectType.addProjectType.name
+            })
+            .then(response => {
+              this.reSearchProjectType();
+              this.projectType.addProjectType.name = "";
+              this.addProjectTypeShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    //取消添加项目类型
+    handleAddProjectTypeCancelClick() {
+      this.projectType.addProjectType.name = "";
+      this.addProjectTypeShowFlag = false;
+      this.viewname = "first";
+    },
+    //更新项目类型提交
+    handleEditProjectTypeSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .put(`/backstage/project-type/update`, {
+              id: this.projectType.updateProjectType.id,
+              name: this.projectType.updateProjectType.name
+            })
+            .then(response => {
+              this.reSearchProjectType();
+              this.projectType.updateProjectType.id = "";
+              this.projectType.updateProjectType.name = "";
+              this.editProjectTypeShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    //取消项目类型更新
+    handleEditProjectTypeCancelClick() {
+      this.projectType.updateProjectType.id = "";
+      this.projectType.updateProjectType.name = "";
+      this.editProjectTypeShowFlag = false;
+      this.viewname = "first";
+    },
+    //添加订单阶段提交
+    handleAddOrderSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .post(`/backstage/order-stage/insert`, {
+              name: this.orderStage.addOrder.name,
+              projectTypeId: this.orderStage.addOrder.projectTypeId
+            })
+            .then(response => {
+              if (this.projectType.multipleSelection.length >= 1)
+                this.reSearchOrder(this.projectType.multipleSelection[0].id);
+              this.orderStage.addOrder.projectTypeId = "";
+              this.orderStage.addOrder.name = "";
+              this.addOrderShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    //取消添加订单阶段
+    handleAddOrderCancelClick() {
+      this.orderStage.addOrder.projectTypeId = "";
+      this.orderStage.addOrder.name = "";
+      this.addOrderShowFlag = false;
+      this.viewname = "first";
+    },
+    //编辑订单阶段提交
+    handleEditOrderSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .put(`/backstage/order-stage/update`, {
+              id: this.orderStage.updateOrder.id,
+              name: this.orderStage.updateOrder.name,
+              projectTypeId: this.orderStage.updateOrder.projectTypeId
+            })
+            .then(response => {
+              this.reSearchOrder(this.lastOrderProjectTypeId);
+              this.orderStage.updateOrder.id = "";
+              this.orderStage.updateOrder.name = "";
+              this.orderStage.updateOrder.projectTypeId = "";
+              this.editOrderShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    //取消编辑订单阶段
+    handleEditOrderCancelClick() {
+      this.orderStage.updateOrder.id = "";
+      this.orderStage.updateOrder.name = "";
+      this.orderStage.updateOrder.projectTypeId = "";
+      this.editOrderShowFlag = false;
+      this.viewname = "first";
+    }
+  }
+};
+</script>
 
 <style lang="less" scoped>
 .box-card {
@@ -243,302 +643,3 @@
   }
 }
 </style>
-
-<script>
-import request from "@/utils/request";
-export default {
-  data() {
-    return {
-      projectType: [],
-      orderTable: [],
-      editProjectTypeId: "",
-      editOrderId: "",
-      lastOrderProjectTypeId: "",
-      addProjectTypeShowFlag: false,
-      editProjectTypeShowFlag: false,
-      addOrderShowFlag: false,
-      editOrderShowFlag: false,
-      multiProjectTypeSelection: [],
-      multipleOrderSelection: [],
-      viewname: "first",
-      underProjectTypeId: "",
-      ruleFormProjectType: {
-        addProjectTypeName: ""
-      },
-      rulesProjectType: {
-        addProjectTypeName: [
-          { required: true, message: "请输入项目类型名称", trigger: "blur" }
-        ]
-      },
-      ruleFormOrder: {
-        addOrderName: "",
-        addOrderProjectTypeId: ""
-      },
-      rulesProp: {
-        addOrderName: [
-          { required: true, message: "请输入订单名称", trigger: "blur" }
-        ],
-        addOrderProjectTypeId: [
-          { required: true, message: "请选择所属项目类型", trigger: "changed" }
-        ]
-      }
-    };
-  },
-
-  created: function() {
-    //加载所有的项目类型
-    request.get(`/backstage/project-type/find`).then(response => {
-      this.projectType = response.result;
-    });
-  },
-  methods: {
-    reSearchOrder(projectTypeId) {
-      console.log(projectTypeId);
-      request
-        .get(`/backstage/order-stage/find`, {
-          params: { projectTypeId: projectTypeId }
-        })
-        .then(response => {
-          this.orderTable = response.result;
-        });
-    },
-    reSearchProjectType() {
-      request.get(`/backstage/project-type/find`).then(response => {
-        this.projectType = response.result;
-      });
-    },
-
-    handleViewChange(tab, event) {
-      console.log(tab, event);
-    },
-
-    handleProjectSelectionChange(val) {
-      this.multiProjectTypeSelection = val;
-      this.orderTable = [];
-      if (val.length >= 1) {
-        this.reSearchOrder(val[0].id);
-      }
-    },
-    handlePropSelectionChange(val) {
-      this.multipleOrderSelection = val;
-    },
-
-    handleAddProjectTypeClick() {
-      this.addProjectTypeShowFlag = true;
-      this.viewname = "second";
-    },
-
-    handleEditProjectTypeClick() {
-      if (this.multiProjectTypeSelection.length === 0) {
-        alert("请选择一个项目类型!");
-        return;
-      }
-
-      if (this.multiProjectTypeSelection.length > 1) {
-        alert("只能选择一个项目类型!");
-        return;
-      }
-
-      this.editProjectTypeId = this.multiProjectTypeSelection[0].id;
-      this.editProjectTypeName = this.multiProjectTypeSelection[0].name;
-      this.editProjectTypeShowFlag = true;
-      this.viewname = "third";
-    },
-    handleDeleteProjectTypeClick() {
-      if (this.multiProjectTypeSelection.length === 0) {
-        this.$message({
-          message: "至少选择一个项目类型",
-          type: "warning"
-        });
-      }
-
-      this.$confirm("是否确认删除该记录？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.multiProjectTypeSelection.forEach(element => {
-            request
-              .delete(`/backstage/project-type/delete`, {
-                params: { id: element.id }
-              })
-              .then(response => {
-                this.reSearchProjectType();
-              });
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-
-    handleAddOrderClick() {
-      this.addOrderShowFlag = true;
-      this.viewname = "fourth";
-    },
-    handleEditOrderClick() {
-      if (this.multipleOrderSelection.length === 0) {
-        alert("请选择一个订单属性!");
-        return;
-      }
-
-      if (this.multipleOrderSelection.length > 1) {
-        alert("只能选择一个订单属性!");
-        return;
-      }
-      this.lastOrderProjectTypeId = this.multipleOrderSelection[0].projectTypeId;
-
-      this.editOrderId = this.multipleOrderSelection[0].id;
-      this.editOrderName = this.multipleOrderSelection[0].name;
-      this.underProjectTypeId = this.multipleOrderSelection[0].projectTypeId;
-
-      this.editOrderShowFlag = true;
-      this.viewname = "fifth";
-    },
-    handleDeleteOrderClick() {
-      if (this.multipleOrderSelection.length === 0) {
-        this.$message({
-          message: "至少选择一个订单属性",
-          type: "warning"
-        });
-      }
-
-      this.$confirm("是否确认删除该记录？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.multipleOrderSelection.forEach(element => {
-            request
-              .delete(`/backstage/order-stage/delete`, {
-                params: { id: element.id }
-              })
-              .then(response => {
-                this.reSearchOrder(element.projectTypeId);
-              });
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    handleAddProjectTypeSaveClick() {
-      var param = {
-        name:
-          this.ruleFormProjectType.addProjectTypeName === ""
-            ? null
-            : this.ruleFormProjectType.addProjectTypeName
-      };
-      request.post(`/backstage/project-type/insert`, param).then(response => {
-        this.reSearchProjectType();
-        this.ruleFormProjectType.addProjectTypeName = "";
-        this.addProjectTypeShowFlag = false;
-        this.viewname = "first";
-      });
-    },
-    handleAddProjectTypeCancelClick() {
-      this.$message({
-        message: "取消新增!",
-        type: "info"
-      });
-
-      this.ruleFormProjectType.addProjectTypeName = "";
-      this.addProjectTypeShowFlag = false;
-      this.viewname = "first";
-    },
-    handleEditProjectTypeSaveClick() {
-      var param = {
-        id: this.editProjectTypeId === "" ? null : this.editProjectTypeId,
-        name: this.editProjectTypeName === "" ? null : this.editProjectTypeName
-      };
-
-      request.put(`/backstage/project-type/update`, param).then(response => {
-        this.reSearchProjectType();
-
-        this.editProjectTypeId = "";
-        this.editProjectTypeName = "";
-        this.editProjectTypeShowFlag = false;
-        this.viewname = "first";
-      });
-    },
-    handleEditProjectTypeCancelClick() {
-      this.$message({
-        message: "取消编辑!",
-        type: "info"
-      });
-      this.editProjectTypeShowFlag = false;
-      this.viewname = "first";
-    },
-
-    handleAddOrderSaveClick() {
-      var param = {
-        name:
-          this.ruleFormOrder.addOrderName === ""
-            ? null
-            : this.ruleFormOrder.addOrderName,
-        projectTypeId:
-          this.ruleFormOrder.addOrderProjectTypeId === ""
-            ? null
-            : this.ruleFormOrder.addOrderProjectTypeId
-      };
-
-      request.post(`/backstage/order-stage/insert`, param).then(response => {
-        this.reSearchOrder(param.projectTypeId);
-        this.ruleFormOrder.addOrderName = "";
-        this.ruleFormOrder.addOrderProjectTypeId = "";
-        this.addOrderShowFlag = false;
-        this.viewname = "first";
-      });
-    },
-
-    handleAddOrderCancelClick() {
-      this.$message({
-        message: "取消新增!",
-        type: "info"
-      });
-
-      this.ruleFormOrder.addOrderName = "";
-      this.ruleFormOrder.addOrderProjectTypeId = "";
-
-      this.addOrderShowFlag = false;
-      this.viewname = "first";
-    },
-
-    handleEditOrderSaveClick() {
-      var param = {
-        id: this.editOrderId === "" ? null : this.editOrderId,
-        name: this.editOrderName === "" ? null : this.editOrderName,
-        projectTypeId:
-          this.underProjectTypeId === "" ? null : this.underProjectTypeId
-      };
-
-      request.put(`/backstage/order-stage/update`, param).then(response => {
-        this.reSearchOrder(this.lastOrderProjectTypeId);
-
-        (this.lastOrderProjectTypeId = ""), (this.editOrderId = "");
-        this.editOrderName = "";
-        this.underProjectTypeId = "";
-
-        this.editOrderShowFlag = false;
-        this.viewname = "first";
-      });
-    },
-    handleEditOrderCancelClick() {
-      this.$message({
-        message: "取消编辑!",
-        type: "info"
-      });
-      this.editOrderShowFlag = false;
-      this.viewname = "first";
-    }
-  }
-};
-</script>

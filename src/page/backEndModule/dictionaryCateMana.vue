@@ -18,19 +18,20 @@
                 <el-main clas="containerMain">
                   <el-table
                     ref="multipleTable"
-                    :data="dictionCategories"
+                    :data="category.tableData"
                     tooltip-effect="dark"
                     style="width: 100%"
-                    @selection-change="handleCategSelectionChange">
-                    <el-table-column  type="selection"  width="55"> </el-table-column>
-                    <el-table-column  prop="id"  v-if="false" label="id"  show-overflow-tooltip></el-table-column>
-                    <el-table-column  prop="name"   label="字典类别"  show-overflow-tooltip></el-table-column>
+                    @selection-change="handleCategSelectionChange"
+                  >
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" v-if="false" label="id" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="name" label="字典类别" show-overflow-tooltip></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
             </el-main>
 
-            <hr class="hr"> 
+            <hr class="hr" />
 
             <el-main class="subMain">
               <el-container class="paneContainer">
@@ -46,13 +47,14 @@
                 <el-main clas="containerMain">
                   <el-table
                     ref="multipleTable"
-                    :data="selectedCateProps"
+                    :data="property.tableData"
                     tooltip-effect="dark"
                     style="width: 100%"
-                    @selection-change="handlePropSelectionChange">
-                    <el-table-column  type="selection"  width="55"></el-table-column>
-                    <el-table-column  prop="id"  label="id"  v-if="false" show-overflow-tooltip></el-table-column>
-                    <el-table-column  prop="name"  label="类别属性"  show-overflow-tooltip></el-table-column>
+                    @selection-change="handlePropSelectionChange"
+                  >
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" label="id" v-if="false" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="name" label="类别属性" show-overflow-tooltip></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -60,18 +62,28 @@
           </el-container>
         </el-card>
       </el-tab-pane>
-      
+
       <el-tab-pane label="新增字典类别" name="second" v-if="addCateShowFlag">
         <el-card>
-          <el-form :model="ruleFormCate" :rules="rulesCate" ref="ruleForm1" label-width="100px" class="add-ruleForm">
-            <el-form-item label="类别名称:" prop="addCateName">
-              <el-input v-model="ruleFormCate.addCateName"  placeholder="请输入字典类别名称" ></el-input>
+          <el-form
+            :model="category.addCate"
+            :rules="category.addCateRules"
+            ref="category.addCate"
+            label-width="100px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="类别名称" prop="name">
+              <el-input v-model="category.addCate.name" placeholder="请输入字典类别名称"></el-input>
             </el-form-item>
-            <el-form-item label="类别描述" prop="addCateCode">
-              <el-input v-model="ruleFormCate.addCateCode" class="input" placeholder="请输入字典类别编码"></el-input>
+            <el-form-item label="类别描述" prop="code">
+              <el-input v-model="category.addCate.code" placeholder="请输入字典类别编码"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" class="save" @click="handleAddCateSaveClick('ruleForm')">保存</el-button>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleAddCateSaveClick('category.addCate')"
+              >保存</el-button>
               <el-button type="primary" class="cancel" @click="handleAddCateCancelClick()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -80,42 +92,66 @@
 
       <el-tab-pane label="编辑字典类别" name="third" v-if="editCateShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">字典类别名称:</span>
-            <el-input v-model="editCateName" class="input" placeholder="请输入字典类别名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">字典类别编码:</span>
-            <el-input v-model="editCateCode" class="input" placeholder="请输入字典类别编码"></el-input>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleEditCateSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleEditCateCancelClick()">取消</el-button>
-          </div>
+          <el-form
+            :model="category.updateCate"
+            :rules="category.addCateRules"
+            ref="category.updateCate"
+            label-width="100px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="类别名称" prop="name">
+              <el-input v-model="category.updateCate.name" placeholder="请输入字典类别名称"></el-input>
+            </el-form-item>
+            <el-form-item label="类别描述" prop="code">
+              <el-input v-model="category.updateCate.code" placeholder="请输入字典类别编码"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleEditCateSaveClick('category.updateCate')"
+              >保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleEditCateCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
 
       <el-tab-pane label="新增类别属性" name="fourth" v-if="addPropShowFlag">
         <el-card>
-          <el-form :model="ruleFormProp" :rules="rulesProp" ref="ruleForm1" label-width="100px" class="add-ruleForm">
-            <el-form-item label="属性名称:" prop="addPropName">
-              <el-input v-model="ruleFormProp.addPropName" class="input" placeholder="请输入类别属性名称"></el-input>
+          <el-form
+            :model="property.addProperty"
+            :rules="property.addPropertyRules"
+            ref="property.addProperty"
+            label-width="100px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="属性名称" prop="name">
+              <el-input v-model="property.addProperty.name" class="input" placeholder="请输入类别属性名称"></el-input>
             </el-form-item>
-            <el-form-item label="属性编码" prop="addPropCode">
-              <el-input v-model="ruleFormProp.addPropCode" class="input" placeholder="请输入类别属性编码"></el-input>
+            <el-form-item label="属性编码" prop="code">
+              <el-input v-model="property.addProperty.code" class="input" placeholder="请输入类别属性编码"></el-input>
             </el-form-item>
-            <el-form-item label="所属类别" prop="addPropCategoryId">
-              <el-select v-model="ruleFormProp.addPropCategoryId" placeholder="请选择" class="inputSelector">
+            <el-form-item label="所属类别" prop="categoryId">
+              <el-select
+                v-model="property.addProperty.categoryId"
+                placeholder="请选择"
+                class="inputSelector"
+              >
                 <el-option
-                  v-for="item in dictionCategories"
+                  v-for="item in property.addProperty.options.categoryOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id">
-                </el-option>
+                  :value="item.id"
+                ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" class="save" @click="handleAddPropSaveClick('ruleForm')">保存</el-button>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleAddPropSaveClick('property.addProperty')"
+              >保存</el-button>
               <el-button type="primary" class="cancel" @click="handleAddPropCancelClick()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -124,29 +160,50 @@
 
       <el-tab-pane label="编辑类别属性" name="fifth" v-if="editPropShowFlag">
         <el-card>
-          <div class="inputCombine">
-            <span class="inputTag">类别属性名称:</span>
-            <el-input v-model="editPropName" class="input" placeholder="请输入类别属性名称"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">类别属性编码:</span>
-            <el-input v-model="editPropCode" class="input" placeholder="请输入类别属性编码"></el-input>
-          </div>
-          <div class="inputCombine">
-            <span class="inputTag">所属类别:</span>
-              <el-select v-model="initeditPropCateId" placeholder="请选择" class="inputSelector">
+          <el-form
+            :model="property.updateProperty"
+            :rules="property.updatePropertyRules"
+            ref="property.updateProperty"
+            label-width="100px"
+            class="add-ruleForm"
+          >
+            <el-form-item label="属性名称" prop="name">
+              <el-input
+                v-model="property.updateProperty.name"
+                class="input"
+                placeholder="请输入类别属性名称"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="属性编码" prop="code">
+              <el-input
+                v-model="property.updateProperty.code"
+                class="input"
+                placeholder="请输入类别属性编码"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="所属类别" prop="categoryId">
+              <el-select
+                v-model="property.updateProperty.categoryId"
+                placeholder="请选择"
+                class="inputSelector"
+              >
                 <el-option
-                  v-for="item in dictionCategories"
+                  v-for="item in property.updateProperty.options.categoryOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id">
-                </el-option>
+                  :value="item.id"
+                ></el-option>
               </el-select>
-          </div>
-          <div class="secondButtonDiv">
-            <el-button type="primary" class="save" @click="handleEditPropSaveClick()">保存</el-button>
-            <el-button type="primary" class="cancel" @click="handleEditPropCancelClick()">取消</el-button>
-          </div>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="primary"
+                class="save"
+                @click="handleEditPropSaveClick('property.updateProperty')"
+              >保存</el-button>
+              <el-button type="primary" class="cancel" @click="handleEditPropCancelClick()">取消</el-button>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -154,429 +211,457 @@
 </template>
 
 <style lang="less" scoped>
-  .box-card{
-    background-color: none;
-    min-width: 1500px;
-    margin: 20px 50px;
-    padding: 0 20px;
-  }
-  .add-ruleForm{
-    min-width: 250px;
-    max-width: 500px;
-  }
-  .submainCard{
-    .subAside{
-      width:400px;
-      // background: rgb(172, 170, 170);
-      .containerHeaderDiv{
-        margin-top: 10px;
-        .cateButton{
-          //width: 50px;
-          text-align: center;
-        }
-      }
-    }
-    .subMain{
-      margin-left: 10px;
-      // background: yellow;
-      .containerHeaderDiv{
-        margin-top: 10px;
-        
-        .cateButton{
-          //width: 50px;
-          text-align: center;
-        }
-      }
-    }
-  }
-
-    .inputCombine{
+.box-card {
+  background-color: none;
+  min-width: 1500px;
+  margin: 20px 50px;
+  padding: 0 20px;
+}
+.add-ruleForm {
+  min-width: 250px;
+  max-width: 500px;
+}
+.submainCard {
+  .subAside {
+    width: 400px;
+    // background: rgb(172, 170, 170);
+    .containerHeaderDiv {
       margin-top: 10px;
-      display: flex;
-      flex-direction: row;
-      min-width: 250px;
-      max-width: 500px;
-      .inputTag{
-        font-size: 18px;
-        line-height: 40px;
-        min-width: 130px;
+      .cateButton {
+        //width: 50px;
+        text-align: center;
       }
     }
+  }
+  .subMain {
+    margin-left: 10px;
+    // background: yellow;
+    .containerHeaderDiv {
+      margin-top: 10px;
 
-  .secondButtonDiv{
-    margin-top: 20px;
-    min-width: 250px;
-    max-width: 500px;
-    // background: black;
-    .save{
-      margin-left: 68%;
+      .cateButton {
+        //width: 50px;
+        text-align: center;
+      }
     }
   }
+}
+
+.inputCombine {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  min-width: 250px;
+  max-width: 500px;
+  .inputTag {
+    font-size: 18px;
+    line-height: 40px;
+    min-width: 130px;
+  }
+}
+
+.secondButtonDiv {
+  margin-top: 20px;
+  min-width: 250px;
+  max-width: 500px;
+  // background: black;
+  .save {
+    margin-left: 68%;
+  }
+}
 </style>
 
 <script>
 import request from "@/utils/request";
 export default {
-  data(){
-    return{
-      initeditPropCateId:"",
-      viewname:'first',
-      dictionCategories:[],
-      multiCateSelection:[],
-      selectedCateProps:[],
-      multiplePropSelection:[],
-
-      ruleFormCate:{
-        addCateName:'',
-        addCateCode:'',
+  data() {
+    return {
+      //字典类别数据
+      category: {
+        tableData: [],
+        multipleSelection: [],
+        addCate: {
+          name: "",
+          code: ""
+        },
+        addCateRules: {
+          name: [
+            { required: true, message: "请输入字典类别名称", trigger: "blur" }
+          ],
+          code: [
+            { required: true, message: "请输入字典类别编码", trigger: "blur" }
+          ]
+        },
+        updateCate: {
+          id: "",
+          name: "",
+          code: ""
+        },
+        updateCateRules: {
+          name: [
+            { required: true, message: "请输入字典类别名称", trigger: "blur" }
+          ],
+          code: [
+            { required: true, message: "请输入字典类别编码", trigger: "blur" }
+          ]
+        }
       },
-      rulesCate:{
-        addCateName:[{ required: true, message: '请输入字典类别名称', trigger: 'blur' },],
-        addCateCode:[{ required: true, message: '请输入字典类别编码', trigger: 'blur' },],
+      //类别属性数据
+      property: {
+        tableData: [],
+        multipleSelection: [],
+        addProperty: {
+          name: "",
+          code: "",
+          categoryId: "",
+          options: {
+            categoryOptions: []
+          }
+        },
+        addPropertyRules: {
+          categoryId: [
+            { required: true, message: "请选择字典类别", trigger: "change" }
+          ],
+          name: [
+            { required: true, message: "请输入类别属性编码", trigger: "blur" }
+          ],
+          code: [
+            { required: true, message: "请输入类别属性名称", trigger: "blur" }
+          ]
+        },
+        updateProperty: {
+          id: "",
+          name: "",
+          code: "",
+          categoryId: "",
+          options: {
+            categoryOptions: []
+          }
+        },
+        updatePropertyRules: {
+          categoryId: [
+            { required: true, message: "请选择字典类别", trigger: "change" }
+          ],
+          name: [
+            { required: true, message: "请输入类别属性编码", trigger: "blur" }
+          ],
+          code: [
+            { required: true, message: "请输入类别属性名称", trigger: "blur" }
+          ]
+        }
       },
 
-      editCateId:'',
-      editCateName:'',
-      editCateCode:'',
-
-      ruleFormProp:{
-        addPropName:'',
-        addPropCode:'',
-        addPropCategoryId:'',
-      },
-      rulesProp:{
-        addPropName:[{ required: true, message: '请输入类别属性名称', trigger: 'blur' },],
-        addPropCode:[{ required: true, message: '请输入类别属性编码', trigger: 'blur' },],
-        addPropCategoryId:[{ required: true, message: '请选择所属类别', trigger: 'blur' },],
-      },
-
-      editPropId:'',
-      editPropName:'',
-      editPropCode:'',
-      editPropCate:'',
-      initeditPropCateName:'',
-
-      addCateShowFlag:false,
-      editCateShowFlag:false,
-      addPropShowFlag:false,
-      editPropShowFlag:false,
-
-      baseInfoManagementErrorCode : [
-        {
-          errorCode:0,
-          errorInfo:"未知错误",
-        },
-        {
-          errorCode:-1,
-          errorInfo:"传送的对象属性中存在null",
-        },
-        {
-          errorCode:-2,
-          errorInfo:"字段重复",
-        },
-        {
-          errorCode:-3,
-          errorInfo:"参数存在不一致",
-        },
-        {
-          errorCode:-4,
-          errorInfo:"当前数据库记录不符合逻辑要求",
-        },
-        {
-          errorCode:-5,
-          errorInfo:"未知错所要查询的数据在数据库中不存在",
-        },
-      ]
-    }
+      viewname: "first",
+      addCateShowFlag: false,
+      editCateShowFlag: false,
+      addPropShowFlag: false,
+      editPropShowFlag: false
+    };
   },
-  created:function(){
+  created: function() {
     //加载所有的字典类别
-    request
-      .get(`${window.$config.HOST}/backstage/dic-category/find`)
-      .then(response=>{
-        this.dictionCategories = response.result;
-      })
+    request.get(`/backstage/dic-category/find`).then(response => {
+      this.category.tableData = response.result;
+      this.property.updateProperty.options.categoryOptions = response.result;
+      this.property.addProperty.options.categoryOptions = response.result;
+    });
   },
-  methods:{
-    reSearchProperty(cateId){
-      console.log(cateId);
+  methods: {
+    //根据类别搜索属性
+    searchPropertyByCate(categoryId) {
       request
-        .get(`${window.$config.HOST}/backstage/dic-property/find`,{
-          params:{categoryId:cateId}
+        .get(`/backstage/dic-property/find`, {
+          params: { categoryId: categoryId }
         })
-        .then(response=>{
-          this.selectedCateProps = response.result;
-        })
-
+        .then(response => {
+          this.property.tableData = response.result;
+        });
     },
-    reSearchCategory(){
-      console.log("再搜索");
-      //重新加载
-      request.get(`${window.$config.HOST}/backstage/dic-category/find`)
-        .then(response=>{
-          this.dictionCategories = response.result;
-        })
+    //搜索类别
+    searchCategory() {
+      request.get(`/backstage/dic-category/find`).then(response => {
+        this.category.tableData = response.result;
+        this.property.updateProperty.options.categoryOptions = response.result;
+        this.property.addProperty.options.categoryOptions = response.result;
+      });
     },
     handleViewChange(tab, event) {
       console.log(tab, event);
     },
+    //字典类别的选中
     handleCategSelectionChange(val) {
-        this.multiCateSelection = val;
-        this.selectedCateProps = [];
-        if(val.length >= 1){
-          this.reSearchProperty(val[0].id);
-        }
+      this.category.multipleSelection = val;
+      this.property.tableData = [];
+      if (val.length >= 1) {
+        this.searchPropertyByCate(val[0].id);
+      }
     },
-    handlePropSelectionChange(val){
-      this.multiplePropSelection = val;
+    //类别属性选中
+    handlePropSelectionChange(val) {
+      this.property.multipleSelection = val;
     },
-    handleAddCateClick(){
+    //新增、编辑、删除类别
+    handleAddCateClick() {
       this.addCateShowFlag = true;
-      this.viewname = 'second';
+      this.category.addCate.name = "";
+      this.category.addCate.code = "";
+      this.viewname = "second";
     },
-    handleEditCateClick(){
-      if(this.multiCateSelection.length === 0){
-         alert("请选择一个字典类别!");
-         return;
-      }
-       
-      if(this.multiCateSelection.length > 1){
-         alert("只能选择一个字典类别!");
-         return;
-      }
-      this.editCateId = this.multiCateSelection[0].id;
-      this.editCateName = this.multiCateSelection[0].name;
-      this.editCateCode = this.multiCateSelection[0].code;
-      this.editCateShowFlag = true;
-      this.viewname = 'third';
-    },
-    handleDeleteCateClick(){
-      if(this.multiCateSelection.length === 0){
-          this.$message({
-            message:'至少选择一个字典类别',
-            type:'warning'
-          });
-        }
-
-        this.$confirm('是否确认删除该记录？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.multiCateSelection.forEach(element => {
-        console.log("删除"+element.id);
-        request
-          .delete(`${window.$config.HOST}/backstage/dic-category/delete`,{
-            params:{id:element.id}
-          })
-          .then(response=>{
- 
-              this.reSearchCategory();
-            
-          })
-
-      });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+    handleEditCateClick() {
+      if (this.category.multipleSelection.length === 0) {
+        this.$message({
+          message: "请选择一个字典类别",
+          type: "error"
         });
-      
-      
-      
+        return;
+      } else if (this.category.multipleSelection.length > 1) {
+        this.$message({
+          message: "只能选择一个字典类别",
+          type: "error"
+        });
+        return;
+      } else {
+        this.category.updateCate.id = this.category.multipleSelection[0].id;
+        this.category.updateCate.name = this.category.multipleSelection[0].name;
+        this.category.updateCate.code = this.category.multipleSelection[0].code;
+        this.editCateShowFlag = true;
+        this.viewname = "third";
+      }
     },
-    handleAddPropClick(){
+    handleDeleteCateClick() {
+      if (this.category.multipleSelection.length === 0) {
+        this.$message({
+          message: "至少选择一个字典类别",
+          type: "warning"
+        });
+      }
+
+      this.$confirm("是否确认选中记录？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.category.multipleSelection.forEach(element => {
+            request
+              .delete(`/backstage/dic-category/delete`, {
+                params: { id: element.id }
+              })
+              .then(response => {
+                this.searchCategory();
+              });
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    //增加、修改、删除属性
+    handleAddPropClick() {
       this.addPropShowFlag = true;
-      this.viewname = 'fourth';
+      this.property.addProperty.code = "";
+      this.property.addProperty.name = "";
+      this.property.addProperty.categoryId = "";
+      this.viewname = "fourth";
     },
-    handleEditPropClick(){
-      if(this.multiplePropSelection.length === 0){
-         alert("请选择一个类别属性!");
-         return;
+    handleEditPropClick() {
+      if (this.property.multipleSelection.length === 0) {
+        this.$message({
+          message: "请选择一个类别属性!",
+          type: "error"
+        });
+        return;
+      } else if (this.property.multipleSelection.length > 1) {
+        this.$message({
+          message: "只能选择一个类别属性!",
+          type: "error"
+        });
+        return;
+      } else {
+        this.property.updateProperty.id = this.property.multipleSelection[0].id;
+        this.property.updateProperty.name = this.property.multipleSelection[0].name;
+        this.property.updateProperty.code = this.property.multipleSelection[0].code;
+        this.property.updateProperty.categoryId = this.property.multipleSelection[0].categoryId;
+        this.editPropShowFlag = true;
+        this.viewname = "fifth";
       }
-       
-      if(this.multiplePropSelection.length > 1){
-         alert("只能选择一个类别属性!");
-         return;
+    },
+    handleDeletePropClick() {
+      if (this.property.multipleSelection.length === 0) {
+        this.$message({
+          message: "至少选择一个类别属性",
+          type: "warning"
+        });
       }
-      console.log(this.multiplePropSelection[0])
-      this.editPropId = this.multiplePropSelection[0].id
-      this.editPropName = this.multiplePropSelection[0].name;
-      this.editPropCode = this.multiplePropSelection[0].code;
-      //Attention!!!!!!
-      this.editPropCate = this.multiCateSelection[0].category;
-      this.initeditPropCateId = this.multiplePropSelection[0].categoryId;
-      this.initeditPropCateName = this.editPropCate;
 
-      this.editPropShowFlag = true;
-      this.viewname = 'fifth';
-    },
-    handleDeletePropClick(){
-      if(this.multiplePropSelection.length === 0){
+      this.$confirm("是否确认删除该记录？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.property.multipleSelection.forEach(element => {
+            request
+              .delete(`/backstage/dic-property/delete`, {
+                params: { id: element.id }
+              })
+              .then(response => {
+                this.searchPropertyByCate(element.categoryId);
+              });
+          });
+        })
+        .catch(() => {
           this.$message({
-            message:'至少选择一个类别属性',
-            type:'warning'
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    //增加类别提交
+    handleAddCateSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .post(`/backstage/dic-category/insert`, {
+              code: this.category.addCate.code,
+              name: this.category.addCate.name
+            })
+            .then(response => {
+              this.searchCategory();
+              this.category.addCate.code = "";
+              this.category.addCate.name = "";
+              this.addCateShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
           });
         }
-
-        this.$confirm('是否确认删除该记录？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-         this.multiplePropSelection.forEach(element => {
-        request
-          .delete(`${window.$config.HOST}/backstage/dic-property/delete`,{
-            params:{id:element.id}
-          })
-          .then(response=>{
-           
-              this.reSearchProperty(element.categoryId);
-            
-          })
-
       });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-      
-      
-      
     },
-    handleAddCateSaveClick(){
-      var param = {
-        name : (this.ruleFormCate.addCateName==='')?null:this.ruleFormCate.addCateName,
-		    code : (this.ruleFormCate.addCateCode==='')?null:this.ruleFormCate.addCateCode,
-      }
-      request.post(`${window.$config.HOST}/backstage/dic-category/insert`,param)
-        .then(response=>{
-            this.reSearchCategory();
-            this.ruleFormCate.addCateName = "";
-            this.ruleFormCate.addCateCode = "";
-            this.addCateShowFlag = false;
-            this.viewname = 'first';
-          
-        })
-
-    },
-    handleAddCateCancelClick(){
-      this.$message({
-        message:"取消新增!",
-        type:"info"
-      });
-
-      this.ruleFormCate.addCateName = "";
-      this.ruleFormCate.addCateCode ="";
-
+    //取消新增
+    handleAddCateCancelClick() {
+      this.category.addCate.name = "";
+      this.category.addCate.code = "";
       this.addCateShowFlag = false;
-      this.viewname = 'first';
+      this.viewname = "first";
     },
-    handleEditCateSaveClick(){
-      var param = {
-        id : (this.editCateId==="")?null:this.editCateId,
-        category : (this.editCateName==="")?null:this.editCateName,
-        code : (this.editCateCode==="")?null:this.editCateCode,
-      };
-    
-      request.put(`${window.$config.HOST}/backstage/dic-category/update`,param)
-        .then(response=>{
-        
-            this.reSearchCategory();
-
-          this.editCateId = "";
-          this.editCateName = "";
-          this.editPropCode = "";
-          
-          this.editCateShowFlag = false;
-          this.viewname = 'first';
-          
-        });
-    },
-    handleEditCateCancelClick(){
-      this.$message({
-        message:"取消编辑!",
-        type:"info"
+    //更新类别提交
+    handleEditCateSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .put(`/backstage/dic-category/update`, {
+              id: this.category.updateCate.id,
+              name: this.category.updateCate.name,
+              code: this.category.updateCate.code
+            })
+            .then(response => {
+              this.searchCategory();
+              this.category.updateCate.id = "";
+              this.category.updateCate.name = "";
+              this.category.updateCate.code = "";
+              this.editCateShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
       });
+    },
+    //取消更新
+    handleEditCateCancelClick() {
+      this.category.updateCate.name = "";
+      this.category.updateCate.code = "";
+      this.category.updateCate.id = "";
       this.editCateShowFlag = false;
-      this.viewname = 'first';
+      this.viewname = "first";
     },
-    handleAddPropSaveClick(){
-      var param = {
-        name : (this.ruleFormProp.addPropName==='')?null:this.ruleFormProp.addPropName,
-        code : (this.ruleFormProp.addPropCode==='')?null:this.ruleFormProp.addPropCode,
-        categoryId : (this.ruleFormProp.addPropCategoryId==='')?null:this.ruleFormProp.addPropCategoryId,
-      };
-
-      console.log(param);
-
-      request.post(`${window.$config.HOST}/backstage/dic-property/insert`,param)
-        .then(response=>{
-         
-            this.reSearchProperty(param.categoryId);
-
-            this.ruleFormProp.addPropName = "";
-            this.ruleFormProp.addPropCode ="";
-            this.ruleFormProp.addPropCategoryId ="";
-
-            this.addPropShowFlag = false;
-            this.viewname = 'first';
-          
-        })
-
-    },
-    handleAddPropCancelClick(){
-      this.$message({
-        message:"取消新增!",
-        type:"info"
+    //增加属性
+    handleAddPropSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .post(`/backstage/dic-property/insert`, {
+              categoryId: this.property.addProperty.categoryId,
+              code: this.property.addProperty.code,
+              name: this.property.addProperty.name
+            })
+            .then(response => {
+              if (this.category.multipleSelection.length >= 1)
+                this.searchPropertyByCate(
+                  this.category.multipleSelection[0].id
+                );
+              this.property.addProperty.categoryId = "";
+              this.property.addProperty.name = "";
+              this.property.addProperty.code = "";
+              this.addPropShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
       });
-      
-      this.ruleFormProp.addPropName = "";
-      this.ruleFormProp.addPropCode = "";
-      this.ruleFormProp.addPropCategoryId = "";
-
+    },
+    //取消新增属性
+    handleAddPropCancelClick() {
+      this.property.addProperty.categoryId = "";
+      this.property.addProperty.name = "";
+      this.property.addProperty.code = "";
       this.addPropShowFlag = false;
-      this.viewname = 'first';
+      this.viewname = "first";
     },
-    handleEditPropSaveClick(){
-      console.log("dictionCategories:",this.dictionCategories)
-      var tmp = (this.initeditPropCateId==="")?null:this.initeditPropCateId;
-      var param={
-        id : (this.editPropId==="")? null:this.editPropId,
-        name : (this.editPropName==="")? null:this.editPropName,
-        code : (this.editPropCode==="")? null:this.editPropCode,
-        categoryId :  tmp
-      }
-      console.log(param);
-
-      request.put(`${window.$config.HOST}/backstage/dic-property/update`,param)
-        .then(response=>{
-            this.reSearchProperty(param.categoryId);
-
-          this.editPropId = "";
-          this.editPropName = "";
-          this.editPropCode = "";
-          this.editPropCate = "";
-          this.initeditPropCateId = "";
-          this.initeditPropCateName = "";
-          
-          this.editPropShowFlag = false;
-          this.viewname = 'first';
-          
-        })
-
-    },
-    handleEditPropCancelClick(){
-      this.$message({
-        message:"取消编辑!",
-        type:"info"
+    //更新属性提交
+    handleEditPropSaveClick(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          request
+            .put(`/backstage/dic-property/update`, {
+              id: this.property.updateProperty.id,
+              name: this.property.updateProperty.name,
+              code: this.property.updateProperty.code,
+              categoryId: this.property.updateProperty.categoryId
+            })
+            .then(response => {
+              this.searchPropertyByCate(
+                this.property.updateProperty.categoryId
+              );
+              this.property.updateProperty.categoryId = "";
+              this.property.updateProperty.name = "";
+              this.property.updateProperty.code = "";
+              this.editPropShowFlag = false;
+              this.viewname = "first";
+            });
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
       });
-      this.editPropShowFlag = false;
-      this.viewname = 'first';
     },
+    handleEditPropCancelClick() {
+      this.property.updateProperty.categoryId = "";
+      this.property.updateProperty.name = "";
+      this.property.updateProperty.code = "";
+      this.editPropShowFlag = false;
+      this.viewname = "first";
+    }
   }
-}
+};
 </script>

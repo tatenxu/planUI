@@ -9,7 +9,7 @@
               <el-option
                 v-for="item in searchOptions.options.userNameOptions"
                 :key="item.id"
-                :label="item.realName"
+                :label="item.username"
                 :value="item.id"
               ></el-option>
             </el-select>
@@ -291,11 +291,9 @@ export default {
   created: function() {
     var that = this;
     //获取产线
-    request
-      .get(`http://192.168.1.111:8081/product-line/find`)
-      .then(response => {
-        this.productionLine = response.result;
-      });
+    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
+      this.productionLine = response.result;
+    });
 
     //获得品牌名字
     request.get(`/backstage/brand/find`).then(response => {
@@ -309,17 +307,19 @@ export default {
     });
 
     //获得用户名称
-    // that.$axios
-    //   .get(`${window.$config.HOST2}/getAllUserName`)
-    //   .then(response => {
-    //     response.data.forEach(element => {
-    //        this.ruleForm.options.userNameOptions.push(element)
-    //        this.searchOptions.options.userNameOptions.push(element)
-    //     });
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   });
+    that.$axios
+      .get(`${window.$config.HOST2}/user/find`, {
+        params: {
+          pageNum: 1,
+          pageSize: 100
+        }
+      })
+      .then(response => {
+        this.searchOptions.options.userNameOptions = response.data.result;
+      })
+      .catch(error => {
+        console.log(error);
+      });
     //获得空搜索
     request.get(`/backstage/user-client-brand/find`).then(response => {
       this.tableData = response.result;
@@ -341,7 +341,7 @@ export default {
     handleNodeClick(data) {
       console.log(data);
       request
-        .get(`http://192.168.1.111:8081/user-product-line/find`, {
+        .get(`${window.$config.HOST2}/user-product-line/find`, {
           params: {
             productLineId: data.id
           }

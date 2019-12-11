@@ -9,7 +9,7 @@
               :disabled="searchDisabled"
               v-model="searchOptions.searchParams.clientName"
               clearable
-              @change="clientNameChange"
+              @change="searchClientChanged"
               placeholder="请选择"
             >
               <el-option
