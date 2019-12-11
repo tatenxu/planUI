@@ -48,7 +48,11 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
+            <el-autocomplete
+              :fetch-suggestions="searchPlanName "
+              v-model="searchOptions.searchParams.planName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
           </div>
         </el-col>
       </el-row>
@@ -56,7 +60,11 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            <el-autocomplete
+              :fetch-suggestions="searchSeriesName"
+              v-model="searchOptions.searchParams.seriesName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
           </div>
         </el-col>
         <el-col :span="9">
@@ -311,6 +319,12 @@ export default {
       isCacheFlag: true,
       lookAllPlans: false,
       allPlans: [],
+
+      inputSuggestions: {
+        plans: [],
+        series: []
+      },
+
       defaultProps: {
         children: "children",
         label: "name"
@@ -444,8 +458,40 @@ export default {
           this.pagination.total = response.total;
         });
     }
+
+    //输入建议
+    request.get(`${window.$config.HOST}/plan/name`).then(response => {
+      this.inputSuggestions.plans = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.plans.push(element);
+      });
+    });
+
+    request.get(`${window.$config.HOST}/info/series/name`).then(response => {
+      this.inputSuggestions.series = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.series.push(element);
+      });
+    });
   },
   methods: {
+    //输入建议
+    searchPlanName(queryString, cb) {
+      var tmp = this.inputSuggestions.plans;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
+    },
+    searchSeriesName(queryString, cb) {
+      var tmp = this.inputSuggestions.series;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
+    },
     clientNameChange() {
       //品牌名称跟随加载
       request
