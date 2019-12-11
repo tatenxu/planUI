@@ -7,7 +7,7 @@
             <div class="title">客户名称</div>
             <el-select
               v-model="searchOptions.searchParams.customerName"
-              @change="clientNameChange"
+              @change="searchClientChanged"
               clearable
             >
               <el-option
@@ -172,6 +172,23 @@ export default {
       });
   },
   methods: {
+    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    searchClientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId:
+              this.searchOptions.searchParams.customerName === ""
+                ? undefined
+                : this.searchOptions.searchParams.customerName
+          }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+          this.searchOptions.searchParams.brandName = 1;
+          this.searchOptions.searchParams.brandName = "";
+        });
+    },
     clientNameChange() {
       //品牌名称跟随加载
       request

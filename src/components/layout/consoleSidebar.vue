@@ -288,8 +288,7 @@ export default {
   created: function() {
     //获得自己的角色信息
     request.get(`/me`).then(response => {
-      for (let i = 0; i <= response.result.roles.length; i++) {
-        this.roleList.push(response.result.roles[i]);
+      for (let i = 0; i < response.result.roles.length; i++) {
         request
           .get(`/backstage/role-menu/find`, {
             params: {

@@ -7,7 +7,12 @@
             <el-col :span="8">
               <div class="bar">
                 <div class="title">客户名称</div>
-                <el-select v-model="clientId" clearable placeholder="请选择">
+                <el-select
+                  v-model="clientId"
+                  clearable
+                  placeholder="请选择"
+                  @change="searchClientChanged"
+                >
                   <el-option
                     v-for="item in searchOptions.clientOptions"
                     :key="item.id"
@@ -123,22 +128,36 @@
             <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
             <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
             <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+            <el-table-column label="是否约束" align="center" width="100px">
+              <template slot-scope="scope">
+                <el-switch
+                  v-model="scope.row.limited"
+                  @change="rootPlanLimit(scope.row)"
+                  active-color="#13ce66"
+                ></el-switch>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" fixed="right" align="center" width="300px">
               <template slot-scope="scope">
-                <el-button size="mini" @click="assignRootPlan(scope.row)" type="text">下发</el-button>
+                <el-button
+                  size="mini"
+                  @click="assignRootPlan(scope.row)"
+                  type="text"
+                  v-if="scope.row.creatorId === meID"
+                >下发</el-button>
                 <el-button
                   size="mini"
                   @click="assignDetail(scope.row)"
                   v-if="scope.row.state ==='已下发'"
                   type="text"
                 >查看下发情况</el-button>
+                <el-button size="mini" @click="toPageDetail(scope.row)" type="text">查看详情</el-button>
                 <el-button
                   size="mini"
-                  @click="toPageDetail(scope.row)"
-                  v-if="scope.row.state ==='已下发'"
+                  @click="toUpdateRootPlan(scope.row)"
+                  v-if="scope.row.state !='已下发' && scope.row.creatorId === meID"
                   type="text"
-                >查看详情</el-button>
-                <el-button size="mini" @click="toUpdateRootPlan(scope.row)" type="text">修改</el-button>
+                >修改</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -321,6 +340,8 @@ export default {
   name: "seriesPlanMake",
   data() {
     return {
+      //自己的ID
+      meID: "",
       //根计划下发部分参数
       productionLine: [],
       rootDistribute: {
@@ -414,6 +435,10 @@ export default {
     };
   },
   created: function() {
+    //确认自己的信息
+    request.get(`/me`).then(response => {
+      this.meID = response.result.id;
+    });
     //获取系列名称
     request
       .get(`/info/series/find`, {
@@ -489,6 +514,33 @@ export default {
       });
   },
   methods: {
+    rootPlanLimit(row) {
+      console.log(row);
+      request
+        .put(`/root-plan/limit`, null, {
+          params: {
+            id: row.id,
+            limited: row.limited
+          }
+        })
+        .then(response => {
+          this.searchRootPlan(this.pagination.currentPage);
+        });
+    },
+    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    searchClientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.clientId === "" ? undefined : this.clientId
+          }
+        })
+        .then(response => {
+          this.searchOptions.brandOptions = response.result;
+          this.brandId = 1;
+          this.brandId = "";
+        });
+    },
     //系列名称搜索的输入建议
     querySearchSeries(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsSeries;
@@ -657,23 +709,36 @@ export default {
         });
         return;
       } else {
-        this.$confirm("是否删除选中根计划？", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-          this.multipleSelection.forEach(element => {
-            request
-              .delete("/root-plan/delete", {
-                params: {
-                  id: element.id
-                }
-              })
-              .then(response => {
-                this.searchRootPlan(1);
-              });
-          });
+        let flag = 0;
+        this.multipleSelection.forEach(element => {
+          if (element.creatorId != this.meID) {
+            flag++;
+          }
         });
+        if (flag === 0) {
+          this.$confirm("是否删除选中根计划？", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }).then(() => {
+            this.multipleSelection.forEach(element => {
+              request
+                .delete("/root-plan/delete", {
+                  params: {
+                    id: element.id
+                  }
+                })
+                .then(response => {
+                  this.searchRootPlan(1);
+                });
+            });
+          });
+        } else {
+          this.$message({
+            message: "您没有权限删除其中的某些条目！",
+            type: "warning"
+          });
+        }
       }
     },
     handleSizeChange(val) {

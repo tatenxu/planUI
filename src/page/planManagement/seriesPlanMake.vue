@@ -6,7 +6,12 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">客户名称</div>
-              <el-select v-model="clientId" clearable placeholder="请选择">
+              <el-select
+                v-model="clientId"
+                clearable
+                placeholder="请选择"
+                @change="searchClientChanged"
+              >
                 <el-option
                   v-for="item in searchOptions.clientOptions"
                   :key="item.id"
@@ -559,6 +564,20 @@ export default {
       });
   },
   methods: {
+    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    searchClientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.clientId === "" ? undefined : this.clientId
+          }
+        })
+        .then(response => {
+          this.searchOptions.brandOptions = response.result;
+          this.brandId = 1;
+          this.brandId = "";
+        });
+    },
     //系列名称搜索的输入建议
     querySearchSeries(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsSeries;

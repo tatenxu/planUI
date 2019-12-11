@@ -9,7 +9,7 @@
               :disabled="searchDisabled"
               v-model="searchOptions.searchParams.clientName"
               clearable
-              @change="clientNameChange"
+              @change="searchClientChanged"
               placeholder="请选择"
             >
               <el-option
@@ -386,6 +386,23 @@ export default {
   },
 
   methods: {
+    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    searchClientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId:
+              this.searchOptions.searchParams.clientName === ""
+                ? undefined
+                : this.searchOptions.searchParams.clientName
+          }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+          this.searchOptions.searchParams.brandName = 1;
+          this.searchOptions.searchParams.brandName = "";
+        });
+    },
     clientNameChange() {
       //品牌名称跟随加载
       request

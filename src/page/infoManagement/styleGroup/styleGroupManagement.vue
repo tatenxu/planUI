@@ -5,7 +5,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="clientId" clearable>
+            <el-select v-model="clientId" clearable @change="searchClientChanged">
               <el-option
                 v-for="item in searchOptions.clientOptions"
                 :key="item.id"
@@ -128,8 +128,18 @@
           <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
-              <el-button @click="updateStyleGroup(scope.row)" type="text" size="small">修改</el-button>
-              <el-button @click="daleteStyleGroup(scope.row)" type="text" size="small">删除</el-button>
+              <el-button
+                @click="updateStyleGroup(scope.row)"
+                type="text"
+                size="small"
+                v-if="scope.row.creatorId === meID"
+              >修改</el-button>
+              <el-button
+                @click="daleteStyleGroup(scope.row)"
+                type="text"
+                size="small"
+                v-if="scope.row.creatorId === meID"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -282,6 +292,7 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      meID: "",
       //搜索条件部分
       clientId: "",
       brandId: "",
@@ -364,12 +375,15 @@ export default {
     };
   },
   created: function() {
+    //确认自己的信息
+    request.get(`/me`).then(response => {
+      this.meID = response.result.id;
+    });
     //获取客户名称
     request.get(`/backstage/client/name`).then(response => {
       this.searchOptions.clientOptions = response.result;
       this.addForm.options.clientOptions = response.result;
       this.updateForm.options.clientOptions = response.result;
-      v;
     });
 
     //获取服装层次
@@ -439,6 +453,20 @@ export default {
       });
   },
   methods: {
+    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    searchClientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.clientId === "" ? undefined : this.clientId
+          }
+        })
+        .then(response => {
+          this.searchOptions.brandOptions = response.result;
+          this.brandId = 1;
+          this.brandId = "";
+        });
+    },
     //系列名称搜索的输入建议
     querySearchStyleGroup(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsStyleGroup;
@@ -622,28 +650,38 @@ export default {
           type: "warning"
         });
       } else if (that.multipleSelection.length >= 1) {
-        console.log("有" + that.multipleSelection.length + "条数据被选中");
-        this.$confirm(
-          "删除所选的" +
-            that.multipleSelection.length +
-            "条款式组信息, 是否继续?",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-          }
-        ).then(() => {
-          this.multipleSelection.forEach(element => {
-            request
-              .delete(`/info/style-group/delete`, {
-                params: { id: element.id }
-              })
-              .then(response => {
-                this.handleSearch(1);
-              });
-          });
+        let flag = 0;
+        this.multipleSelection.forEach(element => {
+          if (element.creatorId != this.meID) flag++;
         });
+        if (flag === 0) {
+          this.$confirm(
+            "删除所选的" +
+              that.multipleSelection.length +
+              "条款式组信息, 是否继续?",
+            "提示",
+            {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning"
+            }
+          ).then(() => {
+            this.multipleSelection.forEach(element => {
+              request
+                .delete(`/info/style-group/delete`, {
+                  params: { id: element.id }
+                })
+                .then(response => {
+                  this.handleSearch(1);
+                });
+            });
+          });
+        } else {
+          this.$message({
+            message: "请选择要删除的款式组",
+            type: "warning"
+          });
+        }
       }
     },
 

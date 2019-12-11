@@ -5,7 +5,7 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="clientId" clearable>
+            <el-select v-model="clientId" clearable @change="searchClientChanged">
               <el-option
                 v-for="item in options1"
                 :key="item.id"
@@ -325,6 +325,20 @@ export default {
       });
   },
   methods: {
+    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    searchClientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId: this.clientId === "" ? undefined : this.clientId
+          }
+        })
+        .then(response => {
+          this.options2 = response.result;
+          this.brandId = 1;
+          this.brandId = "";
+        });
+    },
     lookAllPlan() {
       if (this.AnyChanged.length != 1) {
         this.$message({
