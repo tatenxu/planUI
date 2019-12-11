@@ -223,6 +223,13 @@ export default {
         this.searchOptions.options.clientNameOptions = response.result;
       });
 
+    //品牌名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
+      .then(response => {
+        this.searchOptions.options.brandNameOptions = response.result;
+      });
+
     //服装层级加载
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {
@@ -299,7 +306,7 @@ export default {
         brandId: this.searchOptions.searchParams.brandName,
         seriesName: this.searchOptions.searchParams.seriesName,
         name: this.searchOptions.searchParams.planName,
-        planClass: this.searchOptions.searchParams.planClassNmae,
+        planClass: this.searchOptions.searchParams.planClassName,
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]

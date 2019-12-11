@@ -489,7 +489,7 @@ export default {
         };
         console.log("子计划搜索参数：", param);
         request
-          .get(`${window.$config.HOST}/plan/children`, {
+          .get(`${window.$config.HOST}/root-plan/children`, {
             params: param
           })
           .then(response => {

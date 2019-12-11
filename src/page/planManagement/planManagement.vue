@@ -502,6 +502,7 @@ export default {
         var d = time.getDate();
         d = d < 10 ? "0" + d : d;
         var h = time.getHours();
+        h = h < 10 ? "0" + h : h;
         var minute = time.getMinutes();
         minute = minute < 10 ? "0" + minute : minute;
         var second = time.getSeconds();
