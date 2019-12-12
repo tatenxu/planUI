@@ -807,7 +807,7 @@ export default {
       console.log(tab, event);
     },
 
-    saveModelClick() {
+    saveModelClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {

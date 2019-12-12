@@ -1,74 +1,96 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">客户名称</div>
-            <el-select v-model="clientId" clearable :disabled="isDetail">
-              <el-option
-                v-for="item in options.clientOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">品牌</div>
-            <el-select v-model="brandId" clearable :disabled="isDetail">
-              <el-option
-                v-for="item in options.brandOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
+      <el-form
+        :model="ruleForm"
+        :rules="Rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="bar">
+              <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+                <el-select
+                  v-model="ruleForm.clientId"
+                  clearable
+                  :disabled="isDetail"
+                  @change="clientChanged"
+                >
+                  <el-option
+                    v-for="item in options.clientOptions"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="bar">
+              <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
+                <el-select v-model="ruleForm.brandId" clearable :disabled="isDetail">
+                  <el-option
+                    v-for="item in options.brandOptions"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
 
-        <el-col :span="6">
-          <div class="bar">
-            <div class="title">模板名称</div>
-            <el-input :disabled="isDetail" v-model="name" clearable :rows="1" placeholder></el-input>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
+          <el-col :span="6">
+            <div class="bar">
+              <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
+                <el-input
+                  :disabled="isDetail"
+                  v-model="ruleForm.name"
+                  clearable
+                  :rows="1"
+                  placeholder
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <br />
+        <br />
 
-    <el-card class="box-card">
-      <el-row :gutter="20">
-        <el-col :span="3" v-if="!isDetail">
-          <div class="bar">
-            <el-button type="primary" @click="addOneNode">添加一个结点</el-button>
-          </div>
-        </el-col>
-        <el-col :span="3" v-if="isCreate">
-          <div class="bar">
-            <el-button type="primary" @click="saveTemplate">保存</el-button>
-          </div>
-        </el-col>
+        <el-row :gutter="20">
+          <el-col :span="3" v-if="!isDetail">
+            <div class="bar">
+              <el-button type="primary" @click="addOneNode">添加一个结点</el-button>
+            </div>
+          </el-col>
+          <el-col :span="3" v-if="isCreate">
+            <div class="bar">
+              <el-button type="primary" @click="saveTemplate('ruleForm')">保存</el-button>
+            </div>
+          </el-col>
 
-        <el-col :span="3" v-if="isUpdate">
-          <div class="bar">
-            <el-button type="primary" @click="updateTemplate">更新</el-button>
-          </div>
-        </el-col>
+          <el-col :span="3" v-if="isUpdate">
+            <div class="bar">
+              <el-button type="primary" @click="updateTemplate('ruleForm')">更新</el-button>
+            </div>
+          </el-col>
 
-        <el-col :span="3">
-          <div class="bar">
-            <el-button type="primary" @click="gobackPage">返回</el-button>
-          </div>
-        </el-col>
+          <el-col :span="3">
+            <div class="bar">
+              <el-button type="primary" @click="gobackPage">返回</el-button>
+            </div>
+          </el-col>
 
-        <el-col :span="8" v-if="!isDetail">
-          <div class="bar">
-            <div class="title" style="font-size:14px;color:red">注意：只能保留一个根节点,否则会保存失败！</div>
-          </div>
-        </el-col>
-      </el-row>
+          <el-col :span="8" v-if="!isDetail">
+            <div class="bar">
+              <div class="title" style="font-size:14px;color:red">注意：只能保留一个根节点,否则会保存失败！</div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-form>
 
       <br />
 
@@ -128,10 +150,23 @@ export default {
       goback: "",
 
       //属性参数
-      id: "",
-      clientId: "",
-      brandId: "",
-      name: "",
+      ruleForm: {
+        id: "",
+        clientId: "",
+        brandId: "",
+        name: ""
+      },
+
+      Rules: {
+        clientId: [
+          { required: true, message: "请选择客户名称", trigger: "change" }
+        ],
+        brandId: [
+          { required: true, message: "请选择品牌名称", trigger: "change" }
+        ],
+        name: [{ required: true, message: "请填写模板名称", trigger: "blur" }]
+      },
+
       options: {
         clientOptions: {},
         brandOptions: {}
@@ -189,6 +224,20 @@ export default {
     });
   },
   methods: {
+    clientChanged() {
+      request
+        .get(`/backstage/brand/name`, {
+          params: {
+            clientId:
+              this.ruleForm.clientId === "" ? undefined : this.ruleForm.clientId
+          }
+        })
+        .then(response => {
+          this.options.brandOptions = response.result;
+          this.ruleForm.brandId = 1;
+          this.ruleForm.brandId = "";
+        });
+    },
     handleCheck(data, node) {
       this.nowClickName = data.planName;
     },
@@ -199,48 +248,80 @@ export default {
       });
     },
     //添加模板
-    saveTemplate() {
-      if (this.data.length > 1) {
-        this.$message({
-          type: "error",
-          message: "只能保留一个根节点，请重试!"
-        });
-        return;
-      } else {
-        request
-          .post(`/plan-template/insert`, {
-            name: this.name,
-            clientId: this.clientId,
-            brandId: this.brandId,
-            templateTree: this.data[0]
-          })
-          .then(response => {
-            this.gobackPage();
+    saveTemplate(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.data.length > 1) {
+            this.$message({
+              type: "error",
+              message: "只能保留一个根节点，请重试!"
+            });
+            return;
+          } else if (this.data.length === 0) {
+            this.$message({
+              type: "error",
+              message: "请至少设置一个节点！"
+            });
+            return;
+          } else {
+            request
+              .post(`/plan-template/insert`, {
+                name: this.ruleForm.name,
+                clientId: this.ruleForm.clientId,
+                brandId: this.ruleForm.brandId,
+                templateTree: this.data[0]
+              })
+              .then(response => {
+                this.gobackPage();
+              });
+          }
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
           });
-      }
+        }
+      });
     },
 
     //修改模板
-    updateTemplate() {
-      if (this.data.length > 1) {
-        this.$message({
-          type: "error",
-          message: "只能保留一个根节点，请重试!"
-        });
-        return;
-      } else {
-        request
-          .put(`/plan-template/update`, {
-            id: this.id,
-            name: this.name,
-            clientId: this.clientId,
-            brandId: this.brandId,
-            templateTree: this.data[0]
-          })
-          .then(response => {
-            this.gobackPage();
+    updateTemplate(formName) {
+      const that = this;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.data.length > 1) {
+            this.$message({
+              type: "error",
+              message: "只能保留一个根节点，请重试!"
+            });
+            return;
+          } else if (this.data.length === 0) {
+            this.$message({
+              type: "error",
+              message: "请至少设置一个节点！"
+            });
+            return;
+          } else {
+            request
+              .put(`/plan-template/update`, {
+                id: this.ruleForm.id,
+                name: this.ruleForm.name,
+                clientId: this.ruleForm.clientId,
+                brandId: this.ruleForm.brandId,
+                templateTree: this.data[0]
+              })
+              .then(response => {
+                this.gobackPage();
+              });
+          }
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
           });
-      }
+        }
+      });
     },
     //添加节点唤出弹窗
     addOneNode() {
