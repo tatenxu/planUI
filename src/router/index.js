@@ -18,9 +18,7 @@ const styleManagement = r => require.ensure([], () => r(require('../page/infoMan
 const styleImport = r => require.ensure([], () => r(require('../page/infoManagement/style/styleImport.vue')), 'styleImport');
 
 // 计划管理
-const predictPlanToBeMake = r => require.ensure([], () => r(require('../page/planManagement/predictPlanToBeMake.vue')), 'predictPlanToBeMake');
-const predictPlanMaking = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMaking.vue')), 'predictPlanMaking');
-const predictPlanMade = r => require.ensure([], () => r(require('../page/planManagement/predictPlanMade.vue')), 'predictPlanMade');
+
 const planManagement = r => require.ensure([], () => r(require('../page/planManagement/planManagement.vue')), 'planManagement');
 const distributedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/distributedPlanManagement.vue')), 'distributedPlanManagement');
 const commitedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/commitedPlanManagement.vue')), 'commitedPlanManagement');
@@ -171,30 +169,7 @@ export default [
           bcrumd: ['款式管理', '绑定款式'],
         }
       },
-      {
-        path: '/predictPlanToBeMake',
-        name: 'predictPlanToBeMake',
-        component: predictPlanToBeMake,
-        meta: {
-          bcrumd: ['预测计划管理', '未制定计划'],
-        }
-      },
-      {
-        path: '/predictPlanMaking',
-        name: 'predictPlanMaking',
-        component: predictPlanMaking,
-        meta: {
-          bcrumd: ['预测计划管理', '未提交计划'],
-        }
-      },
-      {
-        path: '/predictPlanMade',
-        name: 'predictPlanMade',
-        component: predictPlanMade,
-        meta: {
-          bcrumd: ['预测计划管理', '已提交计划'],
-        }
-      },
+
       {
         path: '/planManagement',
         name: 'planManagement',

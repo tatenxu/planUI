@@ -204,7 +204,7 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      url: "/planservice/static/rangeImport.png",
+      url: "/static/rangeImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -315,6 +315,7 @@ export default {
   },
   methods: {
     projectTypeChanged() {
+      this.ruleForm.orderStage = "";
       request
         .get(`/backstage/order-stage/name`, {
           params: {

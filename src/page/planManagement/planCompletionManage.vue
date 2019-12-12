@@ -52,9 +52,9 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      totalTableData:[],
-      tableData: [ ],
-      
+      totalTableData: [],
+      tableData: [],
+
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
@@ -63,68 +63,67 @@ export default {
       },
       pages: 0,
       tableSelectionData: [],
-      planManagementErrorCode:[
+      planManagementErrorCode: [
         {
-          errorCode:-1,
-          errotInfo:"所需属性值缺失",
+          errorCode: -1,
+          errotInfo: "所需属性值缺失"
         },
         {
-          errorCode:-2,
-          errotInfo:"计划名称重复",
+          errorCode: -2,
+          errotInfo: "计划名称重复"
         },
         {
-          errorCode:-3,
-          errotInfo:"父计划未下发",
+          errorCode: -3,
+          errotInfo: "父计划未下发"
         },
         {
-          errorCode:-4,
-          errotInfo:"系列根计划不存在",
+          errorCode: -4,
+          errotInfo: "系列根计划不存在"
         },
         {
-          errorCode:-5,
-          errotInfo:"款式组根计划不存在",
+          errorCode: -5,
+          errotInfo: "款式组根计划不存在"
         },
         {
-          errorCode:-6,
-          errotInfo:"根计划已存在",
+          errorCode: -6,
+          errotInfo: "根计划已存在"
         },
         {
-          errorCode:-7,
-          errotInfo:"计划开始结束时间超额",
+          errorCode: -7,
+          errotInfo: "计划开始结束时间超额"
         },
         {
-          errorCode:-8,
-          errotInfo:"计划款数超额",
+          errorCode: -8,
+          errotInfo: "计划款数超额"
         },
         {
-          errorCode:-9,
-          errotInfo:"引用预测计划时预测计划不存在",
+          errorCode: -9,
+          errotInfo: "引用预测计划时预测计划不存在"
         },
         {
-          errorCode:-10,
-          errotInfo:"当前计划状态不允许执行此操作",
+          errorCode: -10,
+          errotInfo: "当前计划状态不允许执行此操作"
         },
         {
-          errorCode:-11,
-          errotInfo:"与已有计划冲突",
-        },
-      ],
+          errorCode: -11,
+          errotInfo: "与已有计划冲突"
+        }
+      ]
     };
   },
-  created: function () {
+  created: function() {
     //加载默认所有系列
     request
       .get(`/info/series/find`, {
-        params:{
-          pageNum :1,
-          pageSize :10,
+        params: {
+          pageNum: 1,
+          pageSize: 10
         }
-      }
-      )
+      })
       .then(response => {
         this.tableData = response.result;
         this.pagination.total = response.total;
-      })
+      });
   },
   methods: {
     // 每页条数改变时触发函数
@@ -145,9 +144,9 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.pagination.currentPage = val;
-      this.handleSearch();
+      this.handleSearch(val);
     },
-    handleSearch(currentPageNum){
+    handleSearch(currentPageNum) {
       request
         .get(`/info/series/find`, {
           params: {
@@ -158,7 +157,7 @@ export default {
         .then(response => {
           this.tableData = response.result;
           this.pagination.total = response.total;
-        })
+        });
     },
     //计划完成按钮点击
     handleCompletionClick() {
@@ -169,33 +168,36 @@ export default {
       } else {
         this.tableSelectionData.forEach(element => {
           request
-            .get(`${window.$config.HOST}/infoManagement/completeRange`,{
-              params:{id:element.id}
+            .get(`${window.$config.HOST}/infoManagement/completeRange`, {
+              params: { id: element.id }
             })
-            .then(response=>{
-              if(response.data < 0){
-                this.$message.error("添加完成失败:"+this.planManagementErrorCode[-response.data-1].errotInfo);
-              }else{
-                console.log("完成"+element.name);
+            .then(response => {
+              if (response.data < 0) {
+                this.$message.error(
+                  "添加完成失败:" +
+                    this.planManagementErrorCode[-response.data - 1].errotInfo
+                );
+              } else {
+                console.log("完成" + element.name);
                 this.$message({
-                  message: element.name+"已完成",
+                  message: element.name + "已完成",
                   type: "success"
                 });
                 this.handleSearch();
               }
             })
-            .catch(error=>{
-              console.log(element.name+"完成失败");
-              this.$message.error(element.name+"添加完成失败");
+            .catch(error => {
+              console.log(element.name + "完成失败");
+              this.$message.error(element.name + "添加完成失败");
             });
         });
       }
     },
-    
+
     //表格选择变化
     tableSelectionChange(val) {
       this.tableSelectionData = val;
-    },
+    }
   }
 };
 </script>

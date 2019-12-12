@@ -846,6 +846,7 @@ export default {
   methods: {
     //添加弹窗中的项目类型变化
     addProjectTypeChanged() {
+      this.addForm.orderStage = "";
       request
         .get(`/backstage/order-stage/name`, {
           params: {
@@ -858,6 +859,7 @@ export default {
     },
     //修改弹窗中的项目类型变化
     updateProjectTypeChanged() {
+      this.updateForm.orderStage = "";
       request
         .get(`/backstage/order-stage/name`, {
           params: {

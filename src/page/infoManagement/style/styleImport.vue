@@ -122,7 +122,7 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-         url: "/planservice/static/styleImport.png",
+         url: "/static/styleImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }

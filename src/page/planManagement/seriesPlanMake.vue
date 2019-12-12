@@ -141,44 +141,6 @@
       <el-tab-pane label="引用计划模板" name="second" v-if="quotePlanModel">
         <el-card>
           <el-row :gutter="20">
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">客户名称</div>
-                <el-select v-model="quotePlan.clientId" clearable placeholder="请选择">
-                  <el-option
-                    v-for="item in quotePlan.options.clientOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">品牌名称</div>
-                <el-select v-model="quotePlan.brandId" clearable placeholder="请选择">
-                  <el-option
-                    v-for="item in quotePlan.options.brandOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-col>
-
-            <el-col :span="8">
-              <div class="bar">
-                <el-button type="primary" @click="searchTemplate">查询</el-button>
-              </div>
-            </el-col>
-          </el-row>
-          <br />
-          <hr />
-          <br />
-
-          <el-row :gutter="20">
             <el-col :span="2">
               <el-button type="primary" size="small" @click="quoteModel()">确认</el-button>
             </el-col>
@@ -493,10 +455,6 @@ export default {
     };
   },
   created: function() {
-    //获取模板列表table
-    request.get(`/plan-template/find`).then(response => {
-      this.quotePlan.tableDate = response.result;
-    });
     //获得品牌下拉框
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
@@ -673,24 +631,6 @@ export default {
       });
     },
 
-    //搜索模板
-    searchTemplate() {
-      request
-        .get(`/plan-template/find`, {
-          params: {
-            clientId:
-              this.quotePlan.clientId === ""
-                ? undefined
-                : this.quotePlan.clientId,
-            brandId:
-              this.quotePlan.brandId === "" ? undefined : this.quotePlan.brandId
-          }
-        })
-        .then(response => {
-          this.quotePlan.tableDate = response.result;
-        });
-    },
-
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       this.handleSearch(1);
@@ -837,13 +777,24 @@ export default {
           type: "error"
         });
         return;
+      } else {
+        request
+          .get(`/plan-template/find`, {
+            params: {
+              clientId: this.multipleSelection[0].clientId,
+              brandId: this.multipleSelection[0].brandId
+            }
+          })
+          .then(response => {
+            this.quotePlan.tableDate = response.result;
+            this.quotePlan.clientId = "";
+            this.quotePlan.brandId = "";
+            this.quotePlan.seriesId = this.multipleSelection[0].id;
+            this.quotePlan.multipleSelection = [];
+            this.quotePlanModel = true;
+            this.viewname = "second";
+          });
       }
-      this.quotePlan.clientId = "";
-      this.quotePlan.brandId = "";
-      this.quotePlan.seriesId = this.multipleSelection[0].id;
-      this.quotePlan.multipleSelection = [];
-      this.quotePlanModel = true;
-      this.viewname = "second";
     }
   },
 
