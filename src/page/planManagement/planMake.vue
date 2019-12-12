@@ -1006,6 +1006,7 @@ export default {
       alwaysGreyFlag: true,
       isModifyPlanFlag: false,
       isCreatePlanFlag: false,
+      originRow: {},
       goback: null, //goback 为返回的 page name
 
       placeHolders: {
@@ -1391,12 +1392,14 @@ export default {
             );
           }
 
+          console.log("产品线结果", that.ruleForm.productLine);
           var param = {
             name: that.ruleForm.name,
             rootPlanId: that.ruleForm.rootPlanId,
             superiorId: that.ruleForm.superiorId,
             type: that.ruleForm.type,
-            productLine: that.ruleForm.productLine[0],
+            productLine:
+              that.ruleForm.productLine[that.ruleForm.productLine.length - 1],
             product: that.ruleForm.product,
             cycle: that.ruleForm.cycle,
             startDate: that.ruleForm.startDate,
@@ -1469,6 +1472,12 @@ export default {
               .put(`${window.$config.HOST}/root-plan/update`, param)
               .then(response => {
                 console.log("修改成功");
+                this.originRow.name = param.name;
+                this.originRow.startDate = param.startDate;
+                this.originRow.endDate = param.endDate;
+                this.originRow.date = param.date;
+                this.originRow.dateType = param.dateType;
+
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
                   params: {}
@@ -1495,7 +1504,12 @@ export default {
               creatorId: this.ruleForm.creatorId,
               rootPlanId: this.ruleForm.rootPlanId,
               name: this.ruleForm.name,
-              productLine: this.ruleForm.productLine,
+              productLine:
+                this.ruleForm.productLine instanceof Array
+                  ? this.ruleForm.productLine[
+                      this.ruleForm.productLine.length - 1
+                    ]
+                  : this.ruleForm.productLine,
               product: this.ruleForm.product,
               cycle: this.ruleForm.cycle,
               startDate: this.changeDate(this.ruleForm.startEndDate[0]),
@@ -1513,6 +1527,21 @@ export default {
             request
               .put(`${window.$config.HOST}/plan/update`, param)
               .then(response => {
+                this.originRow.name = param.name;
+                this.originRow.productLine = param.productLine;
+                this.originRow.product = param.product;
+                this.originRow.cycle = param.cycle;
+                this.originRow.proposal = param.proposal;
+                this.originRow.description = param.description;
+                this.originRow.note = param.note;
+                this.originRow.extension = param.extension;
+                this.originRow.actualStartDate = param.actualStartDate;
+                this.originRow.actualEndDate = param.actualEndDate;
+                this.originRow.startDate = param.startDate;
+                this.originRow.endDate = param.endDate;
+                this.originRow.date = param.date;
+                this.originRow.dateType = param.dateType;
+
                 console.log("修改成功");
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
@@ -1562,6 +1591,7 @@ export default {
         // console.log(data.dateStart)
 
         that.goback = data.goback; //goback 为返回页面的 name
+        that.originRow = data.rowData; // 拷贝引用
         // 深拷贝变量，不然只是引用
         that.ruleForm = JSON.parse(JSON.stringify(data.rowData));
 
