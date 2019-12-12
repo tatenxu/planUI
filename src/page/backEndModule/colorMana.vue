@@ -258,16 +258,6 @@ export default {
       .then(response => {
         this.tableData = response.result;
       });
-    //获取计划类型
-    request
-      .get(`/backstage/dic-property/name`, {
-        params: {
-          categoryName: "计划类型"
-        }
-      })
-      .then(response => {
-        this.colorData.options.typeOptions = response.result;
-      });
   },
   mounted() {
     const { dotStage, hueStage, transStage } = this.$refs;

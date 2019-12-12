@@ -422,7 +422,7 @@ export default {
                 ? "SUBMIT"
                 : this.checked === 2
                 ? "CHECK"
-                : "DISTRIBUTE",
+                : "ASSIGN",
             clientId: this.clientId === "" ? undefined : this.clientId,
             brandId: this.brandId === "" ? undefined : this.brandId,
             seriesName: this.rangeId === "" ? undefined : this.rangeId,

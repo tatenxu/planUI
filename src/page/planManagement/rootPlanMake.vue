@@ -126,7 +126,7 @@
             <el-table-column prop="objectName" label="款式组名称" align="center" v-if="checked ===2"></el-table-column>
             <el-table-column prop="objectName" label="款式名称" align="center" v-if="checked ===3"></el-table-column>
             <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
-            <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="180px" align="center"></el-table-column>
             <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
             <el-table-column label="是否约束" align="center" width="100px" v-if="checked  === 1">
               <template slot-scope="scope">
@@ -190,7 +190,7 @@
                     <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
                       <el-select
                         v-model="saveModel.clientId"
-                        clearable
+                        disabled
                         placeholder="请选择"
                         style="min-width:250px"
                       >
@@ -209,7 +209,7 @@
                     <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
                       <el-select
                         v-model="saveModel.brandId"
-                        clearable
+                        disabled
                         placeholder="请选择"
                         style="min-width:250px"
                       >
@@ -474,6 +474,7 @@ export default {
     //获得品牌下拉框
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
+      this.saveModel.options.brandOptions = response.result;
     });
     //获得服装层次下拉框
     request
