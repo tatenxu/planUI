@@ -1562,6 +1562,8 @@ export default {
         // console.log(data.dateStart)
 
         that.goback = data.goback; //goback 为返回页面的 name
+        // 深拷贝变量，不然只是引用
+        that.ruleForm = JSON.parse(JSON.stringify(data.rowData));
 
         if (data.isCreate) {
           that.isRootPlanFlag = false;
@@ -1583,9 +1585,6 @@ export default {
               });
             });
         }
-
-        // 深拷贝变量，不然只是引用
-        that.ruleForm = JSON.parse(JSON.stringify(data.rowData));
 
         // 甘特图监控变量
         that.ganttWatch.ganttWatchPlanNameOrigin = that.ruleForm.name;

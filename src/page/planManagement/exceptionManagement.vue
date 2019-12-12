@@ -1,15 +1,15 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20">
-        <el-col :span="8">
+      <el-row :gutter="10" style="margin-top: 15px; margin-bottom: 5px;">
+        <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select
               :disabled="searchDisabled"
               v-model="searchOptions.searchParams.clientName"
               clearable
-              @change="searchClientChanged"
+              @change="clientNameChange"
               placeholder="请选择"
             >
               <el-option
@@ -21,7 +21,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <div class="bar">
             <div class="title">品牌</div>
             <el-select
@@ -39,37 +39,11 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">系列名称</div>
-            <el-input
-              :disabled="searchDisabled"
-              v-model="searchOptions.searchParams.seriesName"
-              placeholder="请输入系列名称"
-              :clearable="true"
-            ></el-input>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划名称</div>
-            <el-input
-              :disabled="searchDisabled"
-              v-model="searchOptions.searchParams.planName"
-              placeholder="请输入系列名称"
-              :clearable="true"
-            ></el-input>
-          </div>
-        </el-col>
-        <el-col :span="8">
+        <el-col :span="10" :offset="2">
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
               :disabled="searchDisabled"
-              style="margin-left:20px "
               v-model="searchOptions.searchParams.dateRange"
               type="daterange"
               align="right"
@@ -80,8 +54,33 @@
             ></el-date-picker>
           </div>
         </el-col>
+      </el-row>
 
-        <el-col :span="4">
+      <el-row :gutter="10" style="margin-top: 15px; margin-bottom: 5px;">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">计划名称</div>
+            <el-autocomplete
+              :disabled="searchDisabled"
+              :fetch-suggestions="searchPlanName "
+              v-model="searchOptions.searchParams.planName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">系列名称</div>
+            <el-autocomplete
+              :disabled="searchDisabled"
+              :fetch-suggestions="searchSeriesName"
+              v-model="searchOptions.searchParams.seriesName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
+          </div>
+        </el-col>
+
+        <el-col :span="1" :offset="5">
           <div class="grid-content bg-purple">
             <el-button type="primary" @click="handleSearchClick">搜索</el-button>
           </div>
@@ -245,6 +244,11 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      inputSuggestions: {
+        plans: [],
+        series: []
+      },
+
       searchOptions: {
         searchParams: {
           clientName: "",
@@ -318,6 +322,13 @@ export default {
         this.searchOptions.options.clientNameOptions = response.result;
       });
 
+    //品牌名称跟随加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
+      .then(response => {
+        this.searchOptions.options.brandNameOptions = response.result;
+      });
+
     //异常类型选项
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {
@@ -341,6 +352,23 @@ export default {
         this.tableData = response.result;
         this.pagination.total = response.total;
       });
+
+    //输入建议
+    request.get(`${window.$config.HOST}/plan/name`).then(response => {
+      this.inputSuggestions.plans = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.plans.push(element);
+      });
+    });
+
+    request.get(`${window.$config.HOST}/info/series/name`).then(response => {
+      this.inputSuggestions.series = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.series.push(element);
+      });
+    });
   },
 
   mounted() {
@@ -386,23 +414,22 @@ export default {
   },
 
   methods: {
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
-    searchClientChanged() {
-      request
-        .get(`/backstage/brand/name`, {
-          params: {
-            clientId:
-              this.searchOptions.searchParams.clientName === ""
-                ? undefined
-                : this.searchOptions.searchParams.clientName
-          }
-        })
-        .then(response => {
-          this.searchOptions.options.brandNameOptions = response.result;
-          this.searchOptions.searchParams.brandName = 1;
-          this.searchOptions.searchParams.brandName = "";
-        });
+    //输入建议
+    searchPlanName(queryString, cb) {
+      var tmp = this.inputSuggestions.plans;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
     },
+    searchSeriesName(queryString, cb) {
+      var tmp = this.inputSuggestions.series;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
+    },
+
     clientNameChange() {
       //品牌名称跟随加载
       request
@@ -546,124 +573,37 @@ export default {
 };
 </script>
 
-
 <style lang="less" scoped>
-.title {
-  min-width: 100px;
-}
-.containerHeaderDiv1 {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  // background: black;
-  .containerHeaderDiv2 {
-    position: relative;
-    left: 300px;
-    // margin-right: 100px;
-    // background: white;
-    display: flex;
-    flex-direction: row-reverse;
-    min-width: 500px;
-    .input {
-      min-width: 200px;
-      max-width: 400px;
-    }
-    .inputTag {
-      font-size: 14px;
-      line-height: 40px;
-      min-width: 90px;
-    }
-  }
-}
-
-.inputCombine {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: row;
-  min-width: 250px;
-  max-width: 500px;
-  .inputTag {
-    font-size: 14px;
-    line-height: 40px;
-    min-width: 90px;
-  }
-}
-
-.secondButtonDiv {
-  margin-top: 20px;
-  min-width: 250px;
-  max-width: 500px;
-  // background: black;
-  .save {
-    margin-left: 68%;
-  }
-}
-
-.containerHeaderDiv1 {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  // background: black;
-  .containerHeaderDiv2 {
-    position: relative;
-    left: 300px;
-    // margin-right: 100px;
-    // background: white;
-    display: flex;
-    flex-direction: row-reverse;
-    min-width: 500px;
-    .input {
-      min-width: 200px;
-      max-width: 400px;
-    }
-    .inputTag {
-      font-size: 14px;
-      line-height: 40px;
-      min-width: 90px;
-    }
-  }
-}
-.block {
-  padding: 30px 0;
-  text-align: center;
-}
-.Mtitle {
-  align-content: center;
-  margin-left: 45%;
-  font-size: 2ch;
-}
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
-  .el-row {
+  .bar {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 20px;
-    .MinW {
-      min-width: 400px;
+    width: 100%;
+    .title {
+      font-size: 14px;
+      min-width: 75px;
+      text-align: center;
     }
-    .bar {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      .title {
-        font-size: 14px;
-        width: 90px;
-
-        text-align: center;
-      }
-      .el-input {
-        width: 70%;
-        min-width: 80px;
-        margin-left: 20px;
-      }
-      .el-select {
-        width: 70%;
-        min-width: 80px;
-        margin-left: 20px;
-      }
+    .el-input {
+      width: 300px;
+      min-width: 75px;
+      // margin: 5px 10px;
     }
+    .el-select {
+      width: 300px;
+      min-width: 75px;
+      // margin: 5px 10px;
+    }
+  }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+    //border-right: solid 1px #EFF2F6;
+    //display: inline-block;
+    //box-sizing: border-box;
   }
 }
 </style>
