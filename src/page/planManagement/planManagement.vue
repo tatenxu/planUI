@@ -456,7 +456,6 @@ export default {
         .then(response => {
           this.tableData = response.result;
           this.pagination.total = response.total;
-          console.log(this.tableData);
         });
     }
 

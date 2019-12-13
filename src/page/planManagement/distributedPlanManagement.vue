@@ -112,6 +112,7 @@
         max-height="400"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
+        :row-style="tableRowClassName"
       >
         <el-table-column label width="65">
           <template slot-scope="scope">
@@ -122,7 +123,6 @@
             >{{scope.$index+1}}</el-radio>
           </template>
         </el-table-column>
-        <!-- :row-style="tableRowClassName" -->
         <!-- <el-table-column width="50" type="selection" align="center"></el-table-column> -->
         <!-- <el-table-column width="50" type="index" label="序号" align="center"></el-table-column> -->
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
