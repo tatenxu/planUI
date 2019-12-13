@@ -1040,7 +1040,7 @@ export default {
       formData: "",
       rules: {
         name: [{ required: true, message: "请输入", trigger: "change" }],
-        startEndDate: [{ required: true, message: "请输入", trigger: "blur" }],
+        startEndDate: [],
         cycle: [
           {
             type: "number",
@@ -1265,6 +1265,13 @@ export default {
       .catch(error => {
         console.log("错误的根计划id");
       });
+
+    // addtion
+    this.rules.startEndDate.push({
+      required: !this.isModifyPlanFlag,
+      message: "请输入",
+      trigger: "blur"
+    });
   },
 
   methods: {
@@ -1460,8 +1467,14 @@ export default {
             var param = {
               id: this.ruleForm.id,
               name: this.ruleForm.name,
-              startDate: this.changeDate(this.ruleForm.startEndDate[0]),
-              endDate: this.changeDate(this.ruleForm.startEndDate[1]),
+              startDate:
+                this.ruleForm.startEndDate === undefined
+                  ? this.ruleForm.startDate
+                  : this.changeDate(this.ruleForm.startEndDate[0]),
+              endDate:
+                this.ruleForm.startEndDate === undefined
+                  ? this.ruleForm.endDate
+                  : this.changeDate(this.ruleForm.startEndDate[1]),
               date: this.ruleForm.date,
               dateType: this.changeDate(this.ruleForm.dateType)
             };
@@ -1477,6 +1490,8 @@ export default {
                 this.originRow.endDate = param.endDate;
                 this.originRow.date = param.date;
                 this.originRow.dateType = param.dateType;
+
+                this.$refs.upload.submit();
 
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
@@ -1512,8 +1527,14 @@ export default {
                   : this.ruleForm.productLine,
               product: this.ruleForm.product,
               cycle: this.ruleForm.cycle,
-              startDate: this.changeDate(this.ruleForm.startEndDate[0]),
-              endDate: this.changeDate(this.ruleForm.startEndDate[1]),
+              startDate:
+                this.ruleForm.startEndDate === undefined
+                  ? this.ruleForm.startDate
+                  : this.changeDate(this.ruleForm.startEndDate[0]),
+              endDate:
+                this.ruleForm.startEndDate === undefined
+                  ? this.ruleForm.endDate
+                  : this.changeDate(this.ruleForm.startEndDate[1]),
               proposal: this.ruleForm.proposal,
               description: this.ruleForm.description,
               note: this.ruleForm.note,
@@ -1543,6 +1564,9 @@ export default {
                 this.originRow.dateType = param.dateType;
 
                 console.log("修改成功");
+
+                this.$refs.upload.submit();
+
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
                   params: {}
@@ -1638,6 +1662,17 @@ export default {
           that.ruleForm.type = that.ruleForm.assignPlanType;
           that.ruleForm.superiorId = data.isRoot ? 0 : that.ruleForm.id;
           that.ruleForm.superiorName = that.ruleForm.name;
+
+          that.ruleForm.cycle = undefined;
+          that.ruleForm.productLine = undefined;
+          that.ruleForm.product = undefined;
+          that.ruleForm.extension = undefined;
+          that.ruleForm.proposal = undefined;
+          that.ruleForm.description = undefined;
+          that.ruleForm.note = undefined;
+          that.ruleForm.actualStartEndDate = undefined;
+          that.ruleForm.actualStartDate = undefined;
+          that.ruleForm.actualEndDate = undefined;
 
           that.ruleForm.rootPlanName =
             that.ruleForm.rootPlanName === undefined

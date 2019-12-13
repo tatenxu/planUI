@@ -552,7 +552,7 @@ export default {
         var minute = time.getMinutes();
         minute = minute < 10 ? "0" + minute : minute;
         var second = time.getSeconds();
-        second = minute < 10 ? "0" + second : second;
+        second = second < 10 ? "0" + second : second;
         return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
       }
     },
@@ -761,7 +761,7 @@ export default {
           this.addExceptionRuleForm
         )
         .then(response => {
-          this.selectedData = [];
+          this.addExceptionRuleForm = {};
           this.handleSearch();
           this.addExceptionDialogVisible = false;
         });
