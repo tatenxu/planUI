@@ -172,7 +172,7 @@
             <el-button
               v-if="!isSubmitPlan && 
                 (scope.row.state === '已制定' || scope.row.state === '被驳回') 
-                && (scope.row.creatorId === currentUserId || currentUserId === 0) "
+                && (scope.row.creatorId === currentUserId || scope.row.creatorId === 0) "
               @click.native.prevent="ModifyPlanDetail(scope.row)"
               type="text"
               size="small"
@@ -180,7 +180,7 @@
             <el-button
               v-if="!isSubmitPlan && 
                 (scope.row.state === '已制定' || scope.row.state === '被驳回') 
-                && (scope.row.creatorId === currentUserId || currentUserId === 0) "
+                && (scope.row.creatorId === currentUserId || scope.row.creatorId === 0) "
               @click.native.prevent="deleteOnePlan(scope.row.id)"
               type="text"
               size="small"
@@ -188,7 +188,7 @@
             <el-button
               v-if="!isSubmitPlan && 
                 (scope.row.state === '已制定' || scope.row.state === '被驳回') 
-                && (scope.row.creatorId === currentUserId || currentUserId === 0) "
+                && (scope.row.creatorId === currentUserId || scope.row.creatorId === 0) "
               @click.native.prevent="submitPlan(scope.row)"
               type="text"
               size="small"
