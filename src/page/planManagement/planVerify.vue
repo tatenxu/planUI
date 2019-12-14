@@ -67,7 +67,15 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="rangeId" placeholder="请输入系列名称" :clearable="true"></el-input>
+            <el-autocomplete
+              class="inline-input"
+              v-model="rangeId"
+              :fetch-suggestions="querySearchSeries"
+              placeholder="请输入系列名称"
+              @select="handleSelect"
+              style="width:350px"
+              clearable
+            ></el-autocomplete>
           </div>
         </el-col>
 
@@ -212,6 +220,7 @@ export default {
     return {
       lookAllPlans: false,
       checked: 1,
+      nameSuggestionsSeries: [],
 
       defaultProps: {
         children: "children",
@@ -296,6 +305,14 @@ export default {
   },
   created: function() {
     var that = this;
+    //获取系列名称
+    request.get(`/info/series/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestionsSeries.push({
+          value: element.name
+        });
+      });
+    });
 
     //获得品牌下拉框
     request
@@ -325,6 +342,25 @@ export default {
       });
   },
   methods: {
+    //系列名称搜索的输入建议
+    querySearchSeries(queryString, cb) {
+      var nameSuggestions = this.nameSuggestionsSeries;
+      var results = queryString
+        ? nameSuggestions.filter(this.createFilter(queryString))
+        : nameSuggestions;
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    handleSelect(item) {
+      console.log(item);
+    },
     //当搜索框的客户名称改变的时候GET弹出框的品牌信息
     searchClientChanged() {
       request

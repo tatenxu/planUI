@@ -123,20 +123,22 @@
             <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
             <el-table-column prop="brandName" label="品牌名称" align="center"></el-table-column>
             <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
-            <el-table-column prop="objectName" label="款式组名称" align="center" v-if="checked ===2"></el-table-column>
-            <el-table-column prop="objectName" label="款式名称" align="center" v-if="checked ===3"></el-table-column>
-            <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
-            <el-table-column prop="createTime" label="创建时间" width="180px" align="center"></el-table-column>
-            <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-            <el-table-column label="是否约束" align="center" width="100px" v-if="checked  === 1">
-              <template slot-scope="scope">
+            <el-table-column prop="objectName" label="款式组名称" align="center" v-if="checked === 2"></el-table-column>
+            <el-table-column prop="objectName" label="款式名称" align="center" v-if="checked === 3"></el-table-column>
+            <el-table-column label="是否约束" align="center" width="100px" v-if=" checked ===1">
+              <template slot-scope="scope" v-if=" checked ===1">
                 <el-switch
+                  v-if=" checked ===1"
                   v-model="scope.row.limited"
                   @change="rootPlanLimit(scope.row)"
                   active-color="#13ce66"
                 ></el-switch>
               </template>
             </el-table-column>
+            <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="180px" align="center"></el-table-column>
+            <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
+
             <el-table-column label="操作" fixed="right" align="center" width="300px">
               <template slot-scope="scope">
                 <el-button
@@ -764,7 +766,6 @@ export default {
 
     //搜索
     searchRootPlan(currentPageNum) {
-      console.log("dateRange:", this.dateRange);
       const that = this;
       let startDate, endDate;
 
@@ -773,7 +774,7 @@ export default {
         endDate = undefined;
       } else {
         startDate = this.changeDate(this.dateRange[0]);
-        endDate = this.changeDate(this.dateRangee[1]);
+        endDate = this.changeDate(this.dateRange[1]);
       }
 
       request
@@ -798,6 +799,7 @@ export default {
           }
         })
         .then(response => {
+          this.tableData = [];
           this.tableData = response.result;
           this.pagination.total = response.total;
           this.pagination.currentPage = currentPageNum;
