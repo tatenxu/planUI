@@ -369,7 +369,7 @@ export default {
       this.addClientForm.name = "";
     },
     //提交编辑表格
-    handleEditSaveClick() {
+    handleEditSaveClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
