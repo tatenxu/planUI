@@ -1663,16 +1663,18 @@ export default {
           that.ruleForm.superiorId = data.isRoot ? 0 : that.ruleForm.id;
           that.ruleForm.superiorName = that.ruleForm.name;
 
-          that.ruleForm.cycle = undefined;
-          that.ruleForm.productLine = undefined;
-          that.ruleForm.product = undefined;
-          that.ruleForm.extension = undefined;
-          that.ruleForm.proposal = undefined;
-          that.ruleForm.description = undefined;
-          that.ruleForm.note = undefined;
-          that.ruleForm.actualStartEndDate = undefined;
-          that.ruleForm.actualStartDate = undefined;
-          that.ruleForm.actualEndDate = undefined;
+          if (that.ruleForm.rootPlanName != undefined) {
+            that.ruleForm.cycle = undefined;
+            that.ruleForm.productLine = undefined;
+            that.ruleForm.product = undefined;
+            that.ruleForm.extension = undefined;
+            that.ruleForm.proposal = undefined;
+            that.ruleForm.description = undefined;
+            that.ruleForm.note = undefined;
+            that.ruleForm.actualStartEndDate = undefined;
+            that.ruleForm.actualStartDate = undefined;
+            that.ruleForm.actualEndDate = undefined;
+          }
 
           that.ruleForm.rootPlanName =
             that.ruleForm.rootPlanName === undefined
