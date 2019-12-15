@@ -9,6 +9,36 @@
         class="demo-ruleForm"
       >
         <el-row :gutter="20">
+          <el-col :span="3" v-if="!isDetail">
+            <div class="bar">
+              <el-button type="primary" @click="addOneNode">添加一个结点</el-button>
+            </div>
+          </el-col>
+          <el-col :span="3" v-if="isCreate">
+            <div class="bar">
+              <el-button type="primary" @click="saveTemplate('ruleForm')">保存</el-button>
+            </div>
+          </el-col>
+
+          <el-col :span="3" v-if="isUpdate">
+            <div class="bar">
+              <el-button type="primary" @click="updateTemplate('ruleForm')">更新</el-button>
+            </div>
+          </el-col>
+
+          <el-col :span="3">
+            <div class="bar">
+              <el-button type="primary" @click="gobackPage">返回</el-button>
+            </div>
+          </el-col>
+
+          <el-col :span="8" v-if="!isDetail">
+            <div class="bar">
+              <div class="title" style="font-size:14px;color:red">注意：只能保留一个根节点,否则会保存失败！</div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:30px">
           <el-col :span="6">
             <div class="bar">
               <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
@@ -59,37 +89,6 @@
         </el-row>
         <br />
         <br />
-
-        <el-row :gutter="20">
-          <el-col :span="3" v-if="!isDetail">
-            <div class="bar">
-              <el-button type="primary" @click="addOneNode">添加一个结点</el-button>
-            </div>
-          </el-col>
-          <el-col :span="3" v-if="isCreate">
-            <div class="bar">
-              <el-button type="primary" @click="saveTemplate('ruleForm')">保存</el-button>
-            </div>
-          </el-col>
-
-          <el-col :span="3" v-if="isUpdate">
-            <div class="bar">
-              <el-button type="primary" @click="updateTemplate('ruleForm')">更新</el-button>
-            </div>
-          </el-col>
-
-          <el-col :span="3">
-            <div class="bar">
-              <el-button type="primary" @click="gobackPage">返回</el-button>
-            </div>
-          </el-col>
-
-          <el-col :span="8" v-if="!isDetail">
-            <div class="bar">
-              <div class="title" style="font-size:14px;color:red">注意：只能保留一个根节点,否则会保存失败！</div>
-            </div>
-          </el-col>
-        </el-row>
       </el-form>
 
       <br />
