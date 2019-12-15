@@ -1475,8 +1475,8 @@ export default {
                 this.ruleForm.startEndDate === undefined
                   ? this.ruleForm.endDate
                   : this.changeDate(this.ruleForm.startEndDate[1]),
-              date: this.ruleForm.date,
-              dateType: this.changeDate(this.ruleForm.dateType)
+              date: this.changeDate(this.ruleForm.date),
+              dateType: this.ruleForm.dateType
             };
 
             console.log("修改参数：", param);
@@ -1490,8 +1490,6 @@ export default {
                 this.originRow.endDate = param.endDate;
                 this.originRow.date = param.date;
                 this.originRow.dateType = param.dateType;
-
-                this.$refs.upload.submit();
 
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
