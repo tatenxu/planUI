@@ -592,7 +592,7 @@ export default {
             required: false,
             trigger: "blur",
             validator: (rule, value, callback) => {
-              if (value != "") {
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
@@ -611,7 +611,7 @@ export default {
             required: false,
             trigger: "blur",
             validator: (rule, value, callback) => {
-              if (value != "") {
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
@@ -711,7 +711,8 @@ export default {
           {
             required: false,
             validator: (rule, value, callback) => {
-              if (value != "") {
+              console.log(value);
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
@@ -730,7 +731,7 @@ export default {
           {
             required: false,
             validator: (rule, value, callback) => {
-              if (value != "") {
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
