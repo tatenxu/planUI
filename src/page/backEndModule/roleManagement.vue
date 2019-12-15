@@ -97,7 +97,7 @@
                 <el-option
                   v-for="item in ruleForm.options.roleOptions"
                   :key="item.id"
-                  :label="item.note"
+                  :label="item.name"
                   :value="item.id"
                 ></el-option>
               </el-select>
