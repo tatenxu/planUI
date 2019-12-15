@@ -299,7 +299,7 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :modal="false" title="修改系列" :visible.sync="updatePanelFlag">
+    <el-dialog :modal="false" title="详情信息" :visible.sync="updatePanelFlag">
       <el-form
         :model="updateForm"
         :rules="updateRules"
@@ -486,10 +486,8 @@
           </el-col>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
-          <el-col :span="3" :offset="10">
-            <el-button type="primary" @click="updateSeries('updateForm')">保存</el-button>
-          </el-col>
-          <el-col :span="3">
+          <el-col :span="8" :offset="10">
+            <el-button type="primary" @click="updateSeries('updateForm')" v-if="detailFlag!=true">保存</el-button>
             <el-button type="info" @click="updateCancel">取消</el-button>
           </el-col>
         </el-row>
@@ -594,7 +592,7 @@ export default {
             required: false,
             trigger: "blur",
             validator: (rule, value, callback) => {
-              if (value != "") {
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
@@ -613,7 +611,7 @@ export default {
             required: false,
             trigger: "blur",
             validator: (rule, value, callback) => {
-              if (value != "") {
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
@@ -713,7 +711,8 @@ export default {
           {
             required: false,
             validator: (rule, value, callback) => {
-              if (value != "") {
+              console.log(value);
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {
@@ -732,7 +731,7 @@ export default {
           {
             required: false,
             validator: (rule, value, callback) => {
-              if (value != "") {
+              if (value != "" && value != null) {
                 if (
                   /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/.test(value) == false
                 ) {

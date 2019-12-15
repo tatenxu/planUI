@@ -140,7 +140,7 @@
             label-width="130px"
             class="add-ruleForm"
           >
-            <el-form-item label="订单名称" prop="name">
+            <el-form-item label="订单阶段" prop="name">
               <el-input v-model="orderStage.addOrder.name" class="input" placeholder="请输入订单属性名称"></el-input>
             </el-form-item>
 
@@ -179,7 +179,7 @@
             label-width="130px"
             class="add-ruleForm"
           >
-            <el-form-item label="订单名称" prop="name">
+            <el-form-item label="订单阶段" prop="name">
               <el-input v-model="orderStage.updateOrder.name" class="input" placeholder="请输入订单属性名称"></el-input>
             </el-form-item>
 
@@ -556,7 +556,7 @@ export default {
               projectTypeId: this.orderStage.updateOrder.projectTypeId
             })
             .then(response => {
-              this.reSearchOrder(this.lastOrderProjectTypeId);
+              this.reSearchOrder(this.orderStage.updateOrder.projectTypeId);
               this.orderStage.updateOrder.id = "";
               this.orderStage.updateOrder.name = "";
               this.orderStage.updateOrder.projectTypeId = "";

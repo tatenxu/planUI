@@ -284,6 +284,7 @@ export default {
         })
         .then(response => {
           this.colorData.options.typeOptions = response.result;
+          this.colorData.type = "";
         });
     },
     //RGBA转换为十六进制

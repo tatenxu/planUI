@@ -398,7 +398,7 @@ export default {
       this.$router.push({
         name: "planMakeIndex",
         params: {
-          goback: "planVerify",
+          goback: "planDistribute",
           isRoot: false,
           isModify: false,
           isCreate: false,

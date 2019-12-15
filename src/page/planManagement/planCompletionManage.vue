@@ -128,21 +128,11 @@ export default {
   methods: {
     // 每页条数改变时触发函数
     handleSizeChange(val) {
-      // this.pagination: {
-      //   currentPage: 1,
-      //   pageSizes: [5, 10, 20, 30, 50],
-      //   pageSize: 5,
-      //   total: 400
-      // },
       this.pagination.pageSize = val;
-      console.log(`每页 ${val} 条`);
-
-      this.pagination.currentPage = 1;
-      this.handleSearch();
+      this.handleSearch(1);
     },
     // 当前页码改变时触发函数
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
       this.pagination.currentPage = val;
       this.handleSearch(val);
     },
@@ -157,6 +147,7 @@ export default {
         .then(response => {
           this.tableData = response.result;
           this.pagination.total = response.total;
+          this.pagination.currentPage = currentPageNum;
         });
     },
     //计划完成按钮点击
@@ -164,31 +155,17 @@ export default {
       //this.$set(this.iptDatas[index], `showAlert`, true)
       const that = this;
       if (that.tableSelectionData.length === 0) {
-        that.$message.error("请选择要删除的计划！");
+        that.$message.error("请选择想要完成的计划！");
       } else {
         this.tableSelectionData.forEach(element => {
           request
-            .get(`${window.$config.HOST}/infoManagement/completeRange`, {
-              params: { id: element.id }
-            })
-            .then(response => {
-              if (response.data < 0) {
-                this.$message.error(
-                  "添加完成失败:" +
-                    this.planManagementErrorCode[-response.data - 1].errotInfo
-                );
-              } else {
-                console.log("完成" + element.name);
-                this.$message({
-                  message: element.name + "已完成",
-                  type: "success"
-                });
-                this.handleSearch();
+            .put(`/info/series/complete`, null, {
+              params: {
+                id: element.id
               }
             })
-            .catch(error => {
-              console.log(element.name + "完成失败");
-              this.$message.error(element.name + "添加完成失败");
+            .then(response => {
+              this.handleSearch(1);
             });
         });
       }
