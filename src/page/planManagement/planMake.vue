@@ -1204,7 +1204,16 @@ export default {
 
     // 获得产品线下拉框
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      that.chooseOptions.productLineOptions = response.result;
+      // that.chooseOptions.productLineOptions = response.result;
+      request.get(`/me`).then(response => {
+        response.result.productLines.forEach(ele => {
+          that.chooseOptions.productLineOptions.push({
+            name: ele,
+            id: 0,
+            children: null
+          });
+        });
+      });
     });
   },
   mounted() {
@@ -1275,6 +1284,18 @@ export default {
   },
 
   methods: {
+    dfsDisable(node, plArr) {
+      if (plArr.indexOf(node.name) == -1) {
+        node.disabled = true;
+      } else {
+        node.disabled = false;
+      }
+      if (node.children != null) {
+        node.children.forEach(ele => {
+          this.dfsDisable(ele, plArr);
+        });
+      }
+    },
     downloadRow(row) {
       request
         .get(`${window.$config.HOST}/plan-files/download`, {
