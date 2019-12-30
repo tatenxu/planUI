@@ -3,7 +3,7 @@
     <el-card class="box-card">
       <!-- 第一行 -->
       <el-row :gutter="20" style="margin-top:5px;">
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">计划类别</div>
             <el-select v-model="searchOptions.searchParams.planClassName">
@@ -16,7 +16,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select
@@ -33,7 +33,7 @@
             </el-select>
           </div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
             <el-select v-model="searchOptions.searchParams.brandName" clearable>
@@ -46,8 +46,10 @@
             </el-select>
           </div>
         </el-col>
-
-        <el-col :span="6">
+      </el-row>
+      <!-- 第二行 -->
+      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
             <el-select v-model="searchOptions.searchParams.clothesLevelName" clearable>
@@ -60,22 +62,23 @@
             </el-select>
           </div>
         </el-col>
-      </el-row>
-      <!-- 第二行 -->
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="6">
+
+        <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
             <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
             <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
-        <el-col :span="9">
+      </el-row>
+      <!-- 第三行 -->
+      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+        <el-col :span="12">
           <div class="bar">
             <div class="title">添加时间</div>
             <el-date-picker
@@ -89,10 +92,8 @@
             ></el-date-picker>
           </div>
         </el-col>
-      </el-row>
-      <!-- 第三行 -->
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="6" :offset="15">
+
+        <el-col :span="4" :offset="4">
           <el-switch
             v-model="isRootPlan"
             @change="planTypeSwitchChange"
@@ -101,7 +102,8 @@
             inactive-text="普通计划"
           ></el-switch>
         </el-col>
-        <el-col :span="2">
+
+        <el-col :span="2" :offset="1">
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
         </el-col>
       </el-row>
@@ -133,13 +135,20 @@
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="serialNo" label="计划编号" align="center"></el-table-column>
+        <el-table-column
+          v-if="!isRootPlan"
+          prop="serialNo"
+          label="计划编号"
+          align="center"
+          width="150px"
+        ></el-table-column>
         <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
+        <el-table-column prop="createTime" label="添加时间" align="center" width="200px"></el-table-column>
+        <el-table-column prop="completeTime" label="完成时间" align="center" width="200px"></el-table-column>
         <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="150" align="center">
+        <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
           </template>
@@ -185,7 +194,7 @@ export default {
           clientName: undefined,
           brandName: undefined,
           clothesLevelName: undefined,
-          planClassName: "STYLE",
+          planClassName: "SERIES",
           seriesName: undefined,
           planName: undefined,
           dateRange: undefined
@@ -245,7 +254,7 @@ export default {
     request
       .get(`${window.$config.HOST}/root-plan/find-complete`, {
         params: {
-          planClass: "STYLE",
+          planClass: "SERIES",
           pageNum: this.pagination.currentPage,
           pageSize: this.pagination.pageSize
         }
@@ -410,19 +419,23 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 900px;
   .el-row {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
+    .el-switch {
+      min-width: 200px;
+    }
     .bar {
       display: flex;
       flex-direction: row;
       align-items: center;
       .title {
         font-size: 14px;
-        width: 90px;
-        min-width: 50px;
+        width: 70px;
+        min-width: 70px;
         text-align: center;
       }
       .el-input {

@@ -1,28 +1,26 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import './style/reset.css';
-import Vue from 'vue';
+import "./style/reset.css";
+import Vue from "vue";
 
-import VueRouter from 'vue-router';
-import App from './App';
-import routes from './router';
+import VueRouter from "vue-router";
+import App from "./App";
+import routes from "./router";
 
 // store为实例化生成的
-import store from './store';
+import store from "./store";
 
-import Sto from 'store';
+import Sto from "store";
 
 import axios from "axios";
 
-
 // import { Message, loading } from 'element-ui';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
 
 //cookie
-import VueCookies from 'vue-cookies'
-Vue.use(VueCookies)
-
+import VueCookies from "vue-cookies";
+Vue.use(VueCookies);
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
@@ -33,50 +31,49 @@ Vue.prototype.$message = ElementUI.Message;
 Vue.prototype.$sto = Sto;
 Vue.prototype.$store = store;
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 // 创建路由实例
 const router = new VueRouter({
   routes: routes,
-  mode: 'history',
-  strict: process.env.NODE_ENV === 'development' // 生产环境使用严格模式
-})
+  mode: "history",
+  strict: process.env.NODE_ENV === "development" // 生产环境使用严格模式
+});
 
 router.beforeEach((to, from, next) => {
-  const token = sessionStorage.getItem('token')
-  const exp = sessionStorage.getItem('token-expired')
-  const now = new Date().getTime()
-  if (to.path === '/login') {
-    if (token && exp && (now - exp < 30000)) {
-      next("/")
+  const token = sessionStorage.getItem("token");
+  const exp = sessionStorage.getItem("token-expired");
+  const now = new Date().getTime();
+  if (to.path === "/login") {
+    if (token && exp && now - exp < 30000) {
+      next("/");
     } else {
-      next()
+      next();
     }
   } else {
     // token每过3小时需刷新一次
-    if (token && exp && (now - exp < 10800000)) {
-      next()
+    if (token && exp && now - exp < 10800000) {
+      next();
     } else {
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('token-expired')
-      next('/login')
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("token-expired");
+      next("/login");
     }
   }
-})
-
+});
 
 window.$config = {};
 
 //dev
 
-window.$config.HOST = 'http://192.168.1.111:8080';
-window.$config.HOST2 = 'http://192.168.1.111:8081';
+window.$config.HOST = "http://192.168.1.111:8080";
+window.$config.HOST2 = "http://192.168.1.111:8001";
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
+  el: "#app",
   router,
   store,
-  template: '<App/>',
+  template: "<App/>",
   components: { App }
-})
+});

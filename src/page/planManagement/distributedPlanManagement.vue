@@ -90,7 +90,7 @@
             inactive-text="普通计划"
           ></el-switch>
         </el-col>
-        <el-col :span="2">
+        <el-col :offset="1" :span="2">
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
         </el-col>
       </el-row>
@@ -103,7 +103,7 @@
         <el-col :span="4">
           <el-button type="primary" size="small" @click="changeSubPlanOrder">下级计划顺序调整</el-button>
         </el-col>
-        <el-col :span="3" v-if="!isRootPlan">
+        <el-col :span="3">
           <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
         </el-col>
       </el-row>
@@ -131,21 +131,20 @@
         <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
         <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="serialNo" label="计划编号" align="center"></el-table-column>
+        <el-table-column
+          v-if="!isRootPlan"
+          prop="serialNo"
+          label="计划编号"
+          align="center"
+          width="150px"
+        ></el-table-column>
         <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
         <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-        <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
         <el-table-column prop="planClass" label="计划类别" align="center"></el-table-column>
 
-        <!-- 根计划 -->
-        <el-table-column fixed="right" label="操作" width="150" align="center">
-          <template slot-scope="scope">
-            <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
-          </template>
-        </el-table-column>
-
+        <el-table-column prop="createTime" label="添加时间" align="center" width="200px"></el-table-column>
         <!-- 普通计划有查看异常操作 -->
-        <el-table-column v-if="!isRootPlan" label="异常状态" width="150" align="center">
+        <el-table-column v-if="!isRootPlan" label="异常状态" align="center">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="toSearchException(scope.row)"
@@ -155,6 +154,12 @@
               style="background:red;"
             >有异常，查看</el-button>
             <p v-else>无异常</p>
+          </template>
+        </el-table-column>
+
+        <el-table-column fixed="right" label="操作" width="150" align="center">
+          <template slot-scope="scope">
+            <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -176,7 +181,6 @@
       <el-table :data="subPlanTableData" highlight-current-row style="width: 100%">
         <!-- <el-table-column  type="selection"  width="55px"></el-table-column> -->
         <el-table-column type="index" label="新顺序" width="70px"></el-table-column>
-        <el-table-column prop="order" label="原顺序" width="70"></el-table-column>
         <el-table-column prop="name" label="计划名称" width="100px"></el-table-column>
         <el-table-column prop="startDate" label="开始日期" width="100px"></el-table-column>
         <el-table-column prop="endDate" label="结束日期" width="100px"></el-table-column>
@@ -487,21 +491,35 @@ export default {
         });
         return;
       }
-      let list = {
+      let param = {
         id: this.selectedData[0].id
       };
 
-      request
-        .get(`${window.$config.HOST}/plan/tree`, {
-          params: list
-        })
-        .then(response => {
-          this.allPlans = [];
-          this.allPlans.push(response.result);
+      if (this.isRoot) {
+        request
+          .get(`${window.$config.HOST}/root-plan/tree`, {
+            params: param
+          })
+          .then(response => {
+            this.allPlans = [];
+            this.allPlans.push(response.result);
 
-          // this.selectedData = [];
-          this.lookAllPlanDialogVisible = true;
-        });
+            // this.selectedData = [];
+            this.lookAllPlanDialogVisible = true;
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/tree`, {
+            params: param
+          })
+          .then(response => {
+            this.allPlans = [];
+            this.allPlans.push(response.result);
+
+            // this.selectedData = [];
+            this.lookAllPlanDialogVisible = true;
+          });
+      }
     },
 
     addPlanChild() {
@@ -660,22 +678,28 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 900px;
   .el-row {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
+    .el-switch {
+      min-width: 200px;
+      margin-left: 20px;
+    }
+
     .bar {
       display: flex;
       flex-direction: row;
       align-items: center;
       .title {
         font-size: 14px;
-        width: 90px;
-        min-width: 50px;
+        width: 70px;
+        min-width: 70px;
         text-align: center;
       }
-      .el-input {
+      .el-autocomplete {
         width: 70%;
         min-width: 80px;
         margin-left: 20px;
