@@ -152,14 +152,23 @@
       :before-close="cancel"
     >
       <el-row :gutter="20" style="margin-top:-30px;">
+        <el-col :span="10">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input v-model="personName" clearable placeholder="请输入"></el-input>
+            <el-button type="primary" @click="searchPersonByName">搜索</el-button>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="nextStep" style="margin-left:100px">下一步</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:10px;">
         <el-col :span="6">
           <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
         </el-col>
         <el-col :span="10">
           <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="nextStep" style="margin-left:100px">下一步</el-button>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
@@ -181,21 +190,6 @@
           </el-table>
         </el-col>
       </el-row>
-
-      <!-- <div class="table">
-          <el-table
-            :data="personTable"
-            max-height="400"
-            @selection-change="changeCheckBoxFun1"
-            :stripe="true"
-            :highlight-current-row="true"
-            style="width: 100%; margin-top: 20px;margin-left:30%"
-          >
-            <el-table-column type="selection" width="50px" align="center"></el-table-column>
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
-          </el-table>
-      </div>-->
     </el-dialog>
   </div>
 </template>
@@ -210,10 +204,12 @@ export default {
         children: "children",
         label: "name"
       },
+      personName: "",
       userSelectionList: [],
       userSelection: [],
       productionLine: [],
       personTable: [],
+      personTable2: [],
       userName: "",
       CustomerValue: "",
       BrandValue: "",
@@ -327,6 +323,13 @@ export default {
   },
 
   methods: {
+    searchPersonByName() {
+      this.personTable = [];
+      this.personTable2.forEach(element => {
+        if (element.name.indexOf(this.personName) >= 0)
+          this.personTable.push(element);
+      });
+    },
     nextStep() {
       console.log(this.userSelection);
       if (this.userSelection.length === 0) {
@@ -348,6 +351,7 @@ export default {
         })
         .then(response => {
           this.personTable = response.result;
+          this.personTable2 = response.result;
         });
     },
     handleSearch() {
@@ -536,7 +540,9 @@ export default {
                 (this.userSelectionList = []),
                 (this.ruleForm.multipleSelection = []),
                 (this.personTable = []),
-                (this.dialogFormVisible = false);
+                (this.personTable2 = []),
+                (this.personName = "");
+              this.dialogFormVisible = false;
             });
         } else {
           this.$message({
@@ -555,7 +561,9 @@ export default {
         (this.userSelectionList = []),
         (this.ruleForm.multipleSelection = []),
         (this.personTable = []),
-        (this.dialogFormVisible = false);
+        (this.personTable2 = []),
+        (this.personName = "");
+      this.dialogFormVisible = false;
       this.dialogFormVisible1 = false;
     }
   }
@@ -589,5 +597,29 @@ export default {
     padding: 30px 0;
     text-align: center;
   }
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  .title {
+    font-size: 14px;
+    min-width: 75px;
+    text-align: center;
+  }
+  .el-input {
+    width: 300px;
+    min-width: 75px;
+  }
+  .el-select {
+    width: 300px;
+    min-width: 75px;
+  }
+}
+.block {
+  padding: 30px 0;
+  text-align: center;
 }
 </style>

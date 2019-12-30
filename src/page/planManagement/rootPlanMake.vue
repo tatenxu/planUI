@@ -265,14 +265,28 @@
       :before-close="cancelDistribute"
     >
       <el-row :gutter="20" style="margin-top:-30px;">
+        <el-col :span="12">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input
+              v-model="rootDistribute.personName"
+              clearable
+              placeholder="请输入"
+              style="width:350px"
+            ></el-input>
+            <el-button type="primary" @click="searchPersonByName" style="margin-left:20px">搜索</el-button>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:10px;">
         <el-col :span="6">
           <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
         </el-col>
         <el-col :span="10">
           <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
@@ -348,7 +362,9 @@ export default {
       productionLine: [],
       rootDistribute: {
         id: "",
+        personName: "",
         tableData: [],
+        tableDataA: [],
         multipleSelection: [],
         options: {
           assignPlanTypeOptions: {}
@@ -510,6 +526,13 @@ export default {
       });
   },
   methods: {
+    searchPersonByName() {
+      this.rootDistribute.tableData = [];
+      this.rootDistribute.tableDataA.forEach(element => {
+        if (element.name.indexOf(this.rootDistribute.personName) >= 0)
+          this.rootDistribute.tableData.push(element);
+      });
+    },
     rootPlanLimit(row) {
       console.log(row);
       request
@@ -661,6 +684,8 @@ export default {
           this.rootDistribute.id = "";
           this.rootDistribute.multipleSelection = [];
           this.rootDistribute.tableData = [];
+          this.rootDistribute.tableDataA = [];
+          this.rootDistribute.personName = "";
           this.rootPlanDistributeFlag = false;
         });
       }
@@ -669,6 +694,8 @@ export default {
       this.rootDistribute.id = "";
       this.rootDistribute.multipleSelection = [];
       this.rootDistribute.tableData = [];
+      this.rootDistribute.tableDataA = [];
+      this.rootDistribute.personName = "";
       this.rootPlanDistributeFlag = false;
     },
     cancelDistributeDetail() {
@@ -689,6 +716,7 @@ export default {
         })
         .then(response => {
           this.rootDistribute.tableData = response.result;
+          this.rootDistribute.tableDataA = response.result;
         });
     },
 
@@ -1006,5 +1034,56 @@ export default {
       }
     }
   }
+}
+.box-card {
+  margin: 20px 50px;
+  padding: 0 20px;
+  .bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    .title {
+      font-size: 14px;
+      min-width: 75px;
+      text-align: center;
+    }
+    .el-input {
+      width: 300px;
+      min-width: 75px;
+    }
+    .el-select {
+      width: 300px;
+      min-width: 75px;
+    }
+  }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+  }
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  .title {
+    font-size: 14px;
+    min-width: 75px;
+    text-align: center;
+  }
+  .el-input {
+    width: 300px;
+    min-width: 75px;
+  }
+  .el-select {
+    width: 300px;
+    min-width: 75px;
+  }
+}
+.block {
+  padding: 30px 0;
+  text-align: center;
 }
 </style>

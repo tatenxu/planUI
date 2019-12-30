@@ -70,7 +70,7 @@ window.$config = {};
 //dev
 
 window.$config.HOST = 'http://192.168.1.111:8080';
-window.$config.HOST2 = 'http://192.168.1.111:8081';
+window.$config.HOST2 = 'http://192.168.1.111:8001';
 
 /* eslint-disable no-new */
 new Vue({
