@@ -58,20 +58,20 @@
     <el-card class="box-card">
       <el-container>
         <el-header>
-          <el-row :gutter="40">
-            <el-col :span="2">
+          <el-row :gutter="20">
+            <el-col :span="4">
               <div class="grid-content bg-purple">
                 <el-button type="primary" @click="handleSetUniverseClick">设为通用</el-button>
               </div>
             </el-col>
 
-            <el-col :span="2">
+            <el-col :span="4">
               <div class="grid-content bg-purple">
                 <el-button type="primary" @click="handleSetPrivateClick">设为私有</el-button>
               </div>
             </el-col>
 
-            <el-col :span="2">
+            <el-col :span="4">
               <div class="grid-content bg-purple">
                 <el-button type="primary" @click="addTemplate">添加模板</el-button>
               </div>
@@ -367,6 +367,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .bar {
     display: flex;
     flex-direction: row;

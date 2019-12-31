@@ -178,83 +178,81 @@
         </el-tab-pane>
 
         <el-tab-pane label="保存计划模版" name="second" v-if="savePlanModelFlag">
-          <el-card>
-            <el-form
-              :model="saveModel"
-              :rules="modelRules"
-              ref="saveModel"
-              label-width="100px"
-              class="demo-ruleForm"
-            >
-              <el-row :gutter="20">
-                <el-col :span="8">
-                  <div class="bar">
-                    <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
-                      <el-select
-                        v-model="saveModel.clientId"
-                        disabled
-                        placeholder="请选择"
-                        style="min-width:250px"
-                      >
-                        <el-option
-                          v-for="item in saveModel.options.clientOptions"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id"
-                        ></el-option>
-                      </el-select>
-                    </el-form-item>
-                  </div>
-                </el-col>
-                <el-col :span="8">
-                  <div class="bar">
-                    <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
-                      <el-select
-                        v-model="saveModel.brandId"
-                        disabled
-                        placeholder="请选择"
-                        style="min-width:250px"
-                      >
-                        <el-option
-                          v-for="item in saveModel.options.brandOptions"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id"
-                        ></el-option>
-                      </el-select>
-                    </el-form-item>
-                  </div>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="8">
-                  <div class="bar">
-                    <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
-                      <el-input
-                        v-model="saveModel.name"
-                        clearable
-                        :rows="1"
-                        style="margin-left: 20px;min-width:250px"
-                        placeholder="请输入"
-                      ></el-input>
-                    </el-form-item>
-                  </div>
-                </el-col>
+          <el-form
+            :model="saveModel"
+            :rules="modelRules"
+            ref="saveModel"
+            label-width="100px"
+            class="demo-ruleForm"
+          >
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <div class="bar">
+                  <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+                    <el-select
+                      v-model="saveModel.clientId"
+                      disabled
+                      placeholder="请选择"
+                      style="min-width:250px"
+                    >
+                      <el-option
+                        v-for="item in saveModel.options.clientOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="bar">
+                  <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
+                    <el-select
+                      v-model="saveModel.brandId"
+                      disabled
+                      placeholder="请选择"
+                      style="min-width:250px"
+                    >
+                      <el-option
+                        v-for="item in saveModel.options.brandOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="10">
+                <div class="bar">
+                  <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
+                    <el-input
+                      v-model="saveModel.name"
+                      clearable
+                      :rows="1"
+                      style="margin-left: 20px;min-width:250px"
+                      placeholder="请输入"
+                    ></el-input>
+                  </el-form-item>
+                </div>
+              </el-col>
 
-                <el-col :span="2">
-                  <div class="bar">
-                    <el-button type="primary" @click="saveModelClick('saveModel')">保存</el-button>
-                  </div>
-                </el-col>
+              <el-col :span="2">
+                <div class="bar">
+                  <el-button type="primary" @click="saveModelClick('saveModel')">保存</el-button>
+                </div>
+              </el-col>
 
-                <el-col :span="2">
-                  <div class="bar">
-                    <el-button type="primary" @click="cancelModelClick()">取消</el-button>
-                  </div>
-                </el-col>
-              </el-row>
-            </el-form>
-          </el-card>
+              <el-col :span="2">
+                <div class="bar">
+                  <el-button type="primary" @click="cancelModelClick()">取消</el-button>
+                </div>
+              </el-col>
+            </el-row>
+          </el-form>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -1004,6 +1002,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1200px;
   .el-row {
     display: flex;
     flex-direction: row;
@@ -1038,6 +1037,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .bar {
     display: flex;
     flex-direction: row;

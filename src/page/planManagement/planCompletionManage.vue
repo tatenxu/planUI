@@ -62,53 +62,7 @@ export default {
         total: 0
       },
       pages: 0,
-      tableSelectionData: [],
-      planManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "所需属性值缺失"
-        },
-        {
-          errorCode: -2,
-          errotInfo: "计划名称重复"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "父计划未下发"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "系列根计划不存在"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "款式组根计划不存在"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "根计划已存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "计划开始结束时间超额"
-        },
-        {
-          errorCode: -8,
-          errotInfo: "计划款数超额"
-        },
-        {
-          errorCode: -9,
-          errotInfo: "引用预测计划时预测计划不存在"
-        },
-        {
-          errorCode: -10,
-          errotInfo: "当前计划状态不允许执行此操作"
-        },
-        {
-          errorCode: -11,
-          errotInfo: "与已有计划冲突"
-        }
-      ]
+      tableSelectionData: []
     };
   },
   created: function() {
@@ -123,6 +77,7 @@ export default {
       .then(response => {
         this.tableData = response.result;
         this.pagination.total = response.total;
+        this.pagination.currentPage = 1;
       });
   },
   methods: {
@@ -183,6 +138,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .bar {
     display: flex;
     flex-direction: row;

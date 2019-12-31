@@ -467,6 +467,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .bar {
     display: flex;
     flex-direction: row;

@@ -542,6 +542,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1400px;
   .inputBox {
     display: flex;
     flex-direction: row;
