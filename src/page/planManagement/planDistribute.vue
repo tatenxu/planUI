@@ -158,6 +158,8 @@
             <el-table-column prop="executorName" width="150" label="人员" align="center"></el-table-column>
             <el-table-column prop="createTime" width="150" label="创建时间" align="center"></el-table-column>
             <el-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></el-table-column>
+            <el-table-column prop="assignPlanMadeStr" width="100" label="子计划制定" align="center"></el-table-column>
+            
             <el-table-column label="操作" align="center" width="100px">
               <template slot-scope="scope">
                 <el-button size="mini" @click="deleteAssign(scope.row,scope.index)" type="text">撤回</el-button>
@@ -283,6 +285,11 @@ export default {
         })
         .then(response => {
           this.distributeDetail.tableData = response.result;
+          this.distributeDetail.tableData.forEach(element=>{
+            if(element.assignPlanMade)
+            element.assignPlanMadeStr = "是"
+            else element.assignPlanMadeStr="否"
+          })
         });
     },
     //撤回下发

@@ -116,6 +116,7 @@
             :data="tableData"
             style="width: 100%; margin-top: 20px"
             @selection-change="changeCheckBoxFun"
+            :row-style="tableRowClassName"
           >
             <el-table-column w idth="50" type="selection" align="center"></el-table-column>
             <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
@@ -336,6 +337,7 @@
             <el-table-column prop="executorName" width="150" label="人员" align="center"></el-table-column>
             <el-table-column prop="createTime" width="150" label="创建时间" align="center"></el-table-column>
             <el-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></el-table-column>
+            <el-table-column prop="assignPlanMadeStr" width="100" label="子计划制定" align="center"></el-table-column>
             <el-table-column label="操作" align="center" width="100px">
               <template slot-scope="scope">
                 <el-button size="mini" @click="deleteAssign(scope.row,scope.index)" type="text">撤回</el-button>
@@ -524,6 +526,12 @@ export default {
       });
   },
   methods: {
+     // 行颜色
+    tableRowClassName({ row, rowIndex }) {
+      if (row.fromTemplate) {
+        return "background: oldlace;";
+      }
+    },
     searchPersonByName() {
       this.rootDistribute.tableData = [];
       this.rootDistribute.tableDataA.forEach(element => {
@@ -617,6 +625,11 @@ export default {
         })
         .then(response => {
           this.detailDistribute.tableData = response.result;
+          this.detailDistribute.tableData.forEach(element=>{
+            if(element.assignPlanMade)
+            element.assignPlanMadeStr = "是"
+            else element.assignPlanMadeStr="否"
+          })
         });
     },
     //撤回下发详情中的下发

@@ -331,6 +331,14 @@ export default {
     addNode() {
       this.addNodeFlag = false;
       if (this.data.length === 0) {
+         if(this.nodeName === "")
+        {
+          this.$message({
+            type: "error",
+            message: "必须输入节点名称"
+          });
+          return ;
+        }
         this.data.push({
           planName: this.nodeName,
           children: []
@@ -351,6 +359,14 @@ export default {
         return flag;
       }
       if (T.planName == this.nowClickName) {
+        if(this.nodeName === "")
+        {
+          this.$message({
+            type: "error",
+            message: "必须输入节点名称"
+          });
+          return ;
+        }
         T.children.push({
           planName: this.nodeName,
           children: []
