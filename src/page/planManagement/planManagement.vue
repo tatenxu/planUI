@@ -216,7 +216,12 @@
     </el-dialog>
 
     <!-- 弹出框-添加异常 -->
-    <el-dialog :modal="false" title="添加异常" :visible.sync="addExceptionDialogVisible">
+    <el-dialog
+      :modal="false"
+      title="添加异常"
+      style="min-width:1200px"
+      :visible.sync="addExceptionDialogVisible"
+    >
       <el-form
         :model="addExceptionRuleForm"
         :rules="addExceptionRules"
@@ -243,39 +248,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="时间" prop="time" placeholder="请输入内容">
-              <el-date-picker
-                style="max-width:110px;"
-                v-model="addExceptionRuleForm.time"
-                type="datetime"
-                placeholder="选择日期时间"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" style="margin-top:5px;">
-          <el-col :span="8">
-            <el-form-item label="地点" prop="place" placeholder="请输入内容">
-              <el-input v-model="addExceptionRuleForm.place" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="负责人" prop="principal" placeholder="请输入内容">
               <el-input v-model="addExceptionRuleForm.principal" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="处理意见" prop="handleOption" placeholder="请输入内容">
-              <el-input v-model="addExceptionRuleForm.handleOption" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top:5px;">
-          <el-col :span="8">
-            <el-form-item label="处理结果" prop="handleResult" placeholder="请选择客户名称">
-              <el-input v-model="addExceptionRuleForm.handleResult" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
           <el-col :span="8">
             <el-form-item label="影响范围" prop="scope" placeholder="请输入内容">
               <el-input v-model="addExceptionRuleForm.scope" placeholder="请输入内容"></el-input>
@@ -286,9 +264,45 @@
               <el-input v-model="addExceptionRuleForm.state" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="地点" prop="place" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.place" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="时间" prop="time" placeholder="请输入内容">
+              <el-date-picker
+                v-model="addExceptionRuleForm.time"
+                type="datetime"
+                placeholder="选择日期时间"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="24">
             <el-form-item label="内容" prop="content" placeholder="请输入内容">
               <el-input type="textarea" v-model="addExceptionRuleForm.content" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="处理建议" prop="handleOption" placeholder="请输入内容">
+              <el-input
+                type="textarea"
+                v-model="addExceptionRuleForm.handleOption"
+                placeholder="请输入内容"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="处理结果" prop="handleResult" placeholder="请输入内容">
+              <el-input
+                type="textarea"
+                v-model="addExceptionRuleForm.handleResult"
+                placeholder="请输入内容"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>

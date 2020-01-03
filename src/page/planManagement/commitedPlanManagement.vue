@@ -360,17 +360,31 @@ export default {
       let list = {
         id: this.selectedData.id
       };
-      request
-        .get(`${window.$config.HOST}/plan/tree`, {
-          params: list
-        })
-        .then(response => {
-          this.allPlans = [];
-          this.allPlans.push(response.result);
-          // console.log(this.allPlans);
+      if (this.isRootPlan) {
+        request
+          .get(`${window.$config.HOST}/root-plan/tree`, {
+            params: list
+          })
+          .then(response => {
+            this.allPlans = [];
+            this.allPlans.push(response.result);
+            // console.log(this.allPlans);
 
-          this.lookAllPlanDialogVisible = true;
-        });
+            this.lookAllPlanDialogVisible = true;
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/tree`, {
+            params: list
+          })
+          .then(response => {
+            this.allPlans = [];
+            this.allPlans.push(response.result);
+            // console.log(this.allPlans);
+
+            this.lookAllPlanDialogVisible = true;
+          });
+      }
     },
 
     getPlanDetail(row) {

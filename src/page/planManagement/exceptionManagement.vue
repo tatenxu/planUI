@@ -207,7 +207,6 @@
           <el-col :span="8">
             <el-form-item label="时间" prop="time" placeholder="请输入内容">
               <el-date-picker
-                style="max-width:150px"
                 v-model="addExceptionRuleForm.time"
                 type="datetime"
                 placeholder="选择日期时间"
@@ -222,10 +221,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="处理结果" prop="handleResult" placeholder="请输入内容">
+            <el-form-item label="处理建议" prop="handleOption" placeholder="请输入内容">
               <el-input
                 type="textarea"
-                v-model="addExceptionRuleForm.handleResult"
+                v-model="addExceptionRuleForm.handleOption"
                 placeholder="请输入内容"
               ></el-input>
             </el-form-item>
