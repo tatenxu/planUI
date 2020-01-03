@@ -284,25 +284,25 @@ export default {
     return {
       numberPrefixRange: "",
       numberLengthRange: "",
-      dateRuleRange: "2019-01-01",
+      dateRuleRange: "20190101",
       rangeRuleNumber: "",
       lengthRange: "",
 
       numberPrefixStyleGroup: "",
       numberLengthStyleGroup: "",
-      dateRuleStyleGroup: "2019-01-01",
+      dateRuleStyleGroup: "20190101",
       styleGroupRuleNumber: "",
       lengthStyleGroup: "",
 
       numberPrefixException: "",
       numberLengthException: "",
-      dateRuleException: "2019-01-01",
+      dateRuleException: "20190101",
       exceptionRuleNumber: "",
       lengthException: "",
 
       numberPrefixPlan: "",
       numberLengthPlan: "",
-      dateRulePlan: "2019-01-01",
+      dateRulePlan: "20190101",
       planRuleNumber: "",
       lengthPlan: "",
 
@@ -406,8 +406,7 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.exceptionRuleNumber =
-        this.numberPrefixException + "2019-01-01-" + ss;
+      this.exceptionRuleNumber = this.numberPrefixException + "20190101" + ss;
     },
     previewStyleGroup() {
       if (
@@ -442,8 +441,7 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.styleGroupRuleNumber =
-        this.numberPrefixStyleGroup + "2019-01-01-" + ss;
+      this.styleGroupRuleNumber = this.numberPrefixStyleGroup + "20190101" + ss;
     },
     previewRange() {
       if (
@@ -477,7 +475,7 @@ export default {
       console.log("ss:", ss);
       ss = ss + "1";
       console.log("ss:", ss);
-      this.rangeRuleNumber = this.numberPrefixRange + "2019-01-01-" + ss;
+      this.rangeRuleNumber = this.numberPrefixRange + "20190101" + ss;
     },
     previewPlan() {
       if (
@@ -509,7 +507,7 @@ export default {
         ss = ss + "0";
       }
       ss = ss + "1";
-      this.planRuleNumber = this.numberPrefixPlan + "2019-01-01-" + ss;
+      this.planRuleNumber = this.numberPrefixPlan + "20190101" + ss;
     },
     saveRangeRule() {
       if (
@@ -713,6 +711,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .bar {
     display: flex;
     flex-direction: row;

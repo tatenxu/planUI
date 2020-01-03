@@ -1204,7 +1204,16 @@ export default {
 
     // 获得产品线下拉框
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      that.chooseOptions.productLineOptions = response.result;
+      // that.chooseOptions.productLineOptions = response.result;
+      request.get(`/me`).then(response => {
+        response.result.productLines.forEach(ele => {
+          that.chooseOptions.productLineOptions.push({
+            name: ele,
+            id: 0,
+            children: null
+          });
+        });
+      });
     });
   },
   mounted() {
@@ -1275,6 +1284,18 @@ export default {
   },
 
   methods: {
+    dfsDisable(node, plArr) {
+      if (plArr.indexOf(node.name) == -1) {
+        node.disabled = true;
+      } else {
+        node.disabled = false;
+      }
+      if (node.children != null) {
+        node.children.forEach(ele => {
+          this.dfsDisable(ele, plArr);
+        });
+      }
+    },
     downloadRow(row) {
       request
         .get(`${window.$config.HOST}/plan-files/download`, {
@@ -1475,8 +1496,8 @@ export default {
                 this.ruleForm.startEndDate === undefined
                   ? this.ruleForm.endDate
                   : this.changeDate(this.ruleForm.startEndDate[1]),
-              date: this.ruleForm.date,
-              dateType: this.changeDate(this.ruleForm.dateType)
+              date: this.changeDate(this.ruleForm.date),
+              dateType: this.ruleForm.dateType
             };
 
             console.log("修改参数：", param);
@@ -1490,8 +1511,6 @@ export default {
                 this.originRow.endDate = param.endDate;
                 this.originRow.date = param.date;
                 this.originRow.dateType = param.dateType;
-
-                this.$refs.upload.submit();
 
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
@@ -1663,16 +1682,18 @@ export default {
           that.ruleForm.superiorId = data.isRoot ? 0 : that.ruleForm.id;
           that.ruleForm.superiorName = that.ruleForm.name;
 
-          that.ruleForm.cycle = undefined;
-          that.ruleForm.productLine = undefined;
-          that.ruleForm.product = undefined;
-          that.ruleForm.extension = undefined;
-          that.ruleForm.proposal = undefined;
-          that.ruleForm.description = undefined;
-          that.ruleForm.note = undefined;
-          that.ruleForm.actualStartEndDate = undefined;
-          that.ruleForm.actualStartDate = undefined;
-          that.ruleForm.actualEndDate = undefined;
+          if (that.ruleForm.rootPlanName != undefined) {
+            that.ruleForm.cycle = undefined;
+            that.ruleForm.productLine = undefined;
+            that.ruleForm.product = undefined;
+            that.ruleForm.extension = undefined;
+            that.ruleForm.proposal = undefined;
+            that.ruleForm.description = undefined;
+            that.ruleForm.note = undefined;
+            that.ruleForm.actualStartEndDate = undefined;
+            that.ruleForm.actualStartDate = undefined;
+            that.ruleForm.actualEndDate = undefined;
+          }
 
           that.ruleForm.rootPlanName =
             that.ruleForm.rootPlanName === undefined

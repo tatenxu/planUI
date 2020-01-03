@@ -83,6 +83,7 @@
                 v-model="addClientForm.deptName"
                 :props="deptToCascaderProps"
                 :change-on-select="true"
+                style="width:400px"
               ></el-cascader>
             </el-form-item>
             <el-form-item label="客户描述" prop="description">
@@ -133,6 +134,7 @@
                 v-model="updateClientForm.deptName"
                 :props="deptToCascaderProps"
                 :change-on-select="true"
+                style="width:400px"
               ></el-cascader>
             </el-form-item>
             <el-form-item label="客户描述" prop="description">
@@ -369,7 +371,7 @@ export default {
       this.addClientForm.name = "";
     },
     //提交编辑表格
-    handleEditSaveClick() {
+    handleEditSaveClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {

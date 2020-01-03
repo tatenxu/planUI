@@ -6,11 +6,6 @@
           <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
             <el-col :span="2">
               <div class="bar pur">
-                <el-button type="primary" style="margin-right: 20px">全选</el-button>
-              </div>
-            </el-col>
-            <el-col :span="2">
-              <div class="bar pur">
                 <el-button type="primary" style="margin-right: 20px" @click="sendMessageClick">发送消息</el-button>
               </div>
             </el-col>

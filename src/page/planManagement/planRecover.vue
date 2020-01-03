@@ -83,6 +83,8 @@
       <div>
         <el-row :gutter="20">
           <el-button type="primary" style="margin-right:20px" @click="ReCoverAll">恢复所选计划</el-button>
+
+          <el-button type="primary" style="margin-right:20px" @click="delelePermanently">彻底删除</el-button>
         </el-row>
         <el-table
           :data="tableData"
@@ -90,20 +92,20 @@
           @selection-change="tableSelectionChange"
           :stripe="true"
         >
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column type="selection" align="center"></el-table-column>
           <el-table-column type="index" label="序号" align="center"></el-table-column>
           <el-table-column v-if="false" prop="id" align="center"></el-table-column>
           <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="serialNo" label="系列名称" align="center"></el-table-column>
+          <el-table-column prop="serialNo" label="系列名称" align="center" width="150px"></el-table-column>
           <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
           <el-table-column prop="planClass" label="计划对象" align="center"></el-table-column>
           <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
           <el-table-column prop="deleteName" label="删除人" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="删除时间" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="删除时间" width="200px" align="center"></el-table-column>
 
-          <el-table-column fixed="right" label="操作" width="50">
+          <el-table-column fixed="right" label="操作">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="ReCover(scope.row)">恢复</el-button>
             </template>
@@ -340,6 +342,25 @@ export default {
           this.ReCover(element);
         });
       }
+    },
+    //彻底删除
+    delelePermanently() {
+      if (this.tableSelectionData.length === 0) {
+        this.$message.error("请选择要彻底删除的计划!");
+      } else {
+        this.tableSelectionData.forEach(element => {
+          request
+            .get(`${window.$config.HOST}/plan/completely-delete`, {
+              params: {
+                planId: element.planId
+              }
+            })
+            .then(response => {
+              console.log("彻底删除", element.name, " OK");
+              this.handleSearch();
+            });
+        });
+      }
     }
   }
 };
@@ -349,6 +370,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 900px;
   .bar {
     display: flex;
     flex-direction: row;
@@ -356,18 +378,18 @@ export default {
     width: 100%;
     .title {
       font-size: 14px;
-      min-width: 75px;
+      min-width: 70px;
       text-align: center;
     }
-    .el-input {
-      width: 300px;
-      min-width: 75px;
-      // margin: 5px 10px;
+    .el-autocomplete {
+      width: 70%;
+      min-width: 80px;
+      margin-left: 20px;
     }
     .el-select {
-      width: 300px;
-      min-width: 75px;
-      // margin: 5px 10px;
+      width: 70%;
+      min-width: 80px;
+      margin-left: 20px;
     }
   }
   .block {

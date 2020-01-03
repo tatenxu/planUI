@@ -99,7 +99,7 @@
         >
           <el-table-column type="selection" width="50px"></el-table-column>
           <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
-          <el-table-column prop="serialNo" label="异常编号" width="100px" align="center"></el-table-column>
+          <el-table-column prop="serialNo" label="异常编号" width="150px" align="center"></el-table-column>
           <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="clientName" label="客户" width="100px" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" width="100px" align="center"></el-table-column>
@@ -111,14 +111,14 @@
           <el-table-column prop="principal" label="负责人" width="100px" align="center"></el-table-column>
           <el-table-column prop="scope" label="影响范围" width="100px" align="center"></el-table-column>
           <el-table-column prop="state" label="状态" width="100px" align="center"></el-table-column>
-          <el-table-column prop="time" label="时间" width="100px" align="center"></el-table-column>
           <el-table-column prop="type" label="异常类型" width="100px" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="100px" align="center"></el-table-column>
-          <el-table-column prop="updateTime" label="更新时间" width="100px" align="center"></el-table-column>
+          <el-table-column prop="time" label="时间" width="200px" align="center"></el-table-column>
+          <el-table-column prop="createTime" label="创建时间" width="200px" align="center"></el-table-column>
+          <el-table-column prop="updateTime" label="更新时间" width="200px" align="center"></el-table-column>
           <el-table-column
             prop="content"
             label="异常内容"
-            width="100px"
+            width="300px"
             align="center"
             show-overflow-tooltip
           ></el-table-column>
@@ -149,7 +149,12 @@
     </el-card>
 
     <!-- 弹出框-添加异常 -->
-    <el-dialog :modal="false" title="添加异常" :visible.sync="addExceptionDialogVisible">
+    <el-dialog
+      :modal="false"
+      title="添加异常"
+      style="min-width:1200px"
+      :visible.sync="addExceptionDialogVisible"
+    >
       <el-form
         :model="addExceptionRuleForm"
         :rules="addExceptionRules"
@@ -176,39 +181,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="时间" prop="time" placeholder="请输入内容">
-              <el-date-picker
-                style="max-width:110px;"
-                v-model="addExceptionRuleForm.time"
-                type="datetime"
-                placeholder="选择日期时间"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" style="margin-top:5px;">
-          <el-col :span="8">
-            <el-form-item label="地点" prop="place" placeholder="请输入内容">
-              <el-input v-model="addExceptionRuleForm.place" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="负责人" prop="principal" placeholder="请输入内容">
               <el-input v-model="addExceptionRuleForm.principal" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="处理意见" prop="handleOption" placeholder="请输入内容">
-              <el-input v-model="addExceptionRuleForm.handleOption" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top:5px;">
-          <el-col :span="8">
-            <el-form-item label="处理结果" prop="handleResult" placeholder="请选择客户名称">
-              <el-input v-model="addExceptionRuleForm.handleResult" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
           <el-col :span="8">
             <el-form-item label="影响范围" prop="scope" placeholder="请输入内容">
               <el-input v-model="addExceptionRuleForm.scope" placeholder="请输入内容"></el-input>
@@ -219,9 +197,45 @@
               <el-input v-model="addExceptionRuleForm.state" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="地点" prop="place" placeholder="请输入内容">
+              <el-input v-model="addExceptionRuleForm.place" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="时间" prop="time" placeholder="请输入内容">
+              <el-date-picker
+                v-model="addExceptionRuleForm.time"
+                type="datetime"
+                placeholder="选择日期时间"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="24">
             <el-form-item label="内容" prop="content" placeholder="请输入内容">
               <el-input type="textarea" v-model="addExceptionRuleForm.content" placeholder="请输入内容"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="处理建议" prop="handleOption" placeholder="请输入内容">
+              <el-input
+                type="textarea"
+                v-model="addExceptionRuleForm.handleOption"
+                placeholder="请输入内容"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="处理结果" prop="handleResult" placeholder="请输入内容">
+              <el-input
+                type="textarea"
+                v-model="addExceptionRuleForm.handleResult"
+                placeholder="请输入内容"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -539,8 +553,18 @@ export default {
     },
 
     updateExceptionClick(row) {
-      this.addExceptionRuleForm = row;
-      // this.addExceptionRuleForm.planId = row.id;
+      this.addExceptionRuleForm = {
+        id: row.id,
+        content: row.content,
+        type: row.type,
+        place: row.place,
+        principal: row.principal,
+        handleOption: row.handleOption,
+        handleResult: row.handleResult,
+        scope: row.scope,
+        state: row.state,
+        time: row.time
+      };
       this.addExceptionDialogVisible = true;
     },
     submitForm(formname) {
@@ -567,6 +591,17 @@ export default {
       this.addExceptionDialogVisible = false;
     },
     cancel() {
+      this.addExceptionRuleForm.id = "";
+      this.addExceptionRuleForm.content = "";
+      this.addExceptionRuleForm.type = "";
+      this.addExceptionRuleForm.place = "";
+      this.addExceptionRuleForm.principal = "";
+      this.addExceptionRuleForm.handleOption = "";
+      this.addExceptionRuleForm.handleResult = "";
+      this.addExceptionRuleForm.scope = "";
+      this.addExceptionRuleForm.state = "";
+
+      this.addExceptionRuleForm.time = "";
       this.addExceptionDialogVisible = false;
     }
   }
@@ -577,6 +612,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 900px;
   .bar {
     display: flex;
     flex-direction: row;
@@ -584,18 +620,18 @@ export default {
     width: 100%;
     .title {
       font-size: 14px;
-      min-width: 75px;
+      min-width: 70px;
       text-align: center;
     }
-    .el-input {
-      width: 300px;
-      min-width: 75px;
-      // margin: 5px 10px;
+    .el-autocomplete {
+      width: 70%;
+      min-width: 80px;
+      margin-left: 20px;
     }
     .el-select {
-      width: 300px;
-      min-width: 75px;
-      // margin: 5px 10px;
+      width: 70%;
+      min-width: 80px;
+      margin-left: 20px;
     }
   }
   .block {

@@ -178,83 +178,81 @@
         </el-tab-pane>
 
         <el-tab-pane label="保存计划模版" name="second" v-if="savePlanModelFlag">
-          <el-card>
-            <el-form
-              :model="saveModel"
-              :rules="modelRules"
-              ref="saveModel"
-              label-width="100px"
-              class="demo-ruleForm"
-            >
-              <el-row :gutter="20">
-                <el-col :span="8">
-                  <div class="bar">
-                    <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
-                      <el-select
-                        v-model="saveModel.clientId"
-                        disabled
-                        placeholder="请选择"
-                        style="min-width:250px"
-                      >
-                        <el-option
-                          v-for="item in saveModel.options.clientOptions"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id"
-                        ></el-option>
-                      </el-select>
-                    </el-form-item>
-                  </div>
-                </el-col>
-                <el-col :span="8">
-                  <div class="bar">
-                    <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
-                      <el-select
-                        v-model="saveModel.brandId"
-                        disabled
-                        placeholder="请选择"
-                        style="min-width:250px"
-                      >
-                        <el-option
-                          v-for="item in saveModel.options.brandOptions"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id"
-                        ></el-option>
-                      </el-select>
-                    </el-form-item>
-                  </div>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="8">
-                  <div class="bar">
-                    <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
-                      <el-input
-                        v-model="saveModel.name"
-                        clearable
-                        :rows="1"
-                        style="margin-left: 20px;min-width:250px"
-                        placeholder="请输入"
-                      ></el-input>
-                    </el-form-item>
-                  </div>
-                </el-col>
+          <el-form
+            :model="saveModel"
+            :rules="modelRules"
+            ref="saveModel"
+            label-width="100px"
+            class="demo-ruleForm"
+          >
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <div class="bar">
+                  <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+                    <el-select
+                      v-model="saveModel.clientId"
+                      disabled
+                      placeholder="请选择"
+                      style="min-width:250px"
+                    >
+                      <el-option
+                        v-for="item in saveModel.options.clientOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="bar">
+                  <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
+                    <el-select
+                      v-model="saveModel.brandId"
+                      disabled
+                      placeholder="请选择"
+                      style="min-width:250px"
+                    >
+                      <el-option
+                        v-for="item in saveModel.options.brandOptions"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="10">
+                <div class="bar">
+                  <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
+                    <el-input
+                      v-model="saveModel.name"
+                      clearable
+                      :rows="1"
+                      style="margin-left: 20px;min-width:250px"
+                      placeholder="请输入"
+                    ></el-input>
+                  </el-form-item>
+                </div>
+              </el-col>
 
-                <el-col :span="2">
-                  <div class="bar">
-                    <el-button type="primary" @click="saveModelClick('saveModel')">保存</el-button>
-                  </div>
-                </el-col>
+              <el-col :span="2">
+                <div class="bar">
+                  <el-button type="primary" @click="saveModelClick('saveModel')">保存</el-button>
+                </div>
+              </el-col>
 
-                <el-col :span="2">
-                  <div class="bar">
-                    <el-button type="primary" @click="cancelModelClick()">取消</el-button>
-                  </div>
-                </el-col>
-              </el-row>
-            </el-form>
-          </el-card>
+              <el-col :span="2">
+                <div class="bar">
+                  <el-button type="primary" @click="cancelModelClick()">取消</el-button>
+                </div>
+              </el-col>
+            </el-row>
+          </el-form>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -265,14 +263,28 @@
       :before-close="cancelDistribute"
     >
       <el-row :gutter="20" style="margin-top:-30px;">
+        <el-col :span="12">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input
+              v-model="rootDistribute.personName"
+              clearable
+              placeholder="请输入"
+              style="width:350px"
+            ></el-input>
+            <el-button type="primary" @click="searchPersonByName" style="margin-left:20px">搜索</el-button>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:10px;">
         <el-col :span="6">
           <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
         </el-col>
         <el-col :span="10">
           <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
@@ -348,7 +360,9 @@ export default {
       productionLine: [],
       rootDistribute: {
         id: "",
+        personName: "",
         tableData: [],
+        tableDataA: [],
         multipleSelection: [],
         options: {
           assignPlanTypeOptions: {}
@@ -510,6 +524,13 @@ export default {
       });
   },
   methods: {
+    searchPersonByName() {
+      this.rootDistribute.tableData = [];
+      this.rootDistribute.tableDataA.forEach(element => {
+        if (element.name.indexOf(this.rootDistribute.personName) >= 0)
+          this.rootDistribute.tableData.push(element);
+      });
+    },
     rootPlanLimit(row) {
       console.log(row);
       request
@@ -661,6 +682,8 @@ export default {
           this.rootDistribute.id = "";
           this.rootDistribute.multipleSelection = [];
           this.rootDistribute.tableData = [];
+          this.rootDistribute.tableDataA = [];
+          this.rootDistribute.personName = "";
           this.rootPlanDistributeFlag = false;
         });
       }
@@ -669,6 +692,8 @@ export default {
       this.rootDistribute.id = "";
       this.rootDistribute.multipleSelection = [];
       this.rootDistribute.tableData = [];
+      this.rootDistribute.tableDataA = [];
+      this.rootDistribute.personName = "";
       this.rootPlanDistributeFlag = false;
     },
     cancelDistributeDetail() {
@@ -689,6 +714,7 @@ export default {
         })
         .then(response => {
           this.rootDistribute.tableData = response.result;
+          this.rootDistribute.tableDataA = response.result;
         });
     },
 
@@ -976,6 +1002,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1200px;
   .el-row {
     display: flex;
     flex-direction: row;
@@ -1006,5 +1033,57 @@ export default {
       }
     }
   }
+}
+.box-card {
+  margin: 20px 50px;
+  padding: 0 20px;
+  min-width: 1100px;
+  .bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    .title {
+      font-size: 14px;
+      min-width: 75px;
+      text-align: center;
+    }
+    .el-input {
+      width: 300px;
+      min-width: 75px;
+    }
+    .el-select {
+      width: 300px;
+      min-width: 75px;
+    }
+  }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+  }
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  .title {
+    font-size: 14px;
+    min-width: 75px;
+    text-align: center;
+  }
+  .el-input {
+    width: 300px;
+    min-width: 75px;
+  }
+  .el-select {
+    width: 300px;
+    min-width: 75px;
+  }
+}
+.block {
+  padding: 30px 0;
+  text-align: center;
 }
 </style>

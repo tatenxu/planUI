@@ -9,58 +9,6 @@
         class="demo-ruleForm"
       >
         <el-row :gutter="20">
-          <el-col :span="6">
-            <div class="bar">
-              <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
-                <el-select
-                  v-model="ruleForm.clientId"
-                  clearable
-                  :disabled="isDetail"
-                  @change="clientChanged"
-                >
-                  <el-option
-                    v-for="item in options.clientOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div class="bar">
-              <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
-                <el-select v-model="ruleForm.brandId" clearable :disabled="isDetail">
-                  <el-option
-                    v-for="item in options.brandOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-          </el-col>
-
-          <el-col :span="6">
-            <div class="bar">
-              <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
-                <el-input
-                  :disabled="isDetail"
-                  v-model="ruleForm.name"
-                  clearable
-                  :rows="1"
-                  placeholder
-                ></el-input>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-        <br />
-        <br />
-
-        <el-row :gutter="20">
           <el-col :span="3" v-if="!isDetail">
             <div class="bar">
               <el-button type="primary" @click="addOneNode">添加一个结点</el-button>
@@ -90,6 +38,57 @@
             </div>
           </el-col>
         </el-row>
+        <el-row :gutter="20" style="margin-top:30px">
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
+                <el-select
+                  v-model="ruleForm.clientId"
+                  clearable
+                  :disabled="isDetail"
+                  @change="clientChanged"
+                >
+                  <el-option
+                    v-for="item in options.clientOptions"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
+                <el-select v-model="ruleForm.brandId" clearable :disabled="isDetail">
+                  <el-option
+                    v-for="item in options.brandOptions"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-col>
+
+          <el-col :span="8">
+            <div class="bar">
+              <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
+                <el-input
+                  :disabled="isDetail"
+                  v-model="ruleForm.name"
+                  clearable
+                  :rows="1"
+                  placeholder
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <br />
+        <br />
       </el-form>
 
       <br />
@@ -204,10 +203,10 @@ export default {
     this.goback = data.goback;
 
     if (this.isUpdate || this.isDetail) {
-      this.id = data.data.id;
-      this.clientId = parseInt(data.data.clientId);
-      this.brandId = parseInt(data.data.brandId);
-      this.name = data.data.name;
+      this.ruleForm.id = data.data.id;
+      this.ruleForm.clientId = parseInt(data.data.clientId);
+      this.ruleForm.brandId = parseInt(data.data.brandId);
+      this.ruleForm.name = data.data.name;
       this.data.push(data.data.templateTree);
     }
   },
@@ -415,12 +414,12 @@ export default {
       text-align: center;
     }
     .el-input {
-      width: 300px;
+      width: 250px;
       min-width: 75px;
       // margin: 5px 10px;
     }
     .el-select {
-      width: 300px;
+      width: 250px;
       min-width: 75px;
       // margin: 5px 10px;
     }

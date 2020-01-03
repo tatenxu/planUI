@@ -907,6 +907,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1300px;
   .el-row {
     display: flex;
     flex-direction: row;

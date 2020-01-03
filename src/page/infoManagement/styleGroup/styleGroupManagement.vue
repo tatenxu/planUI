@@ -38,7 +38,6 @@
               :fetch-suggestions="querySearchSeries"
               placeholder="请输入系列名称"
               @select="handleSelect"
-              style="min-width:260px"
               clearable
             ></el-autocomplete>
           </div>
@@ -53,7 +52,6 @@
               :fetch-suggestions="querySearchStyleGroup"
               placeholder="请输入款式组名称"
               @select="handleSelect"
-              style="min-width:260px"
               clearable
             ></el-autocomplete>
           </div>
@@ -839,6 +837,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 900px;
   .bar {
     display: flex;
     flex-direction: row;

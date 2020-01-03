@@ -57,7 +57,6 @@
                     v-model="colorData.classification"
                     clearable
                     placeholder="请选择"
-                    style="min-width:300px"
                     @change="typeChanged"
                   >
                     <el-option
@@ -71,12 +70,7 @@
               </el-col>
               <el-col :span="8">
                 <el-form-item label="类型" prop="type" placeholder="请选择添加类型">
-                  <el-select
-                    v-model="colorData.type"
-                    clearable
-                    placeholder="请选择"
-                    style="min-width:300px"
-                  >
+                  <el-select v-model="colorData.type" clearable placeholder="请选择">
                     <el-option
                       v-for="item in colorData.options.typeOptions"
                       :key="item.name"
@@ -284,6 +278,7 @@ export default {
         })
         .then(response => {
           this.colorData.options.typeOptions = response.result;
+          this.colorData.type = "";
         });
     },
     //RGBA转换为十六进制
@@ -675,6 +670,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .el-row {
     display: flex;
     flex-direction: row;
