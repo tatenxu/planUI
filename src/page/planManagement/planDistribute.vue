@@ -5,28 +5,24 @@
         <el-col :span="5">
           <el-switch
             class="el-switch"
-            v-model="isVerifiedPlan"
+            v-model="planTypeSwitch"
             @change="planTypeSwitchChange"
             inactive-color="#13ce66"
             active-text="已审核计划"
             inactive-text="已下发计划"
           ></el-switch>
         </el-col>
-        <el-col :span="3" v-if="isVerifiedPlan">
+        <el-col :span="3" v-if="planTypeSwitch">
           <div class="bar">
             <el-button type="primary" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
           </div>
         </el-col>
-        <el-col :span="12">
-          <div class="bar" id="userChosenList"></div>
-        </el-col>
-
         <el-col :offset="1" :span="2">
           <div class="bar">
             <el-button type="primary" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
           </div>
         </el-col>
-        <el-col :offset="1" :span="2" v-if="!isVerifiedPlan">
+        <el-col :offset="1" :span="2" v-if="!planTypeSwitch">
           <div class="bar">
             <el-button type="primary" style="margin-right: 20px" @click="assignDetail">查看下发情况</el-button>
           </div>
@@ -38,17 +34,15 @@
         highlight-current-row
         :stripe="true"
       >
-        <!-- <el-table-column type="selection" width="50" align="center"></el-table-column> -->
         <el-table-column label width="65">
           <template slot-scope="scope">
             <el-radio
-              label=" "
+              :label="scope.row.id"
               v-model="templateRadio"
-              @change.native="getTemplateRow(scope.$index,scope.row)"
-            ></el-radio>
+              @change.native="getTemplateRow(scope.row)"
+            >{{scope.$index+1}}</el-radio>
           </template>
         </el-table-column>
-        <el-table-column type="index" label="序号" align="center"></el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
         <el-table-column prop="serialNo" label="计划编号" align="center" width="150px"></el-table-column>
@@ -78,32 +72,46 @@
         :total="pagination.total"
       ></el-pagination>
     </div>
+
     <el-dialog
       :modal="false"
       title="选择下发对象"
-      :visible.sync="userChoseTableDialogShow"
-      :before-close="cancel"
+      :visible.sync="distributePanelFlag"
+      :before-close="distributePanelCancel"
     >
       <el-row :gutter="20" style="margin-top:-30px;">
+        <el-col :span="12">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input v-model="distribute.personName" clearable placeholder="请输入"></el-input>
+            <el-button type="primary" @click="searchPersonByName" style="margin-left:20px">搜索</el-button>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:20px;">
         <el-col :span="6">
           <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
         </el-col>
         <el-col :span="10">
           <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
         </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
-        </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
         <el-col :span="6">
-          <el-tree :data="productionLine" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+          <el-tree
+            :data="distribute.productLine"
+            :props="distribute.defaultProps"
+            @node-click="handleNodeClick"
+          ></el-tree>
         </el-col>
         <el-col :span="13">
           <el-table
-            :data="personTable"
+            :data="distribute.personTable"
             max-height="400"
-            @selection-change="changeCheckBoxFun2"
+            @selection-change="personTableSelect"
             :stripe="true"
             :highlight-current-row="true"
             style="width: 100%; margin-top: 20px;margin-left:30%"
@@ -115,7 +123,7 @@
               <template slot-scope="scope">
                 <el-select size="medium" v-model="scope.row.assignPlanType">
                   <el-option
-                    v-for="item in assignPlanTypeOptions"
+                    v-for="item in distribute.options.assignPlanTypeOptions"
                     :key="item.name"
                     :label="item.name"
                     :value="item.name"
@@ -128,22 +136,22 @@
       </el-row>
     </el-dialog>
 
-    <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
+    <el-dialog title="查看总计划" :visible.sync="planTreePanelFlag" :modal="false">
       <div class="body">
-        <el-tree :data="allPlans" :props="defaultProps"></el-tree>
+        <el-tree :data="planTree.planTreeData" :props="planTree.defaultProps"></el-tree>
       </div>
     </el-dialog>
 
     <el-dialog
       :modal="false"
       title="下发详情"
-      :visible.sync="dialogFormVisible2"
-      :before-close="cancel"
+      :visible.sync="distributeDetailFlag"
+      :before-close="distributeDetailCancel"
     >
       <el-row :gutter="20">
         <el-col :span="20">
           <el-table
-            :data="assignDetailTable"
+            :data="distributeDetail.tableData"
             style="width: 100%; margin-top: 20px;margin-left:100px"
           >
             <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
@@ -167,95 +175,54 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      dialogFormVisible2: false,
-      assignPlanTypeOptions: [],
-      deleteAssignId: "",
-      assignDetailTable: [],
-
-      assignId: "",
-      productionLine: [],
-      personTable: [],
-
-      templateRadio: "",
-      lookAllPlans: false,
-      allPlans: [],
-      defaultProps: {
-        children: "children",
-        label: "name"
-      },
-      userChoseTableDialogShow: false,
-      isVerifiedPlan: true,
-      searchOptions: {
-        searchParams: {
-          userName: ""
-        },
-        options: {
-          userNameOptions: []
-        }
-      },
-
-      totalTableData: [],
-      tableData: [],
-      userTableMultpleSelection: [],
-      chosenPlanRow: [],
-
+      //页码部分
       pagination: {
         currentPage: 1,
         pageSizes: [10, 20, 30, 40, 50],
         pageSize: 10,
         total: 0
       },
+      //页面主体部分
+      planTypeSwitch: true,
+      tableData: [],
+      multipleSelection: [],
+      templateRadio: "",
 
-      planManagementErrorCode: [
-        {
-          errorCode: -1,
-          errotInfo: "所需属性值缺失"
+      //计划下发部分
+      distributePanelFlag: false,
+      distribute: {
+        personName: "",
+        productLine: [],
+        personTable: [],
+        userSelection: [],
+        personTableTemplate: [],
+        options: {
+          assignPlanTypeOptions: {}
         },
-        {
-          errorCode: -2,
-          errotInfo: "计划名称重复"
-        },
-        {
-          errorCode: -3,
-          errotInfo: "父计划未下发"
-        },
-        {
-          errorCode: -4,
-          errotInfo: "系列根计划不存在"
-        },
-        {
-          errorCode: -5,
-          errotInfo: "款式组根计划不存在"
-        },
-        {
-          errorCode: -6,
-          errotInfo: "根计划已存在"
-        },
-        {
-          errorCode: -7,
-          errotInfo: "计划开始结束时间超额"
-        },
-        {
-          errorCode: -8,
-          errotInfo: "计划款数超额"
-        },
-        {
-          errorCode: -9,
-          errotInfo: "引用预测计划时预测计划不存在"
-        },
-        {
-          errorCode: -10,
-          errotInfo: "当前计划状态不允许执行此操作"
-        },
-        {
-          errorCode: -11,
-          errotInfo: "与已有计划冲突"
+        defaultProps: {
+          children: "children",
+          label: "name"
         }
-      ]
+      },
+
+      //查看总计划部分
+      planTreePanelFlag: false,
+      planTree: {
+        planTreeData: [],
+        defaultProps: {
+          children: "children",
+          label: "name"
+        }
+      },
+
+      //下发详情部分
+      distributeDetailFlag: false,
+      distributeDetail: {
+        tableData: []
+      }
     };
   },
   created: function() {
-    let that = this;
     //获取计划类型
     request
       .get(`/backstage/dic-property/name`, {
@@ -264,13 +231,13 @@ export default {
         }
       })
       .then(response => {
-        this.assignPlanTypeOptions = response.result;
+        this.distribute.options.assignPlanTypeOptions = response.result;
       });
     //获取产线
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      this.productionLine = response.result;
+      this.distribute.productLine = response.result;
     });
-    //获取所有未下发计划
+    //获取初始搜索
     request
       .get(`/plan/find`, {
         params: {
@@ -282,20 +249,43 @@ export default {
       .then(response => {
         this.tableData = response.result;
         this.pagination.total = response.total;
+        this.pagination.currentPage = 1;
       });
   },
   methods: {
-    handleSearch1() {
+    //下发面板关闭
+    distributePanelCancel() {
+      this.distribute.personTable = [];
+      this.distribute.userSelection = [];
+      this.distribute.personTableTemplate = [];
+      this.distribute.personName = "";
+      this.distributePanelFlag = false;
+    },
+    distributeDetailCancel() {
+      this.distributeDetail.tableData = [];
+      this.distributeDetailFlag = false;
+    },
+    //根据输入框搜索人员
+    searchPersonByName() {
+      this.distribute.personTable = [];
+      this.distribute.personTableTemplate.forEach(element => {
+        if (element.name.indexOf(this.distribute.personName) >= 0)
+          this.distribute.personTable.push(element);
+      });
+    },
+    //根据单选获得下发详情
+    searchDetailTable() {
       request
         .get(`/plan-assign/find`, {
           params: {
-            planId: this.deleteAssignId
+            planId: this.multipleSelection.id
           }
         })
         .then(response => {
-          this.assignDetailTable = response.result;
+          this.distributeDetail.tableData = response.result;
         });
     },
+    //撤回下发
     deleteAssign(row) {
       const that = this;
       this.$confirm("是否撤回该条计划下发？", "提示", {
@@ -310,58 +300,65 @@ export default {
             }
           })
           .then(response => {
-            this.handleSearch1();
+            this.searchDetailTable();
             this.handleSearch(this.pagination.currentPage);
           });
       });
     },
+    //打开下发详情面板
     assignDetail() {
-      if (this.chosenPlanRow.id === undefined) {
+      if (this.multipleSelection.id === undefined) {
         this.$message({
           message: "请选择一项计划进行查看！",
           type: "warning"
         });
         return;
       }
-
-      this.dialogFormVisible2 = true;
-      this.deleteAssignId = this.chosenPlanRow.id;
-      this.handleSearch1();
+      this.distributeDetailFlag = true;
+      this.searchDetailTable();
     },
+    //进行下发
     assignRoot() {
       let list = [];
       let ok = 0;
-      this.userSelection.forEach(element => {
+      this.distribute.userSelection.forEach(element => {
         if (!element.assignPlanType) {
           this.$message({
             message: "任意一条勾选的人员都必须选择计划类型!",
             type: "error"
           });
           ok++;
-
           return;
         } else {
           list.push({
             assignPlanType: element.assignPlanType,
             executorId: element.userId,
             executorName: element.name,
-            planId: this.assignId
+            planId: this.multipleSelection.id
           });
         }
       });
       if (ok === 0) {
-        request.post(`/plan-assign/insert`, list).then(response => {
-          this.handleSearch(this.pagination.currentPage);
-          this.assignId = "";
-          this.userSelection = [];
-          this.userSelectionList = [];
-          this.personTable = [];
-          this.userChoseTableDialogShow = false;
-        });
+        if (list.length === 0) {
+          this.$message({
+            message: "请至少选择一名人员进行下发!",
+            type: "error"
+          });
+          return;
+        } else {
+          request.post(`/plan-assign/insert`, list).then(response => {
+            this.handleSearch(this.pagination.currentPage);
+            this.distribute.personTable = [];
+            this.distribute.userSelection = [];
+            this.distribute.personTableTemplate = [];
+            this.distribute.personName = "";
+            this.distributePanelFlag = false;
+          });
+        }
       }
     },
+    //点击产线结点
     handleNodeClick(data) {
-      console.log(data);
       request
         .get(`${window.$config.HOST2}/user-product-line/find`, {
           params: {
@@ -369,28 +366,17 @@ export default {
           }
         })
         .then(response => {
-          this.personTable = response.result;
+          this.distribute.personTable = response.result;
+          this.distribute.personTableTemplate = response.result;
         });
     },
-    changeCheckBoxFun2(val) {
-      const that = this;
-      that.userSelection = val;
+    //选中人员
+    personTableSelect(val) {
+      this.distribute.userSelection = val;
     },
-
-    cancel() {
-      this.assignId = "";
-      this.userSelection = [];
-      this.userSelectionList = [];
-      this.personTable = [];
-      this.assignDetailTable = [];
-      this.deleteAssignId = "";
-
-      this.userChoseTableDialogShow = false;
-      this.dialogFormVisible2 = false;
-    },
-    getTemplateRow(index, row) {
-      this.chosenPlanRow = row;
-      console.log(this.chosenPlanRow);
+    //table选中单条
+    getTemplateRow(row) {
+      this.multipleSelection = row;
     },
     //查看详情
     searchDetails(row) {
@@ -406,8 +392,9 @@ export default {
         }
       });
     },
+    //查看总计划
     lookAllPlan() {
-      if (this.chosenPlanRow.id === undefined) {
+      if (this.multipleSelection.id === undefined) {
         this.$message({
           message: "请选择一项计划进行查看！",
           type: "warning"
@@ -417,53 +404,53 @@ export default {
       request
         .get(`/plan/tree`, {
           params: {
-            id: this.chosenPlanRow.id
+            id: this.multipleSelection.id
           }
         })
         .then(response => {
-          this.allPlans = [];
-          this.allPlans.push(response.result);
-          this.lookAllPlans = true;
+          this.planTree.planTreeData = [];
+          this.planTree.planTreeData.push(response.result);
+          this.planTreePanelFlag = true;
         });
     },
+    //下发panel打开
     chooseUserClick() {
-      // console.log(this.chosenPlanRow.brandId);
       const that = this;
-      if (this.chosenPlanRow.length === 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message({
           message: "请选择一个计划!",
           type: "warning"
         });
       } else {
-        //获取用户信息
-        this.assignId = this.chosenPlanRow.id;
-        this.userChoseTableDialogShow = true;
+        this.distributePanelFlag = true;
       }
     },
-    //switch 处理函数
+    //下发-审核转换
     planTypeSwitchChange() {
+      this.multipleSelection = {};
+      this.templateRadio = "";
       this.handleSearch(1);
     },
+    //搜索
     handleSearch(currentPageNum) {
       request
         .get(`/plan/find`, {
           params: {
             pageNum: currentPageNum,
             pageSize: this.pagination.pageSize,
-            state: this.isVerifiedPlan ? "CHECK" : "ASSIGN"
+            state: this.planTypeSwitch ? "CHECK" : "ASSIGN"
           }
         })
         .then(response => {
           this.tableData = response.result;
           this.pagination.total = response.total;
+          this.pagination.currentPage = currentPageNum;
         });
     },
     // 每页条数改变时触发函数
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       console.log(`每页 ${val} 条`);
-
-      this.pagination.currentPage = 1;
       this.handleSearch(1);
     },
     // 当前页码改变时触发函数
@@ -471,18 +458,6 @@ export default {
       console.log(`当前页: ${val}`);
       this.pagination.currentPage = val;
       this.handleSearch(val);
-    },
-    tableSelectionChange(val) {
-      this.userTableMultpleSelection = val;
-      if (this.userTableMultpleSelection.length !== 0) {
-        var showStr = "已选择:";
-        this.userTableMultpleSelection.forEach(element => {
-          showStr = showStr + element.userName + ",";
-        });
-        document.getElementById("userChosenList").innerHTML = showStr;
-      } else {
-        document.getElementById("userChosenList").innerHTML = "";
-      }
     }
   }
 };
@@ -492,6 +467,7 @@ export default {
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
+  min-width: 1100px;
   .bar {
     display: flex;
     flex-direction: row;
@@ -526,5 +502,56 @@ export default {
     //display: inline-block;
     //box-sizing: border-box;
   }
+}
+.box-card {
+  margin: 20px 50px;
+  padding: 0 20px;
+  .bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    .title {
+      font-size: 14px;
+      min-width: 75px;
+      text-align: center;
+    }
+    .el-input {
+      width: 300px;
+      min-width: 75px;
+    }
+    .el-select {
+      width: 300px;
+      min-width: 75px;
+    }
+  }
+  .block {
+    padding: 30px 0;
+    text-align: center;
+  }
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  .title {
+    font-size: 14px;
+    min-width: 75px;
+    text-align: center;
+  }
+  .el-input {
+    width: 300px;
+    min-width: 75px;
+  }
+  .el-select {
+    width: 300px;
+    min-width: 75px;
+  }
+}
+.block {
+  padding: 30px 0;
+  text-align: center;
 }
 </style>

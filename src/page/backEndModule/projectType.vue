@@ -28,16 +28,23 @@
                 </el-header>
 
                 <el-main clas="containerMain">
-                  <el-table
-                    ref="multipleTable"
-                    :data="projectType.tableData"
-                    tooltip-effect="dark"
-                    style="width: 100%"
-                    @selection-change="handleProjectSelectionChange"
-                  >
-                    <el-table-column type="selection" width="55"></el-table-column>
+                  <el-table :data="projectType.tableData" tooltip-effect="dark" style="width: 100%">
+                    <el-table-column label width="65">
+                      <template slot-scope="scope">
+                        <el-radio
+                          :label="scope.row.id"
+                          v-model="templateRadioProjectType"
+                          @change.native="handleProjectSelectionChange(scope.row)"
+                        >{{scope.$index+1}}</el-radio>
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="id" v-if="false" label="id" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="name" label="项目类型" show-overflow-tooltip></el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="项目类型"
+                      show-overflow-tooltip
+                      :render-header="renderHeader"
+                    ></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -61,16 +68,23 @@
                 </el-header>
 
                 <el-main clas="containerMain">
-                  <el-table
-                    ref="multipleTable"
-                    :data="orderStage.tableData"
-                    tooltip-effect="dark"
-                    style="width: 100%"
-                    @selection-change="handleOrderSelectionChange"
-                  >
-                    <el-table-column type="selection" width="55"></el-table-column>
+                  <el-table :data="orderStage.tableData" tooltip-effect="dark" style="width: 100%">
+                    <el-table-column label width="65">
+                      <template slot-scope="scope">
+                        <el-radio
+                          :label="scope.row.id"
+                          v-model="templateRadioOrder"
+                          @change.native="handleOrderSelectionChange(scope.row)"
+                        >{{scope.$index+1}}</el-radio>
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="id" label="id" v-if="false" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="name" label="订单阶段" show-overflow-tooltip></el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="订单阶段"
+                      show-overflow-tooltip
+                      :render-header="renderHeader"
+                    ></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -217,6 +231,9 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      //单选控制
+      templateRadioProjectType: "",
+      templateRadioOrder: "",
       //项目类型部分参数
       projectType: {
         tableData: [],
@@ -293,6 +310,20 @@ export default {
     });
   },
   methods: {
+    //渲染表头
+    renderHeader(h, { column }) {
+      return h("div", {
+        attrs: {
+          class: "cell" //ele原来样式
+        },
+        domProps: {
+          innerHTML:
+            "<span style='font-weight:900;font-size:18px'>" +
+            column.label +
+            "</span>"
+        }
+      });
+    },
     //重新搜索订单阶段
     reSearchOrder(projectTypeId) {
       request
@@ -320,9 +351,7 @@ export default {
     handleProjectSelectionChange(val) {
       this.projectType.multipleSelection = val;
       this.orderStage.tableData = [];
-      if (val.length >= 1) {
-        this.reSearchOrder(val[0].id);
-      }
+      this.reSearchOrder(val.id);
     },
     //订单阶段选中
     handleOrderSelectionChange(val) {
@@ -336,28 +365,21 @@ export default {
       this.viewname = "second";
     },
     handleEditProjectTypeClick() {
-      if (this.projectType.multipleSelection.length === 0) {
+      if (this.projectType.multipleSelection.id === undefined) {
         this.$message({
           type: "error",
           message: "请选择一个项目类型!"
         });
         return;
-      } else if (this.projectType.multipleSelection.length > 1) {
-        this.$message({
-          type: "error",
-          message: "只能选择一个项目类型!"
-        });
-
-        return;
       } else {
-        this.projectType.updateProjectType.id = this.projectType.multipleSelection[0].id;
-        this.projectType.updateProjectType.name = this.projectType.multipleSelection[0].name;
+        this.projectType.updateProjectType.id = this.projectType.multipleSelection.id;
+        this.projectType.updateProjectType.name = this.projectType.multipleSelection.name;
         this.editProjectTypeShowFlag = true;
         this.viewname = "third";
       }
     },
     handleDeleteProjectTypeClick() {
-      if (this.projectType.multipleSelection.length === 0) {
+      if (this.projectType.multipleSelection.id === undefined) {
         this.$message({
           message: "至少选择一个项目类型",
           type: "warning"
@@ -370,15 +392,15 @@ export default {
           type: "warning"
         })
           .then(() => {
-            this.projectType.multipleSelection.forEach(element => {
-              request
-                .delete(`/backstage/project-type/delete`, {
-                  params: { id: element.id }
-                })
-                .then(response => {
-                  this.reSearchProjectType();
-                });
-            });
+            request
+              .delete(`/backstage/project-type/delete`, {
+                params: { id: this.projectType.multipleSelection.id }
+              })
+              .then(response => {
+                this.reSearchProjectType();
+                this.templateRadioProjectType = "";
+                this.projectType.multipleSelection = [];
+              });
           })
           .catch(() => {
             this.$message({
@@ -397,28 +419,22 @@ export default {
       this.viewname = "fourth";
     },
     handleEditOrderClick() {
-      if (this.orderStage.multipleSelection.length === 0) {
+      if (this.orderStage.multipleSelection.id === undefined) {
         this.$message({
           type: "error",
           message: "请选择一个订单属性!"
         });
         return;
-      } else if (this.orderStage.multipleSelection.length > 1) {
-        this.$message({
-          type: "error",
-          message: "只能选择一个订单属性!"
-        });
-        return;
       } else {
-        this.orderStage.updateOrder.id = this.orderStage.multipleSelection[0].id;
-        this.orderStage.updateOrder.name = this.orderStage.multipleSelection[0].name;
-        this.orderStage.updateOrder.projectTypeId = this.orderStage.multipleSelection[0].projectTypeId;
+        this.orderStage.updateOrder.id = this.orderStage.multipleSelection.id;
+        this.orderStage.updateOrder.name = this.orderStage.multipleSelection.name;
+        this.orderStage.updateOrder.projectTypeId = this.orderStage.multipleSelection.projectTypeId;
         this.editOrderShowFlag = true;
         this.viewname = "fifth";
       }
     },
     handleDeleteOrderClick() {
-      if (this.orderStage.multipleSelection.length === 0) {
+      if (this.orderStage.multipleSelection.id === undefined) {
         this.$message({
           message: "至少选择一个订单属性",
           type: "warning"
@@ -431,15 +447,17 @@ export default {
           type: "warning"
         })
           .then(() => {
-            this.orderStage.multipleSelection.forEach(element => {
-              request
-                .delete(`/backstage/order-stage/delete`, {
-                  params: { id: element.id }
-                })
-                .then(response => {
-                  this.reSearchOrder(element.projectTypeId);
-                });
-            });
+            request
+              .delete(`/backstage/order-stage/delete`, {
+                params: { id: this.orderStage.multipleSelection.id }
+              })
+              .then(response => {
+                this.reSearchOrder(
+                  this.orderStage.multipleSelection.projectTypeId
+                );
+                this.templateRadioOrder = "";
+                this.orderStage.multipleSelection = [];
+              });
           })
           .catch(() => {
             this.$message({
@@ -463,6 +481,8 @@ export default {
               this.reSearchProjectType();
               this.projectType.addProjectType.name = "";
               this.addProjectTypeShowFlag = false;
+              this.templateRadioProjectType = "";
+              this.projectType.multipleSelection = [];
               this.viewname = "first";
             });
         } else {
@@ -493,6 +513,9 @@ export default {
               this.reSearchProjectType();
               this.projectType.updateProjectType.id = "";
               this.projectType.updateProjectType.name = "";
+              this.templateRadioProjectType = "";
+              this.projectType.multipleSelection = [];
+
               this.editProjectTypeShowFlag = false;
               this.viewname = "first";
             });
@@ -522,11 +545,13 @@ export default {
               projectTypeId: this.orderStage.addOrder.projectTypeId
             })
             .then(response => {
-              if (this.projectType.multipleSelection.length >= 1)
-                this.reSearchOrder(this.projectType.multipleSelection[0].id);
+              if (this.projectType.multipleSelection.id != undefined)
+                this.reSearchOrder(this.projectType.multipleSelection.id);
               this.orderStage.addOrder.projectTypeId = "";
               this.orderStage.addOrder.name = "";
               this.addOrderShowFlag = false;
+              this.templateRadioOrder = "";
+              this.orderStage.multipleSelection = [];
               this.viewname = "first";
             });
         } else {
@@ -556,10 +581,12 @@ export default {
               projectTypeId: this.orderStage.updateOrder.projectTypeId
             })
             .then(response => {
-              this.reSearchOrder(this.orderStage.updateOrder.projectTypeId);
+              this.reSearchOrder(this.projectType.multipleSelection.id);
               this.orderStage.updateOrder.id = "";
               this.orderStage.updateOrder.name = "";
               this.orderStage.updateOrder.projectTypeId = "";
+              this.templateRadioOrder = "";
+              this.orderStage.multipleSelection = [];
               this.editOrderShowFlag = false;
               this.viewname = "first";
             });

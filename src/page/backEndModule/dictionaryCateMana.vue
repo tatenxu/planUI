@@ -16,16 +16,23 @@
                 </el-header>
 
                 <el-main clas="containerMain">
-                  <el-table
-                    ref="multipleTable"
-                    :data="category.tableData"
-                    tooltip-effect="dark"
-                    style="width: 100%"
-                    @selection-change="handleCategSelectionChange"
-                  >
-                    <el-table-column type="selection" width="55"></el-table-column>
+                  <el-table :data="category.tableData" tooltip-effect="dark" style="width: 100%">
+                    <el-table-column label width="65">
+                      <template slot-scope="scope">
+                        <el-radio
+                          :label="scope.row.id"
+                          v-model="templateRadioCate"
+                          @change.native="handleCategSelectionChange(scope.row)"
+                        >{{scope.$index+1}}</el-radio>
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="id" v-if="false" label="id" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="name" label="字典类别" show-overflow-tooltip></el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="字典类别"
+                      show-overflow-tooltip
+                      :render-header="renderHeader"
+                    ></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -45,16 +52,23 @@
                 </el-header>
 
                 <el-main clas="containerMain">
-                  <el-table
-                    ref="multipleTable"
-                    :data="property.tableData"
-                    tooltip-effect="dark"
-                    style="width: 100%"
-                    @selection-change="handlePropSelectionChange"
-                  >
-                    <el-table-column type="selection" width="55"></el-table-column>
+                  <el-table :data="property.tableData" tooltip-effect="dark" style="width: 100%">
+                    <el-table-column label width="65">
+                      <template slot-scope="scope">
+                        <el-radio
+                          :label="scope.row.id"
+                          v-model="templateRadioProp"
+                          @change.native="handlePropSelectionChange(scope.row)"
+                        >{{scope.$index+1}}</el-radio>
+                      </template>
+                    </el-table-column>
                     <el-table-column prop="id" label="id" v-if="false" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="name" label="类别属性" show-overflow-tooltip></el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="类别属性"
+                      show-overflow-tooltip
+                      :render-header="renderHeader"
+                    ></el-table-column>
                   </el-table>
                 </el-main>
               </el-container>
@@ -276,6 +290,9 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      //单选控制
+      templateRadioCate: "",
+      templateRadioProp: "",
       //字典类别数据
       category: {
         tableData: [],
@@ -367,6 +384,20 @@ export default {
     });
   },
   methods: {
+    //渲染表头
+    renderHeader(h, { column }) {
+      return h("div", {
+        attrs: {
+          class: "cell" //ele原来样式
+        },
+        domProps: {
+          innerHTML:
+            "<span style='font-weight:900;font-size:18px'>" +
+            column.label +
+            "</span>"
+        }
+      });
+    },
     //根据类别搜索属性
     searchPropertyByCate(categoryId) {
       request
@@ -392,9 +423,7 @@ export default {
     handleCategSelectionChange(val) {
       this.category.multipleSelection = val;
       this.property.tableData = [];
-      if (val.length >= 1) {
-        this.searchPropertyByCate(val[0].id);
-      }
+      this.searchPropertyByCate(val.id);
     },
     //类别属性选中
     handlePropSelectionChange(val) {
@@ -408,32 +437,27 @@ export default {
       this.viewname = "second";
     },
     handleEditCateClick() {
-      if (this.category.multipleSelection.length === 0) {
+      if (this.category.multipleSelection.id === undefined) {
         this.$message({
           message: "请选择一个字典类别",
           type: "error"
         });
         return;
-      } else if (this.category.multipleSelection.length > 1) {
-        this.$message({
-          message: "只能选择一个字典类别",
-          type: "error"
-        });
-        return;
       } else {
-        this.category.updateCate.id = this.category.multipleSelection[0].id;
-        this.category.updateCate.name = this.category.multipleSelection[0].name;
-        this.category.updateCate.code = this.category.multipleSelection[0].code;
+        this.category.updateCate.id = this.category.multipleSelection.id;
+        this.category.updateCate.name = this.category.multipleSelection.name;
+        this.category.updateCate.code = this.category.multipleSelection.code;
         this.editCateShowFlag = true;
         this.viewname = "third";
       }
     },
     handleDeleteCateClick() {
-      if (this.category.multipleSelection.length === 0) {
+      if (this.category.multipleSelection.id === undefined) {
         this.$message({
           message: "至少选择一个字典类别",
           type: "warning"
         });
+        return;
       }
 
       this.$confirm("是否确认选中记录？", "提示", {
@@ -442,15 +466,15 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.category.multipleSelection.forEach(element => {
-            request
-              .delete(`/backstage/dic-category/delete`, {
-                params: { id: element.id }
-              })
-              .then(response => {
-                this.searchCategory();
-              });
-          });
+          request
+            .delete(`/backstage/dic-category/delete`, {
+              params: { id: this.category.multipleSelection.id }
+            })
+            .then(response => {
+              this.searchCategory();
+              this.templateRadioCate = "";
+              this.category.multipleSelection = [];
+            });
         })
         .catch(() => {
           this.$message({
@@ -468,33 +492,28 @@ export default {
       this.viewname = "fourth";
     },
     handleEditPropClick() {
-      if (this.property.multipleSelection.length === 0) {
+      if (this.property.multipleSelection.id === undefined) {
         this.$message({
           message: "请选择一个类别属性!",
           type: "error"
         });
         return;
-      } else if (this.property.multipleSelection.length > 1) {
-        this.$message({
-          message: "只能选择一个类别属性!",
-          type: "error"
-        });
-        return;
       } else {
-        this.property.updateProperty.id = this.property.multipleSelection[0].id;
-        this.property.updateProperty.name = this.property.multipleSelection[0].name;
-        this.property.updateProperty.code = this.property.multipleSelection[0].code;
-        this.property.updateProperty.categoryId = this.property.multipleSelection[0].categoryId;
+        this.property.updateProperty.id = this.property.multipleSelection.id;
+        this.property.updateProperty.name = this.property.multipleSelection.name;
+        this.property.updateProperty.code = this.property.multipleSelection.code;
+        this.property.updateProperty.categoryId = this.property.multipleSelection.categoryId;
         this.editPropShowFlag = true;
         this.viewname = "fifth";
       }
     },
     handleDeletePropClick() {
-      if (this.property.multipleSelection.length === 0) {
+      if (this.property.multipleSelection.id === undefined) {
         this.$message({
           message: "至少选择一个类别属性",
           type: "warning"
         });
+        return;
       }
 
       this.$confirm("是否确认删除该记录？", "提示", {
@@ -503,15 +522,17 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.property.multipleSelection.forEach(element => {
-            request
-              .delete(`/backstage/dic-property/delete`, {
-                params: { id: element.id }
-              })
-              .then(response => {
-                this.searchPropertyByCate(element.categoryId);
-              });
-          });
+          request
+            .delete(`/backstage/dic-property/delete`, {
+              params: { id: this.property.multipleSelection.id }
+            })
+            .then(response => {
+              this.searchPropertyByCate(
+                this.property.multipleSelection.categoryId
+              );
+              this.templateRadioProp = "";
+              this.property.multipleSelection = [];
+            });
         })
         .catch(() => {
           this.$message({
@@ -534,6 +555,7 @@ export default {
               this.searchCategory();
               this.category.addCate.code = "";
               this.category.addCate.name = "";
+              this.templateRadioCate = "";
               this.addCateShowFlag = false;
               this.viewname = "first";
             });
@@ -568,6 +590,8 @@ export default {
               this.category.updateCate.id = "";
               this.category.updateCate.name = "";
               this.category.updateCate.code = "";
+              this.templateRadioCate = "";
+              this.category.multipleSelection = [];
               this.editCateShowFlag = false;
               this.viewname = "first";
             });
@@ -599,13 +623,12 @@ export default {
               name: this.property.addProperty.name
             })
             .then(response => {
-              if (this.category.multipleSelection.length >= 1)
-                this.searchPropertyByCate(
-                  this.category.multipleSelection[0].id
-                );
+              if (this.category.multipleSelection.id != undefined)
+                this.searchPropertyByCate(this.category.multipleSelection.id);
               this.property.addProperty.categoryId = "";
               this.property.addProperty.name = "";
               this.property.addProperty.code = "";
+              this.templateRadioProp = "";
               this.addPropShowFlag = false;
               this.viewname = "first";
             });
@@ -635,15 +658,16 @@ export default {
               id: this.property.updateProperty.id,
               name: this.property.updateProperty.name,
               code: this.property.updateProperty.code,
+
               categoryId: this.property.updateProperty.categoryId
             })
             .then(response => {
-              this.searchPropertyByCate(
-                this.property.updateProperty.categoryId
-              );
+              this.searchPropertyByCate(this.property.multipleSelection.id);
               this.property.updateProperty.categoryId = "";
               this.property.updateProperty.name = "";
               this.property.updateProperty.code = "";
+              this.templateRadioProp = "";
+              this.property.multipleSelection = [];
               this.editPropShowFlag = false;
               this.viewname = "first";
             });

@@ -468,15 +468,13 @@ export default {
       });
 
     //得到搜索信息
-    request
-      .get(`/info/style/name`)
-      .then(response => {
-        response.result.forEach(element => {
-          this.nameSuggestionsStyle.push({
-            value: element.number
-          });
+    request.get(`/info/style/name`).then(response => {
+      response.result.forEach(element => {
+        this.nameSuggestionsStyle.push({
+          value: element.number
         });
       });
+    });
   },
 
   methods: {
@@ -908,6 +906,7 @@ export default {
 
 <style lang="less" scoped>
 .box-card {
+  min-width: 900px;
   margin: 20px 50px;
   padding: 0 20px;
   .bar {
