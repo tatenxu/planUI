@@ -50,98 +50,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20" style="margin-top:25px">
-          <el-col :span="8">
-            <el-form-item label="系统编号" prop="systemCode" placeholder="请输入系统编号">
-              <el-input
-                v-model="ruleForm.systemCode"
-                clearable
-                placeholder="请输入"
-                style="width:300px"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="季节" prop="season" placeholder="请选择季节">
-              <el-select v-model="ruleForm.season" style="width:300px">
-                <el-option
-                  v-for="item in options.seasonOptions"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <div class="bar">
-              <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
-                <el-select v-model="ruleForm.inputPoint" clearable placeholder="请选择">
-                  <el-option
-                    v-for="item in options.inputPointOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-          <el-col :span="8">
-            <el-form-item label="项目类型" prop="projectType">
-              <el-select
-                v-model="ruleForm.projectType"
-                @change="projectTypeChanged"
-                style="min-width:300px"
-              >
-                <el-option
-                  v-for="item in options.projectTypeOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="订单阶段" prop="orderStage">
-              <el-select v-model="ruleForm.orderStage " style="min-width:300px">
-                <el-option
-                  v-for="item in options.orderStageOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-          <el-col :span="8">
-            <el-form-item label="预测款数" prop="predictStyleQuantity">
-              <el-input v-model="ruleForm.predictStyleQuantity" clearable placeholder="请输入"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="预测件数" prop="predictPieceQuantity">
-              <el-input v-model="ruleForm.predictPieceQuantity" clearable placeholder="请输入"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-          <el-col :span="8">
-            <el-form-item label="实际款数" prop="styleQuantity">
-              <el-input v-model="ruleForm.styleQuantity" clearable placeholder="请输入"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="实际件数" prop="pieceQuantity">
-              <el-input v-model="ruleForm.pieceQuantity" clearable placeholder="请输入"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
+
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="10">
             <el-form-item label="文件路径">
@@ -167,7 +76,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="示例图片" style="margin-top:20px">
-              <img style="width: 300px; height: 150px" :src="url" />
+              <img style="width: 600px; height: 150px" :src="url" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -180,9 +89,17 @@
             :stripe="true"
             :highlight-current-row="true"
           >
-            <el-table-column prop="rangeName" label="系列名称" align="center"></el-table-column>
-            <!-- <el-table-column prop="rangeAmount" label="系列款数" align="center"></el-table-column> -->
-            <el-table-column prop="rangeNote" label="系列备注" align="center"></el-table-column>
+            <el-table-column prop="name" label="系列名称" align="center"></el-table-column>
+            <el-table-column prop="systemCode" label="系统编号" align="center"></el-table-column>
+            <el-table-column prop="season" label="季节" align="center"></el-table-column>
+            <el-table-column prop="inputPoint" label="投入点" align="center"></el-table-column>
+            <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
+            <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
+            <el-table-column prop="predictStyleQuantity" label="预测款数" align="center"></el-table-column>
+            <el-table-column prop="predictPieceQuantity" label="预测件数" align="center"></el-table-column>
+            <el-table-column prop="styleQuantity" label="实际款数" align="center"></el-table-column>
+            <el-table-column prop="pieceQuantity" label="实际件数" align="center"></el-table-column>
+            <el-table-column prop="note" label="系列备注" align="center"></el-table-column>
           </el-table>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
@@ -209,59 +126,21 @@ export default {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
-        inputPoint: [
-          { required: true, message: "请选择投入点", trigger: "change" }
-        ],
         brandName: [
           { required: true, message: "请选择品牌", trigger: "change" }
         ],
         clothingType: [
           { required: true, message: "请选择服装层次", trigger: "change" }
         ],
-        season: [{ required: true, message: "请选择季节", trigger: "change" }],
-        systemCode: [
-          { required: true, message: "请输入系统编号", trigger: "blur" }
-        ],
-        projectType: [
-          { required: true, message: "请选择项目类型", trigger: "change" }
-        ],
-        orderStage: [
-          { required: true, message: "请选择订单阶段", trigger: "change" }
-        ],
-        predictStyleQuantity: [
-          { required: true, message: "请输入预测款数", trigger: "blur" }
-        ],
-        predictPieceQuantity: [
-          { required: true, message: "请输入预测件数", trigger: "blur" }
-        ],
-        styleQuantity: [
-          { required: false, message: "请输入实际款数", trigger: "blur" }
-        ],
-        pieceQuantity: [
-          { required: false, message: "请输入实际件数", trigger: "blur" }
-        ]
       },
       ruleForm: {
-        season: "",
-        systemCode: "",
         customerName: "",
-        brandName: "",
-        inputPoint: "",
+        brandName: "", 
         clothingType: "",
         filePath: "",
-        projectType: "",
-        orderStage: "",
-        predictStyleQuantity: "",
-        predictPieceQuantity: "",
-        styleQuantity: "",
-        pieceQuantity: "",
         tableData: []
       },
       options: {
-        inputPointOptions: [],
-        projectTypeOptions: [],
-        orderStageOptions: [],
-        seasonOptions: [],
         customerNameOptions: [],
         brandNameOptions: [],
         clothingTypeOptions: []
@@ -271,30 +150,6 @@ export default {
   },
   created: function() {
     var that = this;
-    //获得投入点
-    request
-      .get(`/backstage/dic-property/name`, {
-        params: {
-          categoryName: "投入点"
-        }
-      })
-      .then(response => {
-        this.options.inputPointOptions = response.result;
-      });
-    //获得季节
-    request
-      .get(`/backstage/dic-property/name`, {
-        params: {
-          categoryName: "季节"
-        }
-      })
-      .then(response => {
-        this.options.seasonOptions = response.result;
-      });
-    //获得项目类型
-    request.get(`/backstage/project-type/find`).then(response => {
-      this.options.projectTypeOptions = response.result;
-    });
     //获得顾客名称
     request.get(`/backstage/client/name`).then(response => {
       var CustomerList = response.result;
@@ -314,18 +169,6 @@ export default {
       });
   },
   methods: {
-    projectTypeChanged() {
-      this.ruleForm.orderStage = "";
-      request
-        .get(`/backstage/order-stage/name`, {
-          params: {
-            projectTypeName: this.ruleForm.projectType
-          }
-        })
-        .then(response => {
-          this.options.orderStageOptions = response.result;
-        });
-    },
     clientSelect2() {
       this.ruleForm.brandName = "";
       request
@@ -369,9 +212,17 @@ export default {
               console.log("当前表格的最大列数为: ", colMax);
               let rowData = {
                 // 每一行的数据
-                rangeName: "",
-                rangeAmount: "",
-                rangeNote: ""
+                name: "",
+                systemCode: "",
+                season: "",
+                projectType: "",
+                orderStage: "",
+                predictStyleQuantity: "",
+                predictPieceQuantity: "",
+                styleQuantity: "",
+                pieceQuantity: "",
+                inputPoint: "",
+                note: ""
               };
               for (let i = 1 + colMax; i < locations.length; i++) {
                 //遍历行数×列数内所有的单元格
@@ -384,24 +235,72 @@ export default {
                   console.log(locations[i] + "对应的单元格的值缺失");
                 }
                 if (i % colMax === 1) {
-                  // 第一列为rangeName
-                  rowData.rangeName = value;
+                  // 第一列为name
+                  rowData.name = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 2) {
                   // 第二列为rangeAmount
-                  rowData.rangeAmount = value;
+                  rowData.systemCode = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 3) {
+                  // 第二列为rangeAmount
+                  rowData.season = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 4) {
+                  // 第二列为rangeAmount
+                  rowData.projectType = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 5) {
+                  // 第二列为rangeAmount
+                  rowData.orderStage = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 6) {
+                  // 第二列为rangeAmount
+                  rowData.predictStyleQuantity = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 7) {
+                  // 第二列为rangeAmount
+                  rowData.predictPieceQuantity = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 8) {
+                  // 第二列为rangeAmount
+                  rowData.styleQuantity = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 9) {
+                  // 第二列为rangeAmount
+                  rowData.pieceQuantity = value;
+                  console.log("value: ", value);
+                }
+                if (i % colMax === 10) {
+                  // 第二列为rangeAmount
+                  rowData.inputPoint = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 0) {
-                  // 第三列为rangeNote 同时为最后一列
-                  rowData.rangeNote = value;
+                  // 第三列为note 同时为最后一列
+                  rowData.note = value;
                   sheetData.push(rowData);
                   rowData = {
                     //到了最后一列将行数据清空
-                    rangeName: "",
-                    rangeAmount: "",
-                    rangeNote: ""
+                    name: "",
+                    systemCode: "",
+                    season: "",
+                    projectType: "",
+                    orderStage: "",
+                    predictStyleQuantity: "",
+                    predictPieceQuantity: "",
+                    styleQuantity: "",
+                    pieceQuantity: "",
+                    inputPoint: "",
+                    note: ""
                   };
                 }
               }
@@ -491,25 +390,25 @@ export default {
       var RangeListAdd = [];
       this.ruleForm.tableData.forEach(element => {
         RangeListAdd.push({
-          name: element.rangeName,
+          name: element.name,
           brandId: this.ruleForm.brandName,
           clothesLevelName: this.ruleForm.clothingType,
-          note: element.rangeNote,
-          season: this.ruleForm.season,
-          systemCode: this.ruleForm.systemCode,
-          projectType: this.ruleForm.projectType,
-          orderStage: this.ruleForm.orderStage,
-          inputPoint: this.ruleForm.inputPoint,
-          predictStyleQuantity: this.ruleForm.predictStyleQuantity,
-          predictPieceQuantity: this.ruleForm.predictPieceQuantity,
+          note: element.note,
+          season: element.season,
+          systemCode: element.systemCode,
+          projectType: element.projectType,
+          orderStage: element.orderStage,
+          inputPoint: element.inputPoint,
+          predictStyleQuantity: element.predictStyleQuantity,
+          predictPieceQuantity: element.predictPieceQuantity,
           styleQuantity:
-            this.ruleForm.styleQuantity === ""
+            element.styleQuantity === ""
               ? undefined
-              : this.ruleForm.styleQuantity,
+              : element.styleQuantity,
           pieceQuantity:
-            this.ruleForm.pieceQuantity === ""
+            element.pieceQuantity === ""
               ? undefined
-              : this.ruleForm.pieceQuantity,
+              : element.pieceQuantity,
           addMode: "导入"
         });
       });
