@@ -495,7 +495,7 @@ export default {
         id: this.selectedData[0].id
       };
 
-      if (this.isRoot) {
+      if (this.isRootPlan) {
         request
           .get(`${window.$config.HOST}/root-plan/tree`, {
             params: param
