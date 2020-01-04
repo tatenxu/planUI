@@ -3,7 +3,7 @@ const Main = {
     cookie: 'LOGIN_TOKEN'
   },
   route: {
-    login: '/planservice/login'
+    login: '/login'
   }
 };
 
