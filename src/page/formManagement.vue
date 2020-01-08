@@ -510,68 +510,113 @@ export default {
     },
 
     exportExcel() {
-      import("@/utils/Export2Excel").then(excel => {
-        const tHeader = [
-          "业务组",
-          "业务",
-          "客户",
-          "品牌",
-          "系列名称",
-          "系统编码",
-          "项目类型",
-          "订单阶段",
-          "预测款数",
-          "预测件数",
-          "实际款数",
-          "实际件数",
-          "投入点",
-          "计划开始",
-          "计划完成",
-          "异常",
-          "客户延误",
-          "实际开始",
-          "协商延迟",
-          "实际出清",
-          "计划状态",
-          "系列状态",
-          "TIMELINE远近",
-          "交付远近",
-          "系列更新提醒"
-        ];
-        const filterVal = [
-          "productLine",
-          "creatorName",
-          "clientName",
-          "brandName",
-          "seriesName",
-          "systemCode",
-          "projectType",
-          "orderStage",
-          "predictStyleQuantity",
-          "predictPieceQuantity",
-          "styleQuantity",
-          "pieceQuantity",
-          "inputPoint",
-          "startDate",
-          "endDate",
-          "exceptionContent",
-          "clientDelay",
-          "actualStartDate",
-          "extension",
-          "actualEndDate",
-          "planState",
-          "seriesState",
-          "startTimeLine",
-          "endTimeLine",
-          "seriesRemind"
-        ];
-        const list = this.originSeriesGetData.concat(this.tasks);
-        const data = this.formatJson(filterVal, list);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: this.filename
+      var data = [];
+
+      this.originSeriesGetData.forEach(ele => {
+        data.push({
+          id: ele.id,
+          name: ele.name,
+          superiorId: ele.superiorId,
+          clientName: ele.clientName,
+          brandName: ele.brandName,
+          seriesName: ele.seriesName,
+          systemCode: ele.systemCode,
+          projectType: ele.projectType,
+          orderStage: ele.orderStage,
+          predictStyleQuantity: ele.predictStyleQuantity,
+          predictPieceQuantity: ele.predictPieceQuantity,
+          styleQuantity: ele.styleQuantity,
+          pieceQuantity: ele.pieceQuantity,
+          inputPoint: ele.inputPoint,
+          type: ele.type,
+          productLine: ele.productLine,
+          cycle: ele.cycle,
+          startDate: ele.startDate,
+          endDate: ele.endDate,
+          actualStartDate: ele.actualStartDate,
+          actualEndDate: ele.actualEndDate,
+          extension: ele.extension,
+          creatorId: ele.creatorId,
+          creatorName: ele.creatorName,
+          haveException: ele.haveException,
+          exceptionType: ele.exceptionType,
+          exceptionContent: ele.exceptionContent,
+          planState: ele.planState,
+          seriesState: ele.seriesState,
+          startTimeLine: ele.startTimeLine,
+          endTimeLine: ele.endTimeLine,
+          clientDelay: ele.clientDelay,
+          seriesRemind: ele.seriesRemind,
+          colorCode: ele.colorCode,
+          exceptionColorCode: ele.exceptionColorCode
         });
+      });
+      this.tasks.forEach(ele => {
+        data.push({
+          id: ele.id,
+          name: ele.name,
+          superiorId: ele.superiorId,
+          clientName: ele.clientName,
+          brandName: ele.brandName,
+          seriesName: ele.seriesName,
+          systemCode: ele.systemCode,
+          projectType: ele.projectType,
+          orderStage: ele.orderStage,
+          predictStyleQuantity: ele.predictStyleQuantity,
+          predictPieceQuantity: ele.predictPieceQuantity,
+          styleQuantity: ele.styleQuantity,
+          pieceQuantity: ele.pieceQuantity,
+          inputPoint: ele.inputPoint,
+          type: ele.type,
+          productLine: ele.productLine,
+          cycle: ele.cycle,
+          startDate: ele.startDate,
+          endDate: ele.endDate,
+          actualStartDate: ele.actualStartDate,
+          actualEndDate: ele.actualEndDate,
+          extension: ele.extension,
+          creatorId: ele.creatorId,
+          creatorName: ele.creatorName,
+          haveException: ele.haveException,
+          exceptionType: ele.exceptionType,
+          exceptionContent: ele.exceptionContent,
+          planState: ele.planState,
+          seriesState: ele.seriesState,
+          startTimeLine: ele.startTimeLine,
+          endTimeLine: ele.endTimeLine,
+          clientDelay: ele.clientDelay,
+          seriesRemind: ele.seriesRemind,
+          colorCode: ele.colorCode,
+          exceptionColorCode: ele.exceptionColorCode
+        });
+      });
+
+      request({
+        url: "plan/export-excel",
+        method: "post",
+        data: data,
+        "Content-Type": "application/json;charset=UTF-8",
+        responseType: "blob"
+      }).then(response => {
+        let content = response;
+        let blob = new Blob([content]);
+        let da = new Date();
+        let fileName = da.toLocaleString() + "GanttExcel.xlsx";
+        console.log(response);
+        if ("download" in document.createElement("a")) {
+          // 非IE下载
+          const elink = document.createElement("a");
+          elink.download = fileName;
+          elink.style.display = "none";
+          elink.href = URL.createObjectURL(blob);
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href); // 释放URL 对象
+          document.body.removeChild(elink);
+        } else {
+          // IE10+下载
+          navigator.msSaveBlob(blob, fileName);
+        }
       });
     },
     formatJson(filterVal, jsonData) {
