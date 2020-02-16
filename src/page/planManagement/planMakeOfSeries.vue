@@ -380,6 +380,8 @@
                   :disabled="!isRootPlanFlag || (!isModifyPlanFlag && !isCreatePlanFlag)"
                   placeholder="选择日期"
                   style="min-width:240px"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -420,6 +422,9 @@
                   range-separator="至"
                   :start-placeholder="placeHolders.startStr"
                   :end-placeholder="placeHolders.endStr"
+                  @change="startEndDateChange"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -487,6 +492,8 @@
                   :disabled="alwaysGreyFlag"
                   placeholder="选择日期"
                   style="min-width:240px"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -506,6 +513,8 @@
                   range-separator="至"
                   :start-placeholder="placeHolders.actualStartStr"
                   :end-placeholder="placeHolders.actualEndStr"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -630,7 +639,7 @@ export default {
       isRootPlanFlag: false,
       alwaysGreyFlag: true,
       isModifyPlanFlag: false,
-      isCreatePlanFlag: false,
+      isCreatePlanFlag: true,
       originRow: {},
       goback: null, //goback 为返回的 page name
 
@@ -669,6 +678,7 @@ export default {
         note: [{ required: false, message: "请输入", trigger: "blur" }]
       },
       ruleForm: {
+        date: "1970-01-01",
         seriesCode: "无数据",
         assignPlanType: "无数据",
         brandName: "无数据",
@@ -701,8 +711,8 @@ export default {
         systemCode: "无数据",
         extension: "无数据",
         executionState: "无数据",
-        startEndDate: [],
-        actualStartEndDate: []
+        startEndDate: ["2020-02-15", "2020-02-16"],
+        actualStartEndDate: ["1970-01-01", "1970-01-01"]
       },
 
       // 文件操作
@@ -770,6 +780,13 @@ export default {
   },
 
   methods: {
+    startEndDateChange() {
+      console.log("起止时间改变：", this.ruleForm.startEndDate);
+      var dateStart = new Date(this.ruleForm.startEndDate[0]);
+      var dateEnd = new Date(this.ruleForm.startEndDate[1]);
+      var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
+      this.ruleForm.cycle = difValue;
+    },
     dfsDisable(node, plArr) {
       if (plArr.indexOf(node.name) == -1) {
         node.disabled = true;
@@ -852,37 +869,14 @@ export default {
         });
     },
 
-    changeDate(date1) {
-      var date = new Date(date1);
-      console.log(date);
-      if (!date) {
-        return undefined;
-      } else {
-        var y = date.getFullYear();
-        var m = date.getMonth() + 1;
-        m = m < 10 ? "0" + m : m;
-        var d = date.getDate();
-        d = d < 10 ? "0" + d : d;
-        var h = date.getHours();
-        var minute = date.getMinutes();
-        minute = minute < 10 ? "0" + minute : minute;
-        var second = date.getSeconds();
-        second = minute < 10 ? "0" + second : second;
-        return y + "-" + m + "-" + d;
-      }
-    },
     savePlanForm(formName) {
       //添加
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log("点击添加计划按钮：");
           let that = this;
-          that.ruleForm.startDate = that.changeDate(
-            that.ruleForm.startEndDate[0]
-          );
-          that.ruleForm.endDate = that.changeDate(
-            that.ruleForm.startEndDate[1]
-          );
+          that.ruleForm.startDate = that.ruleForm.startEndDate[0];
+          that.ruleForm.endDate = that.ruleForm.startEndDate[1];
 
           console.log("产品线结果", that.ruleForm.productLine);
           var param = {
@@ -932,15 +926,9 @@ export default {
           if (this.isRootPlanFlag) {
             var param = {
               id: this.ruleForm.id,
-              startDate:
-                this.ruleForm.startEndDate === undefined
-                  ? this.ruleForm.startDate
-                  : this.changeDate(this.ruleForm.startEndDate[0]),
-              endDate:
-                this.ruleForm.startEndDate === undefined
-                  ? this.ruleForm.endDate
-                  : this.changeDate(this.ruleForm.startEndDate[1]),
-              date: this.changeDate(this.ruleForm.date),
+              startDate: this.ruleForm.startEndDate[0],
+              endDate: this.ruleForm.startEndDate[1],
+              date: this.ruleForm.date,
               dateType: this.ruleForm.dateType,
               inputPoint: this.ruleForm.inputPoint
             };
@@ -966,14 +954,8 @@ export default {
           } else {
             var param = {
               id: this.ruleForm.id,
-              startDate:
-                this.ruleForm.startEndDate === undefined
-                  ? this.ruleForm.startDate
-                  : this.changeDate(this.ruleForm.startEndDate[0]),
-              endDate:
-                this.ruleForm.startEndDate === undefined
-                  ? this.ruleForm.endDate
-                  : this.changeDate(this.ruleForm.startEndDate[1]),
+              startDate: this.ruleForm.startEndDate[0],
+              endDate: this.ruleForm.startEndDate[1],
               product: this.ruleForm.product,
               productLine:
                 this.ruleForm.productLine instanceof Array
@@ -1075,15 +1057,15 @@ export default {
 
         that.placeHolders.startStr = that.ruleForm.startDate;
         that.placeHolders.endStr = that.ruleForm.endDate;
+        that.ruleForm.startEndDate = [
+          that.ruleForm.startDate,
+          that.ruleForm.endDate
+        ];
 
-        that.placeHolders.actualStartStr =
-          that.ruleForm.actualStartDate === undefined
-            ? that.placeHolders.actualStartStr
-            : that.ruleForm.actualStartDate;
-        that.placeHolders.actualEndStr =
-          that.ruleForm.actualEndDate === undefined
-            ? that.placeHolders.actualEndStr
-            : that.ruleForm.actualEndDate;
+        that.ruleForm.actualStartEndDate = [
+          that.ruleForm.actualStartDate,
+          that.ruleForm.actualEndDate
+        ];
 
         // 处理是添加子计划时相关属性更改的操作
         if (that.isCreatePlanFlag) {
@@ -1092,14 +1074,11 @@ export default {
           that.ruleForm.superiorName = that.ruleForm.name;
 
           if (that.ruleForm.rootPlanName != undefined) {
-            that.ruleForm.cycle = undefined;
+            that.ruleForm.cycle = 0;
             that.ruleForm.productLine = undefined;
             that.ruleForm.product = undefined;
-            that.ruleForm.extension = undefined;
             that.ruleForm.note = undefined;
-            that.ruleForm.actualStartEndDate = undefined;
-            that.ruleForm.actualStartDate = undefined;
-            that.ruleForm.actualEndDate = undefined;
+            that.ruleForm.inputPoint = undefined;
           }
 
           that.ruleForm.rootPlanName =
@@ -1112,7 +1091,16 @@ export default {
               : that.ruleForm.rootPlanId;
 
           that.ruleForm.id = undefined;
-          that.ruleForm.name = "";
+
+          // 自动生成计划名
+          that.ruleForm.name =
+            that.ruleForm.brandName +
+            "_" +
+            that.ruleForm.rangeCode +
+            "_" +
+            that.ruleForm.orderStage +
+            "_" +
+            that.ruleForm.assignPlanType;
         }
       }
     }
