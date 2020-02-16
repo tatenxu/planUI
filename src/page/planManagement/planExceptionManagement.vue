@@ -91,6 +91,7 @@
     <el-card class="box-card">
       <div>
         <el-table
+          border
           ref="multipleTable"
           :data="tableData"
           tooltip-effect="dark"

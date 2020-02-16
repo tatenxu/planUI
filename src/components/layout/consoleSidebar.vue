@@ -151,7 +151,7 @@
         <el-menu-item index="/planRecover" v-if="planRecover">
           <i class="el-icon-document"></i>计划回收站
         </el-menu-item>
-        <el-menu-item index="/exceptionManagement" v-if="exceptionMana">
+        <el-menu-item index="/planExceptionManagement" v-if="exceptionMana">
           <i class="el-icon-document"></i>异常管理
         </el-menu-item>
       </el-submenu>

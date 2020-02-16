@@ -2,6 +2,20 @@
   <div class="body">
     <el-card class="box-card">
       <el-row :gutter="10" style="margin-top: 15px; margin-bottom: 5px;">
+        <el-col :span="5">
+          <div class="bar" style="min-width:250px">
+            <el-switch
+              v-model="isRootPlan"
+              @change="planTypeSwitchChange"
+              inactive-color="#13ce66"
+              active-text="根计划"
+              inactive-text="普通计划"
+            ></el-switch>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="10" style="margin-top: 15px; margin-bottom: 5px;">
         <el-col :span="6">
           <div class="bar">
             <div class="title">客户名称</div>
@@ -87,21 +101,21 @@
           <el-button type="primary" style="margin-right:20px" @click="delelePermanently">彻底删除</el-button>
         </el-row>
         <el-table
+          border
           :data="tableData"
           style="width: 100%; margin-top: 20px"
           @selection-change="tableSelectionChange"
           :stripe="true"
         >
           <el-table-column type="selection" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" align="center"></el-table-column>
-          <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-          <el-table-column prop="clientName" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+          <el-table-column type="planClass" label="计划类别" align="center"></el-table-column>
           <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="serialNo" label="系列名称" align="center" width="150px"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="planClass" label="计划对象" align="center"></el-table-column>
-          <el-table-column prop="type" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="clothinLevel" label="服装层次" align="center" width="150px"></el-table-column>
+          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="planStage" label="订单阶段" align="center"></el-table-column>
           <el-table-column prop="deleteName" label="删除人" align="center"></el-table-column>
           <el-table-column prop="createTime" label="删除时间" width="200px" align="center"></el-table-column>
 
@@ -134,6 +148,8 @@ export default {
     return {
       totalTableData: [],
       tableData: [],
+
+      isRootPlan: true,
 
       inputSuggestions: {
         plans: [],
@@ -182,17 +198,7 @@ export default {
       });
 
     //加载默认所有的删除计划
-    request
-      .get(`${window.$config.HOST}/plan-delete-info/find`, {
-        params: {
-          pageNum: this.pagination.currentPage,
-          pageSize: this.pagination.pageSize
-        }
-      })
-      .then(response => {
-        this.tableData = response.result;
-        this.pagination.total = response.total;
-      });
+    this.handleSearch();
 
     //输入建议
     request.get(`${window.$config.HOST}/plan/name`).then(response => {
@@ -238,6 +244,12 @@ export default {
           this.searchOptions.options.brandNameOptions = response.result;
         });
     },
+    planTypeSwitchChange() {
+      this.pagination.currentPage = 1;
+      this.tableData = [];
+      this.handleSearch();
+    },
+
     // 每页条数改变时触发函数
     handleSizeChange(val) {
       this.pagination.pageSize = val;
@@ -308,29 +320,53 @@ export default {
       };
       console.log("搜索参数", param);
 
-      request
-        .get(`${window.$config.HOST}/plan-delete-info/find`, {
-          params: param
-        })
-        .then(response => {
-          this.tableData = response.result;
-          this.pagination.total = response.total;
-        });
+      if (this.isRootPlan) {
+        request
+          .get(`${window.$config.HOST}/root-plan/find-delete`, {
+            params: param
+          })
+          .then(response => {
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/find-delete`, {
+            params: param
+          })
+          .then(response => {
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+          });
+      }
     },
     // 恢复单个的按钮
     ReCover(row) {
       console.log("单个恢复:" + row.name);
 
-      request
-        .get(`${window.$config.HOST}/plan-delete-info/delete`, {
-          params: {
-            id: row.id,
-            planId: row.planId
-          }
-        })
-        .then(response => {
-          this.handleSearch();
-        });
+      if (this.isRootPlan) {
+        request
+          .get(`${window.$config.HOST}/root-plan/restore`, {
+            params: {
+              // id: row.id,
+              rootPlanId: row.planId
+            }
+          })
+          .then(response => {
+            this.handleSearch();
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/restore`, {
+            params: {
+              // id: row.id,
+              planId: row.planId
+            }
+          })
+          .then(response => {
+            this.handleSearch();
+          });
+      }
     },
     //恢复所有选择的按钮
     ReCoverAll() {
@@ -349,16 +385,29 @@ export default {
         this.$message.error("请选择要彻底删除的计划!");
       } else {
         this.tableSelectionData.forEach(element => {
-          request
-            .get(`${window.$config.HOST}/plan/completely-delete`, {
-              params: {
-                planId: element.planId
-              }
-            })
-            .then(response => {
-              console.log("彻底删除", element.name, " OK");
-              this.handleSearch();
-            });
+          if (this.isRootPlan) {
+            request
+              .get(`${window.$config.HOST}/root-plan/completely-delete`, {
+                params: {
+                  rootPlanId: element.planId
+                }
+              })
+              .then(response => {
+                console.log("彻底删除", element.name, " OK");
+                this.handleSearch();
+              });
+          } else {
+            request
+              .get(`${window.$config.HOST}/plan/completely-delete`, {
+                params: {
+                  planId: element.planId
+                }
+              })
+              .then(response => {
+                console.log("彻底删除", element.name, " OK");
+                this.handleSearch();
+              });
+          }
         });
       }
     }
@@ -390,6 +439,11 @@ export default {
       width: 70%;
       min-width: 80px;
       margin-left: 20px;
+    }
+    .el-switch {
+      width: 70%;
+      min-width: 80px;
+      margin-left: 7px;
     }
   }
   .block {

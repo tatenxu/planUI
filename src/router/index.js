@@ -23,7 +23,9 @@ const planManagement = r => require.ensure([], () => r(require('../page/planMana
 const distributedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/distributedPlanManagement.vue')), 'distributedPlanManagement');
 const commitedPlanManagement = r => require.ensure([], () => r(require('../page/planManagement/commitedPlanManagement.vue')), 'commitedPlanManagement');
 const planCompletionManage = r => require.ensure([], () => r(require('../page/planManagement/planCompletionManage.vue')), 'planCompletionManage');
-const planMakeIndex = r => require.ensure([], () => r(require('../page/planManagement/planMake.vue')), 'planMakeIndex');
+const planMakeOfSeries = r => require.ensure([], () => r(require('../page/planManagement/planMakeOfSeries.vue')), 'planMakeOfSeries');
+const planMakeOfStyle = r => require.ensure([], () => r(require('../page/planManagement/planMakeOfStyle.vue')), 'planMakeOfStyle');
+const planMakeOfStyleGroup = r => require.ensure([], () => r(require('../page/planManagement/planMakeOfStyleGroup.vue')), 'planMakeOfStyleGroup');
 const seriesPlanMake = r => require.ensure([], () => r(require('../page/planManagement/seriesPlanMake.vue')), 'seriesPlanMake');
 const rootPlanMake = r => require.ensure([], () => r(require('../page/planManagement/rootPlanMake.vue')), 'rootPlanMake');
 const styleGroupPlanMake = r => require.ensure([], () => r(require('../page/planManagement/styleGroupPlanMake .vue')), 'styleGroupPlanMake ');
@@ -32,7 +34,7 @@ const planVerify = r => require.ensure([], () => r(require('../page/planManageme
 const planDistribute = r => require.ensure([], () => r(require('../page/planManagement/planDistribute.vue')), 'planDistribute');
 const planRecover = r => require.ensure([], () => r(require('../page/planManagement/planRecover.vue')), 'planRecover');
 const messageManagement = r => require.ensure([], () => r(require('../page/messageManagement.vue')), 'messageManagement');
-const exceptionManagement = r => require.ensure([], () => r(require('../page/planManagement/exceptionManagement.vue')), 'exceptionManagement');
+const planExceptionManagement = r => require.ensure([], () => r(require('../page/planManagement/planExceptionManagement.vue')), 'exceptionManagement');
 const queryStatistic = r => require.ensure([], () => r(require('../page/queryStatistic.vue')), 'queryStatistic');
 const formManagement = r => require.ensure([], () => r(require('../page/formManagement.vue')), 'formManagement');
 const subGantt = r => require.ensure([], () => r(require('../page/subGantt.vue')), 'subGantt');
@@ -203,9 +205,24 @@ export default [
         }
       },
       {
-        path: '/planMake/planMakeIndex',
-        name: 'planMakeIndex',
-        component: planMakeIndex,
+        path: '/planMake/planMakeOfSeries',
+        name: 'planMakeOfSeries',
+        component: planMakeOfSeries,
+        meta: {
+          bcrumd: ['计划制定'],
+        }
+      },
+      {
+        path: '/planMake/planMakeOfStyle',
+        name: 'planMakeOfStyle',
+        component: planMakeOfStyle,
+        meta: {
+          bcrumd: ['计划制定'],
+        }
+      }, {
+        path: '/planMake/planMakeOfStyleGroup',
+        name: 'planMakeOfStyleGroup',
+        component: planMakeOfStyleGroup,
         meta: {
           bcrumd: ['计划制定'],
         }
@@ -275,9 +292,9 @@ export default [
         }
       },
       {
-        path: '/exceptionManagement',
-        name: 'exceptionManagement',
-        component: exceptionManagement,
+        path: '/planExceptionManagement',
+        name: 'planExceptionManagement',
+        component: planExceptionManagement,
         meta: {
           bcrumd: ['异常管理'],
         }
