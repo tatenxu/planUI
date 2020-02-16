@@ -4,7 +4,7 @@
       <el-row :gutter="20" style="margin-top:5px; ">
         <el-col :span="8">
           <div class="bar">
-            <div class="title">计划类别:</div>
+            <div class="title">计划类别</div>
             <el-select v-model="searchOptions.searchParams.planClassName">
               <el-option
                 v-for="item in searchOptions.options.planClassOptions"
@@ -18,7 +18,7 @@
 
         <el-col :span="8">
           <div class="bar">
-            <div class="title">创建人:</div>
+            <div class="title">创建人</div>
             <el-select v-model="searchOptions.searchParams.creatorName" clearable>
               <el-option
                 v-for="item in searchOptions.options.creatorOptions"
@@ -32,7 +32,7 @@
 
         <el-col :span="8">
           <div class="bar">
-            <div class="title">计划类型:</div>
+            <div class="title">计划类型</div>
             <el-select v-model="searchOptions.searchParams.planTypeName" clearable>
               <el-option
                 v-for="item in searchOptions.options.planTypeOptions"
@@ -45,10 +45,54 @@
         </el-col>
       </el-row>
 
+      <el-row :gutter="20" style="margin-top:5px;">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">客户名称</div>
+            <el-select
+              v-model="searchOptions.searchParams.clientName"
+              @change="clientNameChange"
+              clearable
+            >
+              <el-option
+                v-for="item in searchOptions.options.customerNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">品牌</div>
+            <el-select v-model="searchOptions.searchParams.brandName" clearable>
+              <el-option
+                v-for="item in searchOptions.options.brandNameOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">系列名称</div>
+            <el-autocomplete
+              :fetch-suggestions="searchSeriesName"
+              v-model="searchOptions.searchParams.seriesName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
+          </div>
+        </el-col>
+      </el-row>
+
       <el-row :gutter="20" style="margin-top:5px; ">
         <el-col :span="8">
           <div class="bar">
-            <div class="title">计划状态:</div>
+            <div class="title">计划状态</div>
             <el-select v-model="searchOptions.searchParams.planStateName" clearable>
               <el-option
                 v-for="item in searchOptions.options.planStateOptions"
@@ -62,7 +106,7 @@
 
         <el-col :span="8">
           <div class="bar">
-            <div class="title">系列状态:</div>
+            <div class="title">系列状态</div>
             <el-select v-model="searchOptions.searchParams.seriesStateName" clearable>
               <el-option
                 v-for="item in searchOptions.options.seriesStateOptions"
@@ -78,7 +122,7 @@
       <el-row :gutter="20" style="margin-top:5px; ">
         <el-col :span="8">
           <div class="bar">
-            <div class="title">TimeLine:</div>
+            <div class="title">TimeLine</div>
             <el-select v-model="searchOptions.searchParams.timeLineName" clearable>
               <el-option
                 v-for="item in searchOptions.options.timeLineOptions"
@@ -92,7 +136,7 @@
 
         <el-col :span="8">
           <div class="bar">
-            <div class="title">交付状态:</div>
+            <div class="title">交付状态</div>
             <el-select v-model="searchOptions.searchParams.deliverStateName" clearable>
               <el-option
                 v-for="item in searchOptions.options.deliverStateOptions"
@@ -144,6 +188,9 @@ export default {
       searchOptions: {
         searchParams: {
           planClassName: "SERIES",
+          clientName: "",
+          brandName: "",
+          seriesName: "",
           creatorName: "",
           planTypeName: "",
           timeLineName: "",
@@ -152,6 +199,8 @@ export default {
           deliverStateName: ""
         },
         options: {
+          customerNameOptions: [],
+          brandNameOptions: [],
           planClassOptions: [
             { id: "STYLE", name: "款式计划" },
             { id: "GROUP", name: "款式组计划" },
@@ -211,6 +260,9 @@ export default {
           }
         }
       },
+      inputSuggestions: {
+        series: []
+      },
 
       originSeriesGetData: {},
       tasks: [],
@@ -218,6 +270,27 @@ export default {
     };
   },
   created: function() {
+    //客户名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/client/name`)
+      .then(response => {
+        this.searchOptions.options.customerNameOptions = response.result;
+      });
+    //品牌名称加载
+    request
+      .get(`${window.$config.HOST}/backstage/brand/name`)
+      .then(response => {
+        this.searchOptions.options.brandNameOptions = response.result;
+      });
+    // 输入建议
+    request.get(`${window.$config.HOST}/info/series/name`).then(response => {
+      this.inputSuggestions.series = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.series.push(element);
+      });
+    });
+
     //获取用户信息
     this.$axios
       .get(`${window.$config.HOST2}/getAllUserName`)
@@ -350,6 +423,25 @@ export default {
     };
   },
   methods: {
+    clientNameChange() {
+      //品牌名称跟随加载
+      request
+        .get(`${window.$config.HOST}/backstage/brand/name`, {
+          params: { clientId: this.searchOptions.searchParams.clientName }
+        })
+        .then(response => {
+          this.searchOptions.options.brandNameOptions = response.result;
+        });
+    },
+    // 系列名称搜索建议
+    searchSeriesName(queryString, cb) {
+      var tmp = this.inputSuggestions.series;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
+    },
+
     addTask() {},
     tasksUpdate(tasks) {
       this.tasks = tasks;
@@ -646,6 +738,7 @@ export default {
 
 <style lang="less" scoped>
 .box-card {
+  min-width: 900px;
   margin: 20px 50px;
   padding: 0 20px;
   .bar {
@@ -667,6 +760,10 @@ export default {
       width: 300px;
       min-width: 75px;
       // margin: 5px 10px;
+    }
+    .el-autocomplete {
+      width: 300px;
+      min-width: 75px;
     }
   }
 }
