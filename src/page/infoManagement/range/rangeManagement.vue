@@ -6,12 +6,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select v-model="clientId" :clearable="true" @change="searchClientChanged">
-              <el-option
-                v-for="item in searchOptions.clientOption"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="item in searchOptions.clientOption" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -19,12 +14,7 @@
           <div class="bar">
             <div class="title">品牌</div>
             <el-select v-model="brandId" :clearable="true">
-              <el-option
-                v-for="item in searchOptions.brandOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="item in searchOptions.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -32,14 +22,7 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-autocomplete
-              class="inline-input"
-              v-model="name"
-              :fetch-suggestions="querySearch"
-              placeholder="请输入系列名称"
-              @select="handleSelect"
-              clearable
-            ></el-autocomplete>
+            <el-autocomplete class="inline-input" v-model="name" :fetch-suggestions="querySearch" placeholder="请输入系列名称" @select="handleSelect" clearable></el-autocomplete>
           </div>
         </el-col>
 
@@ -47,12 +30,7 @@
           <div class="bar">
             <div class="title">服装层次</div>
             <el-select v-model="clothesLevelName" :clearable="true">
-              <el-option
-                v-for="item in searchOptions.clothesLevelOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
-              ></el-option>
+              <el-option v-for="item in searchOptions.clothesLevelOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -61,15 +39,7 @@
         <el-col :span="12">
           <div class="bar">
             <div class="title">添加时间</div>
-            <el-date-picker
-              class="inputBar"
-              v-model="dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholde="开始日期"
-              end-placeholde="结束日期"
-              :clearable="true"
-            ></el-date-picker>
+            <el-date-picker class="inputBar" v-model="dateRange" type="daterange" range-separator="至" start-placeholde="开始日期" end-placeholde="结束日期" :clearable="true"></el-date-picker>
           </div>
         </el-col>
         <el-col :span="2">
@@ -91,15 +61,7 @@
             <el-button type="primary" @click="deleteBatchSeries">删除系列</el-button>
           </el-col>
         </el-row>
-        <el-table
-          :data="tableData"
-          max-height="400"
-          border
-          @selection-change="changeCheckBoxFun"
-          :stripe="true"
-          :highlight-current-row="true"
-          style="width: 100%; margin-top: 20px"
-        >
+        <el-table :data="tableData" max-height="400" border @selection-change="changeCheckBoxFun" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="serialNo" width="150" label="系列编号" align="center"></el-table-column>
@@ -116,97 +78,53 @@
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button @click="detailPanel(scope.row)" type="text" size="small">查看</el-button>
-              <el-button
-                @click="updatePanel(scope.row)"
-                type="text"
-                size="small"
-                v-if="scope.row.creatorId === meID"
-              >修改</el-button>
-              <el-button
-                @click="deleteSeries(scope.row)"
-                type="text"
-                size="small"
-                v-if="scope.row.creatorId === meID"
-              >删除</el-button>
+              <el-button @click="updatePanel(scope.row)" type="text" size="small" v-if="scope.row.creatorId === meID">修改</el-button>
+              <el-button @click="deleteSeries(scope.row)" type="text" size="small" v-if="scope.row.creatorId === meID">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!-- 分页 -->
         <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
         </div>
       </div>
     </el-card>
 
     <el-dialog :modal="false" title="添加系列" :visible.sync="addPanelFlag">
-      <el-form
-        :model="addForm"
-        :rules="addRules"
-        ref="addForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
+      <el-form :model="addForm" :rules="addRules" ref="addForm" label-width="100px" class="demo-ruleForm">
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
               <el-select v-model="addForm.clientId" @change="addClientChanged">
-                <el-option
-                  v-for="item in addForm.options.clientOption"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in addForm.options.clientOption" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandId">
               <el-select v-model="addForm.brandId">
-                <el-option
-                  v-for="item in addForm.options.brandOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in addForm.options.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
               <el-input v-model="addForm.name" clearable placeholder="请输入"></el-input>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="服装层次" prop="clothesLevelName">
               <el-select v-model="addForm.clothesLevelName ">
-                <el-option
-                  v-for="item in addForm.options.clothesLevelOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in addForm.options.clothesLevelOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="季节" prop="season">
               <el-select v-model="addForm.season ">
-                <el-option
-                  v-for="item in addForm.options.seasonOptions"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in addForm.options.seasonOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -220,24 +138,14 @@
           <el-col :span="8">
             <el-form-item label="项目类型" prop="projectType">
               <el-select v-model="addForm.projectType" @change="addProjectTypeChanged">
-                <el-option
-                  v-for="item in addForm.options.projectTypeOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in addForm.options.projectTypeOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="订单阶段" prop="orderStage">
               <el-select v-model="addForm.orderStage ">
-                <el-option
-                  v-for="item in addForm.options.orderStageOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in addForm.options.orderStageOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -245,12 +153,7 @@
             <div class="bar">
               <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
                 <el-select v-model="addForm.inputPoint" clearable placeholder="请选择">
-                  <el-option
-                    v-for="item in addForm.options.inputPointOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
+                  <el-option v-for="item in addForm.options.inputPointOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                 </el-select>
               </el-form-item>
             </div>
@@ -270,13 +173,13 @@
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
-            <el-form-item label="实际款数" prop="styleQuantity">
-              <el-input v-model.number="addForm.styleQuantity" placeholder="请输入"></el-input>
+            <el-form-item label="非正式款数" prop="informalStyleQuantity">
+              <el-input v-model.number="addForm.informalStyleQuantity" placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="实际件数" prop="pieceQuantity">
-              <el-input v-model.number="addForm.pieceQuantity" placeholder="请输入"></el-input>
+            <el-form-item label="非正式件数" prop="informalPieceQuantity">
+              <el-input v-model.number="addForm.informalPieceQuantity" placeholder="请输入"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -299,50 +202,25 @@
     </el-dialog>
 
     <el-dialog :modal="false" title="详情信息" :visible.sync="updatePanelFlag">
-      <el-form
-        :model="updateForm"
-        :rules="updateRules"
-        ref="updateForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
+      <el-form :model="updateForm" :rules="updateRules" ref="updateForm" label-width="100px" class="demo-ruleForm">
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" placeholder="请选择客户名称" prop="clientId">
-              <el-select
-                v-model="updateForm.clientId "
-                @change="updateClientChanged"
-                :disabled="detailFlag===true"
-              >
-                <el-option
-                  v-for="item in updateForm.options.clientOption"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="updateForm.clientId " @change="updateClientChanged" :disabled="detailFlag===true">
+                <el-option v-for="item in updateForm.options.clientOption" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandId">
               <el-select v-model="updateForm.brandId " :disabled="detailFlag===true">
-                <el-option
-                  v-for="item in updateForm.options.brandOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="系列名称" prop="name">
-              <el-input
-                v-model="updateForm.name"
-                clearable
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+              <el-input v-model="updateForm.name" clearable placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -350,82 +228,43 @@
           <el-col :span="8">
             <el-form-item label="服装层次" prop="clothesLevelName">
               <el-select v-model="updateForm.clothesLevelName " :disabled="detailFlag===true">
-                <el-option
-                  v-for="item in updateForm.options.clothesLevelOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.clothesLevelOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="季节" prop="season">
               <el-select v-model="updateForm.season " :disabled="detailFlag===true">
-                <el-option
-                  v-for="item in updateForm.options.seasonOptions"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.seasonOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="系统编码" prop="systemCode">
-              <el-input
-                v-model="updateForm.systemCode"
-                clearable
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+              <el-input v-model="updateForm.systemCode" clearable placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="项目类型" prop="projectType">
-              <el-select
-                v-model="updateForm.projectType"
-                @change="updateProjectTypeChanged"
-                :disabled="detailFlag===true"
-              >
-                <el-option
-                  v-for="item in updateForm.options.projectTypeOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+              <el-select v-model="updateForm.projectType" @change="updateProjectTypeChanged" :disabled="detailFlag===true">
+                <el-option v-for="item in updateForm.options.projectTypeOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="订单阶段" prop="orderStage">
               <el-select v-model="updateForm.orderStage " :disabled="detailFlag===true">
-                <el-option
-                  v-for="item in updateForm.options.orderStageOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.orderStageOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <div class="bar">
               <el-form-item label="投入点" prop="inputPoint" placeholder="请输入根计划名称">
-                <el-select
-                  v-model="updateForm.inputPoint"
-                  clearable
-                  placeholder="请选择"
-                  :disabled="detailFlag===true"
-                >
-                  <el-option
-                    v-for="item in updateForm.options.inputPointOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
+                <el-select v-model="updateForm.inputPoint" clearable placeholder="请选择" :disabled="detailFlag===true">
+                  <el-option v-for="item in updateForm.options.inputPointOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                 </el-select>
               </el-form-item>
             </div>
@@ -434,53 +273,31 @@
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
             <el-form-item label="预测款数" prop="predictStyleQuantity">
-              <el-input
-                v-model.number="updateForm.predictStyleQuantity"
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+              <el-input v-model.number="updateForm.predictStyleQuantity" placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="预测件数" prop="predictPieceQuantity">
-              <el-input
-                v-model.number="updateForm.predictPieceQuantity"
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+              <el-input v-model.number="updateForm.predictPieceQuantity" placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="8">
-            <el-form-item label="实际款数" prop="styleQuantity">
-              <el-input
-                v-model.number="updateForm.styleQuantity"
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+            <el-form-item label="非正式款数" prop="informalStyleQuantity">
+              <el-input v-model.number="updateForm.informalStyleQuantity" placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="实际件数" prop="pieceQuantity">
-              <el-input
-                v-model.number="updateForm.pieceQuantity"
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+            <el-form-item label="非正式件数" prop="informalPieceQuantity">
+              <el-input v-model.number="updateForm.informalPieceQuantity" placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="10" style="margin-top: 30px; margin-bottom: 5px;">
           <el-col :span="24">
             <el-form-item label="系列备注">
-              <el-input
-                v-model="updateForm.note"
-                type="textarea"
-                :rows="3"
-                placeholder="请输入"
-                :disabled="detailFlag===true"
-              ></el-input>
+              <el-input v-model="updateForm.note" type="textarea" :rows="3" placeholder="请输入" :disabled="detailFlag===true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -535,8 +352,8 @@ export default {
         orderStage: "",
         predictStyleQuantity: "",
         predictPieceQuantity: "",
-        styleQuantity: "",
-        pieceQuantity: "",
+        informalStyleQuantity: "",
+        informalPieceQuantity: "",
         note: "",
         options: {
           clientOptions: {},
@@ -586,7 +403,7 @@ export default {
           },
           { type: "number", message: "请输入大于0的数字！" }
         ],
-        styleQuantity: [
+        informalStyleQuantity: [
           {
             required: false,
             trigger: "blur",
@@ -605,7 +422,7 @@ export default {
             }
           }
         ],
-        pieceQuantity: [
+        informalPieceQuantity: [
           {
             required: false,
             trigger: "blur",
@@ -642,8 +459,8 @@ export default {
         orderStage: "",
         predictStyleQuantity: "",
         predictPieceQuantity: "",
-        styleQuantity: "",
-        pieceQuantity: "",
+        informalStyleQuantity: "",
+        informalPieceQuantity: "",
         note: "",
         options: {
           clientOptions: {},
@@ -706,7 +523,7 @@ export default {
           },
           { type: "number", message: "请输入大于0的数字！" }
         ],
-        styleQuantity: [
+        informalStyleQuantity: [
           {
             required: false,
             validator: (rule, value, callback) => {
@@ -726,7 +543,7 @@ export default {
             trigger: "blur"
           }
         ],
-        pieceQuantity: [
+        informalPieceQuantity: [
           {
             required: false,
             validator: (rule, value, callback) => {
@@ -757,7 +574,7 @@ export default {
     };
   },
 
-  created: function() {
+  created: function () {
     var that = this;
     //确认自己的信息
     request.get(`/me`).then(response => {
@@ -1006,8 +823,8 @@ export default {
       this.addForm.inputPoint = "";
       this.addForm.predictStyleQuantity = "";
       this.addForm.predictPieceQuantity = "";
-      this.addForm.styleQuantity = "";
-      this.addForm.pieceQuantity = "";
+      this.addForm.informalStyleQuantity = "";
+      this.addForm.informalPieceQuantity = "";
       this.addForm.note = "";
       this.addForm.options.brandOptions = {};
       this.addForm.options.orderStageOptions = {};
@@ -1036,8 +853,8 @@ export default {
         if (flag === 0) {
           this.$confirm(
             "删除所选的" +
-              that.multipleSelection.length +
-              "条系列信息, 是否继续?",
+            that.multipleSelection.length +
+            "条系列信息, 是否继续?",
             "提示",
             {
               confirmButtonText: "确定",
@@ -1100,8 +917,8 @@ export default {
               this.updateForm.inputPoint = row.inputPoint;
               this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
               this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
-              this.updateForm.styleQuantity = row.styleQuantity;
-              this.updateForm.pieceQuantity = row.pieceQuantity;
+              this.updateForm.informalStyleQuantity = row.informalStyleQuantity;
+              this.updateForm.informalPieceQuantity = row.informalPieceQuantity;
               this.updateForm.clothesLevelName = row.clothesLevelName;
               this.updateForm.season = row.season;
               this.updateForm.systemCode = row.systemCode;
@@ -1134,8 +951,8 @@ export default {
           this.updateForm.inputPoint = row.inputPoint;
           this.updateForm.predictStyleQuantity = row.predictStyleQuantity;
           this.updateForm.predictPieceQuantity = row.predictPieceQuantity;
-          this.updateForm.styleQuantity = row.styleQuantity;
-          this.updateForm.pieceQuantity = row.pieceQuantity;
+          this.updateForm.informalStyleQuantity = row.informalStyleQuantity;
+          this.updateForm.informalPieceQuantity = row.informalPieceQuantity;
           this.updateForm.clothesLevelName = row.clothesLevelName;
           this.updateForm.season = row.season;
           this.updateForm.systemCode = row.systemCode;
@@ -1184,6 +1001,9 @@ export default {
               name: this.addForm.name,
               brandId: this.addForm.brandId,
               clothesLevelName: this.addForm.clothesLevelName,
+     
+
+
               note: this.addForm.note === "" ? undefined : this.addForm.note,
               season: this.addForm.season,
               addMode: "手动",
@@ -1193,14 +1013,14 @@ export default {
               inputPoint: this.addForm.inputPoint,
               predictStyleQuantity: this.addForm.predictStyleQuantity,
               predictPieceQuantity: this.addForm.predictPieceQuantity,
-              styleQuantity:
-                this.addForm.styleQuantity === ""
+              informalStyleQuantity:
+                this.addForm.informalStyleQuantity === ""
                   ? undefined
-                  : this.addForm.styleQuantity,
-              pieceQuantity:
-                this.addForm.pieceQuantity === ""
+                  : this.addForm.informalStyleQuantity,
+              informalPieceQuantity:
+                this.addForm.informalPieceQuantity === ""
                   ? undefined
-                  : this.addForm.pieceQuantity
+                  : this.addForm.informalPieceQuantity
             })
             .then(response => {
               this.handleSearch(this.pagination.currentPage);
@@ -1235,14 +1055,14 @@ export default {
               inputPoint: this.updateForm.inputPoint,
               predictStyleQuantity: this.updateForm.predictStyleQuantity,
               predictPieceQuantity: this.updateForm.predictPieceQuantity,
-              styleQuantity:
-                this.updateForm.styleQuantity === ""
+              informalStyleQuantity:
+                this.updateForm.informalStyleQuantity === ""
                   ? undefined
-                  : this.updateForm.styleQuantity,
-              pieceQuantity:
-                this.updateForm.pieceQuantity === ""
+                  : this.updateForm.informalStyleQuantity,
+              informalPieceQuantity:
+                this.updateForm.informalPieceQuantity === ""
                   ? undefined
-                  : this.updateForm.pieceQuantity
+                  : this.updateForm.informalPieceQuantity
             })
             .then(response => {
               this.handleSearch(this.pagination.currentPage);
@@ -1270,8 +1090,8 @@ export default {
       this.addForm.inputPoint = "";
       this.addForm.predictStyleQuantity = "";
       this.addForm.predictPieceQuantity = "";
-      this.addForm.styleQuantity = "";
-      this.addForm.pieceQuantity = "";
+      this.addForm.informalStyleQuantity = "";
+      this.addForm.informalPieceQuantity = "";
       this.addForm.note = "";
       this.addForm.options.orderStageOptions = {};
       this.addForm.options.brandOptions = {};
@@ -1292,8 +1112,8 @@ export default {
       this.updateForm.inputPoint = "";
       this.updateForm.predictStyleQuantity = "";
       this.updateForm.predictPieceQuantity = "";
-      this.updateForm.styleQuantity = "";
-      this.updateForm.pieceQuantity = "";
+      this.updateForm.informalStyleQuantity = "";
+      this.updateForm.informalPieceQuantity = "";
       this.updateForm.note = "";
       this.updateForm.options.orderStageOptions = {};
       this.updateForm.options.brandOptions = {};
