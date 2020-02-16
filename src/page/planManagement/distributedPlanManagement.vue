@@ -115,6 +115,9 @@
           <el-button type="primary" size="small" @click="addPlanChild">添加子计划</el-button>
         </el-col>
         <el-col :span="4">
+          <el-button type="primary" size="small" @click="batchAddPlanChild">批量添加子计划</el-button>
+        </el-col>
+        <el-col :span="4">
           <el-button type="primary" size="small" @click="changeSubPlanOrder">下级计划顺序调整</el-button>
         </el-col>
         <el-col :span="3">
@@ -624,7 +627,7 @@ export default {
 
         var param = {
           goback: "distributedPlanManagement",
-          isRoot: this.isRootPlan,
+          isRoot: false,
           isModify: false,
           isCreate: true,
           rowData: data
@@ -643,6 +646,33 @@ export default {
         this.$message.error("请选择要添加子计划的计划！");
       } else {
         this.$message.error("仅允许对一条计划添加子计划，请重新选择！");
+      }
+    },
+    batchAddPlanChild() {
+      if (this.selectedData.length === 0) {
+        this.$message.error("请选择一个计划！");
+      } else {
+        this.isCacheFlag = true;
+
+        this.selectedData.forEach(element => {
+          var param = {
+            goback: "distributedPlanManagement",
+            isRoot: false,
+            isModify: false,
+            isCreate: true,
+            isBatched: true,
+            rowData: element
+          };
+          console.log("路由参数：", param);
+
+          let createChildPlanPage = this.$router.resolve({
+            name: planClassRouterDestinationDict[planClassRadioValue],
+            params: param
+          });
+          window.open(createChildPlanPage.href, "_blank");
+        });
+
+        // this.selectedData = [];
       }
     },
 

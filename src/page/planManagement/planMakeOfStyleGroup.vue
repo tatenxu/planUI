@@ -769,10 +769,15 @@ export default {
     },
     uploadOK() {
       this.fileOperationDialogVisible = false;
-      this.$router.push({
-        name: this.goback ? this.goback : "planManagement",
-        params: {}
-      });
+      if (this.ruleForm.isBatched) {
+        window.opener = null;
+        window.open("about:blank", "_top").close();
+      } else {
+        this.$router.push({
+          name: this.goback ? this.goback : "planManagement",
+          params: {}
+        });
+      }
     },
     sigleFileUploadAction(item) {
       this.formData.append("file", item.file);
@@ -824,10 +829,15 @@ export default {
               // 上传文件
               this.$refs.upload.submit();
 
-              this.$router.push({
-                name: this.goback ? this.goback : "planManagement",
-                params: {}
-              });
+              if (this.ruleForm.isBatched) {
+                window.opener = null;
+                window.open("about:blank", "_top").close();
+              } else {
+                this.$router.push({
+                  name: this.goback ? this.goback : "planManagement",
+                  params: {}
+                });
+              }
             });
         } else {
           this.$message({
@@ -865,10 +875,15 @@ export default {
                 this.originRow.dateType = param.dateType;
                 this.originRow.inputPoint = param.inputPoint;
 
-                this.$router.push({
-                  name: this.goback ? this.goback : "planManagement",
-                  params: {}
-                });
+                if (this.ruleForm.isBatched) {
+                  window.opener = null;
+                  window.open("about:blank", "_top").close();
+                } else {
+                  this.$router.push({
+                    name: this.goback ? this.goback : "planManagement",
+                    params: {}
+                  });
+                }
               });
           } else {
             var param = {
@@ -902,10 +917,15 @@ export default {
 
                 this.$refs.upload.submit();
 
-                this.$router.push({
-                  name: this.goback ? this.goback : "planManagement",
-                  params: {}
-                });
+                if (this.ruleForm.isBatched) {
+                  window.opener = null;
+                  window.open("about:blank", "_top").close();
+                } else {
+                  this.$router.push({
+                    name: this.goback ? this.goback : "planManagement",
+                    params: {}
+                  });
+                }
               });
           }
         } else {
@@ -922,10 +942,15 @@ export default {
         type: "info"
       });
 
-      this.$router.push({
-        name: this.goback ? this.goback : "planManagement",
-        params: {}
-      });
+      if (this.ruleForm.isBatched) {
+        window.opener = null;
+        window.open("about:blank", "_top").close();
+      } else {
+        this.$router.push({
+          name: this.goback ? this.goback : "planManagement",
+          params: {}
+        });
+      }
     },
     init() {
       /* 跳转至本页面的参数：
@@ -948,6 +973,8 @@ export default {
       if (Object.getOwnPropertyNames(that.$route.params).length != 0) {
         let data = that.$route.params;
 
+        that.ruleForm.isBatched =
+          data.isBatched === undefined ? false : data.isBatched;
         that.goback = data.goback; //goback 为返回页面的 name
         that.originRow = data.rowData; // 拷贝引用
         // 深拷贝变量，不然只是引用
