@@ -6,18 +6,8 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">客户名称</div>
-              <el-select
-                v-model="clientId"
-                clearable
-                placeholder="请选择"
-                @change="searchClientChanged"
-              >
-                <el-option
-                  v-for="item in searchOptions.clientOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="clientId" clearable placeholder="请选择" @change="searchClientChanged">
+                <el-option v-for="item in searchOptions.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
           </el-col>
@@ -25,27 +15,14 @@
             <div class="bar">
               <div class="title">品牌名称</div>
               <el-select v-model="brandId" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in searchOptions.brandOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in searchOptions.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="bar">
               <div class="title">系列名称</div>
-              <el-autocomplete
-                class="inline-input"
-                v-model="name"
-                :fetch-suggestions="querySearchSeries"
-                placeholder="请输入系列名称"
-                @select="handleSelect"
-                style="width:350px"
-                clearable
-              ></el-autocomplete>
+              <el-autocomplete class="inline-input" v-model="name" :fetch-suggestions="querySearchSeries" placeholder="请输入系列名称" @select="handleSelect" style="width:350px" clearable></el-autocomplete>
             </div>
           </el-col>
         </el-row>
@@ -53,58 +30,36 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">添加时间</div>
-              <el-date-picker
-                style="margin-left:20px "
-                v-model="dateRange"
-                type="daterange"
-                align="right"
-                unlink-panels
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              ></el-date-picker>
+              <el-date-picker style="margin-left:20px " v-model="dateRange" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="bar">
               <div class="title">服装层次</div>
               <el-select v-model="clothesLevelName" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in searchOptions.clothesLevelOptions"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in searchOptions.clothesLevelOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </div>
           </el-col>
           <el-col :span="4" class="MinW" style="margin-left:30px">
-            <el-switch
-              v-model="checked"
-              @change="planTypeSwitchChange"
-              inactive-color="#13ce66"
-              inactive-text="未制定"
-              active-text="已制定"
-            ></el-switch>
+            <el-switch v-model="checked" @change="planTypeSwitchChange" inactive-color="#13ce66" inactive-text="未制定" active-text="已制定"></el-switch>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="20">
+          
             <el-col :span="3">
               <el-button type="primary" @click="handleSearch(1)">搜索</el-button>
             </el-col>
             <el-col :span="4">
               <el-button type="primary" @click="toQuoteModel()">引用计划模板</el-button>
             </el-col>
-          </el-col>
+            <el-col :span="3">
+              <GanttExtension :selectedTableData="multipleSelection" :isRootPlan="true"></GanttExtension>
+            </el-col>
+
         </el-row>
         <hr />
-        <el-table
-          :data="tableData"
-          style="width: 100%; margin-top: 20px"
-          @selection-change="changeCheckBoxFun"
-          border
-        >
+        <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="changeCheckBoxFun" border>
           <el-table-column width="50" type="selection" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
           <el-table-column prop="serialNo" width="180" label="系列编号" align="center"></el-table-column>
@@ -126,15 +81,7 @@
 
         <!-- 分页 -->
         <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
         </div>
       </el-tab-pane>
 
@@ -148,11 +95,7 @@
               <el-button type="primary" size="small" @click="CancelModel()">取消</el-button>
             </el-col>
           </el-row>
-          <el-table
-            :data="quotePlan.tableDate"
-            style="width: 100%; margin-top: 20px"
-            @selection-change="quoteChangeCheckBoxFun"
-          >
+          <el-table :data="quotePlan.tableDate" style="width: 100%; margin-top: 20px" @selection-change="quoteChangeCheckBoxFun">
             <el-table-column w idth="50" type="selection" align="center"></el-table-column>
             <el-table-column type="index" label="序号" align="center"></el-table-column>
             <el-table-column prop="name" label="模板名称" align="center"></el-table-column>
@@ -170,29 +113,13 @@
 
       <el-tab-pane label="保存计划模版" name="third" v-if="savePlanModel">
         <el-card>
-          <el-form
-            :model="savePlan"
-            :rules="savePlanModelRules"
-            ref="savePlan"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
+          <el-form :model="savePlan" :rules="savePlanModelRules" ref="savePlan" label-width="100px" class="demo-ruleForm">
             <el-row :gutter="20">
               <el-col :span="8">
                 <div class="bar">
                   <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
-                    <el-select
-                      v-model="savePlan.clientId"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:250px"
-                    >
-                      <el-option
-                        v-for="item in savePlan.options.clientOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
+                    <el-select v-model="savePlan.clientId" clearable placeholder="请选择" style="min-width:250px">
+                      <el-option v-for="item in savePlan.options.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                   </el-form-item>
                 </div>
@@ -200,18 +127,8 @@
               <el-col :span="8">
                 <div class="bar">
                   <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
-                    <el-select
-                      v-model="savePlan.brandId"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:250px"
-                    >
-                      <el-option
-                        v-for="item in savePlan.options.brandOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
+                    <el-select v-model="savePlan.brandId" clearable placeholder="请选择" style="min-width:250px">
+                      <el-option v-for="item in savePlan.options.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                   </el-form-item>
                 </div>
@@ -222,13 +139,7 @@
               <el-col :span="8">
                 <div class="bar">
                   <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
-                    <el-input
-                      v-model="savePlan.name"
-                      clearable
-                      :rows="1"
-                      style="margin-left: 20px;min-width:250px"
-                      placeholder="请输入"
-                    ></el-input>
+                    <el-input v-model="savePlan.name" clearable :rows="1" style="margin-left: 20px;min-width:250px" placeholder="请输入"></el-input>
                   </el-form-item>
                 </div>
               </el-col>
@@ -251,28 +162,12 @@
 
       <el-tab-pane label="制定根计划" name="fourth" v-if="rootPlanMakeFlag">
         <el-card>
-          <el-form
-            :model="rootPlanMake"
-            :rules="rootPlanMakeRules"
-            ref="rootPlanMake"
-            label-width="120px"
-            class="add-ruleForm"
-          >
+          <el-form :model="rootPlanMake" :rules="rootPlanMakeRules" ref="rootPlanMake" label-width="120px" class="add-ruleForm">
             <el-row :gutter="20">
               <el-col :span="10">
                 <div class="bar">
                   <el-form-item label="起止时间" prop="planMakeStartEndDate" placeholder="请选择起止时间">
-                    <el-date-picker
-                      :picker-options="pickerOptions0"
-                      style="margin-left:20px"
-                      v-model="rootPlanMake.planMakeStartEndDate"
-                      type="daterange"
-                      align="right"
-                      unlink-panels
-                      range-separator="至"
-                      start-placeholder="开始时间"
-                      end-placeholder="结束时间"
-                    ></el-date-picker>
+                    <el-date-picker :picker-options="pickerOptions0" style="margin-left:20px" v-model="rootPlanMake.planMakeStartEndDate" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"></el-date-picker>
                   </el-form-item>
                 </div>
               </el-col>
@@ -281,44 +176,22 @@
               <el-col :span="10">
                 <div class="bar">
                   <el-form-item label="根计划名称" prop="name" placeholder="请输入根计划名称">
-                    <el-input
-                      v-model="rootPlanMake.name"
-                      clearable
-                      :rows="1"
-                      placeholder="请输入"
-                      style="min-width:300px"
-                    ></el-input>
+                    <el-input v-model="rootPlanMake.name" clearable :rows="1" placeholder="请输入" style="min-width:300px"></el-input>
                   </el-form-item>
                 </div>
               </el-col>
               <el-col :span="3">
                 <div class="bar" style="margin-left: 0px">
                   <el-form-item label="日期类型" prop="dateType" placeholder="请选择日期类型">
-                    <el-select
-                      v-model="rootPlanMake.dateType"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:120px"
-                    >
-                      <el-option
-                        v-for="item in rootPlanMake.options.dateTypeOptions"
-                        :key="item.name"
-                        :label="item.name"
-                        :value="item.name"
-                      ></el-option>
+                    <el-select v-model="rootPlanMake.dateType" clearable placeholder="请选择" style="min-width:120px">
+                      <el-option v-for="item in rootPlanMake.options.dateTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                     </el-select>
                   </el-form-item>
                 </div>
               </el-col>
               <el-col :span="4">
                 <el-form-item label prop="date" placeholder="请选择日期">
-                  <el-date-picker
-                    :picker-options="pickerOptions1"
-                    v-model="rootPlanMake.date"
-                    type="date"
-                    placeholder="选择日期"
-                    style="min-width:260px"
-                  ></el-date-picker>
+                  <el-date-picker :picker-options="pickerOptions1" v-model="rootPlanMake.date" type="date" placeholder="选择日期" style="min-width:260px"></el-date-picker>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -343,7 +216,11 @@
 
 <script>
 import request from "@/utils/request";
+import GanttExtension from "@/utils/ganttExtension";
 export default {
+  components: {
+    GanttExtension
+  },
   name: "seriesPlanMake",
   data() {
     return {
@@ -454,7 +331,7 @@ export default {
       }
     };
   },
-  created: function() {
+  created: function () {
     //获得品牌下拉框
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;

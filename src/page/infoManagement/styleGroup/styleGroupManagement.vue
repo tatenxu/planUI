@@ -6,12 +6,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select v-model="clientId" clearable @change="searchClientChanged">
-              <el-option
-                v-for="item in searchOptions.clientOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="item in searchOptions.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -19,12 +14,7 @@
           <div class="bar">
             <div class="title">品牌</div>
             <el-select v-model="brandId" clearable>
-              <el-option
-                v-for="item in searchOptions.brandOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="item in searchOptions.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -32,28 +22,14 @@
         <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-autocomplete
-              class="inline-input"
-              v-model="seriesName"
-              :fetch-suggestions="querySearchSeries"
-              placeholder="请输入系列名称"
-              @select="handleSelect"
-              clearable
-            ></el-autocomplete>
+            <el-autocomplete class="inline-input" v-model="seriesName" :fetch-suggestions="querySearchSeries" placeholder="请输入系列名称" @select="handleSelect" clearable></el-autocomplete>
           </div>
         </el-col>
 
         <el-col :span="6">
           <div class="bar">
             <div class="title">款式组名</div>
-            <el-autocomplete
-              class="inline-input"
-              v-model="name"
-              :fetch-suggestions="querySearchStyleGroup"
-              placeholder="请输入款式组名称"
-              @select="handleSelect"
-              clearable
-            ></el-autocomplete>
+            <el-autocomplete class="inline-input" v-model="name" :fetch-suggestions="querySearchStyleGroup" placeholder="请输入款式组名称" @select="handleSelect" clearable></el-autocomplete>
           </div>
         </el-col>
       </el-row>
@@ -62,27 +38,14 @@
           <div class="bar">
             <div class="title">服装层次</div>
             <el-select v-model="clothesLevelName" clearable>
-              <el-option
-                v-for="item in searchOptions.clothesLevelOptions"
-                :key="item.name"
-                :label="item.name"
-                :value="item.name"
-              ></el-option>
+              <el-option v-for="item in searchOptions.clothesLevelOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
             </el-select>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="bar">
             <div class="title">添加时间</div>
-            <el-date-picker
-              class="inputBar"
-              v-model="dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholde="开始日期"
-              end-placeholde="结束日期"
-              clearable
-            ></el-date-picker>
+            <el-date-picker class="inputBar" v-model="dateRange" type="daterange" range-separator="至" start-placeholde="开始日期" end-placeholde="结束日期" clearable></el-date-picker>
           </div>
         </el-col>
         <el-col :span="2">
@@ -103,88 +66,45 @@
             <el-button type="primary" @click="unbindStyleGroup">解绑款式组</el-button>
           </el-col>
         </el-row>
-        <el-table
-          :data="tableData"
-          max-height="400"
-          border
-          @selection-change="changeCheckBoxFun"
-          :stripe="true"
-          :highlight-current-row="true"
-          style="width: 100%; margin-top: 20px"
-        >
+        <el-table :data="tableData" max-height="400" border @selection-change="changeCheckBoxFun" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="serialNo" width="150" label="款式组编号" align="center"></el-table-column>
           <el-table-column prop="name" width="150" label="款式组名称" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="seriesName" width="150" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" label="数量" align="center"></el-table-column>
-          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="150" label="客户" align="center"></el-table-column>
+          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="clothesLevelName" width="150" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="rangeCode" label="波段编码" align="center"></el-table-column>
+          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" label="正式款数" align="center"></el-table-column>
+          <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
-              <el-button
-                @click="updateStyleGroup(scope.row)"
-                type="text"
-                size="small"
-                v-if="scope.row.creatorId === meID"
-              >修改</el-button>
-              <el-button
-                @click="daleteStyleGroup(scope.row)"
-                type="text"
-                size="small"
-                v-if="scope.row.creatorId === meID"
-              >删除</el-button>
+              <el-button @click="updateStyleGroup(scope.row)" type="text" size="small" v-if="scope.row.creatorId === meID">修改</el-button>
+              <el-button @click="daleteStyleGroup(scope.row)" type="text" size="small" v-if="scope.row.creatorId === meID">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!-- 分页 -->
         <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
         </div>
       </div>
     </el-card>
     <el-dialog :modal="false" title="修改款式组" :visible.sync="updatePanelFlag">
-      <el-form
-        :model="updateForm"
-        :rules="updateRules"
-        ref="updateForm"
-        label-width="100px"
-        class="demo-updateForm"
-      >
+      <el-form :model="updateForm" :rules="updateRules" ref="updateForm" label-width="100px" class="demo-updateForm">
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
               <el-select v-model="updateForm.clientId" @change="updateClientChanged()">
-                <el-option
-                  v-for="item in updateForm.options.clientOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
               <el-select v-model="updateForm.brandId" @change="updateBrandChanged()">
-                <el-option
-                  v-for="item in updateForm.options.brandOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -193,12 +113,7 @@
           <el-col :span="8">
             <el-form-item label="系列名称" prop="seriesId" placeholder="请选择系列名称">
               <el-select v-model="updateForm.seriesId">
-                <el-option
-                  v-for="item in updateForm.options.seriesOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in updateForm.options.seriesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -220,35 +135,19 @@
     </el-dialog>
 
     <el-dialog :modal="false" title="增加款式组" :visible.sync="addPanelFlag">
-      <el-form
-        :model="addForm"
-        :rules="addRules"
-        ref="addForm"
-        label-width="100px"
-        class="demo-updateForm"
-      >
+      <el-form :model="addForm" :rules="addRules" ref="addForm" label-width="100px" class="demo-updateForm">
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
               <el-select v-model="addForm.clientId" @change="addClientChanged()">
-                <el-option
-                  v-for="item in addForm.options.clientOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in addForm.options.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
               <el-select v-model="addForm.brandId" @change="addBrandChanged()">
-                <el-option
-                  v-for="item in addForm.options.brandOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in addForm.options.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -257,12 +156,7 @@
           <el-col :span="8">
             <el-form-item label="系列名称" prop="seriesId" placeholder="请选择系列名称">
               <el-select v-model="addForm.seriesId">
-                <el-option
-                  v-for="item in addForm.options.seriesOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in addForm.options.seriesOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -372,7 +266,7 @@ export default {
       }
     };
   },
-  created: function() {
+  created: function () {
     //确认自己的信息
     request.get(`/me`).then(response => {
       this.meID = response.result.id;
@@ -641,8 +535,8 @@ export default {
         if (flag === 0) {
           this.$confirm(
             "删除所选的" +
-              that.multipleSelection.length +
-              "条款式组信息, 是否继续?",
+            that.multipleSelection.length +
+            "条款式组信息, 是否继续?",
             "提示",
             {
               confirmButtonText: "确定",
@@ -832,7 +726,14 @@ export default {
   }
 };
 </script>
-
+<style lang="less">
+.el-table .cell {
+  white-space: pre-line;
+}
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+</style>
 <style lang="less" scoped>
 .box-card {
   margin: 20px 50px;

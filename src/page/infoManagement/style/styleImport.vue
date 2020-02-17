@@ -1,63 +1,27 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select
-                v-model="ruleForm.customerName"
-                @change="dialogCustomerNameSelectionChange"
-              >
-                <el-option
-                  v-for="item in options.customerNameOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="ruleForm.customerName" @change="dialogCustomerNameSelectionChange">
+                <el-option v-for="item in options.customerNameOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
               <el-select v-model="ruleForm.brandName" @change="dialogBrandNameSelectionChange">
-                <el-option
-                  v-for="item in options.brandNameOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in options.brandNameOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="8">
-            <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">  
-              <el-select v-model="ruleForm.clothingType" >
-                <el-option
-                  v-for="item in options.clothingTypeOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form-item> 
-          </el-col>-->
 
           <el-col :span="8">
-            <el-form-item label="系列名称" prop="rangeName" placeholder="请选择系列名称">
-              <el-select v-model="ruleForm.rangeName">
-                <el-option
-                  v-for="item in options.rangeNameTypeOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+            <el-form-item label="系列名称" prop="series" placeholder="请选择系列名称">
+              <el-select v-model="ruleForm.series" @change="seriesChanged">
+                <el-option v-for="item in options.rangeNameTypeOptions" :key="item.id" :label="item.name" :value="[item.id,item.orderStage]"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -69,14 +33,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="2">
-            <el-upload
-              style="display: inline; margin-left: 10px;margin-right: 10px;"
-              action="#"
-              ref="fileupload"
-              :show-file-list="false"
-              :http-request="upLoadChange"
-              :before-upload="beforeUpload"
-            >
+            <el-upload style="display: inline; margin-left: 10px;margin-right: 10px;" action="#" ref="fileupload" :show-file-list="false" :http-request="upLoadChange" :before-upload="beforeUpload">
               <el-button type="primary">
                 上传文件
                 <i class="el-icon-upload el-icon--right"></i>
@@ -84,7 +41,7 @@
             </el-upload>
           </el-col>
         </el-row>
-                <el-row :gutter="20">
+        <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="示例图片" style="margin-top:20px">
               <img style="width: 180px; height: 150px" :src="url"></img>
@@ -93,14 +50,9 @@
         </el-row>
         <el-row style="margin: 20px 0 10px 0">
           <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
-          <el-table
-            :data="ruleForm.tableData"
-            max-height="400"
-            border
-            :stripe="true"
-            :highlight-current-row="true"
-          >
-            <el-table-column prop="styleNumber" label="订单款号" align="center"></el-table-column>
+          <el-table :data="ruleForm.tableData" max-height="400" border :stripe="true" :highlight-current-row="true">
+            <el-table-column prop="number" label="订单款号" align="center"></el-table-column>
+            <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
           </el-table>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
@@ -122,7 +74,7 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-         url: "/static/styleImport.png",
+      url: "/static/styleImport.png",
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -132,9 +84,25 @@ export default {
         ],
         rangeName: [
           { required: true, message: "请选择系列名称", trigger: "change" }
-        ]
+        ],
+        series: [
+          {
+            required: true,
+            trigger: "change",
+            validator: (rule, value, callback) => {
+              if (value.length > 0) {
+                callback();
+              } else {
+                callback(new Error("请选择系列名称！"));
+              }
+            }
+          }
+
+        ],
       },
       ruleForm: {
+        series: [],
+        orderStage: "",
         rangeName: "",
         customerName: "",
         brandName: "",
@@ -150,7 +118,7 @@ export default {
       }
     };
   },
-  created: function() {
+  created: function () {
 
     // //得到客户名称
     request
@@ -160,9 +128,15 @@ export default {
         this.options.customerNameOptions = CustomerList;
       })
 
-    
+
   },
   methods: {
+    seriesChanged() {
+      if (this.ruleForm.series.length > 0) {
+        this.ruleForm.rangeName = this.ruleForm.series[0];
+        this.ruleForm.orderStage = this.ruleForm.series[1];
+      }
+    },
     dialogCustomerNameSelectionChange() {
       request
         .get(`/backstage/brand/name`, {
@@ -193,10 +167,10 @@ export default {
     ////////////// methods for xls /////////////
     readExcel(file) {
       console.log("readExcel")
-    
+
       // 解析Excel
       const that = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         const reader = new FileReader();
         reader.onload = e => {
           try {
@@ -210,7 +184,7 @@ export default {
           let sheetData = []; //读取的数据，不含表头
           let locations = []; // A1,B1,C1,A2,B3,C3...
           // 遍历每张表读取
-          console.log("workbook.Sheets:",workbook.Sheets)
+          console.log("workbook.Sheets:", workbook.Sheets)
           for (var sheet in workbook.Sheets) {
             if (workbook.Sheets.hasOwnProperty(sheet)) {
               let sheetInfos = workbook.Sheets[sheet];
@@ -223,8 +197,9 @@ export default {
               console.log("当前表格的最大列数为: ", colMax);
               let rowData = {
                 // 每一行的数据
-                styleNumber: ""
-              };  
+                number: "",
+                pieceQuantity: "",
+              };
               for (let i = 1 + colMax; i < locations.length; i++) {
                 //遍历行数×列数内所有的单元格
                 var value = "";
@@ -235,14 +210,19 @@ export default {
                   value = "";
                   console.log(locations[i] + "对应的单元格的值缺失");
                 }
-                
+                if (i % colMax === 1) {
+                  // 第一列为name
+                  rowData.number = value;
+                  console.log("value: ", value);
+                }
                 if (i % colMax === 0) {
-                  // 第三列为rangeNote 同时为最后一列
-                  rowData.styleNumber = value;
+                  // 第三列为note 同时为最后一列
+                  rowData.pieceQuantity = value;
                   sheetData.push(rowData);
                   rowData = {
-                    //到了最后一列将行数据清空
-                    styleNumber: ""
+                    //到了最后一列将行数据清空    
+                    number: "",
+                    pieceQuantity: "",
                   };
                 }
               }
@@ -259,7 +239,7 @@ export default {
     beforeUpload(file) {
       console.log("beforeUpload")
       const that = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         that.readExcel(file).then(
           result => {
             const isLt2M = file.size / 1024 / 1024 < 2;
@@ -291,8 +271,8 @@ export default {
       console.log("range", sv);
       let startString = sv[0];
       let endString = sv[1];
-      console.log("startStr:",startString)
-      console.log("endStr:",endString)
+      console.log("startStr:", startString)
+      console.log("endStr:", endString)
 
       let start = startString.substring(0, 1); // 字符'A'
       console.log("表格的起始列值为: ", start);
@@ -339,21 +319,22 @@ export default {
       this.ruleForm.tableData.forEach(element => {
         RangeListAdd.push(
           {
-          number: element.styleNumber,
-          seriesId: this.ruleForm.rangeName,
-          addMode:"导入"
+            number: element.number,
+            seriesId: this.ruleForm.rangeName,
+            pieceQuantity: element.pieceQuantity,
+            name: element.number + this.ruleForm.orderStage
           }
         );
       });
       console.log(RangeListAdd)
       request
-        .post(`/info/style/batch/insert`, 
+        .post(`/info/style/batch/insert`,
           RangeListAdd
         )
         .then(response => {
 
         })
-       
+
       that.$router.push({
         name: `styleManagementIndex`
       });

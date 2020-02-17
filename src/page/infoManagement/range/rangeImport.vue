@@ -1,43 +1,23 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
         <el-row :gutter="20" style="margin-top:5px;">
           <el-col :span="8">
             <el-form-item label="客户名称" prop="customerName" placeholder="请选择客户名称">
-              <el-select
-                v-model="ruleForm.customerName"
-                @change="clientSelect2"
-                style="width:300px"
-              >
-                <el-option
-                  v-for="item in options.customerNameOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="ruleForm.customerName" @change="clientSelect2" style="width:300px">
+                <el-option v-for="item in options.customerNameOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="品牌名称" prop="brandName" placeholder="请选择品牌名称">
-              <el-select v-model="ruleForm.brandName" style="width:300px">
-                <el-option
-                  v-for="item in options.brandNameOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="ruleForm.brandName" style="width:300px" @change="brandChange">
+                <el-option v-for="item in options.brandNameOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
               <el-select v-model="ruleForm.clothingType" style="width:300px">
                 <el-option
@@ -48,7 +28,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
 
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
@@ -58,14 +38,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="2">
-            <el-upload
-              style="display: inline; margin-left: 10px;margin-right: 10px;"
-              action="#"
-              ref="fileupload"
-              :show-file-list="false"
-              :http-request="upLoadChange"
-              :before-upload="beforeUpload"
-            >
+            <el-upload style="display: inline; margin-left: 10px;margin-right: 10px;" action="#" ref="fileupload" :show-file-list="false" :http-request="upLoadChange" :before-upload="beforeUpload">
               <el-button type="primary">
                 上传文件
                 <i class="el-icon-upload el-icon--right"></i>
@@ -82,24 +55,22 @@
         </el-row>
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
-          <el-table
-            :data="ruleForm.tableData"
-            max-height="400"
-            border
-            :stripe="true"
-            :highlight-current-row="true"
-          >
-            <el-table-column prop="name" label="系列名称" align="center"></el-table-column>
-            <el-table-column prop="systemCode" label="系统编号" align="center"></el-table-column>
-            <el-table-column prop="season" label="季节" align="center"></el-table-column>
-            <el-table-column prop="inputPoint" label="投入点" align="center"></el-table-column>
-            <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
+          <el-table :data="ruleForm.tableData" max-height="400" border :stripe="true" :highlight-current-row="true">
+            <el-table-column prop="name" label="款号模板名称" align="center"></el-table-column>
+            <!-- <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
+            <el-table-column prop="brandName" label="品牌" align="center"></el-table-column> -->
+            <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
+            <el-table-column prop="rangeCode" label="波段编码" align="center"></el-table-column>
+            <el-table-column prop="seriesCode" label="系列编码" align="center"></el-table-column>
+            <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
+            <el-table-column prop="orderStage" label="项目类型" align="center"></el-table-column>
             <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
             <el-table-column prop="predictStyleQuantity" label="预测款数" align="center"></el-table-column>
             <el-table-column prop="predictPieceQuantity" label="预测件数" align="center"></el-table-column>
-            <el-table-column prop="styleQuantity" label="实际款数" align="center"></el-table-column>
-            <el-table-column prop="pieceQuantity" label="实际件数" align="center"></el-table-column>
-            <el-table-column prop="note" label="系列备注" align="center"></el-table-column>
+            <el-table-column prop="informalStyleQuantity" label="非正式款数" align="center"></el-table-column>
+            <el-table-column prop="informalPieceQuantity" label="非正式件数" align="center"></el-table-column>
+            <el-table-column prop="note" label="备注" align="center"></el-table-column>
+            
           </el-table>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
@@ -135,7 +106,7 @@ export default {
       },
       ruleForm: {
         customerName: "",
-        brandName: "", 
+        brandName: "",
         clothingType: "",
         filePath: "",
         tableData: []
@@ -148,7 +119,7 @@ export default {
       fileList: []
     };
   },
-  created: function() {
+  created: function () {
     var that = this;
     //获得顾客名称
     request.get(`/backstage/client/name`).then(response => {
@@ -169,6 +140,19 @@ export default {
       });
   },
   methods: {
+    brandChange() {
+      if (this.ruleForm.brandName > 0 && this.ruleForm.tableData.length > 0) {
+        let brandName = "";
+        this.options.brandNameOptions.forEach(ele => {
+          if (ele.id === this.ruleForm.brandName) brandName = ele.name;
+        })
+
+
+        this.ruleForm.tableData.forEach(element => {
+          element.name = brandName + element.rangeCode + element.orderStage;
+        })
+      }
+    },
     clientSelect2() {
       this.ruleForm.brandName = "";
       request
@@ -184,9 +168,10 @@ export default {
 
     ////////////// methods for xls /////////////
     readExcel(file) {
+
       // 解析Excel
       const that = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         const reader = new FileReader();
         reader.onload = e => {
           try {
@@ -213,16 +198,17 @@ export default {
               let rowData = {
                 // 每一行的数据
                 name: "",
+                clothesLevelName: "",
+                rangeCode: "",
+                seriesCode: "",
                 systemCode: "",
-                season: "",
                 projectType: "",
                 orderStage: "",
                 predictStyleQuantity: "",
                 predictPieceQuantity: "",
-                styleQuantity: "",
-                pieceQuantity: "",
-                inputPoint: "",
-                note: ""
+                informalStyleQuantity: "",
+                informalPieceQuantity: "",
+                note: "",
               };
               for (let i = 1 + colMax; i < locations.length; i++) {
                 //遍历行数×列数内所有的单元格
@@ -234,73 +220,94 @@ export default {
                   value = "";
                   console.log(locations[i] + "对应的单元格的值缺失");
                 }
+                // if (i % colMax === 1) {
+                //   // 第一列为name
+                //   rowData.clientName = value;
+                //   console.log("value: ", value);
+                // }
+                // if (i % colMax === 2) {
+                //   // 第二列为rangeAmount
+                //   rowData.brandName = value;
+                //   console.log("value: ", value);
+                // }
                 if (i % colMax === 1) {
-                  // 第一列为name
-                  rowData.name = value;
+                  // 第二列为rangeAmount
+                  rowData.clothesLevelName = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 2) {
                   // 第二列为rangeAmount
-                  rowData.systemCode = value;
+                  rowData.rangeCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 3) {
                   // 第二列为rangeAmount
-                  rowData.season = value;
+                  rowData.seriesCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 4) {
                   // 第二列为rangeAmount
-                  rowData.projectType = value;
+                  rowData.systemCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 5) {
                   // 第二列为rangeAmount
-                  rowData.orderStage = value;
+                  rowData.projectType = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 6) {
                   // 第二列为rangeAmount
-                  rowData.predictStyleQuantity = value;
+                  rowData.orderStage = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 7) {
                   // 第二列为rangeAmount
-                  rowData.predictPieceQuantity = value;
+                  rowData.predictStyleQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 8) {
                   // 第二列为rangeAmount
-                  rowData.styleQuantity = value;
+                  rowData.predictPieceQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 9) {
                   // 第二列为rangeAmount
-                  rowData.pieceQuantity = value;
+                  rowData.informalStyleQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 10) {
                   // 第二列为rangeAmount
-                  rowData.inputPoint = value;
+                  rowData.informalPieceQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 0) {
                   // 第三列为note 同时为最后一列
+
                   rowData.note = value;
+                  console.log("value: ", value);
+                  let brandName = "";
+
+                  that.options.brandNameOptions.forEach(element => {
+                    if (element.id === that.ruleForm.brandName) brandName = element.name;
+                  })
+                  rowData.name = brandName + rowData.rangeCode + rowData.orderStage;
                   sheetData.push(rowData);
                   rowData = {
                     //到了最后一列将行数据清空
                     name: "",
+                    clientName: "",
+                    brandName: "",
+                    clothesLevelName: "",
+                    rangeCode: "",
+                    seriesCode: "",
                     systemCode: "",
-                    season: "",
                     projectType: "",
                     orderStage: "",
                     predictStyleQuantity: "",
                     predictPieceQuantity: "",
-                    styleQuantity: "",
-                    pieceQuantity: "",
-                    inputPoint: "",
-                    note: ""
+                    informalStyleQuantity: "",
+                    informalPieceQuantity: "",
+                    note: "",
                   };
                 }
               }
@@ -315,29 +322,36 @@ export default {
       });
     },
     beforeUpload(file) {
-      const that = this;
-      return new Promise(function(resolve, reject) {
-        that.readExcel(file).then(
-          result => {
-            const isLt2M = file.size / 1024 / 1024 < 2;
-            if (!isLt2M) {
-              that.$message.error("文件大小不能超过2MB!");
-            }
-            if (isLt2M && result) {
-              resolve("校验成功!");
-            } else {
+      if (this.ruleForm.brandName > 0) {
+        const that = this;
+        return new Promise(function (resolve, reject) {
+          that.readExcel(file).then(
+            result => {
+              const isLt2M = file.size / 1024 / 1024 < 2;
+              if (!isLt2M) {
+                that.$message.error("文件大小不能超过2MB!");
+              }
+              if (isLt2M && result) {
+                resolve("校验成功!");
+              } else {
+                reject(false);
+              }
+            },
+            error => {
+              that.$message.error(error);
               reject(false);
             }
-          },
-          error => {
-            that.$message.error(error);
-            reject(false);
-          }
-        );
-      });
+          );
+        });
+      } else {
+        this.$message.error("请先选择客户和品牌!");
+      }
+
     },
     upLoadChange(content) {
-      this.$message.success("文件上传成功!");
+      if (this.ruleForm.brandName > 0) {
+        this.$message.success("文件上传成功!");
+      }
     },
     getLocationsKeys(range) {
       // A1:B5输出 A1,B1...
@@ -392,24 +406,33 @@ export default {
         RangeListAdd.push({
           name: element.name,
           brandId: this.ruleForm.brandName,
-          clothesLevelName: this.ruleForm.clothingType,
-          note: element.note,
-          season: element.season,
+          clothesLevelName: element.clothesLevelName,
+
           systemCode: element.systemCode,
+          rangeCode: element.rangeCode,
+          seriesCode: element.seriesCode,
+
           projectType: element.projectType,
           orderStage: element.orderStage,
-          inputPoint: element.inputPoint,
+
+
           predictStyleQuantity: element.predictStyleQuantity,
           predictPieceQuantity: element.predictPieceQuantity,
-          styleQuantity:
-            element.styleQuantity === ""
+
+
+
+
+          informalStyleQuantity:
+            element.informalStyleQuantity === ""
               ? undefined
-              : element.styleQuantity,
-          pieceQuantity:
-            element.pieceQuantity === ""
+              : element.informalStyleQuantity,
+          informalPieceQuantity:
+            element.informalPieceQuantity === ""
               ? undefined
-              : element.pieceQuantity,
-          addMode: "导入"
+              : element.informalPieceQuantity,
+          note: element.note === ""
+            ? undefined
+            : element.note,
         });
       });
 
