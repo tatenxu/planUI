@@ -421,7 +421,6 @@ export default {
     return {
       currentUserId: null,
       templateRadio: null,
-      isCacheFlag: true,
       lookAllPlans: false,
       allPlans: [],
 
@@ -777,7 +776,6 @@ export default {
     toSearchException(row) {
       console.log("查看异常" + row.name);
 
-      this.isCacheFlag = true;
       this.$router.push({
         name: "planExceptionManagement",
         params: row
@@ -829,7 +827,6 @@ export default {
       };
       console.log("跳转参数：", param);
 
-      this.isCacheFlag = true;
       this.$router.push({
         name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param
@@ -846,7 +843,6 @@ export default {
       };
       console.log("跳转参数：", param);
 
-      this.isCacheFlag = true;
       this.$router.push({
         name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param
@@ -898,11 +894,10 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (
-      this.isCacheFlag &&
-      (to.name === "planMakeOfSeries" ||
-        to.name === "planMakeOfStyle" ||
-        to.name === "planMakeOfStyleGroup" ||
-        to.name === "planExceptionManagement")
+      to.name === "planMakeOfSeries" ||
+      to.name === "planMakeOfStyle" ||
+      to.name === "planMakeOfStyleGroup" ||
+      to.name === "planExceptionManagement"
     ) {
       this.keepAlives = ["planManagement"];
     } else {
