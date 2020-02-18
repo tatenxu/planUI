@@ -8,18 +8,8 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">客户名称</div>
-              <el-select
-                v-model="clientId"
-                clearable
-                placeholder="请选择"
-                @change="searchClientChanged"
-              >
-                <el-option
-                  v-for="item in searchOptions.clientOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+              <el-select v-model="clientId" clearable placeholder="请选择" @change="searchClientChanged">
+                <el-option v-for="item in searchOptions.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
           </el-col>
@@ -27,27 +17,14 @@
             <div class="bar">
               <div class="title">品牌</div>
               <el-select v-model="brandId" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in searchOptions.brandOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in searchOptions.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="bar">
               <div class="title">系列名称</div>
-              <el-autocomplete
-                class="inline-input"
-                v-model="seriesName"
-                :fetch-suggestions="querySearchSeries"
-                placeholder="请输入系列名称"
-                @select="handleSelect"
-                style="width:350px"
-                clearable
-              ></el-autocomplete>
+              <el-autocomplete class="inline-input" v-model="seriesName" :fetch-suggestions="querySearchSeries" placeholder="请输入系列名称" @select="handleSelect" style="width:350px" clearable></el-autocomplete>
             </div>
           </el-col>
         </el-row>
@@ -55,42 +32,18 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">添加时间</div>
-              <el-date-picker
-                style="margin-left:20px "
-                v-model="dateRange"
-                type="daterange"
-                align="right"
-                unlink-panels
-                clearable
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              ></el-date-picker>
+              <el-date-picker style="margin-left:20px " v-model="dateRange" type="daterange" align="right" unlink-panels clearable range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
             </div>
           </el-col>
 
           <el-col :span="8">
             <div class="bar">
               <div class="title">订单款号</div>
-              <el-autocomplete
-                class="inline-input"
-                v-model="number"
-                :fetch-suggestions="querySearchStyle"
-                placeholder="请输入系列名称"
-                @select="handleSelect"
-                style="width:350px;margin-left:20px"
-                clearable
-              ></el-autocomplete>
+              <el-autocomplete class="inline-input" v-model="number" :fetch-suggestions="querySearchStyle" placeholder="请输入系列名称" @select="handleSelect" style="width:350px;margin-left:20px" clearable></el-autocomplete>
             </div>
           </el-col>
-          <el-col :span="5" class="MinW" style="margin-left:30px">
-            <el-switch
-              v-model="checked"
-              @change="planTypeSwitchChange"
-              inactive-color="#13ce66"
-              inactive-text="未制定"
-              active-text="已制定"
-            ></el-switch>
+          <el-col :span="5" class="MinW">
+            <!-- <el-switch v-model="checked" @change="planTypeSwitchChange" inactive-color="#13ce66" inactive-text="未制定" active-text="已制定"></el-switch> -->
             <el-button type="primary" @click="handleSearch(1)" style="margin-left:50px">搜索</el-button>
           </el-col>
         </el-row>
@@ -103,31 +56,20 @@
           </el-col>
         </el-row>
 
-        <el-table
-          :data="tableData"
-          style="width: 100%; margin-top: 20px"
-          @selection-change="changeCheckBoxFun"
-          border
-        >
-          <el-table-column width="50" type="selection" align="center"></el-table-column>
-          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-          <el-table-column prop="number" width="150" label="订单款号" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
+        <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="changeCheckBoxFun" border>
+          <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+          <el-table-column prop="name" width="150" label="款号模板名称" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
+          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
           <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="seriesName" width="150" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addMode" label="添加方式" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" align="center"></el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="250"
-            align="center"
-            v-if="checked===false"
-          >
+          <el-table-column prop="rangeCode" width="150" label="波段编码" align="center"></el-table-column>
+          <el-table-column prop="number" width="150" label="订单编号" align="center"></el-table-column>
+          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" width="170" label="正式款数" align="center"></el-table-column>
+          <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
+          <el-table-column fixed="right" label="操作" width="250" align="center">
             <template slot-scope="scope">
               <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定根计划</el-button>
             </template>
@@ -135,41 +77,26 @@
         </el-table>
         <!-- 分页 -->
         <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
         </div>
       </el-tab-pane>
       <el-tab-pane label="制定根计划" name="second" v-if="rootPlanMakeFlag">
         <el-card>
-          <el-form
-            :model="rootPlanMake"
-            :rules="rootPlanMakeRules"
-            ref="rootPlanMake"
-            label-width="120px"
-            class="add-ruleForm"
-          >
+          <el-form :model="rootPlanMake" :rules="rootPlanMakeRules" ref="rootPlanMake" label-width="120px" class="add-ruleForm">
             <el-row :gutter="20">
               <el-col :span="10">
                 <div class="bar">
                   <el-form-item label="起止时间" prop="planMakeStartEndDate" placeholder="请选择起止时间">
-                    <el-date-picker
-                      :picker-options="pickerOptions0"
-                      style="margin-left:20px"
-                      v-model="rootPlanMake.planMakeStartEndDate"
-                      type="daterange"
-                      align="right"
-                      unlink-panels
-                      range-separator="至"
-                      start-placeholder="开始时间"
-                      end-placeholder="结束时间"
-                    ></el-date-picker>
+                    <el-date-picker :picker-options="pickerOptions0" style="margin-left:20px" v-model="rootPlanMake.planMakeStartEndDate" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"></el-date-picker>
+                  </el-form-item>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="bar">
+                  <el-form-item label="投入点" prop="inputPoint">
+                    <el-select v-model="rootPlanMake.inputPoint" clearable placeholder="请选择" style="min-width:430px">
+                      <el-option v-for="item in rootPlanMake.options.inputPointOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
+                    </el-select>
                   </el-form-item>
                 </div>
               </el-col>
@@ -178,52 +105,45 @@
               <el-col :span="10">
                 <div class="bar">
                   <el-form-item label="根计划名称" prop="name" placeholder="请输入根计划名称">
-                    <el-input
-                      v-model="rootPlanMake.name"
-                      clearable
-                      :rows="1"
-                      placeholder="请输入"
-                      style="min-width:300px"
-                    ></el-input>
+                    <el-input v-model="rootPlanMake.name" disabled :rows="1" placeholder="请输入" style="min-width:350px"></el-input>
                   </el-form-item>
                 </div>
               </el-col>
               <el-col :span="3">
                 <div class="bar" style="margin-left: 0px">
                   <el-form-item label="日期类型" prop="dateType" placeholder="请选择日期类型">
-                    <el-select
-                      v-model="rootPlanMake.dateType"
-                      clearable
-                      placeholder="请选择"
-                      style="min-width:120px"
-                    >
-                      <el-option
-                        v-for="item in rootPlanMake.options.dateTypeOptions"
-                        :key="item.name"
-                        :label="item.name"
-                        :value="item.name"
-                      ></el-option>
+                    <el-select v-model="rootPlanMake.dateType" clearable placeholder="请选择" style="min-width:120px">
+                      <el-option v-for="item in rootPlanMake.options.dateTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                     </el-select>
                   </el-form-item>
                 </div>
               </el-col>
               <el-col :span="4">
                 <el-form-item label prop="date" placeholder="请选择日期">
-                  <el-date-picker
-                    :picker-options="pickerOptions1"
-                    v-model="rootPlanMake.date"
-                    type="date"
-                    placeholder="选择日期"
-                    style="min-width:260px"
-                  ></el-date-picker>
+                  <el-date-picker :picker-options="pickerOptions1" v-model="rootPlanMake.date" type="date" placeholder="选择日期" style="min-width:260px"></el-date-picker>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="20">
                 <div class="Mbutton">
-                  <el-col :span="2">
+                  <el-col :span="2" v-if="nowMakeNum!=0">
+                    <el-button type="primary" @click="toUpOne()">上一个</el-button>
+                  </el-col>
+                  <el-col :span="2" v-else>
+                    <el-button type="primary" @click="toUpOne()" disabled>上一个</el-button>
+                  </el-col>
+                  <el-col :span="2" v-if="nowMakeNum!=allMakeNum-1">
+                    <el-button type="primary" @click="toDownOne()">下一个</el-button>
+                  </el-col>
+                  <el-col :span="2" v-else>
+                    <el-button type="primary" @click="toDownOne()" disabled>下一个</el-button>
+                  </el-col>
+                  <el-col :span="2" v-if="nowMakeNum===allMakeNum-1">
                     <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
+                  </el-col>
+                  <el-col :span="2" v-else>
+                    <el-button type="primary" disabled @click="addRootPlan('rootPlanMake')">添加</el-button>
                   </el-col>
                   <el-col :span="2">
                     <el-button type="primary" @click="rootPlanCancel()">取消</el-button>
@@ -244,6 +164,10 @@ export default {
   name: "stylePlanMake",
   data() {
     return {
+      //批量制定控制
+      nowMakeNum: 0,
+      allMakeNum: 0,
+      batchTable: [],
       //表格数据部分
       tableData: [],
       nameSuggestionsSeries: [],
@@ -266,6 +190,7 @@ export default {
       batchFlag: false, //批量标记
       rootPlanMake: {
         planMakeStartEndDate: "",
+        inputPoint: "",
 
         seriesId: [],
         objectId: [],
@@ -273,7 +198,8 @@ export default {
         dateType: "",
         date: "",
         options: {
-          dateTypeOptions: {}
+          dateTypeOptions: {},
+          inputPointOptions: {},
         }
       },
       rootPlanMakeRules: {
@@ -285,7 +211,8 @@ export default {
         dateType: [
           { required: true, message: "请选择日期类型", trigger: "change" }
         ],
-        date: [{ required: true, message: "请选择日期", trigger: "change" }]
+        date: [{ required: true, message: "请选择日期", trigger: "change" }],
+        inputPoint: [{ required: true, message: "请选择投入点", trigger: "change" }],
       },
       //页码/面板控制部分
       viewname: "first",
@@ -332,9 +259,18 @@ export default {
     next();
   },
 
-  created: function() {
+  created: function () {
     var that = this;
-
+    //获得投入点
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "投入点"
+        }
+      })
+      .then(response => {
+        this.rootPlanMake.options.inputPointOptions = response.result;
+      });
     //获得日期类型
     request
       .get(`/backstage/dic-property/name`, {
@@ -371,7 +307,7 @@ export default {
         params: {
           pageNum: 1,
           pageSize: 10,
-          haveRootPlan: this.checked
+          haveRootPlan: false
         }
       })
       .then(response => {
@@ -386,6 +322,58 @@ export default {
       });
   },
   methods: {
+    //上一个
+    toUpOne() {
+      const that = this;
+      this.$refs["rootPlanMake"].validate(valid => {
+        if (valid) {
+          this.batchTable[this.nowMakeNum] = {
+            name: this.rootPlanMake.name,
+            planMakeStartEndDate: this.rootPlanMake.planMakeStartEndDate,
+            inputPoint: this.rootPlanMake.inputPoint,
+            dateType: this.rootPlanMake.dateType,
+            date: this.rootPlanMake.date,
+          }
+          this.nowMakeNum--;
+          this.rootPlanMake.name = this.batchTable[this.nowMakeNum].name;
+          this.rootPlanMake.planMakeStartEndDate = this.batchTable[this.nowMakeNum].planMakeStartEndDate;
+          this.rootPlanMake.inputPoint = this.batchTable[this.nowMakeNum].inputPoint;
+          this.rootPlanMake.dateType = this.batchTable[this.nowMakeNum].dateType;
+          this.rootPlanMake.date = this.batchTable[this.nowMakeNum].date;
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    //下一个
+    toDownOne() {
+      const that = this;
+      this.$refs["rootPlanMake"].validate(valid => {
+        if (valid) {
+          this.batchTable[this.nowMakeNum] = {
+            name: this.rootPlanMake.name,
+            planMakeStartEndDate: this.rootPlanMake.planMakeStartEndDate,
+            inputPoint: this.rootPlanMake.inputPoint,
+            dateType: this.rootPlanMake.dateType,
+            date: this.rootPlanMake.date,
+          }
+          this.nowMakeNum++;
+          this.rootPlanMake.name = this.batchTable[this.nowMakeNum].name;
+          this.rootPlanMake.planMakeStartEndDate = this.batchTable[this.nowMakeNum].planMakeStartEndDate;
+          this.rootPlanMake.inputPoint = this.batchTable[this.nowMakeNum].inputPoint;
+          this.rootPlanMake.dateType = this.batchTable[this.nowMakeNum].dateType;
+          this.rootPlanMake.date = this.batchTable[this.nowMakeNum].date;
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
     //当搜索框的客户名称改变的时候GET弹出框的品牌信息
     searchClientChanged() {
       request
@@ -438,13 +426,24 @@ export default {
         });
         return;
       }
+      this.batchTable = [];
       this.multipleSelection.forEach(element => {
         this.rootPlanMake.seriesId.push(element.seriesId);
         this.rootPlanMake.objectId.push(element.id);
+        this.batchTable.push({
+          name: element.number + element.orderStage + "款式根计划",
+          planMakeStartEndDate: "",
+          inputPoint: "",
+          dateType: "",
+          date: "",
+        })
       });
-      this.rootPlanMake.planMakeStartEndDate = "";
+      this.allMakeNum = this.multipleSelection.length;
+      this.nowMakeNum = 0;
 
-      this.rootPlanMake.name = "";
+
+      this.rootPlanMake.planMakeStartEndDate = "";
+      this.rootPlanMake.name = this.multipleSelection[0].number + this.multipleSelection[0].orderStage + "款式根计划";
       this.rootPlanMake.dateType = "";
       this.rootPlanMake.date = "";
       this.rootPlanMakeFlag = true;
@@ -455,8 +454,7 @@ export default {
       this.rootPlanMake.seriesId.push(row.seriesId);
       this.rootPlanMake.objectId.push(row.id);
       this.rootPlanMake.planMakeStartEndDate = "";
-
-      this.rootPlanMake.name = "";
+      this.rootPlanMake.name = row.number + row.orderStage + "款式根计划";
       this.rootPlanMake.dateType = "";
       this.rootPlanMake.date = "";
       this.rootPlanMakeFlag = true;
@@ -491,6 +489,7 @@ export default {
               name: this.rootPlanMake.name,
               seriesId: this.rootPlanMake.seriesId[i],
               planClass: "款式计划",
+              inputPoint: this.rootPlanMake.inputPoint,
               objectId: this.rootPlanMake.objectId[i],
               dateType: this.rootPlanMake.dateType,
               date: date,
@@ -557,9 +556,9 @@ export default {
       this.handleSearch(val);
     },
 
-    planTypeSwitchChange() {
-      this.handleSearch(1);
-    },
+    // planTypeSwitchChange() {
+    //   this.handleSearch(1);
+    // },
     handleTabClick(tab, event) {
       console.log(tab, event);
     },
@@ -594,7 +593,7 @@ export default {
       request
         .get(`/info/style/find`, {
           params: {
-            haveRootPlan: this.checked === false ? false : true,
+            haveRootPlan: false,
             number: this.number === "" ? null : this.number,
             clientId: this.clientId === "" ? null : this.clientId,
             brandId: this.brandId === "" ? null : this.brandId,
@@ -614,7 +613,14 @@ export default {
   }
 };
 </script>
-
+<style lang="less">
+.el-table .cell {
+  white-space: pre-line;
+}
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+</style>
 <style lang="less" scoped>
 .block {
   padding: 30px 0;

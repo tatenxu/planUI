@@ -41,38 +41,39 @@
               </el-select>
             </div>
           </el-col>
-          <el-col :span="4" class="MinW" style="margin-left:30px">
+          <!-- <el-col :span="4" class="MinW" style="margin-left:30px">
             <el-switch v-model="checked" @change="planTypeSwitchChange" inactive-color="#13ce66" inactive-text="未制定" active-text="已制定"></el-switch>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row :gutter="20">
-          
-            <el-col :span="3">
-              <el-button type="primary" @click="handleSearch(1)">搜索</el-button>
-            </el-col>
-            <el-col :span="4">
-              <el-button type="primary" @click="toQuoteModel()">引用计划模板</el-button>
-            </el-col>
-            <el-col :span="3">
-              <GanttExtension :selectedTableData="multipleSelection" :isRootPlan="true"></GanttExtension>
-            </el-col>
+
+          <el-col :span="3">
+            <el-button type="primary" @click="handleSearch(1)">搜索</el-button>
+          </el-col>
+          <el-col :span="4">
+            <el-button type="primary" @click="toQuoteModel()">引用计划模板</el-button>
+          </el-col>
 
         </el-row>
         <hr />
         <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="changeCheckBoxFun" border>
-          <el-table-column width="50" type="selection" align="center"></el-table-column>
-          <el-table-column width="50" type="index" label="序号" align="center"></el-table-column>
-          <el-table-column prop="serialNo" width="180" label="系列编号" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
-          <el-table-column prop="name" width="170" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="importStyleQuantity" label="导入款数" align="center"></el-table-column>
+          <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+          <el-table-column prop="name" width="150" label="系列编号" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
+          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="clothesLevelName" width="120" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="rangeCode" width="120" label="波段编码" align="center"></el-table-column>
+          <el-table-column prop="seriesCode" width="120" label="系列编码" align="center"></el-table-column>
+          <el-table-column prop="systemCode" width="120" label="系统编码" align="center"></el-table-column>
+          <el-table-column prop="projectType" width="120" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="orderStage" width="120" label="订单阶段" align="center"></el-table-column>
+          <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
+          <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
           <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addMode" label="添加方式" align="center"></el-table-column>
-          <el-table-column label="操作" fixed="right" align="center" width="200px" v-if="!checked">
+          <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
+          <el-table-column label="操作" fixed="right" align="center" width="200px">
             <template slot-scope="scope">
               <el-button size="mini" @click="ToPlanForm(scope.row)" type="text">制定根计划</el-button>
             </template>
@@ -171,12 +172,22 @@
                   </el-form-item>
                 </div>
               </el-col>
+              <el-col :span="8">
+                <div class="bar">
+                  <el-form-item label="投入点" prop="inputPoint">
+                    <el-select v-model="rootPlanMake.inputPoint" clearable placeholder="请选择" style="min-width:430px">
+                      <el-option v-for="item in rootPlanMake.options.inputPointOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
             </el-row>
+
             <el-row :gutter="20">
               <el-col :span="10">
                 <div class="bar">
                   <el-form-item label="根计划名称" prop="name" placeholder="请输入根计划名称">
-                    <el-input v-model="rootPlanMake.name" clearable :rows="1" placeholder="请输入" style="min-width:300px"></el-input>
+                    <el-input v-model="rootPlanMake.name" disabled :rows="1" placeholder="请输入" style="min-width:350px"></el-input>
                   </el-form-item>
                 </div>
               </el-col>
@@ -216,11 +227,8 @@
 
 <script>
 import request from "@/utils/request";
-import GanttExtension from "@/utils/ganttExtension";
+
 export default {
-  components: {
-    GanttExtension
-  },
   name: "seriesPlanMake",
   data() {
     return {
@@ -232,7 +240,6 @@ export default {
       name: "",
       dateRange: "",
       clothesLevelName: "",
-      checked: false,
       searchOptions: {
         clientOptions: {},
         brandOptions: {},
@@ -243,13 +250,14 @@ export default {
       rootPlanMakeFlag: false,
       rootPlanMake: {
         planMakeStartEndDate: "",
-
+        inputPoint: "",
         seriesId: "",
         name: "",
         dateType: "",
         date: "",
         options: {
-          dateTypeOptions: {}
+          dateTypeOptions: {},
+          inputPointOptions: {}
         }
       },
       rootPlanMakeRules: {
@@ -261,7 +269,8 @@ export default {
         dateType: [
           { required: true, message: "请选择日期类型", trigger: "change" }
         ],
-        date: [{ required: true, message: "请选择日期", trigger: "change" }]
+        date: [{ required: true, message: "请选择日期", trigger: "change" }],
+        inputPoint: [{ required: true, message: "请选择投入点", trigger: "change" }],
       },
 
       //引用计划模板部分参数
@@ -356,6 +365,16 @@ export default {
       })
       .then(response => {
         this.rootPlanMake.options.dateTypeOptions = response.result;
+      });
+    //获得投入点
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "投入点"
+        }
+      })
+      .then(response => {
+        this.rootPlanMake.options.inputPointOptions = response.result;
       });
 
     //获得服装层次下拉框
@@ -470,6 +489,7 @@ export default {
               seriesId: this.rootPlanMake.seriesId,
               planClass: "系列计划",
               objectId: this.rootPlanMake.seriesId,
+              inputPoint: this.rootPlanMake.inputPoint,
               dateType: this.rootPlanMake.dateType,
               date: date,
               startDate: startDate,
@@ -482,6 +502,7 @@ export default {
               this.rootPlanMake.planMakeStartEndDate = "";
               this.rootPlanMake.name = "";
               this.rootPlanMake.dateType = "";
+              this.rootPlanMake.inputPoint = "";
               this.rootPlanMake.date = "";
               this.rootPlanMake.seriesId = "";
             });
@@ -552,7 +573,7 @@ export default {
       request
         .get(`/info/series/find`, {
           params: {
-            haveRootPlan: this.checked === false ? false : true,
+            haveRootPlan: false,
             name: this.name === "" ? null : this.name,
             clientId: this.clientId === "" ? null : this.clientId,
             brandId: this.brandId === "" ? null : this.brandId,
@@ -576,9 +597,10 @@ export default {
       this.rootPlanMakeFlag = true;
       this.viewname = "fourth";
       this.rootPlanMake.planMakeStartEndDate = "";
-      this.rootPlanMake.name = "";
       this.rootPlanMake.dateType = "";
+      this.rootPlanMake.inputPoint = "";
       this.rootPlanMake.date = "";
+      this.rootPlanMake.name = row.brandName + row.rangeCode + row.projectType + "系列根计划";
     },
 
     handleTabClick(tab, event) {
@@ -695,7 +717,14 @@ export default {
   }
 };
 </script>
-
+<style lang="less">
+.el-table .cell {
+  white-space: pre-line;
+}
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+</style>
 <style lang="less" scoped>
 .title {
   min-width: 100px;

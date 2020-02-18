@@ -600,7 +600,7 @@ export default {
     //点击更新根计划
     toUpdateRootPlan(row) {
       this.$router.push({
-        name: "planMakeIndex",
+        name: this.checked===1?"planMakeOfSeries":(this.checked===2?"planMakeOfStyleGroup":"planMakeOfStyle"),
         params: {
           goback: "rootPlanMake",
           isRoot: true,
@@ -655,7 +655,7 @@ export default {
     //计划的查看详情
     toPageDetail(row) {
       this.$router.push({
-        name: "planMakeIndex",
+        name:  this.checked===1?"planMakeOfSeries":(this.checked===2?"planMakeOfStyleGroup":"planMakeOfStyle"),
         params: {
           isRoot: true,
           isModify: false,
@@ -926,7 +926,14 @@ export default {
   }
 };
 </script>
-
+<style lang="less">
+.el-table .cell {
+  white-space: pre-line;
+}
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+</style>
 <style lang="less" scoped>
 .title {
   min-width: 100px;
