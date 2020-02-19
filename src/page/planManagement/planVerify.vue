@@ -1,17 +1,24 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-      <el-row :gutter="20">
+      <el-row :gutter="20" style="margin-top:5px;">
+        <el-col :span="15">
+          <div class="bar">
+            <div class="title">计划类型</div>
+            <el-radio-group v-model="planClassRadioValue" @change="planClassRadioValueChanged()">
+              <el-radio-button label="系列计划"></el-radio-button>
+              <el-radio-button label="款式计划"></el-radio-button>
+              <el-radio-button label="款式组计划"></el-radio-button>
+            </el-radio-group>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:20px;">
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
-            <el-select v-model="clientId" clearable @change="searchClientChanged">
-              <el-option
-                v-for="item in options1"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="clientId" clearable @change="searchClientChanged" style="width:350px">
+              <el-option v-for="item in options1" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -19,13 +26,8 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
-            <el-select v-model="brandId" clearable>
-              <el-option
-                v-for="item in options2"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="brandId" clearable style="width:350px">
+              <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -54,28 +56,14 @@
         <el-col :span="8">
           <div class="bar">
             <div class="title">新建时间</div>
-            <el-date-picker
-              v-model="dataRange"
-              type="daterange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="['00:00:00', '23:59:59']"
-            ></el-date-picker>
+            <el-date-picker v-model="dataRange" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
           </div>
         </el-col>
 
         <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-autocomplete
-              class="inline-input"
-              v-model="rangeId"
-              :fetch-suggestions="querySearchSeries"
-              placeholder="请输入系列名称"
-              @select="handleSelect"
-              style="width:350px"
-              clearable
-            ></el-autocomplete>
+            <el-autocomplete class="inline-input" v-model="rangeId" :fetch-suggestions="querySearchSeries" placeholder="请输入系列名称" @select="handleSelect" style="width:350px" clearable></el-autocomplete>
           </div>
         </el-col>
 
@@ -91,32 +79,17 @@
       <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
         <el-col :span="2">
           <div class="bar">
-            <el-button
-              type="primary"
-              style="margin-right: 20px"
-              @click="VerifyPass"
-              v-if="checked===1"
-            >审核通过</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="VerifyPass" v-if="checked===1">审核通过</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button
-              type="primary"
-              style="margin-right: 20px"
-              @click="VerifyRebut"
-              v-if="checked===1"
-            >审核驳回</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="VerifyRebut" v-if="checked===1">审核驳回</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button
-              type="primary"
-              style="margin-right: 20px"
-              @click="CancelVerify"
-              v-if="checked===2"
-            >取消审核</el-button>
+            <el-button type="primary" style="margin-right: 20px" @click="CancelVerify" v-if="checked===2">取消审核</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
@@ -129,15 +102,7 @@
       <hr />
       <br />
       <div>
-        <el-table
-          :data="tableDataA"
-          max-height="400"
-          border
-          @selection-change="isChanged"
-          :stripe="true"
-          :highlight-current-row="true"
-          style="width: 100%; margin-top: 20px"
-        >
+        <el-table :data="tableDataA" max-height="400" border @selection-change="isChanged" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column width="50" type="index" label="序号"></el-table-column>
           <el-table-column prop="serialNo" label="计划编号" align="center" width="150"></el-table-column>
@@ -160,15 +125,7 @@
 
         <!-- 分页 -->
         <div class="block">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="pagination.currentPage"
-            :page-sizes="pagination.pageSizes"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
         </div>
       </div>
       <!-- <div class="block">
@@ -219,6 +176,7 @@ export default {
   data() {
     return {
       lookAllPlans: false,
+      planClassRadioValue: "系列计划",
       checked: 1,
       nameSuggestionsSeries: [],
 
@@ -303,7 +261,7 @@ export default {
     }
     next();
   },
-  created: function() {
+  created: function () {
     var that = this;
     //获取系列名称
     request.get(`/info/series/name`).then(response => {
@@ -333,7 +291,8 @@ export default {
         params: {
           pageNum: 1,
           pageSize: 10,
-          state: "SUBMIT"
+          state: "SUBMIT",
+          planClass: "SERIES"
         }
       })
       .then(response => {
@@ -342,6 +301,10 @@ export default {
       });
   },
   methods: {
+    //计划类型发生变化
+    planClassRadioValueChanged(){
+      this.getWareList(1);
+    },
     //系列名称搜索的输入建议
     querySearchSeries(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsSeries;
@@ -457,8 +420,8 @@ export default {
               this.checked === 1
                 ? "SUBMIT"
                 : this.checked === 2
-                ? "CHECK"
-                : "ASSIGN",
+                  ? "CHECK"
+                  : "ASSIGN",
             clientId: this.clientId === "" ? undefined : this.clientId,
             brandId: this.brandId === "" ? undefined : this.brandId,
             seriesName: this.rangeId === "" ? undefined : this.rangeId,
@@ -467,7 +430,8 @@ export default {
             createAfter: this.DataStartTime,
             createBefore: this.DataEndTime,
             pageNum: currentPageNum,
-            pageSize: this.pagination.pageSize
+            pageSize: this.pagination.pageSize,
+            planClass: this.planClassRadioValue === "系列计划" ? "SERIES" : (this.planClassRadioValue === "款式组计划" ? "GROUP" : "STYLE")
           }
         })
         .then(response => {

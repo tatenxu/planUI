@@ -1,16 +1,21 @@
 <template>
   <el-card class="box-card">
     <div>
-      <el-row :gutter="20">
+      <el-row :gutter="20" style="margin-top:5px;">
+        <el-col :span="15">
+          <div class="bar">
+            <div class="title">计划类型</div>
+            <el-radio-group v-model="planClassRadioValue" @change="planClassRadioValueChanged()">
+              <el-radio-button label="系列计划"></el-radio-button>
+              <el-radio-button label="款式计划"></el-radio-button>
+              <el-radio-button label="款式组计划"></el-radio-button>
+            </el-radio-group>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" style="margin-top:30px">
         <el-col :span="5">
-          <el-switch
-            class="el-switch"
-            v-model="planTypeSwitch"
-            @change="planTypeSwitchChange"
-            inactive-color="#13ce66"
-            active-text="已审核计划"
-            inactive-text="已下发计划"
-          ></el-switch>
+          <el-switch class="el-switch" v-model="planTypeSwitch" @change="planTypeSwitchChange" inactive-color="#13ce66" active-text="已审核计划" inactive-text="已下发计划"></el-switch>
         </el-col>
         <el-col :span="3" v-if="planTypeSwitch">
           <div class="bar">
@@ -28,19 +33,10 @@
           </div>
         </el-col>
       </el-row>
-      <el-table
-        :data="tableData"
-        style="width: 100%; margin-top: 20px"
-        highlight-current-row
-        :stripe="true"
-      >
+      <el-table :data="tableData" style="width: 100%; margin-top: 20px" highlight-current-row :stripe="true">
         <el-table-column label width="65">
           <template slot-scope="scope">
-            <el-radio
-              :label="scope.row.id"
-              v-model="templateRadio"
-              @change.native="getTemplateRow(scope.row)"
-            >{{scope.$index+1}}</el-radio>
+            <el-radio :label="scope.row.id" v-model="templateRadio" @change.native="getTemplateRow(scope.row)">{{scope.$index+1}}</el-radio>
           </template>
         </el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
@@ -62,23 +58,10 @@
       </el-table>
     </div>
     <div class="block">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="pagination.currentPage"
-        :page-sizes="pagination.pageSizes"
-        :page-size="pagination.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pagination.total"
-      ></el-pagination>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
     </div>
 
-    <el-dialog
-      :modal="false"
-      title="选择下发对象"
-      :visible.sync="distributePanelFlag"
-      :before-close="distributePanelCancel"
-    >
+    <el-dialog :modal="false" title="选择下发对象" :visible.sync="distributePanelFlag" :before-close="distributePanelCancel">
       <el-row :gutter="20" style="margin-top:-30px;">
         <el-col :span="12">
           <div class="bar">
@@ -101,33 +84,17 @@
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
         <el-col :span="6">
-          <el-tree
-            :data="distribute.productLine"
-            :props="distribute.defaultProps"
-            @node-click="handleNodeClick"
-          ></el-tree>
+          <el-tree :data="distribute.productLine" :props="distribute.defaultProps" @node-click="handleNodeClick"></el-tree>
         </el-col>
         <el-col :span="13">
-          <el-table
-            :data="distribute.personTable"
-            max-height="400"
-            @selection-change="personTableSelect"
-            :stripe="true"
-            :highlight-current-row="true"
-            style="width: 100%; margin-top: 20px;margin-left:30%"
-          >
+          <el-table :data="distribute.personTable" max-height="400" @selection-change="personTableSelect" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
             <el-table-column type="selection" width="50px" align="center"></el-table-column>
             <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
             <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
             <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
               <template slot-scope="scope">
                 <el-select size="medium" v-model="scope.row.assignPlanType">
-                  <el-option
-                    v-for="item in distribute.options.assignPlanTypeOptions"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
+                  <el-option v-for="item in distribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                 </el-select>
               </template>
             </el-table-column>
@@ -142,24 +109,16 @@
       </div>
     </el-dialog>
 
-    <el-dialog
-      :modal="false"
-      title="下发详情"
-      :visible.sync="distributeDetailFlag"
-      :before-close="distributeDetailCancel"
-    >
+    <el-dialog :modal="false" title="下发详情" :visible.sync="distributeDetailFlag" :before-close="distributeDetailCancel">
       <el-row :gutter="20">
         <el-col :span="20">
-          <el-table
-            :data="distributeDetail.tableData"
-            style="width: 100%; margin-top: 20px;margin-left:100px"
-          >
+          <el-table :data="distributeDetail.tableData" style="width: 100%; margin-top: 20px;margin-left:100px">
             <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
             <el-table-column prop="executorName" width="150" label="人员" align="center"></el-table-column>
             <el-table-column prop="createTime" width="150" label="创建时间" align="center"></el-table-column>
             <el-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></el-table-column>
             <el-table-column prop="assignPlanMadeStr" width="100" label="子计划制定" align="center"></el-table-column>
-            
+
             <el-table-column label="操作" align="center" width="100px">
               <template slot-scope="scope">
                 <el-button size="mini" @click="deleteAssign(scope.row,scope.index)" type="text">撤回</el-button>
@@ -177,6 +136,7 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      planClassRadioValue:"系列计划",
       //页码部分
       pagination: {
         currentPage: 1,
@@ -224,7 +184,7 @@ export default {
       }
     };
   },
-  created: function() {
+  created: function () {
     //获取计划类型
     request
       .get(`/backstage/dic-property/name`, {
@@ -245,7 +205,8 @@ export default {
         params: {
           pageNum: 1,
           pageSize: 10,
-          state: "CHECK"
+          state: "CHECK",
+          planClass: "SERIES"
         }
       })
       .then(response => {
@@ -255,6 +216,9 @@ export default {
       });
   },
   methods: {
+    planClassRadioValueChanged(){
+      this.handleSearch(1);
+    },
     //下发面板关闭
     distributePanelCancel() {
       this.distribute.personTable = [];
@@ -285,10 +249,10 @@ export default {
         })
         .then(response => {
           this.distributeDetail.tableData = response.result;
-          this.distributeDetail.tableData.forEach(element=>{
-            if(element.assignPlanMade)
-            element.assignPlanMadeStr = "是"
-            else element.assignPlanMadeStr="否"
+          this.distributeDetail.tableData.forEach(element => {
+            if (element.assignPlanMade)
+              element.assignPlanMadeStr = "是"
+            else element.assignPlanMadeStr = "否"
           })
         });
     },
@@ -445,7 +409,8 @@ export default {
           params: {
             pageNum: currentPageNum,
             pageSize: this.pagination.pageSize,
-            state: this.planTypeSwitch ? "CHECK" : "ASSIGN"
+            state: this.planTypeSwitch ? "CHECK" : "ASSIGN",
+            planClass: this.planClassRadioValue === "系列计划" ? "SERIES" : (this.planClassRadioValue === "款式组计划" ? "GROUP" : "STYLE")
           }
         })
         .then(response => {
