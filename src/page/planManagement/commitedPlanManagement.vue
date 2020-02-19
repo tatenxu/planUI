@@ -249,7 +249,7 @@
       </div>
       <el-dialog title="查看总计划" :visible.sync="lookAllPlanDialogVisible" :modal="false">
         <div class="body">
-          <el-tree :data="allPlans" :props="defaultProps"></el-tree>
+          <el-tree :data="allPlans" default-expand-all :props="allPlansDefaultProps"></el-tree>
         </div>
       </el-dialog>
     </el-card>
@@ -282,7 +282,7 @@ export default {
       lookAllPlanDialogVisible: false,
       isRootPlan: true,
       allPlans: [],
-      defaultProps: {
+      allPlansDefaultProps: {
         children: "children",
         label: "name"
       },
@@ -466,7 +466,6 @@ export default {
           .then(response => {
             this.allPlans = [];
             this.allPlans.push(response.result);
-            // console.log(this.allPlans);
 
             this.lookAllPlanDialogVisible = true;
           });
@@ -498,7 +497,6 @@ export default {
       };
       console.log("跳转参数：", param);
 
-      this.isCacheFlag = true;
       this.$router.push({
         name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param

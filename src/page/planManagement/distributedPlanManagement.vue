@@ -311,7 +311,7 @@ export default {
     GanttExtension
   },
 
-  name: "planManagement",
+  name: "distributedPlanManagement",
   data() {
     return {
       isRootPlan: true,
@@ -328,7 +328,6 @@ export default {
       planClassRadioValue: "系列计划",
 
       templateRadio: null,
-      isCacheFlag: true,
       lookAllPlanDialogVisible: false,
 
       inputSuggestions: {
@@ -635,8 +634,6 @@ export default {
 
         console.log("路由参数：", param);
 
-        this.isCacheFlag = true;
-
         this.$router.push({
           name: planClassRouterDestinationDict[planClassRadioValue],
           params: param
@@ -652,8 +649,6 @@ export default {
       if (this.selectedData.length === 0) {
         this.$message.error("请选择一个计划！");
       } else {
-        this.isCacheFlag = true;
-
         this.selectedData.forEach(element => {
           var param = {
             goback: "distributedPlanManagement",
@@ -686,7 +681,6 @@ export default {
       };
       console.log("跳转参数：", param);
 
-      this.isCacheFlag = true;
       this.$router.push({
         name: planClassRouterDestinationDict[planClassRadioValue],
         params: param
@@ -778,13 +772,12 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (
-      this.isCacheFlag &&
-      (to.name === "planMakeOfSeries" ||
-        to.name === "planMakeOfStyle" ||
-        to.name === "planMakeOfStyleGroup" ||
-        to.name === "planExceptionManagement")
+      to.name === "planMakeOfSeries" ||
+      to.name === "planMakeOfStyle" ||
+      to.name === "planMakeOfStyleGroup" ||
+      to.name === "planExceptionManagement"
     ) {
-      this.keepAlives = ["planManagement"];
+      this.keepAlives = ["distributedPlanManagement"];
     } else {
       this.keepAlives = [];
     }

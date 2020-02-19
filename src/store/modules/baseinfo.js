@@ -13,7 +13,7 @@ const actions = {
 };
 
 const mutations = {
-  [types.INFO_KEEPALIVE_OPT_ARR] (state, keepAliveOptions) {
+  [types.INFO_KEEPALIVE_OPT_ARR](state, keepAliveOptions) {
     state.keepAliveOptions = keepAliveOptions;
   }
 };

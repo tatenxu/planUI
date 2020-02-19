@@ -617,8 +617,7 @@ export default {
         planClass: "无数据",
         predictPieceQuantity: "无数据",
         predictStyleQuantity: "无数据",
-        product: "无数据",
-        productLine: "一号线",
+        productLine: null,
         projectType: "无数据",
         rootPlanName: "无数据",
         seriesName: "无数据",
@@ -1009,10 +1008,16 @@ export default {
           that.ruleForm.endDate
         ];
 
-        that.ruleForm.actualStartEndDate = [
-          that.ruleForm.actualStartDate,
-          that.ruleForm.actualEndDate
-        ];
+        // that.ruleForm.actualStartEndDate = [
+        //   that.ruleForm.actualStartDate,
+        //   that.ruleForm.actualEndDate
+        // ];
+
+        // 自动计算周期
+        var dateStart = new Date(that.ruleForm.startEndDate[0]);
+        var dateEnd = new Date(that.ruleForm.startEndDate[1]);
+        var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
+        that.ruleForm.cycle = difValue;
 
         // 处理是添加子计划时相关属性更改的操作
         if (that.isCreatePlanFlag) {
