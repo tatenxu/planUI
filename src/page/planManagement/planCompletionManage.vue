@@ -5,24 +5,23 @@
         <el-row :gutter="20">
           <el-button type="primary" style="margin-right:20px" @click="handleCompletionClick">计划完成</el-button>
         </el-row>
-        <el-table
-          :data="tableData"
-          style="width: 100%; margin-top: 20px"
-          @selection-change="tableSelectionChange"
-          :stripe="true"
-        >
+        <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="tableSelectionChange" :stripe="true">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" align="center"></el-table-column>
-          <el-table-column prop="name" width="180" label="系列名称" align="center"></el-table-column>
-          <el-table-column prop="serialNo" width="180" label="系列编号" align="center"></el-table-column>
-          <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" label="服装类型" align="center"></el-table-column>
-          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="deptName" label="部门" align="center"></el-table-column>
-          <el-table-column prop="createTime" width="170" label="添加时间" align="center"></el-table-column>
-          <el-table-column prop="addMode" label="添加方式" align="center"></el-table-column>
-          <!-- <el-table-column prop="completionState" label="状态" align="center"></el-table-column> -->
+          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+          <el-table-column prop="name" width="150" label="系列编号" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
+          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="clothesLevelName" width="120" label="服装层次" align="center"></el-table-column>
+          <el-table-column prop="rangeCode" width="120" label="波段编码" align="center"></el-table-column>
+          <el-table-column prop="seriesCode" width="120" label="系列编码" align="center"></el-table-column>
+          <el-table-column prop="systemCode" width="120" label="系统编码" align="center"></el-table-column>
+          <el-table-column prop="projectType" width="120" label="项目类型" align="center"></el-table-column>
+          <el-table-column prop="orderStage" width="120" label="订单阶段" align="center"></el-table-column>
+          <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
+          <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
+          <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
+          <el-table-column prop="creatorName" width="180" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
 
           <!-- <el-table-column fixed="right" label="操作" width="50">
             <template slot-scope="scope">
@@ -32,15 +31,7 @@
         </el-table>
       </div>
       <div class="block">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="pagination.currentPage"
-          :page-sizes="pagination.pageSizes"
-          :page-size="pagination.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
-        ></el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
       </div>
     </el-card>
   </div>
@@ -65,7 +56,7 @@ export default {
       tableSelectionData: []
     };
   },
-  created: function() {
+  created: function () {
     //加载默认所有系列
     request
       .get(`/info/series/find`, {

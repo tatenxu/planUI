@@ -79,9 +79,9 @@
             <el-table-column prop="clientName" width="250px" label="客户" align="center"></el-table-column>
             <el-table-column prop="brandName" width="250px" label="品牌" align="center"></el-table-column>
             <el-table-column prop="clothesLevelName" width="250px" label="服装层次" align="center"></el-table-column>
-            <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center" ></el-table-column>
-            <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3" ></el-table-column>
-            <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2" ></el-table-column>
+            <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center"></el-table-column>
+            <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3"></el-table-column>
+            <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2"></el-table-column>
             <el-table-column prop="seriesCode" width="250px" label="系列编码" align="center" v-if="checked===1"></el-table-column>
             <el-table-column prop="systemCode" width="250px" label="系统编码" align="center" v-if="checked===1"></el-table-column>
             <el-table-column prop="projectType" width="250px" label="项目类型" align="center"></el-table-column>
@@ -187,7 +187,7 @@
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
         <el-col :span="6">
-          <el-tree :data="productionLine" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+          <el-tree :data="productionLine" :highlight-current="true" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
         </el-col>
         <el-col :span="13">
           <el-table :data="rootDistribute.tableData" max-height="400" @selection-change="changeCheckBoxFun2" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">

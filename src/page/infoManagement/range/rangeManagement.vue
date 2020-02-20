@@ -76,8 +76,8 @@
           <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
           <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
           <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
-          <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="添加时间" align="center"></el-table-column>
+          <el-table-column prop="creatorName" width="180" label="添加人" align="center"></el-table-column>
+          <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button @click="detailPanel(scope.row)" type="text" size="small">查看</el-button>

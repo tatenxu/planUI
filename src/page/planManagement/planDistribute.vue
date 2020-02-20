@@ -17,7 +17,7 @@
         <el-col :span="5">
           <el-switch class="el-switch" v-model="planTypeSwitch" @change="planTypeSwitchChange" inactive-color="#13ce66" active-text="已审核计划" inactive-text="已下发计划"></el-switch>
         </el-col>
-        <el-col :span="3" v-if="planTypeSwitch">
+        <el-col :span="3">
           <div class="bar">
             <el-button type="primary" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
           </div>
@@ -96,7 +96,7 @@
       </el-row>
       <el-row :gutter="20" style="margin-top:15px;">
         <el-col :span="6">
-          <el-tree :data="distribute.productLine" :props="distribute.defaultProps" @node-click="handleNodeClick"></el-tree>
+          <el-tree :data="distribute.productLine" :highlight-current="true" :props="distribute.defaultProps" @node-click="handleNodeClick"></el-tree>
         </el-col>
         <el-col :span="13">
           <el-table :data="distribute.personTable" max-height="400" @selection-change="personTableSelect" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
@@ -117,7 +117,7 @@
 
     <el-dialog title="查看总计划" :visible.sync="planTreePanelFlag" :modal="false">
       <div class="body">
-        <el-tree :data="planTree.planTreeData" :props="planTree.defaultProps"></el-tree>
+        <el-tree :data="planTree.planTreeData" :highlight-current="true" :props="planTree.defaultProps"></el-tree>
       </div>
     </el-dialog>
 

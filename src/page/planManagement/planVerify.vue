@@ -173,7 +173,7 @@
 
       <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
         <div class="body">
-          <el-tree :data="allPlans" :props="defaultProps"></el-tree>
+          <el-tree :data="allPlans" :highlight-current="true" :props="defaultProps"></el-tree>
         </div>
       </el-dialog>
     </el-card>

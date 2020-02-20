@@ -98,6 +98,7 @@
         :data="data"
         node-key="id"
         :props="defaultProps"
+        :highlight-current="true"
         default-expand-all
         @node-drag-start="handleDragStart"
         @node-drag-enter="handleDragEnter"
