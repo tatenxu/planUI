@@ -40,16 +40,28 @@
           </template>
         </el-table-column>
         <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-        <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="serialNo" label="计划编号" align="center" width="150px"></el-table-column>
-        <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="seriesName" label="系列名称" align="center"></el-table-column>
-        <el-table-column prop="objectName" label="计划对象" align="center"></el-table-column>
-        <el-table-column prop="planClass" label="项目类型" align="center"></el-table-column>
-        <el-table-column prop="creatorName" label="创建人" align="center"></el-table-column>
-        <el-table-column prop="state" label="状态" align="center"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间" align="center" width="150px"></el-table-column>
+        <el-table-column prop="name" width="250px" label="根计划名称" align="center"></el-table-column>
+        <el-table-column prop="clientName" width="250px" label="客户" align="center"></el-table-column>
+        <el-table-column prop="brandName" width="250px" label="品牌" align="center"></el-table-column>
+        <el-table-column prop="clothesLevelName" width="250px" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center"></el-table-column>
+        <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3"></el-table-column>
+        <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2"></el-table-column>
+        <el-table-column prop="seriesCode" width="250px" label="系列编码" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="systemCode" width="250px" label="系统编码" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="projectType" width="250px" label="项目类型" align="center"></el-table-column>
+        <el-table-column prop="orderStage" width="250px" label="订单阶段" align="center"></el-table-column>
+        <el-table-column prop="predictStyleQuantity" width="250px" label="预测款数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="predictPieceQuantity" width="250px" label="预测件数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="informalStyleQuantity" width="250px" label="非正式款数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="informalPieceQuantity" width="250px" label="非正式件数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="styleQuantity" width="250px" label="正式款数" align="center"></el-table-column>
+        <el-table-column prop="pieceQuantity" width="250px" label="正式件数" align="center"></el-table-column>
+        <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
+        <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
+        <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
+        <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
+        <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column>
         <el-table-column fixed="right" width="100" label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
@@ -136,7 +148,8 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      planClassRadioValue:"系列计划",
+      planClassRadioValue: "系列计划",
+      checked: 1,
       //页码部分
       pagination: {
         currentPage: 1,
@@ -216,7 +229,15 @@ export default {
       });
   },
   methods: {
-    planClassRadioValueChanged(){
+    planClassRadioValueChanged() {
+      if (this.planClassRadioValue === "系列计划") {
+        this.checked = 1;
+      } else if (this.planClassRadioValue === "款式组计划") {
+        this.checked = 2;
+
+      } else {
+        this.checked = 3;
+      }
       this.handleSearch(1);
     },
     //下发面板关闭
