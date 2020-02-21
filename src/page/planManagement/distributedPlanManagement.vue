@@ -582,7 +582,7 @@ export default {
 
         var param = {
           goback: "distributedPlanManagement",
-          isRoot: this.isRoot,
+          isRoot: this.isRootPlan,
           isModify: false,
           isCreate: true,
           rowData: data
@@ -608,7 +608,7 @@ export default {
         this.selectedData.forEach(element => {
           var param = {
             goback: "distributedPlanManagement",
-            isRoot: this.isRoot,
+            isRoot: this.isRootPlan,
             isModify: false,
             isCreate: true,
             isBatched: true,
