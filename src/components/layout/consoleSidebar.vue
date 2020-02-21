@@ -66,15 +66,7 @@
 </style>
 <template>
   <div class="console-sidebar">
-    <el-menu
-      :unique-opened="true"
-      :router="true"
-      :default-active="defaultActive"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b"
-      class="sidebar-content"
-    >
+    <el-menu :unique-opened="true" :router="true" :default-active="defaultActive" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" class="sidebar-content">
       <div class="sidebar-fold">计划服务-系列规划</div>
 
       <el-menu-item index="/quick'">
@@ -159,8 +151,12 @@
       <el-menu-item index="/messageManagement" v-if="messageMana">
         <i class="el-icon-document"></i>消息管理
       </el-menu-item>
+
       <el-menu-item index="/formManagement" v-if="gantt">
         <i class="el-icon-document"></i>报表管理
+      </el-menu-item>
+      <el-menu-item index="/queryStatistic" v-if="statistics">
+        <i class="el-icon-document"></i>查询统计
       </el-menu-item>
 
       <!-- <el-menu-item index="/gantt"><i class="el-icon-document"></i>报表管理</el-menu-item> -->
@@ -246,7 +242,8 @@ export default {
       privilegeMana: false,
       systemMana: false,
       numberMana: false,
-      afterPlanMake: false
+      afterPlanMake: false,
+      statistics:true,
 
       // rangeMana: true,
       // styleGroupMana: true,
@@ -285,7 +282,7 @@ export default {
     };
   },
 
-  created: function() {
+  created: function () {
     //获得自己的角色信息
     request.get(`/me`).then(response => {
       for (let i = 0; i < response.result.roles.length; i++) {
@@ -368,7 +365,7 @@ export default {
   },
   components: {},
   computed: {
-    defaultActive: function() {
+    defaultActive: function () {
       const that = this;
       return (
         (that.$route.meta && that.$route.meta.activePath) || this.$route.path

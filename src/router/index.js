@@ -34,8 +34,9 @@ const planVerify = r => require.ensure([], () => r(require('../page/planManageme
 const planDistribute = r => require.ensure([], () => r(require('../page/planManagement/planDistribute.vue')), 'planDistribute');
 const planRecover = r => require.ensure([], () => r(require('../page/planManagement/planRecover.vue')), 'planRecover');
 const messageManagement = r => require.ensure([], () => r(require('../page/messageManagement.vue')), 'messageManagement');
-const planExceptionManagement = r => require.ensure([], () => r(require('../page/planManagement/planExceptionManagement.vue')), 'exceptionManagement');
 const queryStatistic = r => require.ensure([], () => r(require('../page/queryStatistic.vue')), 'queryStatistic');
+const planExceptionManagement = r => require.ensure([], () => r(require('../page/planManagement/planExceptionManagement.vue')), 'exceptionManagement');
+
 const formManagement = r => require.ensure([], () => r(require('../page/formManagement.vue')), 'formManagement');
 const bePlanModelEdit = r => require.ensure([], () => r(require('../page/backEndModule/planModelEdit.vue')), 'bePlanModelEdit');
 const bePlanModelManagement = r => require.ensure([], () => r(require('../page/backEndModule/planModelManagement.vue')), 'bePlanModelManagement');
@@ -281,6 +282,7 @@ export default [
           bcrumd: ['计划回收站'],
         }
       },
+
       {
         path: '/messageManagement',
         name: 'messageManagement',
