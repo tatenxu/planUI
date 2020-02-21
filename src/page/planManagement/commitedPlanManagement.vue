@@ -5,7 +5,7 @@
         <el-col :span="15">
           <div class="bar">
             <div class="title">计划类型</div>
-            <el-radio-group v-model="planClassRadioValue">
+            <el-radio-group v-model="planClassRadioValue" @change="planClassTypeChange">
               <el-radio-button label="系列计划"></el-radio-button>
               <el-radio-button label="款式计划"></el-radio-button>
               <el-radio-button label="款式组计划"></el-radio-button>
@@ -122,9 +122,6 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="3">
-          <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
-        </el-col>
-        <el-col :span="3">
           <GanttExtension :selectedTableData="selectedData" :isRootPlan="isRootPlan"></GanttExtension>
         </el-col>
       </el-row>
@@ -150,7 +147,7 @@
         <!-- 三种计划类型都有 -->
         <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="childPlanNumber" label="子计划数" align="center"></el-table-column>
+        <el-table-column prop="numberChild" label="子计划数" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
@@ -247,11 +244,6 @@
           :total="pagination.total"
         ></el-pagination>
       </div>
-      <el-dialog title="查看总计划" :visible.sync="lookAllPlanDialogVisible" :modal="false">
-        <div class="body">
-          <el-tree :data="allPlans" default-expand-all :props="allPlansDefaultProps"></el-tree>
-        </div>
-      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -279,13 +271,8 @@ export default {
       planClassRadioValue: "系列计划",
 
       templateRadio: "",
-      lookAllPlanDialogVisible: false,
       isRootPlan: true,
-      allPlans: [],
-      allPlansDefaultProps: {
-        children: "children",
-        label: "name"
-      },
+
       searchOptions: {
         searchParams: {
           clientName: undefined,
@@ -386,6 +373,13 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
+
+    planClassTypeChange() {
+      this.pagination.currentPage = 1;
+      this.tableData = [];
+      this.handleSearch();
+    },
+
     // 改变日期格式
     changeDate(date) {
       if (!date) {
@@ -452,36 +446,6 @@ export default {
     getTemplateRow(index, row) {
       this.selectedData = row;
       console.log(row);
-    },
-    // 查看总计划接口
-    lookAllPlan() {
-      let list = {
-        id: this.selectedData.id
-      };
-      if (this.isRootPlan) {
-        request
-          .get(`${window.$config.HOST}/root-plan/tree`, {
-            params: list
-          })
-          .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
-
-            this.lookAllPlanDialogVisible = true;
-          });
-      } else {
-        request
-          .get(`${window.$config.HOST}/plan/tree`, {
-            params: list
-          })
-          .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
-            // console.log(this.allPlans);
-
-            this.lookAllPlanDialogVisible = true;
-          });
-      }
     },
 
     getPlanDetail(row) {

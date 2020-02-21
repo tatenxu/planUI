@@ -485,6 +485,13 @@
           </el-col>
         </el-row>
 
+        <el-row :gutter="20" v-if="!isCreatePlanFlag && !isModifyPlanFlag">
+          <el-col :span="20">
+            <el-form-item label="总计划树"></el-form-item>
+            <el-tree :data="allPlansData.allPlans" :props="allPlansData.allPlansDefaultProps"></el-tree>
+          </el-col>
+        </el-row>
+
         <!-- 按钮行 -->
         <el-row :gutter="20">
           <el-col :span="20">
@@ -581,6 +588,14 @@ export default {
         endStr: "结束时间",
         actualStartStr: "开始时间",
         actualEndStr: "结束时间"
+      },
+
+      allPlansData: {
+        allPlans: [],
+        allPlansDefaultProps: {
+          children: "children",
+          label: "name"
+        }
       },
 
       productLineShowProps: {
@@ -967,6 +982,33 @@ export default {
         });
       }
     },
+
+    // 查看总计划函数
+    getPlanTreeData(idArg) {
+      let list = {
+        id: idArg
+      };
+      if (this.isRootPlanFlag) {
+        request
+          .get(`${window.$config.HOST}/root-plan/tree`, {
+            params: list
+          })
+          .then(response => {
+            this.allPlans = [];
+            this.allPlans.push(response.result);
+          });
+      } else {
+        request
+          .get(`${window.$config.HOST}/plan/tree`, {
+            params: list
+          })
+          .then(response => {
+            this.allPlans = [];
+            this.allPlans.push(response.result);
+          });
+      }
+    },
+
     init() {
       /* 跳转至本页面的参数：
         ? {
@@ -1034,6 +1076,11 @@ export default {
         var dateEnd = new Date(that.ruleForm.startEndDate[1]);
         var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
         that.ruleForm.cycle = difValue;
+
+        // 查看时加载计划树
+        if (!that.isCreatePlanFlag && !that.isModifyPlanFlag) {
+          this.getPlanTreeData();
+        }
 
         // 处理是添加子计划时相关属性更改的操作
         if (that.isCreatePlanFlag) {

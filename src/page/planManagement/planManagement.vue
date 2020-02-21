@@ -5,7 +5,7 @@
         <el-col :span="15">
           <div class="bar">
             <div class="title">计划类型</div>
-            <el-radio-group v-model="planClassRadioValue">
+            <el-radio-group v-model="planClassRadioValue" @change="planClassTypeChange">
               <el-radio-button label="系列计划"></el-radio-button>
               <el-radio-button label="款式计划"></el-radio-button>
               <el-radio-button label="款式组计划"></el-radio-button>
@@ -112,9 +112,6 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="3">
-          <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
-        </el-col>
-        <el-col :span="3">
           <el-button type="primary" size="small" @click="addException">添加异常</el-button>
         </el-col>
         <el-col :span="3">
@@ -142,7 +139,7 @@
         <!-- 三种计划类型都有 -->
         <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="childPlanNumber" label="子计划数" align="center"></el-table-column>
+        <el-table-column prop="numberChild" label="子计划数" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
@@ -296,12 +293,6 @@
       </div>
     </el-card>
 
-    <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
-      <div class="body">
-        <el-tree :data="allPlans" :props="defaultProps"></el-tree>
-      </div>
-    </el-dialog>
-
     <!-- 弹出框-添加异常 -->
     <el-dialog
       :modal="false"
@@ -421,8 +412,6 @@ export default {
     return {
       currentUserId: null,
       templateRadio: null,
-      lookAllPlans: false,
-      allPlans: [],
 
       planClassDict: {
         系列计划: "SERIES",
@@ -641,6 +630,13 @@ export default {
         return "background: oldlace;";
       }
     },
+
+    planClassTypeChange() {
+      this.pagination.currentPage = 1;
+      this.tableData = [];
+      this.handleSearch();
+    },
+
     // 改变日期格式
     changeDate(date) {
       if (!date) {
@@ -747,31 +743,7 @@ export default {
       this.tableData = [];
       this.handleSearch();
     },
-    //查看总计划
-    lookAllPlan() {
-      if (this.selectedData.length != 1) {
-        this.$message({
-          message: "请选择一项！",
-          type: "warning"
-        });
-        return;
-      }
-      let list = {
-        id: this.selectedData[0].id
-      };
 
-      request
-        .get(`${window.$config.HOST}/plan/tree`, {
-          params: list
-        })
-        .then(response => {
-          this.allPlans = [];
-          this.allPlans.push(response.result);
-
-          this.selectedData = [];
-          this.lookAllPlans = true;
-        });
-    },
     //查看异常--跳转
     toSearchException(row) {
       console.log("查看异常" + row.name);
