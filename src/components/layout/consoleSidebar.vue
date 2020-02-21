@@ -359,6 +359,9 @@ export default {
             if (this.pageList.includes("后台管理模块")) {
               this.backMana = true;
             }
+            if (this.pageList.includes("查询统计")) {
+              this.statistics = true;
+            }
           });
       }
     });

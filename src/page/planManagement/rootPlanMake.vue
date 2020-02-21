@@ -64,10 +64,18 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="10">
-              <el-button type="primary" @click="searchRootPlan(1)">搜索</el-button>
-              <el-button type="primary" @click="saveModelPanelOpen()" v-if="checked  === 1">存为计划模板</el-button>
-              <el-button type="primary" @click="deleteRootPlan()">删除根计划</el-button>
+
+            <el-col :span="2">
+              <el-button type="primary" size="small" @click="searchRootPlan(1)">搜索</el-button>
+            </el-col>
+            <el-col :span="3">
+              <el-button type="primary" size="small" @click="saveModelPanelOpen()" v-if="checked  === 1">存为计划模板</el-button>
+            </el-col>
+            <el-col :span="3">
+              <el-button type="primary" size="small" @click="deleteRootPlan()">删除根计划</el-button>
+            </el-col>
+            <el-col :span="3">
+              <GanttExtension :selectedTableData="multipleSelection" :isRootPlan="true"></GanttExtension>
             </el-col>
           </el-row>
 
@@ -229,8 +237,12 @@
 
 <script>
 import request from "@/utils/request";
+import GanttExtension from "@/utils/ganttExtension";
 export default {
   name: "rootPlanMake",
+  components: {
+    GanttExtension
+  },
   data() {
     return {
       //自己的ID

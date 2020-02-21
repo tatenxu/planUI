@@ -41,10 +41,9 @@
               <el-autocomplete class="inline-input" v-model="name" :fetch-suggestions="querySearchStyleGroup" placeholder="请输入款式组名称" @select="handleSelect" style="width:350px;margin-left:20px" clearable></el-autocomplete>
             </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
+
           <el-col :span="3">
-            <el-button type="primary" @click="searchStyleGroup(1)" style="margin-left:50px">搜索</el-button>
+            <el-button type="primary"  @click="searchStyleGroup(1)" style="margin-left:50px">搜索</el-button>
           </el-col>
 
         </el-row>
@@ -126,10 +125,10 @@
               <el-col :span="20">
                 <div class="Mbutton">
                   <el-col :span="2">
-                    <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
+                    <el-button type="primary" size="small" @click="addRootPlan('rootPlanMake')">添加</el-button>
                   </el-col>
                   <el-col :span="2">
-                    <el-button type="primary" @click="rootPlanCancel()">取消</el-button>
+                    <el-button type="primary" size="small" @click="rootPlanCancel()">取消</el-button>
                   </el-col>
                 </div>
               </el-col>

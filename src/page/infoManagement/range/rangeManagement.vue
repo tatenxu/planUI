@@ -623,7 +623,7 @@ export default {
       this.searchOptions.brandOptions = response.result;
     });
 
-    //获得投入点
+    //获取波段编码
     request
       .get(`/backstage/dic-property/name`, {
         params: {

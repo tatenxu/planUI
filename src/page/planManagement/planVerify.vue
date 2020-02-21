@@ -79,23 +79,26 @@
       <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
         <el-col :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="VerifyPass" v-if="checked===1">审核通过</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="VerifyPass" v-if="checked===1">审核通过</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="VerifyRebut" v-if="checked===1">审核驳回</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="VerifyRebut" v-if="checked===1">审核驳回</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="CancelVerify" v-if="checked===2">取消审核</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="CancelVerify" v-if="checked===2">取消审核</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
           </div>
+        </el-col>
+        <el-col :span="3" style="margin-left:100px">
+          <GanttExtension :selectedTableData="AnyChanged" :isRootPlan="false"></GanttExtension>
         </el-col>
       </el-row>
       <br />
@@ -182,9 +185,13 @@
 
 <script>
 import request from "@/utils/request";
+import GanttExtension from "@/utils/ganttExtension";
 const cityOptions = ["已制定", "未制定", "制定中"];
 export default {
   name: "planVerify",
+  components: {
+    GanttExtension
+  },
   data() {
     return {
       lookAllPlans: false,
@@ -266,7 +273,10 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === "planMakeIndex") {
+    if (to.name === "planMakeOfSeries" ||
+      to.name === "planMakeOfStyle" ||
+      to.name === "planMakeOfStyleGroup" ||
+      to.name === "bePlanModelEdit") {
       this.keepAlives = ["planVerify"];
     } else {
       this.keepAlives = [];

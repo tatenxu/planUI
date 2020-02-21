@@ -1,296 +1,161 @@
 <template>
   <div class="body">
     <el-card class="box-card">
-
-      <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
-        <el-tab-pane label="根计划" name="first" class="tabPane">
-          <el-row :gutter="20" style="margin-top:5px;">
-            <el-col :span="15">
-              <div class="bar">
-                <div class="title">计划类型</div>
-                <el-radio-group v-model="planClassRadioValue" @change="planClassRadioValueChange" style="margin-left:20px">
-                  <el-radio-button label="系列计划"></el-radio-button>
-                  <el-radio-button label="款式计划"></el-radio-button>
-                  <el-radio-button label="款式组计划"></el-radio-button>
-                </el-radio-group>
-              </div>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">客户名称</div>
-                <el-select v-model="clientId" clearable placeholder="请选择" @change="searchClientChanged">
-                  <el-option v-for="item in searchOptions.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                </el-select>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">品牌</div>
-                <el-select v-model="brandId" clearable placeholder="请选择">
-                  <el-option v-for="item in searchOptions.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                </el-select>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">系列名称</div>
-                <el-autocomplete class="inline-input" v-model="seriesName" :fetch-suggestions="querySearchSeries" placeholder="请输入系列名称" @select="handleSelect" style="width:350px" clearable></el-autocomplete>
-              </div>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">添加时间</div>
-                <el-date-picker style="margin-left:20px " v-model="dateRange" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">服装层次</div>
-
-                <el-select v-model="clothesLevelName" clearable placeholder="请选择">
-                  <el-option v-for="item in searchOptions.clothesLevelOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
-                </el-select>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div class="bar">
-                <div class="title">根计划名称</div>
-                <el-autocomplete class="inline-input" v-model="name" :fetch-suggestions="querySearchRootPlan" placeholder="请输入根计划名称" @select="handleSelect" style="width:350px" clearable></el-autocomplete>
-              </div>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-button type="primary" @click="searchRootPlan(1)">搜索</el-button>
-              <el-button type="primary" @click="saveModelPanelOpen()" v-if="checked  === 1">存为计划模板</el-button>
-              <el-button type="primary" @click="deleteRootPlan()">删除根计划</el-button>
-            </el-col>
-          </el-row>
-
-          <hr />
-
-          <el-table :data="tableData" style="width: 100%; margin-top: 20px" border @selection-change="changeCheckBoxFun" :row-style="tableRowClassName">
-            <el-table-column w idth="50" type="selection" align="center"></el-table-column>
-            <el-table-column prop="name" width="250px" label="根计划名称" align="center"></el-table-column>
-            <el-table-column prop="clientName" width="250px" label="客户" align="center"></el-table-column>
-            <el-table-column prop="brandName" width="250px" label="品牌" align="center"></el-table-column>
-            <el-table-column prop="clothesLevelName" width="250px" label="服装层次" align="center"></el-table-column>
-            <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center"></el-table-column>
-            <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3"></el-table-column>
-            <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2"></el-table-column>
-            <el-table-column prop="seriesCode" width="250px" label="系列编码" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="systemCode" width="250px" label="系统编码" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="projectType" width="250px" label="项目类型" align="center"></el-table-column>
-            <el-table-column prop="orderStage" width="250px" label="订单阶段" align="center"></el-table-column>
-            <el-table-column prop="predictStyleQuantity" width="250px" label="预测款数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="predictPieceQuantity" width="250px" label="预测件数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="informalStyleQuantity" width="250px" label="非正式款数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="informalPieceQuantity" width="250px" label="非正式件数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="styleQuantity" width="250px" label="正式款数" align="center"></el-table-column>
-            <el-table-column prop="pieceQuantity" width="250px" label="正式件数" align="center"></el-table-column>
-            <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
-            <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
-            <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
-            <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
-            <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column>
-            <el-table-column label="是否约束" align="center" fixed="right" width="80px" v-if="checked ===1">
-              <template slot-scope="scope" v-if=" checked ===1">
-                <el-switch v-if=" checked ===1" v-model="scope.row.limited" @change="rootPlanLimit(scope.row)" active-color="#13ce66"></el-switch>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" fixed="right" align="center" width="250px">
-              <template slot-scope="scope">
-                <el-button size="mini" @click="assignRootPlan(scope.row)" type="text" v-if="scope.row.creatorId === meID">下发</el-button>
-                <el-button size="mini" @click="assignDetail(scope.row)" v-if="scope.row.state ==='已下发'" type="text">查看下发情况</el-button>
-                <el-button size="mini" @click="toPageDetail(scope.row)" type="text">查看详情</el-button>
-                <el-button size="mini" @click="toUpdateRootPlan(scope.row)" v-if="scope.row.state !='已下发' && scope.row.creatorId === meID" type="text">修改</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <!-- 分页 -->
-          <div class="block">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
-          </div>
-        </el-tab-pane>
-
-        <el-tab-pane label="保存计划模版" name="second" v-if="savePlanModelFlag">
-          <el-form :model="saveModel" :rules="modelRules" ref="saveModel" label-width="100px" class="demo-ruleForm">
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <div class="bar">
-                  <el-form-item label="客户名称" prop="clientId" placeholder="请选择客户名称">
-                    <el-select v-model="saveModel.clientId" disabled placeholder="请选择" style="min-width:250px">
-                      <el-option v-for="item in saveModel.options.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="8">
-                <div class="bar">
-                  <el-form-item label="品牌名称" prop="brandId" placeholder="请选择品牌名称">
-                    <el-select v-model="saveModel.brandId" disabled placeholder="请选择" style="min-width:250px">
-                      <el-option v-for="item in saveModel.options.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="10">
-                <div class="bar">
-                  <el-form-item label="模板名称" prop="name" placeholder="请输入模板名称">
-                    <el-input v-model="saveModel.name" clearable :rows="1" style="margin-left: 20px;min-width:250px" placeholder="请输入"></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-
-              <el-col :span="2">
-                <div class="bar">
-                  <el-button type="primary" @click="saveModelClick('saveModel')">保存</el-button>
-                </div>
-              </el-col>
-
-              <el-col :span="2">
-                <div class="bar">
-                  <el-button type="primary" @click="cancelModelClick()">取消</el-button>
-                </div>
-              </el-col>
-            </el-row>
-          </el-form>
-        </el-tab-pane>
-      </el-tabs>
-    </el-card>
-    <el-dialog :modal="false" title="根计划下发" :visible.sync="rootPlanDistributeFlag" :before-close="cancelDistribute">
-      <el-row :gutter="20" style="margin-top:-30px;">
-        <el-col :span="12">
+      <el-row :gutter="20" style="margin-top:5px;">
+        <el-col :span="15">
           <div class="bar">
-            <div class="title">人员名称</div>
-            <el-input v-model="rootDistribute.personName" clearable placeholder="请输入" style="width:350px"></el-input>
-            <el-button type="primary" @click="searchPersonByName" style="margin-left:20px">搜索</el-button>
+            <div class="title">计划类型</div>
+            <el-radio-group v-model="planClassRadioValue" @change="planClassRadioValueChange" style="margin-left:20px">
+              <el-radio-button label="系列计划"></el-radio-button>
+              <el-radio-button label="款式计划"></el-radio-button>
+              <el-radio-button label="款式组计划"></el-radio-button>
+            </el-radio-group>
           </div>
         </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
+        <el-col :span="5">
+          <el-switch v-model="isRootPlan" @change="planTypeSwitchChange" inactive-color="#13ce66" active-text="根计划" inactive-text="普通计划"></el-switch>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top:10px;">
-        <el-col :span="6">
-          <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top:15px;">
-        <el-col :span="6">
-          <el-tree :data="productionLine" :highlight-current="true" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-        </el-col>
-        <el-col :span="13">
-          <el-table :data="rootDistribute.tableData" max-height="400" @selection-change="changeCheckBoxFun2" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
-            <el-table-column type="selection" width="50px" align="center"></el-table-column>
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
-            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
-              <template slot-scope="scope">
-                <el-select size="medium" v-model="scope.row.assignPlanType">
-                  <el-option v-for="item in rootDistribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-dialog>
-
-    <el-dialog :modal="false" title="下发详情" :visible.sync="detailDistributeFlag" :before-close="cancelDistributeDetail">
       <el-row :gutter="20">
-        <el-col :span="20">
-          <el-table :data="detailDistribute.tableData" style="width: 100%; margin-top: 20px;margin-left:100px">
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="executorName" width="150" label="人员" align="center"></el-table-column>
-            <el-table-column prop="createTime" width="150" label="创建时间" align="center"></el-table-column>
-            <el-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></el-table-column>
-            <el-table-column prop="assignPlanMadeStr" width="100" label="子计划制定" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="100px">
-              <template slot-scope="scope">
-                <el-button size="mini" @click="deleteAssign(scope.row,scope.index)" type="text">撤回</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">客户名称</div>
+            <el-select v-model="clientId" clearable placeholder="请选择" @change="searchClientChanged">
+              <el-option v-for="item in searchOptions.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">品牌</div>
+            <el-select v-model="brandId" clearable placeholder="请选择">
+              <el-option v-for="item in searchOptions.brandOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">系列名称</div>
+            <el-autocomplete class="inline-input" v-model="seriesName" :fetch-suggestions="querySearchSeries" placeholder="请输入系列名称" @select="handleSelect" style="width:350px;margin-left:20px" clearable></el-autocomplete>
+          </div>
         </el-col>
       </el-row>
-    </el-dialog>
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">波段编码</div>
+            <el-select v-model="rangeCode" clearable placeholder="请选择" @change="projectTypeChange">
+              <el-option v-for="item in searchOptions.rangeCodeOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">项目类型</div>
+            <el-select v-model="projectType" clearable placeholder="请选择" @change="projectTypeChange">
+              <el-option v-for="item in searchOptions.projectTypeOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">订单阶段</div>
+            <el-select v-model="orderStage" clearable placeholder="请选择">
+              <el-option v-for="item in searchOptions.orderStageOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <div class="bar">
+            <div class="title">投入点</div>
+            <el-select v-model="inputPoint" clearable placeholder="请选择">
+              <el-option v-for="item in searchOptions.inputPointOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
+            </el-select>
+          </div>
+        </el-col>
+
+        <el-col :span="1">
+          <GanttExtension :selectedTableData="multipleSelection" :isRootPlan="isRootPlan"></GanttExtension>
+        </el-col>
+        <el-col :span="1">
+          <el-button type="primary" size="small" @click="searchRootPlan(1)" style="margin-left:100px">搜索</el-button>
+        </el-col>
+      </el-row>
+
+      <hr />
+
+      <el-table :data="tableData" style="width: 100%; margin-top: 20px" border @selection-change="changeCheckBoxFun" :row-style="tableRowClassName">
+        <el-table-column w idth="50" type="selection" align="center"></el-table-column>
+        <el-table-column prop="name" width="250px" label="根计划名称" align="center"></el-table-column>
+        <el-table-column prop="clientName" width="250px" label="客户" align="center"></el-table-column>
+        <el-table-column prop="brandName" width="250px" label="品牌" align="center"></el-table-column>
+        <el-table-column prop="clothesLevelName" width="250px" label="服装层次" align="center"></el-table-column>
+        <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center"></el-table-column>
+        <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3"></el-table-column>
+        <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2"></el-table-column>
+        <el-table-column prop="seriesCode" width="250px" label="系列编码" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="systemCode" width="250px" label="系统编码" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="projectType" width="250px" label="项目类型" align="center"></el-table-column>
+        <el-table-column prop="orderStage" width="250px" label="订单阶段" align="center"></el-table-column>
+        <el-table-column prop="predictStyleQuantity" width="250px" label="预测款数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="predictPieceQuantity" width="250px" label="预测件数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="informalStyleQuantity" width="250px" label="非正式款数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="informalPieceQuantity" width="250px" label="非正式件数" align="center" v-if="checked===1"></el-table-column>
+        <el-table-column prop="styleQuantity" width="250px" label="正式款数" align="center"></el-table-column>
+        <el-table-column prop="pieceQuantity" width="250px" label="正式件数" align="center"></el-table-column>
+        <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
+        <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
+        <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
+        <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
+        <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column>
+        <el-table-column label="操作" fixed="right" align="center" width="150px">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="toPageDetail(scope.row)" type="text">查看详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <div class="block">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
+      </div>
+
+    </el-card>
+
   </div>
 </template>
 
 <script>
 import request from "@/utils/request";
+import GanttExtension from "@/utils/ganttExtension";
+
 export default {
-  name: "rootPlanMake",
+  name: "queryStatistic",
+  components: {
+    GanttExtension
+  },
   data() {
     return {
-      //自己的ID
-      meID: "",
-      //根计划下发部分参数
-      productionLine: [],
-      rootDistribute: {
-        id: "",
-        personName: "",
-        tableData: [],
-        tableDataA: [],
-        multipleSelection: [],
-        options: {
-          assignPlanTypeOptions: {}
-        }
-      },
-      //下发详情部分参数
-
-      detailDistribute: {
-        id: "",
-        tableData: []
-      },
-
-      //存为模板部分参数
-      saveModel: {
-        rootPlanName: "",
-        id: "",
-        clientId: "",
-        brandIo: "",
-        name: "",
-        options: {
-          clientOptions: {},
-          brandOptions: {}
-        }
-      },
-      modelRules: {
-        clientId: [
-          { required: true, message: "请选择客户名称", trigger: "change" }
-        ],
-        brandId: [
-          { required: true, message: "请选择品牌名称", trigger: "change" }
-        ],
-        name: [{ required: true, message: "请输入模板名称", trigger: "blur" }]
-      },
-      //窗口控制部分
-      viewname: "first",
-      savePlanModelFlag: false,
-      detailDistributeFlag: false,
-      rootPlanDistributeFlag: false,
-
       //搜索部分参数
       checked: 1,
       planClassRadioValue: "系列计划",
       clientId: "",
+      isRootPlan: true,
       brandId: "",
       name: "",
       clothesLevelName: "",
       dateRange: "",
       seriesName: "",
+      rangeCode: "",
+      projectType: "",
+      orderStage: "",
+      inputPoint: "",
       searchOptions: {
+        inputPointOptions: {},
+        orderStageOptions: {},
+        projectTypeOptions: {},
+        rangeCodeOptions: {},
         clientOptions: {},
         brandOptions: {},
         clothesLevelOptions: {}
@@ -335,6 +200,30 @@ export default {
     request.get(`/me`).then(response => {
       this.meID = response.result.id;
     });
+    //获取波段编码
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "波段编码"
+        }
+      })
+      .then(response => {
+        this.searchOptions.rangeCodeOptions = response.result;
+      });
+    //获得投入点
+    request
+      .get(`/backstage/dic-property/name`, {
+        params: {
+          categoryName: "投入点"
+        }
+      })
+      .then(response => {
+        this.searchOptions.inputPointOptions = response.result;
+      });
+    //加载所有的项目类型
+    request.get(`/backstage/project-type/find`).then(response => {
+      this.searchOptions.projectTypeOptions = response.result;
+    });
     //获取系列名称
     request.get(`/info/series/name`).then(response => {
       response.result.forEach(element => {
@@ -352,36 +241,12 @@ export default {
         });
       });
     });
-    //获取计划类型
-    request
-      .get(`/backstage/dic-property/name`, {
-        params: {
-          categoryName: "计划类型"
-        }
-      })
-      .then(response => {
-        this.rootDistribute.options.assignPlanTypeOptions = response.result;
-      });
 
-    //获取产线
-    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      this.productionLine = response.result;
-    });
     //获得品牌下拉框
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
       this.saveModel.options.brandOptions = response.result;
     });
-    //获得服装层次下拉框
-    request
-      .get(`/backstage/dic-property/name`, {
-        params: {
-          categoryName: "服装层次"
-        }
-      })
-      .then(response => {
-        this.searchOptions.clothesLevelOptions = response.result;
-      });
     //获得客户名称下拉框
     request.get(`/backstage/client/name`).then(response => {
       this.searchOptions.clientOptions = response.result;
@@ -404,6 +269,21 @@ export default {
       });
   },
   methods: {
+    planTypeSwitchChange() {
+      this.searchRootPlan(1);
+    },
+    projectTypeChange() {
+      this.orderStage = "";
+      request
+        .get(`/backstage/order-stage/name`, {
+          params: {
+            projectTypeName: this.projectType
+          }
+        })
+        .then(response => {
+          this.searchOptions.orderStageOptions = response.result;
+        });
+    },
     //计划类型修改
     planClassRadioValueChange() {
       if (this.planClassRadioValue === "系列计划") {
@@ -696,43 +576,62 @@ export default {
     //搜索
     searchRootPlan(currentPageNum) {
       const that = this;
-      let startDate, endDate;
-
-      if (this.dateRange == "") {
-        startDate = undefined;
-        endDate = undefined;
-      } else {
-        startDate = this.changeDate(this.dateRange[0]);
-        endDate = this.changeDate(this.dateRange[1]);
-      }
-
-      request
-        .get(`/root-plan/find`, {
-          params: {
-            name: this.name === "" ? null : this.name,
-            seriesName: this.seriesName === "" ? null : this.seriesName,
-            clientId: this.clientId === "" ? null : this.clientId,
-            brandId: this.brandId === "" ? null : this.brandId,
-            clothesLevelName:
-              this.clothesLevelName === "" ? null : this.clothesLevelName,
-            createAfter: startDate,
-            createBefore: endDate,
-            pageNum: currentPageNum,
-            pageSize: this.pagination.pageSize,
-            planClass:
-              this.checked === 1
-                ? "SERIES"
-                : this.checked === 2
-                  ? "GROUP"
-                  : "STYLE"
-          }
-        })
+      if (this.isRootPlan) {        request
+          .get(`/root-plan/search`, {
+            params: {
+              seriesName: this.seriesName === "" ? null : this.seriesName,
+              clientId: this.clientId === "" ? null : this.clientId,
+              brandId: this.brandId === "" ? null : this.brandId,
+              inputPoint: this.inputPoint === "" ? null : this.inputPoint,
+              orderStage: this.orderStage === "" ? null : this.orderStage,
+              projectType: this.projectType === "" ? null : this.projectType,
+              rangeCode: this.rangeCode === "" ? null : this.rangeCode,
+              pageNum: currentPageNum,
+              pageSize: this.pagination.pageSize,
+              planClass:
+                this.checked === 1
+                  ? "SERIES"
+                  : this.checked === 2
+                    ? "GROUP"
+                    : "STYLE"
+            }
+          })
         .then(response => {
           this.tableData = [];
           this.tableData = response.result;
           this.pagination.total = response.total;
           this.pagination.currentPage = currentPageNum;
         });
+
+      } else {
+        request
+          .get(`/plan/search`, {
+            params: {
+              seriesName: this.seriesName === "" ? null : this.seriesName,
+              clientId: this.clientId === "" ? null : this.clientId,
+              brandId: this.brandId === "" ? null : this.brandId,
+              inputPoint: this.inputPoint === "" ? null : this.inputPoint,
+              orderStage: this.orderStage === "" ? null : this.orderStage,
+              projectType: this.projectType === "" ? null : this.projectType,
+              rangeCode: this.rangeCode === "" ? null : this.rangeCode,
+              pageNum: currentPageNum,
+              pageSize: this.pagination.pageSize,
+              planClass:
+                this.checked === 1
+                  ? "SERIES"
+                  : this.checked === 2
+                    ? "GROUP"
+                    : "STYLE"
+            }
+          })
+          .then(response => {
+            this.tableData = [];
+            this.tableData = response.result;
+            this.pagination.total = response.total;
+            this.pagination.currentPage = currentPageNum;
+          });
+      }
+
     },
     handleTabClick(tab, event) {
       console.log(tab, event);
@@ -811,7 +710,7 @@ export default {
       to.name === "planMakeOfStyle" ||
       to.name === "planMakeOfStyleGroup" ||
       to.name === "bePlanModelEdit") {
-      this.keepAlives = ["rootPlanMake"];
+      this.keepAlives = ["queryStatistic"];
     } else {
       this.keepAlives = [];
     }

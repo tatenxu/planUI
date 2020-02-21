@@ -48,10 +48,10 @@
         <el-row :gutter="20">
 
           <el-col :span="3">
-            <el-button type="primary" @click="handleSearch(1)">搜索</el-button>
+            <el-button type="primary" size="small" @click="handleSearch(1)">搜索</el-button>
           </el-col>
           <el-col :span="4">
-            <el-button type="primary" @click="toQuoteModel()">引用计划模板</el-button>
+            <el-button type="primary" size="small" @click="toQuoteModel()">引用计划模板</el-button>
           </el-col>
 
         </el-row>
@@ -147,13 +147,13 @@
 
               <el-col :span="2">
                 <div class="bar">
-                  <el-button type="primary" @click="saveModel('savePlanModel')">保存</el-button>
+                  <el-button type="primary" size="small" @click="saveModel('savePlanModel')">保存</el-button>
                 </div>
               </el-col>
 
               <el-col :span="2">
                 <div class="bar">
-                  <el-button type="primary" @click="saveModelCancel()">取消</el-button>
+                  <el-button type="primary" size="small" @click="saveModelCancel()">取消</el-button>
                 </div>
               </el-col>
             </el-row>
@@ -210,10 +210,10 @@
               <el-col :span="20">
                 <div class="Mbutton">
                   <el-col :span="2">
-                    <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
+                    <el-button type="primary" size="small" @click="addRootPlan('rootPlanMake')">添加</el-button>
                   </el-col>
                   <el-col :span="2">
-                    <el-button type="primary" @click="rootPlanCancel()">取消</el-button>
+                    <el-button type="primary" size="small" @click="rootPlanCancel()">取消</el-button>
                   </el-col>
                 </div>
               </el-col>

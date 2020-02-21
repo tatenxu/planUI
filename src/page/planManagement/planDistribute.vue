@@ -18,18 +18,21 @@
           <el-switch class="el-switch" v-model="planTypeSwitch" @change="planTypeSwitchChange" inactive-color="#13ce66" active-text="已审核计划" inactive-text="已下发计划"></el-switch>
         </el-col>
         <el-col :span="3">
+          <GanttExtension :selectedTableData="multipleSelection" :isRootPlan="false"></GanttExtension>
+        </el-col>
+        <el-col :span="3">
           <div class="bar">
-            <el-button type="primary" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
+            <el-button type="primary" size="small" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2" v-if="!planTypeSwitch">
           <div class="bar">
-            <el-button type="primary" style="margin-right: 20px" @click="assignDetail">查看下发情况</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="assignDetail">查看下发情况</el-button>
           </div>
         </el-col>
       </el-row>
@@ -145,7 +148,13 @@
 
 <script>
 import request from "@/utils/request";
+import GanttExtension from "@/utils/ganttExtension";
 export default {
+  name:"planDistribute",
+  components: {
+    GanttExtension
+  },
+
   data() {
     return {
       planClassRadioValue: "系列计划",
@@ -452,6 +461,27 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch(val);
     }
+  },
+  computed: {
+    keepAlives: {
+      get() {
+        return this.$store.getters["baseinfo/keepAliveOptions"];
+      },
+      set(value) {
+        return this.$store.commit("baseinfo/keepalive-opt-arr", value);
+      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === "planMakeOfSeries" ||
+      to.name === "planMakeOfStyle" ||
+      to.name === "planMakeOfStyleGroup" ||
+      to.name === "bePlanModelEdit") {
+      this.keepAlives = ["planDistribute"];
+    } else {
+      this.keepAlives = [];
+    }
+    next();
   }
 };
 </script>

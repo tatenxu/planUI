@@ -52,7 +52,7 @@
         <br />
         <el-row :gutter="20">
           <el-col :span="5">
-            <el-button type="primary" @click="rootPlanMakeBatch()">批量制定根计划</el-button>
+            <el-button type="primary" size="small" @click="rootPlanMakeBatch()">批量制定根计划</el-button>
           </el-col>
         </el-row>
 
@@ -128,25 +128,25 @@
               <el-col :span="20">
                 <div class="Mbutton">
                   <el-col :span="2" v-if="nowMakeNum!=0">
-                    <el-button type="primary" @click="toUpOne()">上一个</el-button>
+                    <el-button type="primary" size="small" @click="toUpOne()">上一个</el-button>
                   </el-col>
                   <el-col :span="2" v-else>
-                    <el-button type="primary" @click="toUpOne()" disabled>上一个</el-button>
+                    <el-button type="primary" size="small" @click="toUpOne()" disabled>上一个</el-button>
                   </el-col>
                   <el-col :span="2" v-if="nowMakeNum!=allMakeNum-1">
-                    <el-button type="primary" @click="toDownOne()">下一个</el-button>
+                    <el-button type="primary" size="small" @click="toDownOne()">下一个</el-button>
                   </el-col>
                   <el-col :span="2" v-else>
-                    <el-button type="primary" @click="toDownOne()" disabled>下一个</el-button>
+                    <el-button type="primary" size="small" @click="toDownOne()" disabled>下一个</el-button>
                   </el-col>
                   <el-col :span="2" v-if="nowMakeNum===allMakeNum-1">
-                    <el-button type="primary" @click="addRootPlan('rootPlanMake')">添加</el-button>
+                    <el-button type="primary" size="small" @click="addRootPlan('rootPlanMake')">添加</el-button>
                   </el-col>
                   <el-col :span="2" v-else>
-                    <el-button type="primary" disabled @click="addRootPlan('rootPlanMake')">添加</el-button>
+                    <el-button type="primary" size="small" disabled @click="addRootPlan('rootPlanMake')">添加</el-button>
                   </el-col>
                   <el-col :span="2">
-                    <el-button type="primary" @click="rootPlanCancel()">取消</el-button>
+                    <el-button type="primary" size="small" @click="rootPlanCancel()">取消</el-button>
                   </el-col>
                 </div>
               </el-col>
