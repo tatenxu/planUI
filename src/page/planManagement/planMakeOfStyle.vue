@@ -1109,9 +1109,7 @@ export default {
           // 自动生成计划名
           that.ruleForm.name =
             that.ruleForm.styleNumber +
-            "_" +
             that.ruleForm.orderStage +
-            "_" +
             that.ruleForm.type;
         }
       }

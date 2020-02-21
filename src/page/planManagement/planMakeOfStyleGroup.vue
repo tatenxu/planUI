@@ -1093,13 +1093,9 @@ export default {
           // 自动生成计划名
           that.ruleForm.name =
             that.ruleForm.brandName +
-            "_" +
             that.ruleForm.rangeCode +
-            "_" +
             that.ruleForm.orderStage +
-            "_" +
             that.ruleForm.styleGroupName +
-            "_" +
             that.ruleForm.assignPlanType;
         }
       }
