@@ -5,7 +5,7 @@
         <el-col :span="15">
           <div class="bar">
             <div class="title">计划类型</div>
-            <el-radio-group v-model="planClassRadioValue">
+            <el-radio-group v-model="planClassRadioValue" @change="planClassTypeChange">
               <el-radio-button label="系列计划"></el-radio-button>
               <el-radio-button label="款式计划"></el-radio-button>
               <el-radio-button label="款式组计划"></el-radio-button>
@@ -121,9 +121,6 @@
           <el-button type="primary" size="small" @click="changeSubPlanOrder">下级计划顺序调整</el-button>
         </el-col>
         <el-col :span="3">
-          <el-button type="primary" size="small" @click="lookAllPlan">查看总计划</el-button>
-        </el-col>
-        <el-col :span="3">
           <GanttExtension :selectedTableData="selectedData" :isRootPlan="isRootPlan"></GanttExtension>
         </el-col>
       </el-row>
@@ -148,7 +145,7 @@
         <!-- 三种计划类型都有 -->
         <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="childPlanNumber" label="子计划数" align="center"></el-table-column>
+        <el-table-column prop="numberChild" label="子计划数" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
@@ -293,12 +290,6 @@
       </el-table>
       <el-button type="primary" @click="subPlanOrderConfirm">确定</el-button>
     </el-dialog>
-
-    <el-dialog title="查看总计划" :visible.sync="lookAllPlanDialogVisible" :modal="false">
-      <div class="body">
-        <el-tree :data="allPlans" :props="defaultProps"></el-tree>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -328,7 +319,6 @@ export default {
       planClassRadioValue: "系列计划",
 
       templateRadio: null,
-      lookAllPlanDialogVisible: false,
 
       inputSuggestions: {
         rootPlans: [],
@@ -336,7 +326,6 @@ export default {
         series: []
       },
 
-      allPlans: [],
       defaultProps: {
         children: "children",
         label: "name"
@@ -475,6 +464,11 @@ export default {
           this.searchOptions.options.brandNameOptions = response.result;
         });
     },
+    planClassTypeChange() {
+      this.pagination.currentPage = 1;
+      this.tableData = [];
+      this.handleSearch();
+    },
     planTypeSwitchChange() {
       this.pagination.currentPage = 1;
       this.tableData = [];
@@ -581,44 +575,6 @@ export default {
           });
       }
     },
-    lookAllPlan() {
-      if (this.selectedData.length != 1) {
-        this.$message({
-          message: "请选择一项！",
-          type: "warning"
-        });
-        return;
-      }
-      let param = {
-        id: this.selectedData[0].id
-      };
-
-      if (this.isRootPlan) {
-        request
-          .get(`${window.$config.HOST}/root-plan/tree`, {
-            params: param
-          })
-          .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
-
-            // this.selectedData = [];
-            this.lookAllPlanDialogVisible = true;
-          });
-      } else {
-        request
-          .get(`${window.$config.HOST}/plan/tree`, {
-            params: param
-          })
-          .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
-
-            // this.selectedData = [];
-            this.lookAllPlanDialogVisible = true;
-          });
-      }
-    },
 
     addPlanChild() {
       if (this.selectedData.length === 1) {
@@ -626,7 +582,7 @@ export default {
 
         var param = {
           goback: "distributedPlanManagement",
-          isRoot: false,
+          isRoot: this.isRoot,
           isModify: false,
           isCreate: true,
           rowData: data
@@ -635,7 +591,7 @@ export default {
         console.log("路由参数：", param);
 
         this.$router.push({
-          name: planClassRouterDestinationDict[planClassRadioValue],
+          name: this.planClassRouterDestinationDict[this.planClassRadioValue],
           params: param
         });
         // this.selectedData = [];
@@ -652,7 +608,7 @@ export default {
         this.selectedData.forEach(element => {
           var param = {
             goback: "distributedPlanManagement",
-            isRoot: false,
+            isRoot: this.isRoot,
             isModify: false,
             isCreate: true,
             isBatched: true,
@@ -661,7 +617,7 @@ export default {
           console.log("路由参数：", param);
 
           let createChildPlanPage = this.$router.resolve({
-            name: planClassRouterDestinationDict[planClassRadioValue],
+            name: this.planClassRouterDestinationDict[this.planClassRadioValue],
             params: param
           });
           window.open(createChildPlanPage.href, "_blank");
@@ -682,7 +638,7 @@ export default {
       console.log("跳转参数：", param);
 
       this.$router.push({
-        name: planClassRouterDestinationDict[planClassRadioValue],
+        name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param
       });
     },
