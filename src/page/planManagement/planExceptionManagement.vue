@@ -100,7 +100,6 @@
         >
           <el-table-column type="selection" width="50px"></el-table-column>
           <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
-          <el-table-column prop="serialNo" label="异常编号" width="150px" align="center"></el-table-column>
           <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
           <el-table-column prop="clientName" label="客户" width="100px" align="center"></el-table-column>
           <el-table-column prop="brandName" label="品牌" width="100px" align="center"></el-table-column>
@@ -356,17 +355,18 @@ export default {
       });
 
     //加载默认所有的异常计划
-    request
-      .get(`${window.$config.HOST}/plan-exception/find`, {
-        params: {
-          pageNum: this.pagination.currentPage,
-          pageSize: this.pagination.pageSize
-        }
-      })
-      .then(response => {
-        this.tableData = response.result;
-        this.pagination.total = response.total;
-      });
+    this.handleSearchClick();
+    // request
+    //   .get(`${window.$config.HOST}/plan-exception/find`, {
+    //     params: {
+    //       pageNum: this.pagination.currentPage,
+    //       pageSize: this.pagination.pageSize
+    //     }
+    //   })
+    //   .then(response => {
+    //     this.tableData = response.result;
+    //     this.pagination.total = response.total;
+    //   });
 
     //输入建议
     request.get(`${window.$config.HOST}/plan/name`).then(response => {
@@ -493,6 +493,7 @@ export default {
         return undefined;
       } else {
         console.log(time);
+        time = new Date(time);
         var y = time.getFullYear();
         var m = time.getMonth() + 1;
         m = m < 10 ? "0" + m : m;
@@ -504,6 +505,7 @@ export default {
         minute = minute < 10 ? "0" + minute : minute;
         var second = time.getSeconds();
         second = minute < 10 ? "0" + second : second;
+
         return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
       }
     },

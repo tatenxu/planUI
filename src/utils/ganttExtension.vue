@@ -142,10 +142,12 @@ export default {
         });
       } else {
         this.transferedRootPlanId = this.isRootPlan
-          ? this.selectedTableData.id
-          : this.selectedTableData.rootPlanId;
+          ? this.selectedTableData[0].id
+          : this.selectedTableData[0].rootPlanId;
         console.log("根计划ID：", this.transferedRootPlanId);
         this.ganttDrawerVisible = true;
+
+        this.getGanttDataByRootPlanId();
       }
     },
 

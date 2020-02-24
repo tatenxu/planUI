@@ -413,6 +413,7 @@
               <el-form-item label="起止时间" prop="startEndDate" placeholder="请输入">
                 <el-date-picker
                   :disabled="!isModifyPlanFlag && !isCreatePlanFlag"
+                  clearable
                   :picker-options="chooseOptions.pickerOptions0"
                   style="margin-left:20px"
                   v-model="ruleForm.startEndDate"
@@ -726,7 +727,8 @@ export default {
         systemCode: "无数据",
         extension: "无数据",
         executionState: "无数据",
-        startEndDate: ["2020-02-15", "2020-02-16"],
+        startEndDate: [],
+        defaultStartEndDate: ["2020-02-15", "2020-02-16"],
         actualStartEndDate: ["1970-01-01", "1970-01-01"]
       },
 
@@ -797,10 +799,19 @@ export default {
   methods: {
     startEndDateChange() {
       console.log("起止时间改变：", this.ruleForm.startEndDate);
-      var dateStart = new Date(this.ruleForm.startEndDate[0]);
-      var dateEnd = new Date(this.ruleForm.startEndDate[1]);
-      var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
-      this.ruleForm.cycle = difValue;
+      if (val === null) {
+        this.ruleForm.startDate = this.ruleForm.startStr;
+        this.ruleForm.endDate = this.ruleForm.endStr;
+        this.ruleForm.cycle = 0;
+      } else {
+        this.ruleForm.startDate = this.ruleForm.startEndDate[0];
+        this.ruleForm.endDate = this.ruleForm.startEndDate[1];
+
+        var dateStart = new Date(this.ruleForm.startDate);
+        var dateEnd = new Date(this.ruleForm.endDate);
+        var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
+        this.ruleForm.cycle = difValue;
+      }
     },
     dfsDisable(node, plArr) {
       if (plArr.indexOf(node.name) == -1) {
@@ -865,9 +876,20 @@ export default {
     },
     uploadOK() {
       this.fileOperationDialogVisible = false;
+
       if (this.ruleForm.isBatched) {
-        window.opener = null;
-        window.open("about:blank", "_top").close();
+        this.$message({
+          message: "上传成功!",
+          type: "success"
+        });
+
+        function sleep(time) {
+          return new Promise(resolve => setTimeout(resolve, time));
+        }
+        sleep(1000).then(() => {
+          window.opener = null;
+          window.open("about:blank", "_top").close();
+        });
       } else {
         this.$router.push({
           name: this.goback ? this.goback : "planManagement",
@@ -895,8 +917,6 @@ export default {
         if (valid) {
           console.log("点击添加计划按钮：");
           let that = this;
-          that.ruleForm.startDate = that.ruleForm.startEndDate[0];
-          that.ruleForm.endDate = that.ruleForm.startEndDate[1];
 
           console.log("产品线结果", that.ruleForm.productLine);
           var param = {
@@ -926,8 +946,18 @@ export default {
               this.$refs.upload.submit();
 
               if (this.ruleForm.isBatched) {
-                window.opener = null;
-                window.open("about:blank", "_top").close();
+                this.$message({
+                  message: "添加成功!",
+                  type: "success"
+                });
+
+                function sleep(time) {
+                  return new Promise(resolve => setTimeout(resolve, time));
+                }
+                sleep(1000).then(() => {
+                  window.opener = null;
+                  window.open("about:blank", "_top").close();
+                });
               } else {
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
@@ -951,11 +981,12 @@ export default {
           if (this.isRootPlanFlag) {
             var param = {
               id: this.ruleForm.id,
-              startDate: this.ruleForm.startEndDate[0],
-              endDate: this.ruleForm.startEndDate[1],
+              startDate: this.ruleForm.startDate,
+              endDate: this.ruleForm.endDate,
               date: this.ruleForm.date,
               dateType: this.ruleForm.dateType,
-              inputPoint: this.ruleForm.inputPoint
+              inputPoint: this.ruleForm.inputPoint,
+              superiorId: this.ruleForm.superiorId
             };
 
             console.log("修改参数：", param);
@@ -971,21 +1002,17 @@ export default {
                 this.originRow.dateType = param.dateType;
                 this.originRow.inputPoint = param.inputPoint;
 
-                if (this.ruleForm.isBatched) {
-                  window.opener = null;
-                  window.open("about:blank", "_top").close();
-                } else {
-                  this.$router.push({
-                    name: this.goback ? this.goback : "planManagement",
-                    params: {}
-                  });
-                }
+                this.$router.push({
+                  name: this.goback ? this.goback : "planManagement",
+                  params: {}
+                });
               });
           } else {
             var param = {
               id: this.ruleForm.id,
-              startDate: this.ruleForm.startEndDate[0],
-              endDate: this.ruleForm.startEndDate[1],
+              rootPlanId: this.ruleForm.rootPlanId,
+              startDate: this.ruleForm.startDate,
+              endDate: this.ruleForm.endDate,
               product: this.ruleForm.product,
               productLine:
                 this.ruleForm.productLine instanceof Array
@@ -994,7 +1021,8 @@ export default {
                     ]
                   : this.ruleForm.productLine,
               inputPoint: this.ruleForm.inputPoint,
-              note: this.ruleForm.note
+              note: this.ruleForm.note,
+              superiorId: this.ruleForm.superiorId
             };
 
             console.log("修改参数：", param);
@@ -1013,15 +1041,10 @@ export default {
 
                 this.$refs.upload.submit();
 
-                if (this.ruleForm.isBatched) {
-                  window.opener = null;
-                  window.open("about:blank", "_top").close();
-                } else {
-                  this.$router.push({
-                    name: this.goback ? this.goback : "planManagement",
-                    params: {}
-                  });
-                }
+                this.$router.push({
+                  name: this.goback ? this.goback : "planManagement",
+                  params: {}
+                });
               });
           }
         } else {
@@ -1039,8 +1062,13 @@ export default {
       });
 
       if (this.ruleForm.isBatched) {
-        window.opener = null;
-        window.open("about:blank", "_top").close();
+        function sleep(time) {
+          return new Promise(resolve => setTimeout(resolve, time));
+        }
+        sleep(1000).then(() => {
+          window.opener = null;
+          window.open("about:blank", "_top").close();
+        });
       } else {
         this.$router.push({
           name: this.goback ? this.goback : "planManagement",
@@ -1076,7 +1104,7 @@ export default {
     },
 
     init() {
-      /* 跳转至本页面的参数：
+      /* 新建窗口（query） / 跳转至本页面的参数：
         ? {
         ?   name: "this page's router name",
         ?   params: {
@@ -1091,12 +1119,11 @@ export default {
       console.log("开始处理页面跳转参数");
       let that = this;
 
-      console.log("路由参数：", that.$route.params);
-
       if (Object.getOwnPropertyNames(that.$route.params).length != 0) {
+        console.log("路由params参数：", that.$route.params);
+
         let data = that.$route.params;
-        that.ruleForm.isBatched =
-          data.isBatched === undefined ? false : data.isBatched;
+        that.ruleForm.isBatched = false;
 
         that.goback = data.goback; //goback 为返回页面的 name
         that.originRow = data.rowData; // 拷贝引用
@@ -1126,25 +1153,16 @@ export default {
 
         that.placeHolders.startStr = that.ruleForm.startDate;
         that.placeHolders.endStr = that.ruleForm.endDate;
-        that.ruleForm.startEndDate = [
-          that.ruleForm.startDate,
-          that.ruleForm.endDate
-        ];
-
-        // that.ruleForm.actualStartEndDate = [
-        //   that.ruleForm.actualStartDate,
-        //   that.ruleForm.actualEndDate
-        // ];
 
         // 自动计算周期
-        var dateStart = new Date(that.ruleForm.startEndDate[0]);
-        var dateEnd = new Date(that.ruleForm.startEndDate[1]);
+        var dateStart = new Date(that.ruleForm.startDate);
+        var dateEnd = new Date(that.ruleForm.endDate);
         var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
         that.ruleForm.cycle = difValue;
 
         // 查看时加载计划树
         if (!that.isCreatePlanFlag && !that.isModifyPlanFlag) {
-          that.getPlanTreeData();
+          that.getPlanTreeData(that.ruleForm.id);
         }
 
         // 处理是添加子计划时相关属性更改的操作
@@ -1179,6 +1197,69 @@ export default {
             that.ruleForm.orderStage +
             that.ruleForm.assignPlanType;
         }
+      } else if (Object.getOwnPropertyNames(that.$route.query).length != 0) {
+        console.log("路由query参数：", that.$route.query);
+
+        let data = that.$route.query;
+        that.ruleForm.isBatched = true;
+
+        that.goback = data.goback; //goback 为返回页面的 name
+        that.originRow = data; // 拷贝引用
+        // 深拷贝变量，不然只是引用
+        that.ruleForm = JSON.parse(JSON.stringify(data));
+
+        that.isRootPlanFlag = false;
+        that.isModifyPlanFlag = data.isModify === "true";
+        that.isCreatePlanFlag = data.isCreate === "true";
+
+        that.placeHolders.startStr = that.ruleForm.startDate;
+        that.placeHolders.endStr = that.ruleForm.endDate;
+        that.ruleForm.startEndDate = [
+          that.ruleForm.startDate,
+          that.ruleForm.endDate
+        ];
+
+        that.placeHolders.startStr = that.ruleForm.startDate;
+        that.placeHolders.endStr = that.ruleForm.endDate;
+
+        // 自动计算周期
+        var dateStart = new Date(that.ruleForm.startDate);
+        var dateEnd = new Date(that.ruleForm.endDate);
+        var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
+        that.ruleForm.cycle = difValue;
+
+        // 处理是添加子计划时相关属性更改的操作
+        that.ruleForm.type = that.ruleForm.assignPlanType;
+        that.ruleForm.superiorId =
+          data.isRoot === "true" ? 0 : that.ruleForm.id;
+
+        that.ruleForm.superiorName = that.ruleForm.name;
+
+        if (that.ruleForm.rootPlanName != undefined) {
+          that.ruleForm.cycle = 0;
+          that.ruleForm.productLine = undefined;
+          that.ruleForm.product = undefined;
+          that.ruleForm.note = undefined;
+          that.ruleForm.inputPoint = undefined;
+        }
+
+        that.ruleForm.rootPlanName =
+          that.ruleForm.rootPlanName === undefined
+            ? that.ruleForm.name
+            : that.ruleForm.rootPlanName;
+        that.ruleForm.rootPlanId =
+          that.ruleForm.rootPlanId === undefined
+            ? that.ruleForm.id
+            : that.ruleForm.rootPlanId;
+
+        that.ruleForm.id = undefined;
+
+        // 自动生成计划名
+        that.ruleForm.name =
+          that.ruleForm.brandName +
+          that.ruleForm.rangeCode +
+          that.ruleForm.orderStage +
+          that.ruleForm.assignPlanType;
       }
     }
   }

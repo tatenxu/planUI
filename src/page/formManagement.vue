@@ -148,17 +148,25 @@
           </div>
         </el-col>
 
-        <el-col :span="2" :offset="2">
-          <el-button type="primary" @click="exportExcel">导出</el-button>
-        </el-col>
-
-        <el-col :span="2">
+        <el-col :span="2" :offset="6">
           <el-button type="primary" @click="handleSearch">搜索</el-button>
         </el-col>
       </el-row>
     </el-card>
 
     <el-card class="box-card">
+      <el-row :gutter="20" style="margin-top:5px; ">
+        <el-col :span="3">
+          <el-button type="primary" @click="exportExcel('plan/export-month')">按月导出</el-button>
+        </el-col>
+        <el-col :span="3">
+          <el-button type="primary" @click="exportExcel('plan/export-week')">按周导出</el-button>
+        </el-col>
+        <el-col :span="3">
+          <el-button type="primary" @click="exportExcel('plan/export-day')">按日导出</el-button>
+        </el-col>
+      </el-row>
+
       <gantt-elastic
         :options="options"
         :tasks="tasks"
@@ -524,6 +532,19 @@ export default {
     handleSearch() {
       var allDates = this.generateDateLists();
       var param = {
+        planClass:
+          this.searchOptions.searchParams.clientName === ""
+            ? undefined
+            : this.searchOptions.searchParams.clientName,
+        planClass:
+          this.searchOptions.searchParams.brandName === ""
+            ? undefined
+            : this.searchOptions.searchParams.brandName,
+        planClass:
+          this.searchOptions.searchParams.seriesName === ""
+            ? undefined
+            : this.searchOptions.searchParams.seriesName,
+
         creatorId:
           this.searchOptions.searchParams.creatorName === ""
             ? undefined
@@ -601,7 +622,7 @@ export default {
         });
     },
 
-    exportExcel() {
+    exportExcel(exportUrl) {
       var data = [];
 
       this.originSeriesGetData.forEach(ele => {
@@ -684,7 +705,7 @@ export default {
       });
 
       request({
-        url: "plan/export-excel",
+        url: exportUrl,
         method: "post",
         data: data,
         "Content-Type": "application/json;charset=UTF-8",

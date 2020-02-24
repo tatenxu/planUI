@@ -132,8 +132,12 @@
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
         :row-style="tableRowClassName"
+        @selection-change="handleMultipleSelectionChange"
       >
-        <el-table-column label width="65">
+        <!-- 多选 -->
+        <el-table-column type="selection" width="55"></el-table-column>
+        <!-- 单选 -->
+        <!-- <el-table-column label width="65">
           <template slot-scope="scope">
             <el-radio
               :label="scope.row.id"
@@ -141,11 +145,12 @@
               @change.native="getTemplateRow(scope.row)"
             >{{scope.$index+1}}</el-radio>
           </template>
-        </el-table-column>
+        </el-table-column>-->
+
         <!-- 三种计划类型都有 -->
-        <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
+        <el-table-column prop="assignPlanType" label="下发计划类型" align="center" width="120"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="numberChild" label="子计划数" align="center"></el-table-column>
+        <el-table-column prop="numberOfChildren" label="子计划数" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
@@ -318,7 +323,7 @@ export default {
       },
       planClassRadioValue: "系列计划",
 
-      templateRadio: null,
+      // templateRadio: null,
 
       inputSuggestions: {
         rootPlans: [],
@@ -483,10 +488,16 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch();
     },
-    getTemplateRow(row) {
-      this.templateRadio = row.id;
-      this.selectedData = [];
-      this.selectedData.push(row);
+
+    // 单选触发函数
+    // getTemplateRow(row) {
+    //   this.templateRadio = row.id;
+    //   this.selectedData = [];
+    //   this.selectedData.push(row);
+    // },
+    // 多选触发函数
+    handleMultipleSelectionChange(val) {
+      this.selectedData = val;
     },
 
     // 行颜色
@@ -606,19 +617,17 @@ export default {
         this.$message.error("请选择一个计划！");
       } else {
         this.selectedData.forEach(element => {
-          var param = {
-            goback: "distributedPlanManagement",
-            isRoot: this.isRootPlan,
-            isModify: false,
-            isCreate: true,
-            isBatched: true,
-            rowData: element
-          };
-          console.log("路由参数：", param);
+          var param = element;
+          param.goback = "distributedPlanManagement";
+          param.isRoot = this.isRootPlan;
+          param.isModify = false;
+          param.isCreate = true;
+
+          console.log("新建标签页路由参数：", param);
 
           let createChildPlanPage = this.$router.resolve({
             name: this.planClassRouterDestinationDict[this.planClassRadioValue],
-            params: param
+            query: param
           });
           window.open(createChildPlanPage.href, "_blank");
         });

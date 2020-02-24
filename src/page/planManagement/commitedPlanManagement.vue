@@ -147,7 +147,7 @@
         <!-- 三种计划类型都有 -->
         <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
         <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="numberChild" label="子计划数" align="center"></el-table-column>
+        <el-table-column prop="numberOfChildren" label="子计划数" align="center"></el-table-column>
         <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
         <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
         <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
