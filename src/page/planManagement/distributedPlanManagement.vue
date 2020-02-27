@@ -235,7 +235,7 @@
         <af-table-column prop="startDate" label="计划开始" align="center"></af-table-column>
         <af-table-column prop="endDate" label="计划完成" align="center"></af-table-column>
 
-        <af-table-column fixed="right" label="操作" align="center">
+        <af-table-column fixed="right" label="操作" width="80px" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
           </template>
@@ -264,7 +264,7 @@
         <af-table-column prop="creatorName" label="创建人"></af-table-column>
         <af-table-column prop="deptName" label="部门名称"></af-table-column>
         <af-table-column prop="createTime" label="创建日期"></af-table-column>
-        <af-table-column label="操作" fixed="right">
+        <af-table-column label="操作" width="80px" fixed="right">
           <template slot-scope="scope">
             <el-button
               size="mini"

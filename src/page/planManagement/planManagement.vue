@@ -592,6 +592,13 @@ export default {
   },
   methods: {
     //输入建议
+    createFilter(queryString) {
+      return element => {
+        return (
+          element.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
     searchPlanName(queryString, cb) {
       var tmp = this.inputSuggestions.plans;
       var results = queryString
