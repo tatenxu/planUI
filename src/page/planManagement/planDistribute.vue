@@ -18,16 +18,11 @@
           <el-switch class="el-switch" v-model="planTypeSwitch" @change="planTypeSwitchChange" inactive-color="#13ce66" active-text="已审核计划" inactive-text="已下发计划"></el-switch>
         </el-col>
         <el-col :span="3">
-          <GanttExtension :selectedTableData="multipleSelection" :isRootPlan="false"></GanttExtension>
+          <GanttExtension :selectedTableData="[multipleSelection]" :isRootPlan="false"></GanttExtension>
         </el-col>
         <el-col :span="3">
           <div class="bar">
             <el-button type="primary" size="small" style="margin-right:20px" @click="chooseUserClick">选择下发对象</el-button>
-          </div>
-        </el-col>
-        <el-col :offset="1" :span="2">
-          <div class="bar">
-            <el-button type="primary" size="small" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2" v-if="!planTypeSwitch">
@@ -36,7 +31,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-table :data="tableData" style="width: 100%; margin-top: 20px" highlight-current-row :stripe="true">
+      <el-table :data="tableData" border style="width: 100%; margin-top: 20px" highlight-current-row :stripe="true">
         <el-table-column label width="65">
           <template slot-scope="scope">
             <el-radio :label="scope.row.id" v-model="templateRadio" @change.native="getTemplateRow(scope.row)">{{scope.$index+1}}</el-radio>
@@ -63,8 +58,8 @@
         <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
         <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
         <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
-        <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
-        <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column>
+        <!-- <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
+        <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column> -->
         <el-table-column fixed="right" width="100" label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
@@ -76,7 +71,7 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
     </div>
 
-    <el-dialog :modal="false" title="选择下发对象" :visible.sync="distributePanelFlag" :before-close="distributePanelCancel">
+    <!-- <el-dialog :modal="false" title="选择下发对象" :visible.sync="distributePanelFlag" :before-close="distributePanelCancel">
       <el-row :gutter="20" style="margin-top:-30px;">
         <el-col :span="12">
           <div class="bar">
@@ -116,8 +111,52 @@
           </el-table>
         </el-col>
       </el-row>
-    </el-dialog>
+    </el-dialog> -->
+    <el-dialog :modal="false" title="选择下发对象" width="1200px" :visible.sync="distributePanelFlag" :before-close="distributePanelCancel">
+      <el-row :gutter="20" style="margin-top:0px;">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input v-model="distribute.personName" clearable placeholder="请输入" style="width:250px"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">部门</div>
+            <el-cascader expand-trigger="hover" :options="distribute.options.deptOptiopns" clearable v-model="distribute.deptName" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">产线</div>
+            <el-cascader expand-trigger="hover" :options="distribute.options.productLineOptions" clearable v-model="distribute.productLine" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="searchPersonByPDP" style="margin-left:100px">搜索</el-button>
+        </el-col>
+      </el-row>
 
+      <el-row :gutter="20" style="margin-top:15px;">
+        <el-col :span="13">
+          <el-table :data="distribute.personTable" max-height="400" @selection-change="personTableSelect" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
+            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
+              <template slot-scope="scope">
+                <el-select size="medium" v-model="scope.row.assignPlanType">
+                  <el-option v-for="item in distribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="assignRoot" style="margin-left:348px;margin-top:30px">下发</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
     <el-dialog title="查看总计划" :visible.sync="planTreePanelFlag" :modal="false">
       <div class="body">
         <el-tree :data="planTree.planTreeData" :highlight-current="true" :props="planTree.defaultProps"></el-tree>
@@ -150,13 +189,18 @@
 import request from "@/utils/request";
 import GanttExtension from "@/utils/ganttExtension";
 export default {
-  name:"planDistribute",
+  name: "planDistribute",
   components: {
     GanttExtension
   },
 
   data() {
     return {
+      deptToCascaderProps: {
+        value: "id",
+        label: "name",
+        children: "children"
+      },
       planClassRadioValue: "系列计划",
       checked: 1,
       //页码部分
@@ -176,12 +220,16 @@ export default {
       distributePanelFlag: false,
       distribute: {
         personName: "",
-        productLine: [],
+        deptName: "",
+        productLine: "",
+        //productLine: [],
         personTable: [],
         userSelection: [],
         personTableTemplate: [],
         options: {
-          assignPlanTypeOptions: {}
+          assignPlanTypeOptions: {},
+          productLineOptions: {},
+          deptNameOptions: {}
         },
         defaultProps: {
           children: "children",
@@ -207,6 +255,19 @@ export default {
     };
   },
   created: function () {
+    // 获取部门信息
+    this.$axios
+      .get(`${window.$config.HOST2}/dept/find`)
+      .then(response => {
+        this.distribute.options.deptOptiopns = response.data.result;
+      })
+      .catch(error => {
+        this.$message.error("部门信息加载失败!");
+      });
+    //获取产线
+    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
+      this.distribute.options.productLineOptions = response.result;
+    });
     //获取计划类型
     request
       .get(`/backstage/dic-property/name`, {
@@ -217,10 +278,6 @@ export default {
       .then(response => {
         this.distribute.options.assignPlanTypeOptions = response.result;
       });
-    //获取产线
-    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      this.distribute.productLine = response.result;
-    });
     //获取初始搜索
     request
       .get(`/plan/find`, {
@@ -238,6 +295,23 @@ export default {
       });
   },
   methods: {
+    searchPersonByPDP() {
+      this.$axios
+        .get(`${window.$config.HOST2}/user/find-dup`,
+          {
+            params: {
+              name: this.distribute.personName === "" ? undefined : this.distribute.personName,
+              deptId: (this.distribute.deptName === "" || this.distribute.deptName === null) ? undefined : this.distribute.deptName[this.distribute.deptName.length - 1],
+              productLineId: (this.distribute.productLine === "" || this.distribute.productLine === null) ? undefined : this.distribute.productLine[this.distribute.productLine.length - 1]
+            }
+          })
+        .then(response => {
+          this.distribute.personTable = response.data.result;
+        })
+        .catch(error => {
+          this.$message.error("人员信息加载失败!");
+        });
+    },
     planClassRadioValueChanged() {
       if (this.planClassRadioValue === "系列计划") {
         this.checked = 1;
@@ -333,9 +407,10 @@ export default {
         } else {
           list.push({
             assignPlanType: element.assignPlanType,
-            executorId: element.userId,
+            executorId: element.id,
             executorName: element.name,
-            planId: this.multipleSelection.id
+            planId: this.multipleSelection.id,
+            rootPlanId: this.multipleSelection.rootPlanId
           });
         }
       });
@@ -383,7 +458,7 @@ export default {
     searchDetails(row) {
       console.log(row);
       this.$router.push({
-        name: "planMakeIndex",
+        name: this.checked === 1 ? "planMakeOfSeries" : (this.checked === 2 ? "planMakeOfStyleGroup" : "planMakeOfStyle"),
         params: {
           goback: "planDistribute",
           isRoot: false,
@@ -423,6 +498,10 @@ export default {
           type: "warning"
         });
       } else {
+        this.distribute.personName = "";
+        this.distribute.deptName = "";
+        this.distribute.productLine = "";
+        this.distribute.userSelection = [];
         this.distributePanelFlag = true;
       }
     },

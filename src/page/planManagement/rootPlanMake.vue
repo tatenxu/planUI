@@ -69,7 +69,7 @@
               <el-button type="primary" size="small" @click="searchRootPlan(1)">搜索</el-button>
             </el-col>
             <el-col :span="3">
-              <el-button type="primary" size="small" @click="saveModelPanelOpen()" v-if="checked  === 1">存为计划模板</el-button>
+              <el-button type="primary" size="small" @click="negotiatePanelOpen()">协商延迟</el-button>
             </el-col>
             <el-col :span="3">
               <el-button type="primary" size="small" @click="deleteRootPlan()">删除根计划</el-button>
@@ -104,7 +104,7 @@
             <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
             <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
             <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
-            <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column>
+            <el-table-column prop="date" width="150px" label="日期" align="center"></el-table-column>
             <el-table-column label="是否约束" align="center" fixed="right" width="80px" v-if="checked ===1">
               <template slot-scope="scope" v-if=" checked ===1">
                 <el-switch v-if=" checked ===1" v-model="scope.row.limited" @change="rootPlanLimit(scope.row)" active-color="#13ce66"></el-switch>
@@ -172,7 +172,22 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
-    <el-dialog :modal="false" title="根计划下发" :visible.sync="rootPlanDistributeFlag" :before-close="cancelDistribute">
+    <el-dialog :modal="false" title="协商延迟" width="900px" :visible.sync="negotiatePanelFlag">
+      <el-form :model="negotiateForm" :rules="negotiateFormRule" ref="negotiateForm" label-width="120px" class="demo-ruleForm">
+        <el-row :gutter="20" style="margin-top:5px;">
+          <el-col :span="8">
+            <el-form-item label="协商延迟时间" prop="extension" placeholder="请选择客户名称">
+              <el-date-picker v-model="negotiateForm.extension" type="date" placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-button type="primary" size="small" @click="negotiate()" style="margin-left:100px;margin-top:3px">协商延迟</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
+    <!-- <el-dialog :modal="false" title="根计划下发" :visible.sync="rootPlanDistributeFlag" :before-close="cancelDistribute">
       <el-row :gutter="20" style="margin-top:-30px;">
         <el-col :span="12">
           <div class="bar">
@@ -212,8 +227,53 @@
           </el-table>
         </el-col>
       </el-row>
-    </el-dialog>
+    </el-dialog> -->
 
+    <el-dialog :modal="false" title="根计划下发" width="1200px" :visible.sync="rootPlanDistributeFlag" :before-close="cancelDistribute">
+      <el-row :gutter="20" style="margin-top:0px;">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input v-model="rootDistribute.personName" clearable placeholder="请输入" style="width:250px"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">部门</div>
+            <el-cascader expand-trigger="hover" :options="rootDistribute.options.deptOptiopns" clearable v-model="rootDistribute.deptName" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">产线</div>
+            <el-cascader expand-trigger="hover" :options="rootDistribute.options.productLineOptions" clearable v-model="rootDistribute.productLine" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="searchPersonByPDP" style="margin-left:100px">搜索</el-button>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top:15px;">
+        <el-col :span="13">
+          <el-table :data="rootDistribute.tableData" max-height="400" @selection-change="changeCheckBoxFun2" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
+            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
+              <template slot-scope="scope">
+                <el-select size="medium" v-model="scope.row.assignPlanType">
+                  <el-option v-for="item in rootDistribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="assignRoot" style="margin-left:348px;margin-top:30px">下发</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
     <el-dialog :modal="false" title="下发详情" :visible.sync="detailDistributeFlag" :before-close="cancelDistributeDetail">
       <el-row :gutter="20">
         <el-col :span="20">
@@ -245,18 +305,38 @@ export default {
   },
   data() {
     return {
+      deptToCascaderProps: {
+        value: "id",
+        label: "name",
+        children: "children"
+      },
+      //协商延迟
+      negotiatePanelFlag: false,
+      negotiateForm: {
+        extension: "",
+      },
+      negotiateFormRule: {
+        extension: [
+          { required: true, message: "请选择协商延迟的时间！", trigger: "change" }
+        ],
+      },
       //自己的ID
       meID: "",
       //根计划下发部分参数
       productionLine: [],
       rootDistribute: {
         id: "",
+        productLine: "",
+        deptName: "",
         personName: "",
         tableData: [],
         tableDataA: [],
         multipleSelection: [],
         options: {
-          assignPlanTypeOptions: {}
+          assignPlanTypeOptions: {},
+          productLineOptions: [],
+          deptOptiopns: [],
+
         }
       },
       //下发详情部分参数
@@ -343,6 +423,19 @@ export default {
     };
   },
   created: function () {
+    // 获取部门信息
+    this.$axios
+      .get(`${window.$config.HOST2}/dept/find`)
+      .then(response => {
+        this.rootDistribute.options.deptOptiopns = response.data.result;
+      })
+      .catch(error => {
+        this.$message.error("部门信息加载失败!");
+      });
+    //获取产线
+    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
+      this.rootDistribute.options.productLineOptions = response.result;
+    });
     //确认自己的信息
     request.get(`/me`).then(response => {
       this.meID = response.result.id;
@@ -375,10 +468,6 @@ export default {
         this.rootDistribute.options.assignPlanTypeOptions = response.result;
       });
 
-    //获取产线
-    request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      this.productionLine = response.result;
-    });
     //获得品牌下拉框
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
@@ -416,6 +505,62 @@ export default {
       });
   },
   methods: {
+    searchPersonByPDP() {
+
+      this.$axios
+        .get(`${window.$config.HOST2}/user/find-dup`,
+          {
+            params: {
+              name: this.rootDistribute.personName === "" ? undefined : this.rootDistribute.personName,
+              deptId: (this.rootDistribute.deptName === "" || this.rootDistribute.deptName === null) ? undefined : this.rootDistribute.deptName[this.rootDistribute.deptName.length - 1],
+              productLineId: (this.rootDistribute.productLine === "" || this.rootDistribute.productLine === null) ? undefined : this.rootDistribute.productLine[this.rootDistribute.productLine.length - 1]
+            }
+          })
+        .then(response => {
+          this.rootDistribute.tableData = response.data.result;
+        })
+        .catch(error => {
+          this.$message.error("人员信息加载失败!");
+        });
+    },
+    //协商延迟面板打开
+    negotiatePanelOpen() {
+      if (this.multipleSelection.length != 1) {
+        this.$message({
+          message: "请选择单条计划进行协商延迟！",
+          type: "error"
+        });
+        return;
+      }
+      this.negotiatePanelFlag = true;
+      this.negotiateForm.extension = "";
+    },
+    //协商延迟按钮点击
+    negotiate() {
+      this.$refs["negotiateForm"].validate(valid => {
+        if (valid) {
+          this.multipleSelection.forEach(element => {
+            request
+              .put("/root-plan/negotiate", null, {
+                params: {
+                  id: element.id,
+                  extension: this.changeDate(this.negotiateForm.extension)
+                }
+              })
+              .then(response => {
+                this.negotiatePanelFlag = false;
+                this.searchRootPlan(this.pagination.currentPage);
+              });
+          });
+
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
     //计划类型修改
     planClassRadioValueChange() {
       if (this.planClassRadioValue === "系列计划") {
@@ -516,6 +661,7 @@ export default {
     assignDetail(row) {
       this.detailDistributeFlag = true;
       this.detailDistribute.id = row.id;
+
       this.searchDetailDistruibute();
     },
     searchDetailDistruibute() {
@@ -570,9 +716,20 @@ export default {
     //根计划的下发按钮
     assignRootPlan(row) {
       this.rootDistribute.id = row.id;
+      this.rootDistribute.personName = "";
+      this.rootDistribute.deptName = "";
+      this.rootDistribute.productLine = "";
+      this.rootDistribute.multipleSelection = [];
       this.rootPlanDistributeFlag = true;
     },
     assignRoot() {
+      if (this.rootDistribute.multipleSelection.length === 0) {
+        this.$message({
+          message: "请至少选择一个人员进行下发!",
+          type: "error"
+        });
+        return;
+      }
       let list = [];
       let ok = 0;
       this.rootDistribute.multipleSelection.forEach(element => {
@@ -586,9 +743,9 @@ export default {
         }
         list.push({
           assignPlanType: element.assignPlanType,
-          executorId: element.userId,
+          executorId: element.id,
           executorName: element.name,
-          rootPlanId: this.rootDistribute.id
+          rootPlanId: this.rootDistribute.id,
         });
       });
       if (ok === 0) {

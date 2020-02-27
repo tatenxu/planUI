@@ -76,6 +76,7 @@
           <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
           <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
           <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
+          <el-table-column prop="pieceQuantity" width="120" label="正式件数" align="center"></el-table-column>
           <el-table-column prop="creatorName" width="180" label="添加人" align="center"></el-table-column>
           <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
@@ -631,8 +632,24 @@ export default {
         }
       })
       .then(response => {
-        this.addForm.options.rangeCodeOptions = response.result;
-        this.updateForm.options.rangeCodeOptions = response.result;
+        let list = [];
+        let i = 1;
+        response.result.forEach(ele => {
+          list.push({
+            id: i,
+            name: ele.name
+          })
+          i++;
+        })
+        response.result.forEach(ele => {
+          list.push({
+            id: i,
+            name: ele.code
+          })
+          i++;
+        })
+        this.addForm.options.rangeCodeOptions = list;
+        this.updateForm.options.rangeCodeOptions = list;
       });
 
     //获得项目类型

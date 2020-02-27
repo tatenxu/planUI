@@ -41,20 +41,18 @@
               </el-select>
             </div>
           </el-col>
-          <!-- <el-col :span="4" class="MinW" style="margin-left:30px">
-            <el-switch v-model="checked" @change="planTypeSwitchChange" inactive-color="#13ce66" inactive-text="未制定" active-text="已制定"></el-switch>
-          </el-col> -->
-        </el-row>
-        <el-row :gutter="20">
-
           <el-col :span="3">
             <el-button type="primary" size="small" @click="handleSearch(1)">搜索</el-button>
           </el-col>
+
+        </el-row>
+        <!-- <el-row :gutter="20">
+
           <el-col :span="4">
             <el-button type="primary" size="small" @click="toQuoteModel()">引用计划模板</el-button>
           </el-col>
 
-        </el-row>
+        </el-row> -->
         <hr />
         <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="changeCheckBoxFun" border>
           <el-table-column type="selection" width="50" align="center"></el-table-column>
@@ -71,6 +69,7 @@
           <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
           <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
           <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
+          <el-table-column prop="pieceQuantity" width="120" label="正式件数" align="center"></el-table-column>
           <el-table-column prop="creatorName" label="添加人" align="center"></el-table-column>
           <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
           <el-table-column label="操作" fixed="right" align="center" width="200px">

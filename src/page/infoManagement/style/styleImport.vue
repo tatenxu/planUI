@@ -44,7 +44,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="示例图片" style="margin-top:20px">
-              <img style="width: 180px; height: 150px" :src="url"></img>
+              <img style="width: 180px; height: 200px" :src="url"></img>
             </el-form-item>
           </el-col>
         </el-row>
@@ -237,31 +237,44 @@ export default {
       });
     },
     beforeUpload(file) {
-      console.log("beforeUpload")
       const that = this;
-      return new Promise(function (resolve, reject) {
-        that.readExcel(file).then(
-          result => {
-            const isLt2M = file.size / 1024 / 1024 < 2;
-            if (!isLt2M) {
-              that.$message.error("文件大小不能超过2MB!");
-            }
-            if (isLt2M && result) {
-              resolve("校验成功!");
-            } else {
-              reject(false);
-            }
-          },
-          error => {
-            that.$message.error(error);
-            reject(false);
-          }
-        );
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          const that = this;
+          return new Promise(function (resolve, reject) {
+            that.readExcel(file).then(
+              result => {
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                  that.$message.error("文件大小不能超过2MB!");
+                }
+                if (isLt2M && result) {
+                  resolve("校验成功!");
+                } else {
+                  reject(false);
+                }
+              },
+              error => {
+                that.$message.error(error);
+                reject(false);
+              }
+            );
+          });
+        } else {
+          this.$message({
+            message: "请先选择客户、品牌、服装层次!",
+            type: "error"
+          });
+        }
       });
+
     },
     upLoadChange(content) {
-      console.log("upLoadChange")
-      this.$message.success("文件上传成功!");
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          this.$message.success("文件上传成功!");
+        }
+      })
     },
     getLocationsKeys(range) {
       // A1:B5输出 A1,B1...

@@ -43,7 +43,7 @@
               ></el-option>
             </el-select>-->
 
-            <el-radio-group v-model="checked" @change="changeState">
+            <el-radio-group v-model="checkedTwo" @change="changeState">
               <el-radio :label="1">已提交</el-radio>
               <el-radio :label="2">已审核</el-radio>
               <el-radio :label="3">已下发</el-radio>
@@ -79,22 +79,27 @@
       <el-row :gutter="20" style="margin-top: 10px; margin-bottom: 5px;">
         <el-col :span="2">
           <div class="bar">
-            <el-button type="primary" size="small" style="margin-right: 20px" @click="VerifyPass" v-if="checked===1">审核通过</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="VerifyPass" v-if="checkedTwo===1">审核通过</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" size="small" style="margin-right: 20px" @click="VerifyRebut" v-if="checked===1">审核驳回</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="VerifyRebut" v-if="checkedTwo===1">审核驳回</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" size="small" style="margin-right: 20px" @click="CancelVerify" v-if="checked===2">取消审核</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="CancelVerify" v-if="checkedTwo===2">取消审核</el-button>
           </div>
         </el-col>
         <el-col :offset="1" :span="2">
           <div class="bar">
-            <el-button type="primary" size="small" style="margin-right: 20px" @click="lookAllPlan">查看总计划</el-button>
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="negotiatePanelOpen" v-if="checkedTwo===2">协商延迟</el-button>
+          </div>
+        </el-col>
+        <el-col :offset="1" :span="2">
+          <div class="bar">
+            <el-button type="primary" size="small" style="margin-right: 20px" @click="updateExecutePanelOpen" v-if="checkedTwo===2">执行状态更新</el-button>
           </div>
         </el-col>
         <el-col :span="3" style="margin-left:100px">
@@ -128,9 +133,9 @@
           <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
           <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
           <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
-          <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
+          <!-- <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
           <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column>
-          <el-table-column prop="state" label="审核状态" align="center"></el-table-column>
+          <el-table-column prop="state" label="审核状态" align="center"></el-table-column> -->
           <el-table-column fixed="right" width="100" label="操作" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
@@ -173,6 +178,46 @@
           </el-row>
         </div>
       </el-dialog>
+      <el-dialog :modal="false" title="协商延迟" width="1200px" :visible.sync="negotiatePanelFlag">
+        <el-form :model="negotiateForm" :rules="negotiateFormRule" ref="negotiateForm" label-width="120px" class="demo-ruleForm">
+          <el-row :gutter="20" style="margin-top:5px;">
+            <el-col :span="8">
+              <el-form-item label="协商延迟时间" prop="extension" placeholder="请选择客户名称">
+                <el-date-picker v-model="negotiateForm.extension" type="date" placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <div class="bar">
+                <el-form-item label="起止时间" prop="actualDate" placeholder="请选择起止时间">
+                  <el-date-picker :picker-options="pickerOptions0" style="margin-left:20px" v-model="negotiateForm.actualDate" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"></el-date-picker>
+                </el-form-item>
+              </div>
+            </el-col>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" style="margin-top:5px;">
+            <el-col :span="8">
+              <el-button type="primary" size="small" @click="negotiate()" style="margin-left:500px;margin-top:3px">协商延迟</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-dialog>
+      <el-dialog :modal="false" title="执行状态" width="900px" :visible.sync="updateExecuteFlag">
+        <el-form :model="updateExecuteForm" :rules="updateExecuteRule" ref="updateExecuteForm" label-width="120px" class="demo-ruleForm">
+          <el-row :gutter="20" style="margin-top:5px;">
+            <el-col :span="8">
+              <el-form-item label="执行状态" prop="executionState" placeholder="请选择客户名称">
+                <el-input v-model="updateExecuteForm.executionState" clearable :rows="1" style="margin-left: 20px;min-width:250px" placeholder="请输入"></el-input>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="2">
+              <el-button type="primary" size="small" @click="updateExecute()" style="margin-left:150px;margin-top:3px">确定更新状态</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-dialog>
 
       <el-dialog title="查看总计划" :visible.sync="lookAllPlans" :modal="false">
         <div class="body">
@@ -194,9 +239,61 @@ export default {
   },
   data() {
     return {
+      pickerOptions0: {
+        disabledDate: time => {
+          var date = new Date();
+
+          return time.getTime() < Date.now() - 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+        }
+      },
+      //执行状态参数
+      updateExecuteFlag: false,
+      updateExecuteForm: {
+        executionState: "",
+      },
+      updateExecuteRule: {
+        executionState: [
+          { required: true, message: "请输入执行状态！", trigger: "change" }
+        ]
+      },
+      //协商延迟参数
+      negotiatePanelFlag: false,
+      negotiateForm: {
+        extension: "",
+        actualDate: "",
+      },
+      negotiateFormRule: {
+        extension: [
+          {
+            required: true,
+            trigger: "change",
+            validator: (rule, value, callback) => {
+              if ((value != "" && value != null) || (this.negotiateForm.actualDate != null && this.negotiateForm.actualDate != "")) {
+                callback();
+              } else {
+                callback(new Error("请至少选择一项填写！"));
+              }
+            }
+          }
+        ],
+        actualDate: [
+          {
+            required: true,
+            trigger: "change",
+            validator: (rule, value, callback) => {
+              if ((value != null && value != "") || (this.negotiateForm.extension != "" && this.negotiateForm.extension != null)) {
+                callback();
+              } else {
+                callback(new Error("请至少选择一项填写！"));
+              }
+            }
+          }
+        ],
+      },
       lookAllPlans: false,
       planClassRadioValue: "系列计划",
       checked: 1,
+      checkedTwo: 1,
       nameSuggestionsSeries: [],
 
       defaultProps: {
@@ -323,6 +420,88 @@ export default {
       });
   },
   methods: {
+    //执行状态更新
+    updateExecutePanelOpen() {
+      if (this.AnyChanged.length != 1) {
+        this.$message({
+          message: "请选择单条计划进行执行状态更新！",
+          type: "error"
+        });
+        return;
+      }
+      this.updateExecuteFlag = true;
+      this.updateExecuteForm.executionState = "";
+    },
+
+    updateExecute() {
+
+      this.$refs["updateExecuteForm"].validate(valid => {
+        console.log(valid)
+        if (valid) {
+          this.AnyChanged.forEach(element => {
+            request
+              .put("/plan/update-execute", null, {
+                params:
+                {
+                  id: this.AnyChanged[0].id,
+                  executionState: this.updateExecuteForm.executionState
+                }
+              })
+              .then(response => {
+                this.updateExecuteFlag = false;
+                this.getWareList(this.pagination.currentPage);
+              });
+          });
+
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
+    //协商延迟面板打开
+    negotiatePanelOpen() {
+      if (this.AnyChanged.length != 1) {
+        this.$message({
+          message: "请选择单条计划进行协商延迟！",
+          type: "error"
+        });
+        return;
+      }
+      this.negotiatePanelFlag = true;
+      this.negotiateForm.extension = "";
+      this.negotiateForm.actualDate = "";
+    },
+    //协商延迟按钮点击
+    negotiate() {
+      this.$refs["negotiateForm"].validate(valid => {
+        if (valid) {
+          this.AnyChanged.forEach(element => {
+            request
+              .put("/plan/negotiate", {
+
+                id: element.id,
+                extension: (this.negotiateForm.extension === null || this.negotiateForm.extension === "") ? undefined : this.changeDate(this.negotiateForm.extension),
+                actualEndDate: (this.negotiateForm.actualDate === null || this.negotiateForm.actualDate === "") ? undefined : this.changeDate(this.negotiateForm.actualDate[1]),
+                actualStartDate: (this.negotiateForm.actualDate === null || this.negotiateForm.actualDate === "") ? undefined : this.changeDate(this.negotiateForm.actualDate[0])
+
+              })
+              .then(response => {
+                this.negotiatePanelFlag = false;
+                this.getWareList(this.pagination.currentPage);
+              });
+          });
+
+        } else {
+          this.$message({
+            message: "请填写所有必填项!",
+            type: "error"
+          });
+        }
+      });
+    },
     //计划类型发生变化
     planClassRadioValueChanged() {
       if (this.planClassRadioValue === "系列计划") {
@@ -368,6 +547,7 @@ export default {
           this.brandId = "";
         });
     },
+
     lookAllPlan() {
       if (this.AnyChanged.length != 1) {
         this.$message({
@@ -404,7 +584,7 @@ export default {
     searchDetails(row) {
       console.log(row);
       this.$router.push({
-        name: "planMakeIndex",
+        name: this.checked === 1 ? "planMakeOfSeries" : (this.checked === 2 ? "planMakeOfStyleGroup" : "planMakeOfStyle"),
         params: {
           goback: "planVerify",
           isRoot: false,
@@ -447,9 +627,9 @@ export default {
         .get(`/plan/find`, {
           params: {
             state:
-              this.checked === 1
+              this.checkedTwo === 1
                 ? "SUBMIT"
-                : this.checked === 2
+                : this.checkedTwo === 2
                   ? "CHECK"
                   : "ASSIGN",
             clientId: this.clientId === "" ? undefined : this.clientId,

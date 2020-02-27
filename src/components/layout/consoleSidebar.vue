@@ -166,9 +166,9 @@
           <i class="el-icon-message"></i>
           后台管理模块
         </template>
-        <el-menu-item index="/backEndModule/planModelManagement">
+        <!-- <el-menu-item index="/backEndModule/planModelManagement">
           <i class="el-icon-document"></i>计划模板管理
-        </el-menu-item>
+        </el-menu-item> -->
 
         <el-menu-item index="/backEndModule/dictionary/customerMana">
           <i class="el-icon-document"></i>客户管理
@@ -194,9 +194,9 @@
         <el-menu-item index="/backEndModule/roleManagement">
           <i class="el-icon-message"></i>系统权限管理
         </el-menu-item>
-        <el-menu-item index="/backEndModule/numberRuleMana">
+        <!-- <el-menu-item index="/backEndModule/numberRuleMana">
           <i class="el-icon-message"></i>编号规则管理
-        </el-menu-item>
+        </el-menu-item> -->
       </el-submenu>
     </el-menu>
   </div>
@@ -243,7 +243,7 @@ export default {
       systemMana: false,
       numberMana: false,
       afterPlanMake: false,
-      statistics:true,
+      statistics: true,
 
       // rangeMana: true,
       // styleGroupMana: true,
