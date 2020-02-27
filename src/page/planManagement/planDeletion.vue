@@ -119,7 +119,7 @@
           <af-table-column prop="deleterName" label="删除人" align="center"></af-table-column>
           <af-table-column prop="deleteTime" label="删除时间" align="center"></af-table-column>
 
-          <af-table-column fixed="right" align="center" label="操作">
+          <af-table-column fixed="right" align="center" width="80px" label="操作">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="ReCover(scope.row)">恢复</el-button>
             </template>
@@ -218,7 +218,14 @@ export default {
     });
   },
   methods: {
-    //输入建议
+    // 输入建议
+    createFilter(queryString) {
+      return element => {
+        return (
+          element.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
     searchPlanName(queryString, cb) {
       var tmp = this.inputSuggestions.plans;
       var results = queryString

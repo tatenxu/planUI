@@ -78,16 +78,24 @@
 
       <!-- 第二行 -->
       <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="8">
+        <el-col :span="6">
           <div class="bar">
             <div class="title">计划名称</div>
-            <el-input v-model="searchOptions.searchParams.planName" placeholder="请输入内容"></el-input>
+            <el-autocomplete
+              :fetch-suggestions="searchPlanName "
+              v-model="searchOptions.searchParams.planName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
           </div>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <div class="bar">
             <div class="title">系列名称</div>
-            <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
+            <el-autocomplete
+              :fetch-suggestions="searchSeriesName"
+              v-model="searchOptions.searchParams.seriesName"
+              placeholder="请输入内容"
+            ></el-autocomplete>
           </div>
         </el-col>
 
@@ -219,7 +227,7 @@
         <af-table-column prop="endDate" label="计划完成" align="center"></af-table-column>
         <af-table-column prop="completeTime" label="完成时间" align="center"></af-table-column>
 
-        <af-table-column fixed="right" label="操作" align="center">
+        <af-table-column fixed="right" width="80px" label="操作" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
           </template>
@@ -293,6 +301,11 @@ export default {
       },
       templateRadio: "",
 
+      inputSuggestions: {
+        plans: [],
+        series: []
+      },
+
       searchOptions: {
         searchParams: {
           clientName: undefined,
@@ -351,8 +364,48 @@ export default {
 
     //默认获取已完成系列根计划计划列表
     this.handleSearch();
+
+    //输入建议
+    request.get(`${window.$config.HOST}/plan/name`).then(response => {
+      this.inputSuggestions.plans = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.plans.push(element);
+      });
+    });
+
+    request.get(`${window.$config.HOST}/info/series/name`).then(response => {
+      this.inputSuggestions.series = [];
+      response.result.forEach(element => {
+        element.value = element.name;
+        this.inputSuggestions.series.push(element);
+      });
+    });
   },
   methods: {
+    // 输入建议
+    createFilter(queryString) {
+      return element => {
+        return (
+          element.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
+    searchPlanName(queryString, cb) {
+      var tmp = this.inputSuggestions.plans;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
+    },
+    searchSeriesName(queryString, cb) {
+      var tmp = this.inputSuggestions.series;
+      var results = queryString
+        ? tmp.filter(this.createFilter(queryString))
+        : tmp;
+      cb(results);
+    },
+
     clientNameChange() {
       //品牌名称跟随加载
       request
@@ -570,6 +623,11 @@ export default {
         margin-left: 20px;
       }
       .el-select {
+        width: 70%;
+        min-width: 80px;
+        margin-left: 20px;
+      }
+      .el-autocomplete {
         width: 70%;
         min-width: 80px;
         margin-left: 20px;

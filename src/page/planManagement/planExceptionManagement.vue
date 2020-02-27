@@ -118,7 +118,7 @@
           <af-table-column prop="content" label="异常内容" align="center" show-overflow-tooltip></af-table-column>
 
           <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
-          <af-table-column fixed="right" label="操作" align="center">
+          <af-table-column fixed="right" width="80px" label="操作" align="center">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="updateExceptionClick(scope.row)"
@@ -423,7 +423,14 @@ export default {
   },
 
   methods: {
-    //输入建议
+    // 输入建议
+    createFilter(queryString) {
+      return element => {
+        return (
+          element.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
     searchPlanName(queryString, cb) {
       var tmp = this.inputSuggestions.plans;
       var results = queryString
@@ -561,7 +568,7 @@ export default {
         handleResult: row.handleResult,
         scope: row.scope,
         state: row.state,
-        time: t(row.time),
+        time: row.time,
         discover: row.discover
       };
       this.addExceptionDialogVisible = true;
