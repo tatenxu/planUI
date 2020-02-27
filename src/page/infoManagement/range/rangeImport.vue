@@ -17,18 +17,13 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="8">
+          <el-col :span="8">
             <el-form-item label="服装层次" prop="clothingType" placeholder="请选择服装层次">
               <el-select v-model="ruleForm.clothingType" style="width:300px">
-                <el-option
-                  v-for="item in options.clothingTypeOptions"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                ></el-option>
+                <el-option v-for="item in options.clothingTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
               </el-select>
             </el-form-item>
-          </el-col> -->
+          </el-col>
         </el-row>
 
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
@@ -59,7 +54,7 @@
             <el-table-column prop="name" label="款号模板名称" align="center"></el-table-column>
             <!-- <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
             <el-table-column prop="brandName" label="品牌" align="center"></el-table-column> -->
-            <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
+            <!-- <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column> -->
             <el-table-column prop="rangeCode" label="波段编码" align="center"></el-table-column>
             <el-table-column prop="seriesCode" label="系列编码" align="center"></el-table-column>
             <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
@@ -70,7 +65,7 @@
             <el-table-column prop="informalStyleQuantity" label="非正式款数" align="center"></el-table-column>
             <el-table-column prop="informalPieceQuantity" label="非正式件数" align="center"></el-table-column>
             <el-table-column prop="note" label="备注" align="center"></el-table-column>
-            
+
           </el-table>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">
@@ -198,7 +193,6 @@ export default {
               let rowData = {
                 // 每一行的数据
                 name: "",
-                clothesLevelName: "",
                 rangeCode: "",
                 seriesCode: "",
                 systemCode: "",
@@ -221,61 +215,51 @@ export default {
                   console.log(locations[i] + "对应的单元格的值缺失");
                 }
                 // if (i % colMax === 1) {
-                //   // 第一列为name
-                //   rowData.clientName = value;
-                //   console.log("value: ", value);
-                // }
-                // if (i % colMax === 2) {
                 //   // 第二列为rangeAmount
-                //   rowData.brandName = value;
+                //   rowData.clothesLevelName = value;
                 //   console.log("value: ", value);
                 // }
                 if (i % colMax === 1) {
                   // 第二列为rangeAmount
-                  rowData.clothesLevelName = value;
+                  rowData.rangeCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 2) {
                   // 第二列为rangeAmount
-                  rowData.rangeCode = value;
+                  rowData.seriesCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 3) {
                   // 第二列为rangeAmount
-                  rowData.seriesCode = value;
+                  rowData.systemCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 4) {
                   // 第二列为rangeAmount
-                  rowData.systemCode = value;
+                  rowData.projectType = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 5) {
                   // 第二列为rangeAmount
-                  rowData.projectType = value;
+                  rowData.orderStage = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 6) {
                   // 第二列为rangeAmount
-                  rowData.orderStage = value;
+                  rowData.predictStyleQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 7) {
                   // 第二列为rangeAmount
-                  rowData.predictStyleQuantity = value;
+                  rowData.predictPieceQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 8) {
                   // 第二列为rangeAmount
-                  rowData.predictPieceQuantity = value;
-                  console.log("value: ", value);
-                }
-                if (i % colMax === 9) {
-                  // 第二列为rangeAmount
                   rowData.informalStyleQuantity = value;
                   console.log("value: ", value);
                 }
-                if (i % colMax === 10) {
+                if (i % colMax === 9) {
                   // 第二列为rangeAmount
                   rowData.informalPieceQuantity = value;
                   console.log("value: ", value);
@@ -297,7 +281,7 @@ export default {
                     name: "",
                     clientName: "",
                     brandName: "",
-                    clothesLevelName: "",
+                    // clothesLevelName: "",
                     rangeCode: "",
                     seriesCode: "",
                     systemCode: "",
@@ -322,36 +306,47 @@ export default {
       });
     },
     beforeUpload(file) {
-      if (this.ruleForm.brandName > 0) {
-        const that = this;
-        return new Promise(function (resolve, reject) {
-          that.readExcel(file).then(
-            result => {
-              const isLt2M = file.size / 1024 / 1024 < 2;
-              if (!isLt2M) {
-                that.$message.error("文件大小不能超过2MB!");
-              }
-              if (isLt2M && result) {
-                resolve("校验成功!");
-              } else {
+      const that = this;
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          const that = this;
+          return new Promise(function (resolve, reject) {
+            that.readExcel(file).then(
+              result => {
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                  that.$message.error("文件大小不能超过2MB!");
+                }
+                if (isLt2M && result) {
+                  resolve("文件上传成功!");
+                } else {
+                  reject(false);
+                }
+              },
+              error => {
+                that.$message.error(error);
                 reject(false);
               }
-            },
-            error => {
-              that.$message.error(error);
-              reject(false);
-            }
-          );
-        });
-      } else {
-        this.$message.error("请先选择客户和品牌!");
-      }
+            );
+          });
+        } else {
+          this.$message({
+            message: "请先选择客户、品牌、服装层次!",
+            type: "error"
+          });
+        }
+      });
 
     },
     upLoadChange(content) {
-      if (this.ruleForm.brandName > 0) {
-        this.$message.success("文件上传成功!");
-      }
+      // if (this.ruleForm.brandName > 0) {
+      //   this.$message.success("文件上传成功!");
+      // }
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          this.$message.success("文件上传成功!");
+        }
+      })
     },
     getLocationsKeys(range) {
       // A1:B5输出 A1,B1...
@@ -406,22 +401,14 @@ export default {
         RangeListAdd.push({
           name: element.name,
           brandId: this.ruleForm.brandName,
-          clothesLevelName: element.clothesLevelName,
-
+          clothesLevelName: this.ruleForm.clothingType,
           systemCode: element.systemCode,
           rangeCode: element.rangeCode,
           seriesCode: element.seriesCode,
-
           projectType: element.projectType,
           orderStage: element.orderStage,
-
-
           predictStyleQuantity: element.predictStyleQuantity,
           predictPieceQuantity: element.predictPieceQuantity,
-
-
-
-
           informalStyleQuantity:
             element.informalStyleQuantity === ""
               ? undefined

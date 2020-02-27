@@ -5,7 +5,7 @@
         <el-row :gutter="20">
           <el-button type="primary" style="margin-right:20px" @click="handleCompletionClick">计划完成</el-button>
         </el-row>
-        <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="tableSelectionChange" :stripe="true">
+        <el-table :data="tableData" border style="width: 100%; margin-top: 20px" @selection-change="tableSelectionChange" :stripe="true">
           <el-table-column type="selection" width="50" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
           <el-table-column prop="name" width="150" label="系列编号" align="center"></el-table-column>

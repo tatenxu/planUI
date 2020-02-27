@@ -208,7 +208,23 @@ export default {
         }
       })
       .then(response => {
-        this.searchOptions.rangeCodeOptions = response.result;
+        let list = [];
+        let i = 1;
+        response.result.forEach(ele => {
+          list.push({
+            id: i,
+            name: ele.name
+          })
+          i++;
+        })
+        response.result.forEach(ele => {
+          list.push({
+            id: i,
+            name: ele.code
+          })
+          i++;
+        })
+        this.searchOptions.rangeCodeOptions = list;
       });
     //获得投入点
     request

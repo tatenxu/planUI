@@ -6,7 +6,7 @@
           <div class="bar">
             <div class="title">用户</div>
             <el-select v-model="searchForm.userId" :clearable="true">
-              <el-option v-for="item in searchForm.options.userIdOptions" :key="item.id" :label="item.username" :value="item.id"></el-option>
+              <el-option v-for="item in searchForm.options.userIdOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -84,7 +84,7 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :modal="false" title="添加权限" :visible.sync="addPrivilegePanelFlagS1" width="1000px">
+    <!-- <el-dialog :modal="false" title="添加权限" :visible.sync="addPrivilegePanelFlagS1" width="1000px">
       <el-row :gutter="20" style="margin-top:10px;">
         <el-col :span="10">
           <div class="bar">
@@ -117,6 +117,45 @@
           </el-table>
         </el-col>
       </el-row>
+    </el-dialog> -->
+
+    <el-dialog :modal="false" title="添加权限" width="1200px" :visible.sync="addPrivilegePanelFlagS1">
+      <el-row :gutter="20" style="margin-top:0px;">
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">人员名称</div>
+            <el-input v-model="addPrivilege.personName" clearable placeholder="请输入" style="width:250px"></el-input>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">部门</div>
+            <el-cascader expand-trigger="hover" :options="addPrivilege.options.deptOptiopns" clearable v-model="addPrivilege.deptName" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div class="bar">
+            <div class="title">产线</div>
+            <el-cascader expand-trigger="hover" :options="addPrivilege.options.productLineOptions" clearable v-model="addPrivilege.productLine" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="searchPersonByPDP" style="margin-left:100px">搜索</el-button>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top:15px;">
+        <el-col :span="13">
+          <el-table :data="addPrivilege.personTable" max-height="400" ref="multipleTablePerson" @selection-change="personChanged" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
+            <el-table-column type="selection" width="50px" align="center"></el-table-column>
+            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
+          </el-table>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" @click="nextStep" style="margin-left:348px;margin-top:30px">下一步</el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -127,6 +166,11 @@ import { POINT_CONVERSION_COMPRESSED } from "constants";
 export default {
   data() {
     return {
+      deptToCascaderProps: {
+        value: "id",
+        label: "name",
+        children: "children"
+      },
       //搜索数据:
       searchForm: {
         userId: "",
@@ -145,6 +189,9 @@ export default {
       addPrivilegePanelFlagS1: false,
       addPrivilegePanelFlagS2: false,
       addPrivilege: {
+        productLine: "",
+        deptName: "",
+        personName: "",
         searchName: "",
         productionLine: [],
         personTable: [],
@@ -154,6 +201,11 @@ export default {
         clientSelection: [],
         brandTable: [],
         brandSelection: [],
+        options: {
+          productLineOptions: [],
+          deptOptiopns: [],
+
+        }
       },
       addPrivilegeRules: {
 
@@ -169,9 +221,20 @@ export default {
 
   created: function () {
     var that = this;
+    // 获取部门信息
+    this.$axios
+      .get(`${window.$config.HOST2}/dept/find`)
+      .then(response => {
+        this.addPrivilege.options.deptOptiopns = response.data.result;
+      })
+      .catch(error => {
+        this.$message.error("部门信息加载失败!");
+      });
     //获取产线
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
-      this.addPrivilege.productionLine = response.result;
+      // this.addPrivilege.productionLine = response.result;
+      this.addPrivilege.options.productLineOptions = response.result;
+
     });
 
     //获得品牌名字
@@ -206,6 +269,23 @@ export default {
   },
 
   methods: {
+    searchPersonByPDP() {
+      this.$axios
+        .get(`${window.$config.HOST2}/user/find-dup`,
+          {
+            params: {
+              name: this.addPrivilege.personName === "" ? undefined : this.addPrivilege.personName,
+              deptId: (this.addPrivilege.deptName === "" || this.addPrivilege.deptName === null) ? undefined : this.addPrivilege.deptName[this.addPrivilege.deptName.length - 1],
+              productLineId: (this.addPrivilege.productLine === "" || this.addPrivilege.productLine === null) ? undefined : this.addPrivilege.productLine[this.addPrivilege.productLine.length - 1]
+            }
+          })
+        .then(response => {
+          this.addPrivilege.personTable = response.data.result;
+        })
+        .catch(error => {
+          this.$message.error("人员信息加载失败!");
+        });
+    },
     //根据名字搜索人物
     searchPersonByName() {
       this.addPrivilege.personTable = [];
@@ -379,17 +459,25 @@ export default {
 
       this.addPrivilegePanelFlagS1 = true;
 
-      this.addPrivilege.searchName = "";
-      this.addPrivilege.personTable = [];
-      this.addPrivilege.allPersonTable = [];
+      // this.addPrivilege.searchName = "";
+      // this.addPrivilege.personTable = [];
+      // this.addPrivilege.allPersonTable = [];
 
-      this.addPrivilege.brandTable = [];
+      // this.addPrivilege.brandTable = [];
+      // this.$nextTick(() => {
+      //   this.$nextTick(() => {
+      //     for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
+      //       this.$refs.tree.store._getAllNodes()[i].expanded = false;
+      //     }
+      //   });
+      // this.$refs.multipleTablePerson.clearSelection();
+      // })
+      this.addPrivilege.personName = "";
+      this.addPrivilege.deptName = "";
+      this.addPrivilege.productLine = "";
+      this.addPrivilege.userSelection = [];
+      this.addPrivilege.personTable = [];
       this.$nextTick(() => {
-        this.$nextTick(() => {
-          for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-            this.$refs.tree.store._getAllNodes()[i].expanded = false;
-          }
-        });
         this.$refs.multipleTablePerson.clearSelection();
       })
     },
@@ -407,8 +495,8 @@ export default {
       this.addPrivilege.userSelection.forEach(element => {
         this.addPrivilege.brandSelection.forEach(ele => {
           list.push({
-            userId: element.userId,
-            userName: element.username,
+            userId: element.id,
+            userName: element.name,
             brandId: ele.id,
             clientId: ele.clientId
           });

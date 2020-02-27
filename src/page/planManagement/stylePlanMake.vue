@@ -440,8 +440,6 @@ export default {
       });
       this.allMakeNum = this.multipleSelection.length;
       this.nowMakeNum = 0;
-
-
       this.rootPlanMake.planMakeStartEndDate = "";
       this.rootPlanMake.name = this.multipleSelection[0].number + this.multipleSelection[0].orderStage + "款式根计划";
       this.rootPlanMake.dateType = "";
@@ -453,6 +451,8 @@ export default {
     ToPlanForm(row) {
       this.rootPlanMake.seriesId.push(row.seriesId);
       this.rootPlanMake.objectId.push(row.id);
+      this.allMakeNum = 1;
+      this.nowMakeNum = 0;
       this.rootPlanMake.planMakeStartEndDate = "";
       this.rootPlanMake.name = row.number + row.orderStage + "款式根计划";
       this.rootPlanMake.dateType = "";
