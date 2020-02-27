@@ -62,25 +62,25 @@
           </el-col>
         </el-row>
         <el-table :data="tableData" max-height="400" border @selection-change="changeCheckBoxFun" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" width="150" label="款号模板名称" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="rangeCode" width="150" label="波段编码" align="center"></el-table-column>
-          <el-table-column prop="number" width="150" label="订单编号" align="center"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" width="170" label="正式款数" align="center"></el-table-column>
-          <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
-          <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
+          <af-table-column type="selection" width="50" align="center"></af-table-column>
+          <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+          <af-table-column prop="name" label="款号模板名称" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+          <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+          <af-table-column prop="number" label="订单编号" align="center"></af-table-column>
+          <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+          <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+          <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
+          <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
+          <af-table-column label="操作" width="180"  align="center" fixed="right">
             <template slot-scope="scope">
               <el-button v-if="scope.row.styleGroupNumber && scope.row.creatorId === meID" type="text" size="small" disabled>修改</el-button>
               <el-button v-if="scope.row.creatorId === meID && !scope.row.styleGroupNumber " @click="styleChanged(scope.row)" type="text" size="small">修改</el-button>
               <el-button @click="styleDelete(scope.row)" v-if="scope.row.creatorId === meID" type="text" size="small">删除</el-button>
             </template>
-          </el-table-column>
+          </af-table-column>
         </el-table>
         <div class="block">
           <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>

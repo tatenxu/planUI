@@ -32,14 +32,14 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">添加时间</div>
-              <el-date-picker style="margin-left:20px " v-model="dateRange" type="daterange" align="right" unlink-panels clearable range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+              <el-date-picker style="margin-left:20px;width:400px " v-model="dateRange" type="daterange" align="right" unlink-panels clearable range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
             </div>
           </el-col>
 
           <el-col :span="8">
             <div class="bar">
               <div class="title">订单款号</div>
-              <el-autocomplete class="inline-input" v-model="number" :fetch-suggestions="querySearchStyle" placeholder="请输入系列名称" @select="handleSelect" style="width:350px;margin-left:20px" clearable></el-autocomplete>
+              <el-autocomplete class="inline-input" v-model="number" :fetch-suggestions="querySearchStyle" placeholder="请输入系列名称" @select="handleSelect" style="width:400px;margin-left:20px" clearable></el-autocomplete>
             </div>
           </el-col>
           <el-col :span="5" class="MinW">
@@ -57,23 +57,23 @@
         </el-row>
 
         <el-table :data="tableData" style="width: 100%; margin-top: 20px" @selection-change="changeCheckBoxFun" border>
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" width="150" label="款号模板名称" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="rangeCode" width="150" label="波段编码" align="center"></el-table-column>
-          <el-table-column prop="number" width="150" label="订单编号" align="center"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" width="170" label="正式款数" align="center"></el-table-column>
-          <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="250" align="center">
+          <af-table-column type="selection" width="50" align="center"></af-table-column>
+          <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+          <af-table-column prop="name" label="款号模板名称" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+          <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+          <af-table-column prop="number" label="订单编号" align="center"></af-table-column>
+          <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+          <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+          <af-table-column prop="styleQuantity" width="170" label="正式款数" align="center"></af-table-column>
+          <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
+          <af-table-column fixed="right" label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定根计划</el-button>
             </template>
-          </el-table-column>
+          </af-table-column>
         </el-table>
         <!-- 分页 -->
         <div class="block">

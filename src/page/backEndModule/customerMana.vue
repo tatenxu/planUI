@@ -34,19 +34,12 @@
           </el-header>
 
           <el-main clas="containerMain">
-            <el-table
-              ref="multipleTable"
-              :data="tableData"
-              tooltip-effect="dark"
-              style="width: 100%"
-              @selection-change="handleSelectionChange"
-            >
+            <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%" border @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column prop="id" label="id" width="120" v-if="false"></el-table-column>
-              <el-table-column prop="name" label="客户名称" width="120"></el-table-column>
-              <el-table-column prop="abbreviation" label="客户简称" width="120"></el-table-column>
-              <el-table-column prop="description" label="客户描述" width="120" show-overflow-tooltip></el-table-column>
-              <el-table-column prop="deptName" label="所属业务组" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="name" label="客户名称" width="220" align="center"></el-table-column>
+              <el-table-column prop="abbreviation" label="客户简称" width="200" align="center"></el-table-column>
+              <el-table-column prop="description" label="客户描述" width="420"  align="center" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="deptName" label="所属业务组"  align="left" show-overflow-tooltip></el-table-column>
             </el-table>
           </el-main>
         </el-container>
@@ -54,46 +47,18 @@
 
       <el-tab-pane label="新增客户信息" name="second" v-if="newCardShowFlag">
         <el-card>
-          <el-form
-            :model="addClientForm"
-            :rules="addClientRules"
-            ref="addClientForm"
-            label-width="100px"
-            class="add-ruleForm"
-          >
+          <el-form :model="addClientForm" :rules="addClientRules" ref="addClientForm" label-width="100px" class="add-ruleForm">
             <el-form-item label="客户名称:" prop="name">
-              <el-input
-                v-model="addClientForm.name"
-                class="inputStyle"
-                placeholder="请输入客户名称"
-                required
-              ></el-input>
+              <el-input v-model="addClientForm.name" class="inputStyle" placeholder="请输入客户名称" required></el-input>
             </el-form-item>
             <el-form-item label="客户简称" prop="abbreviation">
-              <el-input
-                v-model="addClientForm.abbreviation"
-                class="inputStyle"
-                placeholder="请输入客户简称"
-              ></el-input>
+              <el-input v-model="addClientForm.abbreviation" class="inputStyle" placeholder="请输入客户简称"></el-input>
             </el-form-item>
             <el-form-item label="所属业务组" prop="deptName">
-              <el-cascader
-                expand-trigger="hover"
-                :options="addClientForm.options.deptOptiopns"
-                v-model="addClientForm.deptName"
-                :props="deptToCascaderProps"
-                :change-on-select="true"
-                style="width:400px"
-              ></el-cascader>
+              <el-cascader expand-trigger="hover" :options="addClientForm.options.deptOptiopns" v-model="addClientForm.deptName" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
             </el-form-item>
             <el-form-item label="客户描述" prop="description">
-              <el-input
-                class="inputArea"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入客户描述"
-                v-model="addClientForm.description"
-              ></el-input>
+              <el-input class="inputArea" type="textarea" :rows="4" placeholder="请输入客户描述" v-model="addClientForm.description"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" class="save" @click="handleNewSaveClick('addClientForm')">保存</el-button>
@@ -105,53 +70,21 @@
 
       <el-tab-pane label="编辑客户信息" name="third" v-if="editCardShowFlag">
         <el-card>
-          <el-form
-            :model="updateClientForm"
-            :rules="updateClientRules"
-            ref="updateClientForm"
-            label-width="100px"
-            class="add-ruleForm"
-          >
+          <el-form :model="updateClientForm" :rules="updateClientRules" ref="updateClientForm" label-width="100px" class="add-ruleForm">
             <el-form-item label="客户名称:" prop="name">
-              <el-input
-                v-model="updateClientForm.name"
-                class="inputStyle"
-                placeholder="请输入客户名称"
-                required
-              ></el-input>
+              <el-input v-model="updateClientForm.name" class="inputStyle" placeholder="请输入客户名称" required></el-input>
             </el-form-item>
             <el-form-item label="客户简称" prop="abbreviation">
-              <el-input
-                v-model="updateClientForm.abbreviation"
-                class="inputStyle"
-                placeholder="请输入客户简称"
-              ></el-input>
+              <el-input v-model="updateClientForm.abbreviation" class="inputStyle" placeholder="请输入客户简称"></el-input>
             </el-form-item>
             <el-form-item label="所属业务组" prop="deptName">
-              <el-cascader
-                expand-trigger="hover"
-                :options="updateClientForm.options.deptOptiopns"
-                v-model="updateClientForm.deptName"
-                :props="deptToCascaderProps"
-                :change-on-select="true"
-                style="width:400px"
-              ></el-cascader>
+              <el-cascader expand-trigger="hover" :options="updateClientForm.options.deptOptiopns" v-model="updateClientForm.deptName" :props="deptToCascaderProps" :change-on-select="true" style="width:400px"></el-cascader>
             </el-form-item>
             <el-form-item label="客户描述" prop="description">
-              <el-input
-                class="inputArea"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入客户描述"
-                v-model="updateClientForm.description"
-              ></el-input>
+              <el-input class="inputArea" type="textarea" :rows="4" placeholder="请输入客户描述" v-model="updateClientForm.description"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button
-                type="primary"
-                class="save"
-                @click="handleEditSaveClick('updateClientForm')"
-              >保存</el-button>
+              <el-button type="primary" class="save" @click="handleEditSaveClick('updateClientForm')">保存</el-button>
               <el-button type="primary" class="cancel" @click="handleEditCancelClick()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -228,7 +161,7 @@ export default {
       searchInput: ""
     };
   },
-  created: function() {
+  created: function () {
     // 获取部门信息
     this.$axios
       .get(`${window.$config.HOST2}/dept/find`)

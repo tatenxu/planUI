@@ -6,28 +6,22 @@
           <el-button type="primary" style="margin-right:20px" @click="handleCompletionClick">计划完成</el-button>
         </el-row>
         <el-table :data="tableData" border style="width: 100%; margin-top: 20px" @selection-change="tableSelectionChange" :stripe="true">
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" width="150" label="系列编号" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" width="120" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="rangeCode" width="120" label="波段编码" align="center"></el-table-column>
-          <el-table-column prop="seriesCode" width="120" label="系列编码" align="center"></el-table-column>
-          <el-table-column prop="systemCode" width="120" label="系统编码" align="center"></el-table-column>
-          <el-table-column prop="projectType" width="120" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="orderStage" width="120" label="订单阶段" align="center"></el-table-column>
-          <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
-          <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
-          <el-table-column prop="creatorName" width="180" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
-
-          <!-- <el-table-column fixed="right" label="操作" width="50">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="ReCover(scope.$index, scope.row)">恢复</el-button>
-            </template>
-          </el-table-column>-->
+          <af-table-column type="selection" width="50" align="center"></af-table-column>
+          <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+          <af-table-column prop="name" label="系列编号" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+          <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+          <af-table-column prop="seriesCode" label="系列编码" align="center"></af-table-column>
+          <af-table-column prop="systemCode" label="系统编码" align="center"></af-table-column>
+          <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+          <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+          <af-table-column prop="predictStyleQuantity" label="预测款式" align="center"></af-table-column>
+          <af-table-column prop="predictPieceQuantity" label="预测件数" align="center"></af-table-column>
+          <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
+          <af-table-column prop="creatorName" label="添加人" align="center"></af-table-column>
+          <af-table-column prop="createTime" label="添加时间" align="center"></af-table-column>
         </el-table>
       </div>
       <div class="block">

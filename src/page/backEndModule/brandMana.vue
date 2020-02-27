@@ -36,19 +36,12 @@
           </el-header>
 
           <el-main clas="containerMain">
-            <el-table
-              ref="multipleTable"
-              :data="tableData"
-              tooltip-effect="dark"
-              style="width: 100%"
-              @selection-change="handleSelectionChange"
-            >
+            <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" border style="width: 100%" @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column prop="id" label="id" v-if="false" width="120"></el-table-column>
-              <el-table-column prop="name" label="品牌名称" width="120"></el-table-column>
-              <el-table-column prop="abbreviation" label="品牌简称" width="120"></el-table-column>
-              <el-table-column prop="description" label="品牌描述" width="120"></el-table-column>
-              <el-table-column prop="clientName" label="所属客户" show-overflow-tooltip></el-table-column>
+              <el-table-column prop="name" label="品牌名称" width="220" align="center"></el-table-column>
+              <el-table-column prop="abbreviation" label="品牌简称" width="200" align="center"></el-table-column>
+              <el-table-column prop="description" label="品牌描述" width="420" align="center"></el-table-column>
+              <el-table-column prop="clientName" label="所属客户" align="left" show-overflow-tooltip></el-table-column>
             </el-table>
           </el-main>
         </el-container>
@@ -56,41 +49,20 @@
 
       <el-tab-pane label="新增品牌信息" name="second" v-if="addCardShowFlag">
         <el-card>
-          <el-form
-            :model="addBrandForm"
-            :rules="addBrandRules"
-            ref="addBrandForm"
-            label-width="100px"
-            class="add-ruleForm"
-          >
+          <el-form :model="addBrandForm" :rules="addBrandRules" ref="addBrandForm" label-width="100px" class="add-ruleForm">
             <el-form-item label="品牌名称" prop="name">
               <el-input v-model="addBrandForm.name" class="inputStyle" placeholder="请输入品牌名称"></el-input>
             </el-form-item>
             <el-form-item label="品牌简称" prop="abbreviation">
-              <el-input
-                v-model="addBrandForm.abbreviation"
-                class="inputStyle"
-                placeholder="请输入品牌简称"
-              ></el-input>
+              <el-input v-model="addBrandForm.abbreviation" class="inputStyle" placeholder="请输入品牌简称"></el-input>
             </el-form-item>
             <el-form-item label="所属客户" prop="clientId">
               <el-select v-model="addBrandForm.clientId" placeholder="请选择" class="inputSelector">
-                <el-option
-                  v-for="item in addBrandForm.options.clientOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in addBrandForm.options.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="品牌描述" prop="description">
-              <el-input
-                class="inputArea"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入品牌描述"
-                v-model="addBrandForm.description"
-              ></el-input>
+              <el-input class="inputArea" type="textarea" :rows="4" placeholder="请输入品牌描述" v-model="addBrandForm.description"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" class="save" @click="handleNewSaveClick('addBrandForm')">保存</el-button>
@@ -102,48 +74,23 @@
 
       <el-tab-pane label="编辑品牌信息" name="third" v-if="editCardShowFlag">
         <el-card>
-          <el-form
-            :model="updateBrandForm"
-            :rules="updateBrandRules"
-            ref="updateBrandForm"
-            label-width="100px"
-            class="add-ruleForm"
-          >
+          <el-form :model="updateBrandForm" :rules="updateBrandRules" ref="updateBrandForm" label-width="100px" class="add-ruleForm">
             <el-form-item label="品牌名称" prop="name">
               <el-input v-model="updateBrandForm.name" class="inputStyle" placeholder="请输入品牌名称"></el-input>
             </el-form-item>
             <el-form-item label="品牌简称" prop="abbreviation">
-              <el-input
-                v-model="updateBrandForm.abbreviation"
-                class="inputStyle"
-                placeholder="请输入品牌简称"
-              ></el-input>
+              <el-input v-model="updateBrandForm.abbreviation" class="inputStyle" placeholder="请输入品牌简称"></el-input>
             </el-form-item>
             <el-form-item label="所属客户" prop="clientId">
               <el-select v-model="updateBrandForm.clientId" placeholder="请选择" class="inputSelector">
-                <el-option
-                  v-for="item in updateBrandForm.options.clientOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in updateBrandForm.options.clientOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="品牌描述" prop="description">
-              <el-input
-                class="inputArea"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入品牌描述"
-                v-model="updateBrandForm.description"
-              ></el-input>
+              <el-input class="inputArea" type="textarea" :rows="4" placeholder="请输入品牌描述" v-model="updateBrandForm.description"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button
-                type="primary"
-                class="save"
-                @click="handleEditSaveClick('updateBrandForm')"
-              >保存</el-button>
+              <el-button type="primary" class="save" @click="handleEditSaveClick('updateBrandForm')">保存</el-button>
               <el-button type="primary" class="cancel" @click="handleEditCancelClick()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -212,7 +159,7 @@ export default {
       searchInput: ""
     };
   },
-  created: function() {
+  created: function () {
     //加载客户选择框
     request.get(`/backstage/client/find`).then(response => {
       this.addBrandForm.options.clientOptions = response.result;

@@ -82,42 +82,42 @@
           <hr />
 
           <el-table :data="tableData" style="width: 100%; margin-top: 20px" border @selection-change="changeCheckBoxFun" :row-style="tableRowClassName">
-            <el-table-column w idth="50" type="selection" align="center"></el-table-column>
-            <el-table-column prop="name" width="250px" label="根计划名称" align="center"></el-table-column>
-            <el-table-column prop="clientName" width="250px" label="客户" align="center"></el-table-column>
-            <el-table-column prop="brandName" width="250px" label="品牌" align="center"></el-table-column>
-            <el-table-column prop="clothesLevelName" width="250px" label="服装层次" align="center"></el-table-column>
-            <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center"></el-table-column>
-            <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3"></el-table-column>
-            <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2"></el-table-column>
-            <el-table-column prop="seriesCode" width="250px" label="系列编码" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="systemCode" width="250px" label="系统编码" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="projectType" width="250px" label="项目类型" align="center"></el-table-column>
-            <el-table-column prop="orderStage" width="250px" label="订单阶段" align="center"></el-table-column>
-            <el-table-column prop="predictStyleQuantity" width="250px" label="预测款数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="predictPieceQuantity" width="250px" label="预测件数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="informalStyleQuantity" width="250px" label="非正式款数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="informalPieceQuantity" width="250px" label="非正式件数" align="center" v-if="checked===1"></el-table-column>
-            <el-table-column prop="styleQuantity" width="250px" label="正式款数" align="center"></el-table-column>
-            <el-table-column prop="pieceQuantity" width="250px" label="正式件数" align="center"></el-table-column>
-            <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
-            <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
-            <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
-            <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
-            <el-table-column prop="date" width="150px" label="日期" align="center"></el-table-column>
-            <el-table-column label="是否约束" align="center" fixed="right" width="80px" v-if="checked ===1">
+            <af-table-column w idth="50" type="selection" align="center"></af-table-column>
+            <af-table-column prop="name" label="根计划名称" align="center"></af-table-column>
+            <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+            <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+            <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+            <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+            <af-table-column prop="styleNumber" label="款号" align="center" v-if="checked===3"></af-table-column>
+            <af-table-column prop="styleGroupName" label="款式组名称" align="center" v-if="checked===2"></af-table-column>
+            <af-table-column prop="seriesCode" label="系列编码" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="systemCode" label="系统编码" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+            <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+            <af-table-column prop="predictStyleQuantity" label="预测款数" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="predictPieceQuantity" label="预测件数" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="informalStyleQuantity" label="非正式款数" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="informalPieceQuantity" w label="非正式件数" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
+            <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
+            <af-table-column prop="inputPoint" label="投入点" align="center"></af-table-column>
+            <af-table-column prop="startDate" label="开始时间" align="center"></af-table-column>
+            <af-table-column prop="endDate" label="结束时间" align="center"></af-table-column>
+            <af-table-column prop="dateType" label="日期类型" align="center"></af-table-column>
+            <af-table-column prop="date" label="日期" align="center"></af-table-column>
+            <af-table-column label="是否约束" align="center" fixed="right" width="80px" v-if="checked ===1">
               <template slot-scope="scope" v-if=" checked ===1">
                 <el-switch v-if=" checked ===1" v-model="scope.row.limited" @change="rootPlanLimit(scope.row)" active-color="#13ce66"></el-switch>
               </template>
-            </el-table-column>
-            <el-table-column label="操作" fixed="right" align="center" width="250px">
+            </af-table-column>
+            <af-table-column label="操作" fixed="right" align="center" width="250px">
               <template slot-scope="scope">
                 <el-button size="mini" @click="assignRootPlan(scope.row)" type="text" v-if="scope.row.creatorId === meID">下发</el-button>
                 <el-button size="mini" @click="assignDetail(scope.row)" v-if="scope.row.state ==='已下发'" type="text">查看下发情况</el-button>
                 <el-button size="mini" @click="toPageDetail(scope.row)" type="text">查看详情</el-button>
                 <el-button size="mini" @click="toUpdateRootPlan(scope.row)" v-if="scope.row.state !='已下发' && scope.row.creatorId === meID" type="text">修改</el-button>
               </template>
-            </el-table-column>
+            </af-table-column>
           </el-table>
           <!-- 分页 -->
           <div class="block">
@@ -214,16 +214,16 @@
         </el-col>
         <el-col :span="13">
           <el-table :data="rootDistribute.tableData" max-height="400" @selection-change="changeCheckBoxFun2" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
-            <el-table-column type="selection" width="50px" align="center"></el-table-column>
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
-            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
+            <af-table-column type="selection" width="50px" align="center"></af-table-column>
+            <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+            <af-table-column prop="name" width="200" label="人员" align="center"></af-table-column>
+            <af-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
               <template slot-scope="scope">
                 <el-select size="medium" v-model="scope.row.assignPlanType">
                   <el-option v-for="item in rootDistribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                 </el-select>
               </template>
-            </el-table-column>
+            </af-table-column>
           </el-table>
         </el-col>
       </el-row>
@@ -257,16 +257,16 @@
       <el-row :gutter="20" style="margin-top:15px;">
         <el-col :span="13">
           <el-table :data="rootDistribute.tableData" max-height="400" @selection-change="changeCheckBoxFun2" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
-            <el-table-column type="selection" width="50px" align="center"></el-table-column>
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
-            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
+            <af-table-column type="selection" width="50px" align="center"></af-table-column>
+            <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+            <af-table-column prop="name" width="200" label="人员" align="center"></af-table-column>
+            <af-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
               <template slot-scope="scope">
                 <el-select size="medium" v-model="scope.row.assignPlanType">
                   <el-option v-for="item in rootDistribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
                 </el-select>
               </template>
-            </el-table-column>
+            </af-table-column>
           </el-table>
         </el-col>
         <el-col :span="2">
@@ -278,16 +278,16 @@
       <el-row :gutter="20">
         <el-col :span="20">
           <el-table :data="detailDistribute.tableData" style="width: 100%; margin-top: 20px;margin-left:100px">
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="executorName" width="150" label="人员" align="center"></el-table-column>
-            <el-table-column prop="createTime" width="150" label="创建时间" align="center"></el-table-column>
-            <el-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></el-table-column>
-            <el-table-column prop="assignPlanMadeStr" width="100" label="子计划制定" align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="100px">
+            <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+            <af-table-column prop="executorName" width="150" label="人员" align="center"></af-table-column>
+            <af-table-column prop="createTime" width="150" label="创建时间" align="center"></af-table-column>
+            <af-table-column prop="assignPlanType" width="150" label="计划类型" align="center"></af-table-column>
+            <af-table-column prop="assignPlanMadeStr" width="100" label="子计划制定" align="center"></af-table-column>
+            <af-table-column label="操作" align="center" width="100px">
               <template slot-scope="scope">
                 <el-button size="mini" @click="deleteAssign(scope.row,scope.index)" type="text">撤回</el-button>
               </template>
-            </el-table-column>
+            </af-table-column>
           </el-table>
         </el-col>
       </el-row>

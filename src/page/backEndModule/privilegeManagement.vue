@@ -42,12 +42,12 @@
             <el-button type="primary" @click="deletePrivilege">删除权限</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" max-height="400" @selection-change="changeCheckBoxFun" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
+        <el-table :data="tableData" max-height="400" border @selection-change="changeCheckBoxFun" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
           <el-table-column type="selection" width="50px" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="userName" width="200" label="用户" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="200" label="客户名称" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="200" label="品牌" align="center"></el-table-column>
+          <el-table-column prop="userName" width="300" label="用户" align="center"></el-table-column>
+          <el-table-column prop="clientName" width="300" label="客户名称" align="center"></el-table-column>
+          <el-table-column prop="brandName" width="300" label="品牌" align="center"></el-table-column>
           <el-table-column label="操作" width="200" min-width="100" align="center">
             <template slot-scope="scope">
               <el-button @click="deleteRangeData(scope.row,scope.index)" type="text" size="small">删除</el-button>

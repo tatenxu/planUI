@@ -51,8 +51,8 @@
         <el-row style="margin: 20px 0 10px 0">
           <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
           <el-table :data="ruleForm.tableData" max-height="400" border :stripe="true" :highlight-current-row="true">
-            <el-table-column prop="number" label="订单款号" align="center"></el-table-column>
-            <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
+            <af-table-column prop="number" label="订单款号" align="center"></af-table-column>
+            <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
           </el-table>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">

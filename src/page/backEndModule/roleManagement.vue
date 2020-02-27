@@ -53,12 +53,13 @@
           @selection-change="changeCheckBoxFun"
           :stripe="true"
           :highlight-current-row="true"
+          border
           style="width: 100%; margin-top: 20px"
         >
           <el-table-column type="selection" width="50px" align="center"></el-table-column>
           <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="roleName" width="200" label="角色" align="center"></el-table-column>
-          <el-table-column prop="menuName" width="200" label="页面名" align="center"></el-table-column>
+          <el-table-column prop="roleName" width="300" label="角色" align="center"></el-table-column>
+          <el-table-column prop="menuName" width="300" label="页面名" align="center"></el-table-column>
           <el-table-column label="操作" width="200" min-width="100" align="center">
             <template slot-scope="scope">
               <!-- <el-button @click="getRangeData(scope.row)" type="text" size="small">查看</el-button> -->

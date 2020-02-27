@@ -51,21 +51,17 @@
         <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
           <div class="label" align="center" style="margin: 0 0 5px 0">文件导入的数据</div>
           <el-table :data="ruleForm.tableData" max-height="400" border :stripe="true" :highlight-current-row="true">
-            <el-table-column prop="name" label="款号模板名称" align="center"></el-table-column>
-            <!-- <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-            <el-table-column prop="brandName" label="品牌" align="center"></el-table-column> -->
-            <!-- <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column> -->
-            <el-table-column prop="rangeCode" label="波段编码" align="center"></el-table-column>
-            <el-table-column prop="seriesCode" label="系列编码" align="center"></el-table-column>
-            <el-table-column prop="systemCode" label="系统编码" align="center"></el-table-column>
-            <el-table-column prop="orderStage" label="项目类型" align="center"></el-table-column>
-            <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
-            <el-table-column prop="predictStyleQuantity" label="预测款数" align="center"></el-table-column>
-            <el-table-column prop="predictPieceQuantity" label="预测件数" align="center"></el-table-column>
-            <el-table-column prop="informalStyleQuantity" label="非正式款数" align="center"></el-table-column>
-            <el-table-column prop="informalPieceQuantity" label="非正式件数" align="center"></el-table-column>
-            <el-table-column prop="note" label="备注" align="center"></el-table-column>
-
+            <af-table-column prop="name" label="款号模板名称" align="center"></af-table-column>
+            <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+            <af-table-column prop="seriesCode" label="系列编码" align="center"></af-table-column>
+            <af-table-column prop="systemCode" label="系统编码" align="center"></af-table-column>
+            <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+            <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+            <af-table-column prop="predictStyleQuantity" label="预测款数" align="center"></af-table-column>
+            <af-table-column prop="predictPieceQuantity" label="预测件数" align="center"></af-table-column>
+            <af-table-column prop="informalStyleQuantity" label="非正式款数" align="center"></af-table-column>
+            <af-table-column prop="informalPieceQuantity" label="非正式件数" align="center"></af-table-column>
+            <af-table-column prop="note" label="备注" align="center"></af-table-column>
           </el-table>
         </el-row>
         <el-row style="margin: 50px 0 10px 0">

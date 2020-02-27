@@ -62,30 +62,30 @@
           </el-col>
         </el-row>
         <el-table :data="tableData" max-height="400" border @selection-change="changeCheckBoxFun" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" width="150" label="系列编号" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="120" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" width="120" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="rangeCode" width="120" label="波段编码" align="center"></el-table-column>
-          <el-table-column prop="seriesCode" width="120" label="系列编码" align="center"></el-table-column>
-          <el-table-column prop="systemCode" width="120" label="系统编码" align="center"></el-table-column>
-          <el-table-column prop="projectType" width="120" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="orderStage" width="120" label="订单阶段" align="center"></el-table-column>
-          <el-table-column prop="predictStyleQuantity" width="120" label="预测款式" align="center"></el-table-column>
-          <el-table-column prop="predictPieceQuantity" width="120" label="预测件数" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" width="120" label="正式款数" align="center"></el-table-column>
-          <el-table-column prop="pieceQuantity" width="120" label="正式件数" align="center"></el-table-column>
-          <el-table-column prop="creatorName" width="180" label="添加人" align="center"></el-table-column>
-          <el-table-column prop="createTime" width="220" label="添加时间" align="center"></el-table-column>
-          <el-table-column label="操作" width="150" min-width="100" align="center" fixed="right">
+          <af-table-column type="selection" align="center"></af-table-column>
+          <af-table-column type="index" width="50px" label="序号" align="center"></af-table-column>
+          <af-table-column prop="name" label="系列编号" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+          <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+          <af-table-column prop="seriesCode" label="系列编码" align="center"></af-table-column>
+          <af-table-column prop="systemCode" label="系统编码" align="center"></af-table-column>
+          <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+          <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+          <af-table-column prop="predictStyleQuantity" label="预测款式" align="center"></af-table-column>
+          <af-table-column prop="predictPieceQuantity" label="预测件数" align="center"></af-table-column>
+          <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
+          <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
+          <af-table-column prop="creatorName" label="添加人" align="center"></af-table-column>
+          <af-table-column prop="createTime" label="添加时间" align="center"></af-table-column>
+          <af-table-column label="操作" align="center" width="180"  fixed="right">
             <template slot-scope="scope">
               <el-button @click="detailPanel(scope.row)" type="text" size="small">查看</el-button>
               <el-button @click="updatePanel(scope.row)" type="text" size="small" v-if="scope.row.creatorId === meID">修改</el-button>
               <el-button @click="deleteSeries(scope.row)" type="text" size="small" v-if="scope.row.creatorId === meID">删除</el-button>
             </template>
-          </el-table-column>
+          </af-table-column>
         </el-table>
         <!-- 分页 -->
         <div class="block">

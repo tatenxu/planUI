@@ -31,7 +31,7 @@
           <el-col :span="8">
             <div class="bar">
               <div class="title">添加时间</div>
-              <el-date-picker style="margin-left:20px " v-model="dateRange" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+              <el-date-picker style="margin-left:20px;width:400px " v-model="dateRange" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
             </div>
           </el-col>
 
@@ -43,7 +43,7 @@
           </el-col>
 
           <el-col :span="3">
-            <el-button type="primary"  @click="searchStyleGroup(1)" style="margin-left:50px">搜索</el-button>
+            <el-button type="primary" @click="searchStyleGroup(1)" style="margin-left:50px">搜索</el-button>
           </el-col>
 
         </el-row>
@@ -53,22 +53,22 @@
         <!-- 搜索结果 -->
 
         <el-table :data="tableData" style="width: 100%; margin-top: 20px" border>
-          <el-table-column type="selection" width="50" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column prop="name" width="150" label="款式组名称" align="center"></el-table-column>
-          <el-table-column prop="clientName" width="150" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" width="120" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothesLevelName" width="150" label="服装层次" align="center"></el-table-column>
-          <el-table-column prop="rangeCode" label="波段编码" align="center"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
-          <el-table-column prop="styleQuantity" label="正式款数" align="center"></el-table-column>
-          <el-table-column prop="pieceQuantity" label="正式件数" align="center"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="250" align="center">
+          <af-table-column type="selection" width="50" align="center"></af-table-column>
+          <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
+          <af-table-column prop="name" label="款式组名称" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+          <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+          <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+          <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+          <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
+          <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
+          <af-table-column fixed="right" label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button @click="ToPlanForm(scope.row)" type="text" size="small">制定根计划</el-button>
             </template>
-          </el-table-column>
+          </af-table-column>
         </el-table>
 
         <!-- 分页 -->
@@ -481,7 +481,7 @@ export default {
 
       this.rootPlanMake.dateType = "";
       this.rootPlanMake.date = "";
-      this.rootPlanMake.name = row.brandName+row.rangeCode+row.orderStage+row.name+"根计划";
+      this.rootPlanMake.name = row.brandName + row.rangeCode + row.orderStage + row.name + "根计划";
       this.rootPlanMakeFlag = true;
       this.viewname = "second";
     }

@@ -32,39 +32,37 @@
         </el-col>
       </el-row>
       <el-table :data="tableData" border style="width: 100%; margin-top: 20px" highlight-current-row :stripe="true">
-        <el-table-column label width="65">
+        <af-table-column label width="65">
           <template slot-scope="scope">
             <el-radio :label="scope.row.id" v-model="templateRadio" @change.native="getTemplateRow(scope.row)">{{scope.$index+1}}</el-radio>
           </template>
-        </el-table-column>
-        <el-table-column v-if="false" prop="id" align="center"></el-table-column>
-        <el-table-column prop="name" width="250px" label="根计划名称" align="center"></el-table-column>
-        <el-table-column prop="clientName" width="250px" label="客户" align="center"></el-table-column>
-        <el-table-column prop="brandName" width="250px" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesLevelName" width="250px" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="rangeCode" width="250px" label="波段编码" align="center"></el-table-column>
-        <el-table-column prop="styleNumber" width="250px" label="款号" align="center" v-if="checked===3"></el-table-column>
-        <el-table-column prop="styleGroupName" width="250px" label="款式组名称" align="center" v-if="checked===2"></el-table-column>
-        <el-table-column prop="seriesCode" width="250px" label="系列编码" align="center" v-if="checked===1"></el-table-column>
-        <el-table-column prop="systemCode" width="250px" label="系统编码" align="center" v-if="checked===1"></el-table-column>
-        <el-table-column prop="projectType" width="250px" label="项目类型" align="center"></el-table-column>
-        <el-table-column prop="orderStage" width="250px" label="订单阶段" align="center"></el-table-column>
-        <el-table-column prop="predictStyleQuantity" width="250px" label="预测款数" align="center" v-if="checked===1"></el-table-column>
-        <el-table-column prop="predictPieceQuantity" width="250px" label="预测件数" align="center" v-if="checked===1"></el-table-column>
-        <el-table-column prop="informalStyleQuantity" width="250px" label="非正式款数" align="center" v-if="checked===1"></el-table-column>
-        <el-table-column prop="informalPieceQuantity" width="250px" label="非正式件数" align="center" v-if="checked===1"></el-table-column>
-        <el-table-column prop="styleQuantity" width="250px" label="正式款数" align="center"></el-table-column>
-        <el-table-column prop="pieceQuantity" width="250px" label="正式件数" align="center"></el-table-column>
-        <el-table-column prop="inputPoint" width="250px" label="投入点" align="center"></el-table-column>
-        <el-table-column prop="startDate" width="150px" label="开始时间" align="center"></el-table-column>
-        <el-table-column prop="endDate" width="150px" label="结束时间" align="center"></el-table-column>
-        <!-- <el-table-column prop="dateType" label="日期类型" align="center"></el-table-column>
-        <el-table-column prop="date" width="150px" label="时间" align="center"></el-table-column> -->
-        <el-table-column fixed="right" width="100" label="操作" align="center">
+        </af-table-column>
+        <af-table-column v-if="false" prop="id" align="center"></af-table-column>
+        <af-table-column prop="name" label="根计划名称" align="center"></af-table-column>
+        <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+        <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+        <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+        <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+        <af-table-column prop="styleNumber" label="款号" align="center" v-if="checked===3"></af-table-column>
+        <af-table-column prop="styleGroupName" label="款式组名称" align="center" v-if="checked===2"></af-table-column>
+        <af-table-column prop="seriesCode" label="系列编码" align="center" v-if="checked===1"></af-table-column>
+        <af-table-column prop="systemCode" label="系统编码" align="center" v-if="checked===1"></af-table-column>
+        <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+        <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+        <af-table-column prop="predictStyleQuantity" label="预测款数" align="center" v-if="checked===1"></af-table-column>
+        <af-table-column prop="predictPieceQuantity" label="预测件数" align="center" v-if="checked===1"></af-table-column>
+        <af-table-column prop="informalStyleQuantity" label="非正式款数" align="center" v-if="checked===1"></af-table-column>
+        <af-table-column prop="informalPieceQuantity" label="非正式件数" align="center" v-if="checked===1"></af-table-column>
+        <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
+        <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
+        <af-table-column prop="inputPoint" label="投入点" align="center"></af-table-column>
+        <af-table-column prop="startDate" label="开始时间" align="center"></af-table-column>
+        <af-table-column prop="endDate" label="结束时间" align="center"></af-table-column>
+        <af-table-column fixed="right" width="100" label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" @click="searchDetails(scope.row)">查看详情</el-button>
           </template>
-        </el-table-column>
+        </af-table-column>
       </el-table>
     </div>
     <div class="block">
