@@ -104,7 +104,7 @@
           <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
           <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
           <af-table-column prop="seriesName" label="系列名称" align="center"></af-table-column>
-          <af-table-column prop="discover" label="创建人" align="center"></af-table-column>
+          <af-table-column prop="discover" label="发现人" align="center"></af-table-column>
           <af-table-column prop="handleOption" label="处理意见" align="center"></af-table-column>
           <af-table-column prop="handleResult" label="处理结果" align="center"></af-table-column>
           <af-table-column prop="place" label="地点" align="center"></af-table-column>
@@ -203,6 +203,7 @@
               <el-date-picker
                 v-model="addExceptionRuleForm.time"
                 type="datetime"
+                format="yyyy-MM-dd HH:mm:ss"
                 placeholder="选择日期时间"
               ></el-date-picker>
             </el-form-item>
@@ -290,8 +291,7 @@ export default {
         ],
         handleResult: [
           { required: false, message: "请输入", trigger: "change" }
-        ],
-        discover: [{ required: false, message: "请输入", trigger: "change" }]
+        ]
       },
       addExceptionRuleForm: {
         content: "",
@@ -561,7 +561,8 @@ export default {
         handleResult: row.handleResult,
         scope: row.scope,
         state: row.state,
-        time: row.time
+        time: t(row.time),
+        discover: row.discover
       };
       this.addExceptionDialogVisible = true;
     },
@@ -582,7 +583,7 @@ export default {
             : this.changeTime(this.addExceptionRuleForm.time)
       };
 
-      console.log("添加异常参数：", this.addExceptionRuleForm);
+      console.log("添加异常参数：", param);
       request.put(`/plan-exception/update`, param).then(response => {
         this.handleSearchClick();
       });
