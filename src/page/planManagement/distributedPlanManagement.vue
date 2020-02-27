@@ -611,6 +611,7 @@ export default {
           isRoot: this.isRootPlan,
           isModify: false,
           isCreate: true,
+          isBatch: true,
           batchData: this.selectedData
         };
 

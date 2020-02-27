@@ -247,9 +247,10 @@
             :highlight-current="true"
             :props="allPlansData.defaultProps"
           >
-            <span slot-scope="{ node, data }">
-              <span>
-                <el-button type="text" size="mini" @click="subPlanLookDetail(data)">Append</el-button>
+            <span class="custom-tree-node" slot-scope="{ node, data }">
+              <span>{{ node.label }}</span>
+              <span v-if="data.name != selectedData[0].name && data.id != 0">
+                <el-button type="text" size="mini" @click="subPlanLookDetail(data)">详情</el-button>
               </span>
             </span>
           </el-tree>
@@ -286,7 +287,8 @@ export default {
         allPlanShow: false,
         defaultProps: {
           children: "children",
-          label: "name"
+          label: "name",
+          id: "id"
         }
       },
       templateRadio: "",
@@ -446,6 +448,7 @@ export default {
         });
         return;
       }
+
       request
         .get(`/root-plan/tree`, {
           params: {
@@ -455,7 +458,7 @@ export default {
         .then(response => {
           this.allPlansData.allPlans = [];
           this.allPlansData.allPlans.push(response.result);
-          this.allPlansData.allPlanshow = true;
+          this.allPlansData.allPlanShow = true;
         });
     },
     getPlanDetail(row) {
@@ -473,11 +476,34 @@ export default {
         name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param
       });
+    },
+    subPlanLookDetail(data) {
+      request
+        .get(`/plan/find-complete`, {
+          params: {
+            id: data.id,
+            planClass: this.planClassDict[this.planClassRadioValue]
+          }
+        })
+        .then(response => {
+          var param = {
+            goback: "commitedPlanManagement",
+            planClass: planClassDict[planClassRadioValue],
+            isRoot: false,
+            isModify: false,
+            isCreate: false,
+            rowData: reponse.result
+          };
+          console.log("跳转参数：", param);
+
+          this.$router.push({
+            name: this.planClassRouterDestinationDict[this.planClassRadioValue],
+            params: param
+          });
+        });
     }
   },
-  subPlanLookDetail(data) {
-    console.log(data);
-  },
+
   computed: {
     keepAlives: {
       get() {
@@ -507,6 +533,14 @@ export default {
 .Mtitle {
   font-size: 3ch;
   margin-left: 47%;
+}
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
 }
 .box-card {
   margin: 20px 50px;

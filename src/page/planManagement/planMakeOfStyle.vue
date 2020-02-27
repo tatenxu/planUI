@@ -353,8 +353,8 @@
                   align="right"
                   unlink-panels
                   range-separator="至"
-                  :start-placeholder="placeHolders.startStr"
-                  :end-placeholder="placeHolders.endStr"
+                  :start-placeholder="ruleForm.placeHolders.startStr"
+                  :end-placeholder="ruleForm.placeHolders.endStr"
                   @change="startEndDateChange"
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
@@ -368,7 +368,7 @@
               <el-form-item label="计划周期" prop="cycle" placeholder="请输入">
                 <el-input
                   :disabled="alwaysGreyFlag"
-                  v-model.number="ruleForm.cycle"
+                  v-model.number="cycleHelper"
                   clearable
                   placeholder="请输入"
                   style="min-width:140px"
@@ -444,8 +444,8 @@
                   type="daterange"
                   unlink-panels
                   range-separator="至"
-                  :start-placeholder="placeHolders.actualStartStr"
-                  :end-placeholder="placeHolders.actualEndStr"
+                  :start-placeholder="ruleForm.placeHolders.actualStartStr"
+                  :end-placeholder="ruleForm.placeHolders.actualEndStr"
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
                 ></el-date-picker>
@@ -488,11 +488,7 @@
         <el-row :gutter="20" v-if="!isCreatePlanFlag && !isModifyPlanFlag">
           <el-col :span="20">
             <el-form-item label="总计划树"></el-form-item>
-            <el-tree
-              default-expand-all
-              :data="allPlansData.allPlans"
-              :props="allPlansData.allPlansDefaultProps"
-            ></el-tree>
+            <el-tree default-expand-all :data="ruleForm.allPlansData" :props="allPlansDefaultProps"></el-tree>
           </el-col>
         </el-row>
 
@@ -519,7 +515,7 @@
             ref="upload"
             v-if="isModifyPlanFlag || isCreatePlanFlag"
             action
-            :file-list="fileList"
+            :file-list="ruleForm.fileList"
             :http-request="sigleFileUploadAction"
             multiple
             style="margin-left:11%"
@@ -537,7 +533,7 @@
         </el-row>
         <el-row :gutter="20">
           <el-col style="width:70%;margin-left:10%  ">
-            <el-table :data="uploadFileNameList" border style="width: 100%">
+            <el-table :data="ruleForm.uploadFileNameList" border style="width: 100%">
               <el-table-column prop="fileName" label="已上传文件"></el-table-column>
               <el-table-column fixed="right" width="150" align="center" v-if="isModifyPlanFlag">
                 <template slot-scope="scope">
@@ -565,9 +561,23 @@
           <span>修改上传文件请到修改计划页面中！</span>
           <el-button type="primary" @click="uploadOK">确 定</el-button>
         </span>
-        <el-table :data="uploadResult" border style="width: 100%">
+        <el-table :data="ruleForm.uploadResult" border style="width: 100%">
           <el-table-column prop="result" label="上传结果"></el-table-column>
         </el-table>
+      </el-dialog>
+
+      <el-dialog
+        title="提示"
+        :visible.sync="batchDialogVisible"
+        width="30%"
+        :before-close="batchDialogCancel"
+        :modal="false"
+      >
+        <span>计划添加成功，是否继续添加下一个计划？</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="batchDialogCancel">返回被下发计划管理</el-button>
+          <el-button type="primary" @click="batchDialogContinue">继 续</el-button>
+        </span>
       </el-dialog>
     </el-card>
   </div>
@@ -580,27 +590,20 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
+      cycleHelper: 0,
       isRootPlanFlag: false,
       alwaysGreyFlag: true,
-      isModifyPlanFlag: true,
+      isModifyPlanFlag: false,
       isCreatePlanFlag: false,
       originRow: {},
       goback: null, //goback 为返回的 page name
-
-      placeHolders: {
-        startStr: "开始时间",
-        endStr: "结束时间",
-        actualStartStr: "开始时间",
-        actualEndStr: "结束时间"
+      GlobalControl: {
+        AllData: [],
+        CurrentIndex: 0
       },
 
-      allPlansData: {
-        allPlans: [],
-        allPlansDefaultProps: {
-          children: "children",
-          label: "name"
-        }
-      },
+      fileOperationDialogVisible: false,
+      batchDialogVisible: false,
 
       productLineShowProps: {
         label: "name",
@@ -620,6 +623,10 @@ export default {
           }
         }
       },
+      allPlansDefaultProps: {
+        children: "children",
+        label: "name"
+      },
 
       // 表单数据
       formData: "",
@@ -637,8 +644,6 @@ export default {
       },
       ruleForm: {
         date: "1970-01-01",
-        styleName: "无数据",
-        styleNumber: "无数据",
         seriesCode: "无数据",
         assignPlanType: "无数据",
         brandName: "无数据",
@@ -646,7 +651,7 @@ export default {
         clothesLevelName: "无数据",
         createTime: "无数据",
         creatorName: "无数据",
-        cycle: 0,
+        cycle: "0",
         dateType: "无数据",
         deptName: "无数据",
         haveException: "无数据",
@@ -658,6 +663,7 @@ export default {
         planClass: "无数据",
         predictPieceQuantity: "无数据",
         predictStyleQuantity: "无数据",
+        product: "无数据",
         productLine: null,
         projectType: "无数据",
         rootPlanName: "无数据",
@@ -670,15 +676,24 @@ export default {
         systemCode: "无数据",
         extension: "无数据",
         executionState: "无数据",
-        startEndDate: ["2020-02-15", "2020-02-16"],
-        actualStartEndDate: ["1970-01-01", "1970-01-01"]
-      },
+        startEndDate: [],
+        defaultStartEndDate: ["2020-02-15", "2020-02-16"],
+        actualStartEndDate: ["1970-01-01", "1970-01-01"],
 
-      // 文件操作
-      fileList: [],
-      uploadFileNameList: [],
-      uploadResult: [],
-      fileOperationDialogVisible: false
+        fileList: [],
+        uploadFileNameList: [],
+        uploadResult: [],
+        fileOperationDialogVisible: false,
+
+        placeHolders: {
+          startStr: "开始时间",
+          endStr: "结束时间",
+          actualStartStr: "开始时间",
+          actualEndStr: "结束时间"
+        },
+
+        allPlansData: []
+      }
     };
   },
 
@@ -737,23 +752,26 @@ export default {
     let that = this;
     that.init();
   },
+  watch: {
+    cycleHelper: function(val) {
+      this.ruleForm.cycle = val;
+    }
+  },
 
   methods: {
     startEndDateChange() {
       console.log("起止时间改变：", this.ruleForm.startEndDate);
       if (this.ruleForm.startEndDate === null) {
-        this.ruleForm.startDate = this.ruleForm.startStr;
-        this.ruleForm.endDate = this.ruleForm.endStr;
-        this.ruleForm.cycle = 0;
+        this.ruleForm.startDate = this.ruleForm.placeHolders.startStr;
+        this.ruleForm.endDate = this.ruleForm.placeHolders.endStr;
       } else {
         this.ruleForm.startDate = this.ruleForm.startEndDate[0];
         this.ruleForm.endDate = this.ruleForm.startEndDate[1];
-
-        var dateStart = new Date(this.ruleForm.startDate);
-        var dateEnd = new Date(this.ruleForm.endDate);
-        var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
-        this.ruleForm.cycle = difValue;
       }
+      var dateStart = new Date(this.ruleForm.startDate);
+      var dateEnd = new Date(this.ruleForm.endDate);
+      var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
+      this.cycleHelper = difValue;
     },
     dfsDisable(node, plArr) {
       if (plArr.indexOf(node.name) == -1) {
@@ -807,9 +825,9 @@ export default {
         })
         .then(response => {
           var i = 0;
-          this.uploadFileNameList.forEach(element => {
+          this.ruleForm.uploadFileNameList.forEach(element => {
             if (element.fileName === row.fileName) {
-              this.uploadFileNameList.splice(i, 1);
+              this.ruleForm.uploadFileNameList.splice(i, 1);
             }
             i = i + 1;
           });
@@ -817,20 +835,23 @@ export default {
         .catch(error => {});
     },
     uploadOK() {
-      this.fileOperationDialogVisible = false;
-      if (this.ruleForm.isBatched) {
-        this.$message({
-          message: "上传成功!",
-          type: "success"
-        });
+      this.ruleForm.fileOperationDialogVisible = false;
 
-        function sleep(time) {
-          return new Promise(resolve => setTimeout(resolve, time));
+      if (this.isBatched) {
+        if (
+          this.GlobalControl.CurrentIndex == this.GlobalControl.AllData.length
+        ) {
+          this.$message({
+            message: "所有子计划添加成功！",
+            type: "success"
+          });
+          this.$router.push({
+            name: this.goback ? this.goback : "planManagement",
+            params: {}
+          });
+        } else {
+          this.batchDialogVisible = true;
         }
-        sleep(1000).then(() => {
-          window.opener = null;
-          window.open("about:blank", "_top").close();
-        });
       } else {
         this.$router.push({
           name: this.goback ? this.goback : "planManagement",
@@ -886,19 +907,22 @@ export default {
               // 上传文件
               this.$refs.upload.submit();
 
-              if (this.ruleForm.isBatched) {
-                this.$message({
-                  message: "添加成功!",
-                  type: "success"
-                });
-
-                function sleep(time) {
-                  return new Promise(resolve => setTimeout(resolve, time));
+              if (this.isBatched) {
+                if (
+                  this.GlobalControl.CurrentIndex ==
+                  this.GlobalControl.AllData.length
+                ) {
+                  this.$message({
+                    message: "所有子计划添加成功！",
+                    type: "success"
+                  });
+                  this.$router.push({
+                    name: this.goback ? this.goback : "planManagement",
+                    params: {}
+                  });
+                } else {
+                  this.batchDialogVisible = true;
                 }
-                sleep(1000).then(() => {
-                  window.opener = null;
-                  window.open("about:blank", "_top").close();
-                });
               } else {
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
@@ -1001,20 +1025,25 @@ export default {
         type: "info"
       });
 
-      if (this.ruleForm.isBatched) {
-        function sleep(time) {
-          return new Promise(resolve => setTimeout(resolve, time));
-        }
-        sleep(1000).then(() => {
-          window.opener = null;
-          window.open("about:blank", "_top").close();
-        });
-      } else {
-        this.$router.push({
-          name: this.goback ? this.goback : "planManagement",
-          params: {}
-        });
-      }
+      this.$router.push({
+        name: this.goback ? this.goback : "planManagement",
+        params: {}
+      });
+    },
+    batchDialogCancel() {
+      this.$message({
+        message: "取消制定！",
+        type: "info"
+      });
+
+      this.$router.push({
+        name: this.goback ? this.goback : "planManagement",
+        params: {}
+      });
+    },
+    batchDialogContinue() {
+      this.processOnePlanData();
+      this.batchDialogVisible = false;
     },
 
     // 查看总计划函数
@@ -1028,8 +1057,7 @@ export default {
             params: list
           })
           .then(response => {
-            this.allPlansData.allPlans = [];
-            this.allPlansData.allPlans.push(response.result);
+            this.ruleForm.allPlansData = [response.result];
           });
       } else {
         request
@@ -1037,138 +1065,58 @@ export default {
             params: list
           })
           .then(response => {
-            this.allPlansData.allPlans = [];
-            this.allPlansData.allPlans.push(response.result);
+            this.ruleForm.allPlansData = [response.result];
           });
       }
     },
 
-    init() {
-      /* 跳转至本页面的参数：
-        ? {
-        ?   name: "this page's router name",
-        ?   params: {
-        ?     goback: source page name
-        ?     isRoot: boolean,
-        ?     isModify: boolean,
-        ?     isCreate: boolean,
-        ?     rowData: the choosen row data
-        ?   }
-        ? }
-      */
-      console.log("开始处理页面跳转参数");
+    processOnePlanData() {
       let that = this;
 
-      if (Object.getOwnPropertyNames(that.$route.params).length != 0) {
-        console.log("路由参数：", that.$route.params);
+      console.log(that.GlobalControl.AllData[that.GlobalControl.CurrentIndex]);
+      // 深拷贝变量，不然只是引用
+      that.ruleForm = JSON.parse(
+        JSON.stringify(
+          that.GlobalControl.AllData[that.GlobalControl.CurrentIndex]
+        )
+      );
 
-        let data = that.$route.params;
-
-        that.ruleForm.isBatched = data.isBatched === false;
-        that.goback = data.goback; //goback 为返回页面的 name
-        that.originRow = data.rowData; // 拷贝引用
-        // 深拷贝变量，不然只是引用
-        that.ruleForm = JSON.parse(JSON.stringify(data.rowData));
-
-        if (data.isCreate) {
-          that.isRootPlanFlag = false;
-          that.isModifyPlanFlag = data.isModify;
-          that.isCreatePlanFlag = data.isCreate;
-        } else {
-          that.isRootPlanFlag = data.isRoot;
-          that.isModifyPlanFlag = data.isModify;
-          that.isCreatePlanFlag = data.isCreate;
-
-          // 获取计划的文件列表, 创建子计划时不能获取文件列表
-          request
-            .get(`${window.$config.HOST}/plan-files/find`, {
-              params: { planId: data.rowData.id }
-            })
-            .then(response => {
-              response.result.forEach(ele => {
-                that.uploadFileNameList.push({ fileName: ele });
-              });
+      // 非创建时获取计划文件列表
+      if (!that.isCreatePlanFlag) {
+        // 获取计划的文件列表, 创建子计划时不能获取文件列表
+        request
+          .get(`${window.$config.HOST}/plan-files/find`, {
+            params: { planId: that.ruleForm.id }
+          })
+          .then(response => {
+            response.result.forEach(ele => {
+              that.ruleForm.uploadFileNameList.push({ fileName: ele });
             });
-        }
+          });
+      }
 
-        that.placeHolders.startStr = that.ruleForm.startDate;
-        that.placeHolders.endStr = that.ruleForm.endDate;
+      that.ruleForm.placeHolders = {
+        startStr: that.ruleForm.startDate,
+        endStr: that.ruleForm.endDate
+      };
 
-        // 自动计算周期
-        var dateStart = new Date(that.ruleForm.startDate);
-        var dateEnd = new Date(that.ruleForm.endDate);
-        var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
-        that.ruleForm.cycle = difValue;
+      // 自动计算周期
+      var dateStart = new Date(that.ruleForm.startDate);
+      var dateEnd = new Date(that.ruleForm.endDate);
+      var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
+      that.cycleHelper = difValue;
 
-        // 查看时加载计划树
-        if (!that.isCreatePlanFlag && !that.isModifyPlanFlag) {
-          this.getPlanTreeData(that.ruleForm.id);
-        }
+      // 查看时加载计划树
+      if (!that.isCreatePlanFlag && !that.isModifyPlanFlag) {
+        that.getPlanTreeData(that.ruleForm.id);
+      }
 
-        // 处理是添加子计划时相关属性更改的操作
-        if (that.isCreatePlanFlag) {
-          that.ruleForm.type = that.ruleForm.assignPlanType;
-          that.ruleForm.superiorId = data.isRoot ? 0 : that.ruleForm.id;
-          that.ruleForm.superiorName = that.ruleForm.name;
-
-          if (that.ruleForm.rootPlanName != undefined) {
-            that.ruleForm.cycle = 0;
-            that.ruleForm.productLine = undefined;
-            that.ruleForm.product = undefined;
-            that.ruleForm.note = undefined;
-            that.ruleForm.inputPoint = undefined;
-          }
-
-          that.ruleForm.rootPlanName =
-            that.ruleForm.rootPlanName === undefined
-              ? that.ruleForm.name
-              : that.ruleForm.rootPlanName;
-          that.ruleForm.rootPlanId =
-            that.ruleForm.rootPlanId === undefined
-              ? that.ruleForm.id
-              : that.ruleForm.rootPlanId;
-
-          that.ruleForm.id = undefined;
-          that.rules.startEndDate = [
-            {
-              required: true,
-              message: "请输入",
-              trigger: "blur"
-            }
-          ];
-          // 自动生成计划名
-          that.ruleForm.name =
-            that.ruleForm.styleNumber +
-            that.ruleForm.orderStage +
-            that.ruleForm.type;
-        }
-      } else if (Object.getOwnPropertyNames(that.$route.query).length != 0) {
-        console.log("路由query参数：", that.$route.query);
-        let data = that.$route.query;
-
-        that.ruleForm.isBatched = true;
-        that.goback = data.goback; //goback 为返回页面的 name
-        that.originRow = data; // 拷贝引用
-        // 深拷贝变量，不然只是引用
-        that.ruleForm = JSON.parse(JSON.stringify(data));
-
-        that.isRootPlanFlag = false;
-        that.isModifyPlanFlag = data.isModify === "true";
-        that.isCreatePlanFlag = data.isCreate === "true";
-
-        that.placeHolders.startStr = that.ruleForm.startDate;
-        that.placeHolders.endStr = that.ruleForm.endDate;
-
-        // 自动计算周期
-        var dateStart = new Date(that.ruleForm.startDate);
-        var dateEnd = new Date(that.ruleForm.endDate);
-        var difValue = (dateEnd - dateStart) / (1000 * 60 * 60 * 24);
-        that.ruleForm.cycle = difValue;
-
-        // 处理是添加子计划时相关属性更改的操作
+      // 处理是添加子计划时相关属性更改的操作
+      if (that.isCreatePlanFlag) {
         that.ruleForm.type = that.ruleForm.assignPlanType;
-        that.ruleForm.superiorId =
-          data.isRoot === "true" ? 0 : that.ruleForm.id;
+        that.ruleForm.superiorId = that.originalDataIsRoot
+          ? 0
+          : that.ruleForm.id;
         that.ruleForm.superiorName = that.ruleForm.name;
 
         if (that.ruleForm.rootPlanName != undefined) {
@@ -1189,6 +1137,7 @@ export default {
             : that.ruleForm.rootPlanId;
 
         that.ruleForm.id = undefined;
+
         that.rules.startEndDate = [
           {
             required: true,
@@ -1202,6 +1151,55 @@ export default {
           that.ruleForm.styleNumber +
           that.ruleForm.orderStage +
           that.ruleForm.type;
+      }
+
+      that.GlobalControl.CurrentIndex++;
+    },
+    init() {
+      /* 新建窗口（query） / 跳转至本页面的参数：
+        ? {
+        ?   name: "this page's router name",
+        ?   params: {
+        ?     goback: source page name
+        ?     isRoot: boolean,
+        ?     isModify: boolean,
+        ?     isCreate: boolean,
+        ?     rowData: the choosen row data
+        ?   }
+        ? }
+      */
+      console.log("开始处理页面跳转参数");
+      let that = this;
+
+      if (Object.getOwnPropertyNames(that.$route.params).length != 0) {
+        console.log("路由params参数：", that.$route.params);
+        let data = that.$route.params;
+
+        that.goback = data.goback; //goback 为返回页面的 name
+        that.originalDataIsRoot = data.isRoot;
+        that.isModifyPlanFlag = data.isModify;
+        that.isCreatePlanFlag = data.isCreate;
+        if (data.isCreate) {
+          that.isRootPlanFlag = false;
+        } else {
+          that.isRootPlanFlag = data.isRoot;
+        }
+
+        if (data.isBatch === undefined) {
+          that.isBatched = false;
+          that.originRow = data.rowData; // 拷贝引用
+
+          that.GlobalControl.AllData = [data.rowData];
+          that.GlobalControl.CurrentIndex = 0;
+          that.GlobalControl.AllDataLength = 1;
+        } else {
+          that.isBatched = true;
+
+          that.GlobalControl.AllData = data.batchData;
+          that.GlobalControl.CurrentIndex = 0;
+        }
+
+        this.processOnePlanData();
       }
     }
   }
