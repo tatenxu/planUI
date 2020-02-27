@@ -556,7 +556,11 @@
         <el-row :gutter="20" v-if="!isCreatePlanFlag && !isModifyPlanFlag">
           <el-col :span="20">
             <el-form-item label="总计划树"></el-form-item>
-            <el-tree :data="allPlansData.allPlans" :props="allPlansData.allPlansDefaultProps"></el-tree>
+            <el-tree
+              default-expand-all
+              :data="allPlansData.allPlans"
+              :props="allPlansData.allPlansDefaultProps"
+            ></el-tree>
           </el-col>
         </el-row>
 
@@ -688,10 +692,16 @@ export default {
       // 表单数据
       formData: "",
       rules: {
-        name: [{ required: true, message: "请输入", trigger: "change" }],
         product: [{ required: true, message: "请输入", trigger: "blur" }],
         productLine: [{ required: true, message: "请输入", trigger: "blur" }],
-        note: [{ required: false, message: "请输入", trigger: "blur" }]
+        startEndDate: [
+          {
+            required: false,
+            message: "请输入",
+            trigger: "blur"
+          }
+        ],
+        inputPoint: [{ required: true, message: "请输入", trigger: "blur" }]
       },
       ruleForm: {
         date: "1970-01-01",
@@ -799,7 +809,7 @@ export default {
   methods: {
     startEndDateChange() {
       console.log("起止时间改变：", this.ruleForm.startEndDate);
-      if (val === null) {
+      if (this.ruleForm.startEndDate === null) {
         this.ruleForm.startDate = this.ruleForm.startStr;
         this.ruleForm.endDate = this.ruleForm.endStr;
         this.ruleForm.cycle = 0;
@@ -1088,8 +1098,8 @@ export default {
             params: list
           })
           .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
+            this.allPlansData.allPlans = [];
+            this.allPlansData.allPlans.push(response.result);
           });
       } else {
         request
@@ -1097,8 +1107,8 @@ export default {
             params: list
           })
           .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
+            this.allPlansData.allPlans = [];
+            this.allPlansData.allPlans.push(response.result);
           });
       }
     },
@@ -1190,6 +1200,14 @@ export default {
 
           that.ruleForm.id = undefined;
 
+          that.rules.startEndDate = [
+            {
+              required: true,
+              message: "请输入",
+              trigger: "blur"
+            }
+          ];
+
           // 自动生成计划名
           that.ruleForm.name =
             that.ruleForm.brandName +
@@ -1253,6 +1271,14 @@ export default {
             : that.ruleForm.rootPlanId;
 
         that.ruleForm.id = undefined;
+
+        that.rules.startEndDate = [
+          {
+            required: true,
+            message: "请输入",
+            trigger: "blur"
+          }
+        ];
 
         // 自动生成计划名
         that.ruleForm.name =

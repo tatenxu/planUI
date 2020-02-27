@@ -66,7 +66,15 @@
 </style>
 <template>
   <div class="console-sidebar">
-    <el-menu :unique-opened="true" :router="true" :default-active="defaultActive" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" class="sidebar-content">
+    <el-menu
+      :unique-opened="true"
+      :router="true"
+      :default-active="defaultActive"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+      class="sidebar-content"
+    >
       <div class="sidebar-fold">计划服务-系列规划</div>
 
       <el-menu-item index="/quick'">
@@ -140,7 +148,7 @@
         <el-menu-item index="/planCompletionManage" v-if="rangeCompleted">
           <i class="el-icon-document"></i>系列完成管理
         </el-menu-item>
-        <el-menu-item index="/planRecover" v-if="planRecover">
+        <el-menu-item index="/planDeletion" v-if="planDeletion">
           <i class="el-icon-document"></i>计划回收站
         </el-menu-item>
         <el-menu-item index="/planExceptionManagement" v-if="exceptionMana">
@@ -223,7 +231,7 @@ export default {
       planReview: false,
       planDistribute: false,
       rangeCompleted: false,
-      planRecover: false,
+      planDeletion: false,
       exceptionMana: false,
       messageMana: false,
       statistics: false,
@@ -243,7 +251,7 @@ export default {
       systemMana: false,
       numberMana: false,
       afterPlanMake: false,
-      statistics:true,
+      statistics: true
 
       // rangeMana: true,
       // styleGroupMana: true,
@@ -259,7 +267,7 @@ export default {
       // planReview: true,
       // planDistribute: true,
       // rangeCompleted: true,
-      // planRecover: true,
+      // planDeletion: true,
       // exceptionMana: true,
       // messageMana: true,
       // statistics: true,
@@ -282,7 +290,7 @@ export default {
     };
   },
 
-  created: function () {
+  created: function() {
     //获得自己的角色信息
     request.get(`/me`).then(response => {
       for (let i = 0; i < response.result.roles.length; i++) {
@@ -345,7 +353,7 @@ export default {
               this.rangeCompleted = true;
             }
             if (this.pageList.includes("计划回收站")) {
-              this.planRecover = true;
+              this.planDeletion = true;
             }
             if (this.pageList.includes("异常管理")) {
               this.exceptionMana = true;
@@ -368,7 +376,7 @@ export default {
   },
   components: {},
   computed: {
-    defaultActive: function () {
+    defaultActive: function() {
       const that = this;
       return (
         (that.$route.meta && that.$route.meta.activePath) || this.$route.path

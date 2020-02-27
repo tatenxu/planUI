@@ -4,7 +4,7 @@
       <el-row :gutter="20" style="margin-top:5px;">
         <el-col :span="15">
           <div class="bar">
-            <div class="title">计划类型</div>
+            <div class="title">计划类别</div>
             <el-radio-group v-model="planClassRadioValue" @change="planClassTypeChange">
               <el-radio-button label="系列计划"></el-radio-button>
               <el-radio-button label="款式计划"></el-radio-button>
@@ -12,31 +12,24 @@
             </el-radio-group>
           </div>
         </el-col>
-        <el-col :span="4">
-          <el-switch
-            v-model="isRootPlan"
-            @change="planTypeSwitchChange"
-            inactive-color="#13ce66"
-            active-text="根计划"
-            inactive-text="普通计划"
-          ></el-switch>
+
+        <el-col :span="12">
+          <div class="bar">
+            <div class="title">添加时间</div>
+            <el-date-picker
+              style="margin-left: 20px"
+              v-model="searchOptions.searchParams.dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholde="开始日期"
+              end-placeholde="结束日期"
+              clearable
+            ></el-date-picker>
+          </div>
         </el-col>
       </el-row>
 
       <el-row :gutter="20" style="margin-top:5px;">
-        <el-col :span="8">
-          <div class="bar">
-            <div class="title">计划类别</div>
-            <el-select v-model="searchOptions.searchParams.planClassName">
-              <el-option
-                v-for="item in searchOptions.options.planClassOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-col>
         <el-col :span="8">
           <div class="bar">
             <div class="title">客户名称</div>
@@ -67,9 +60,7 @@
             </el-select>
           </div>
         </el-col>
-      </el-row>
-      <!-- 第二行 -->
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
+
         <el-col :span="8">
           <div class="bar">
             <div class="title">服装层次</div>
@@ -83,7 +74,10 @@
             </el-select>
           </div>
         </el-col>
+      </el-row>
 
+      <!-- 第二行 -->
+      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
         <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
@@ -96,25 +90,8 @@
             <el-input v-model="searchOptions.searchParams.seriesName" placeholder="请输入内容"></el-input>
           </div>
         </el-col>
-      </el-row>
-      <!-- 第三行 -->
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="12">
-          <div class="bar">
-            <div class="title">添加时间</div>
-            <el-date-picker
-              style="margin-left: 20px"
-              v-model="searchOptions.searchParams.dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholde="开始日期"
-              end-placeholde="结束日期"
-              clearable
-            ></el-date-picker>
-          </div>
-        </el-col>
 
-        <el-col :span="2" :offset="1">
+        <el-col :span="2" :offset="5">
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
         </el-col>
       </el-row>
@@ -122,19 +99,30 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="3">
-          <GanttExtension :selectedTableData="selectedData" :isRootPlan="isRootPlan"></GanttExtension>
+          <div class="bar">
+            <el-button
+              type="primary"
+              size="small"
+              style="margin-right: 20px"
+              @click="lookAllPlan"
+            >查看总计划</el-button>
+          </div>
+        </el-col>
+
+        <el-col :span="3">
+          <GanttExtension :selectedTableData="selectedData" :isRootPlan="true"></GanttExtension>
         </el-col>
       </el-row>
 
       <el-table
         border
         :data="tableData"
-        max-height="400"
+        max-height="800"
         :stripe="true"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
       >
-        <el-table-column label width="65">
+        <af-table-column label>
           <template slot-scope="scope">
             <el-radio
               :label="scope.row.id"
@@ -142,96 +130,102 @@
               @change.native="getTemplateRow(scope.$index,scope.row)"
             >{{scope.$index+1}}</el-radio>
           </template>
-        </el-table-column>
+        </af-table-column>
 
         <!-- 三种计划类型都有 -->
-        <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
-        <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="numberOfChildren" label="子计划数" align="center"></el-table-column>
-        <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="seriesName" label="波段编码" align="center"></el-table-column>
+        <af-table-column prop="name" label="计划名称" align="center"></af-table-column>
+        <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+        <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+        <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+        <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+
+        <!-- 只款式组有 -->
+        <af-table-column
+          v-if="planClassDict[planClassRadioValue]==='GROUP'"
+          prop="styleGroupName"
+          label="款式组名称"
+          align="center"
+        ></af-table-column>
 
         <!-- 只有款式计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='STYLE'"
-          prop="seriesName"
+          prop="styleNumber"
           label="款号"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 只有系列计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="seriesName"
+          prop="seriesCode"
           label="系列编码"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="systemCode"
           label="系统编码"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 都有 -->
-        <el-table-column prop="systemCode" label="项目类型" align="center"></el-table-column>
-        <el-table-column prop="systemCode" label="订单阶段" align="center"></el-table-column>
+        <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+        <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
 
         <!-- 只有系列计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="predictStyleQuantity"
           label="预测款数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="predictPieceQuantity"
           label="预测件数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="informalStyleQuantity"
           label="非正式款数"
           align="center"
-          width="100"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="informalPieceQuantity"
           label="非正式件数"
           align="center"
-          width="100"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 款式和款式组有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]!='SERIES'"
-          prop="systemCode"
+          prop="styleQuantity"
           label="正式款数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]!='SERIES'"
-          prop="systemCode"
+          prop="pieceQuantity"
           label="正式件数"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 都有 -->
-        <el-table-column prop="systemCode" label="投入点" align="center"></el-table-column>
-        <el-table-column prop="systemCode" label="计划开始" align="center"></el-table-column>
-        <el-table-column prop="systemCode" label="计划结束" align="center"></el-table-column>
+        <af-table-column prop="inputPoint" label="投入点" align="center"></af-table-column>
+        <af-table-column prop="startDate" label="计划开始" align="center"></af-table-column>
+        <af-table-column prop="endDate" label="计划完成" align="center"></af-table-column>
+        <af-table-column prop="completeTime" label="完成时间" align="center"></af-table-column>
 
-        <el-table-column fixed="right" label="操作" align="center">
+        <af-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
           </template>
-        </el-table-column>
+        </af-table-column>
       </el-table>
+
       <!-- 分页 -->
       <div class="block">
         <el-pagination
@@ -244,6 +238,23 @@
           :total="pagination.total"
         ></el-pagination>
       </div>
+
+      <el-dialog title="查看总计划" :visible.sync="allPlansData.allPlanShow" :modal="false">
+        <div class="body">
+          <el-tree
+            default-expand-all
+            :data="allPlansData.allPlans"
+            :highlight-current="true"
+            :props="allPlansData.defaultProps"
+          >
+            <span slot-scope="{ node, data }">
+              <span>
+                <el-button type="text" size="mini" @click="subPlanLookDetail(data)">Append</el-button>
+              </span>
+            </span>
+          </el-tree>
+        </div>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -270,15 +281,21 @@ export default {
       },
       planClassRadioValue: "系列计划",
 
+      allPlansData: {
+        allPlans: [],
+        allPlanShow: false,
+        defaultProps: {
+          children: "children",
+          label: "name"
+        }
+      },
       templateRadio: "",
-      isRootPlan: true,
 
       searchOptions: {
         searchParams: {
           clientName: undefined,
           brandName: undefined,
           clothesLevelName: undefined,
-          planClassName: "SERIES",
           seriesName: undefined,
           planName: undefined,
           dateRange: undefined
@@ -286,11 +303,7 @@ export default {
         options: {
           clientNameOptions: [],
           brandNameOptions: [],
-          planClassOptions: [
-            { id: "STYLE", name: "款式计划" },
-            { id: "GROUP", name: "款式组计划" },
-            { id: "SERIES", name: "系列计划" }
-          ],
+
           clothesLevelNameOptions: []
         }
       },
@@ -335,18 +348,7 @@ export default {
       });
 
     //默认获取已完成系列根计划计划列表
-    request
-      .get(`${window.$config.HOST}/root-plan/find-complete`, {
-        params: {
-          planClass: "SERIES",
-          pageNum: this.pagination.currentPage,
-          pageSize: this.pagination.pageSize
-        }
-      })
-      .then(response => {
-        this.tableData = response.result;
-        this.pagination.total = response.total;
-      });
+    this.handleSearch();
   },
   methods: {
     clientNameChange() {
@@ -358,11 +360,6 @@ export default {
         .then(response => {
           this.searchOptions.options.brandNameOptions = response.result;
         });
-    },
-    planTypeSwitchChange() {
-      this.pagination.currentPage = 1;
-      this.tableData = [];
-      this.handleSearch();
     },
     handleSizeChange(val) {
       this.pagination.pageSize = val;
@@ -406,7 +403,6 @@ export default {
         brandId: this.searchOptions.searchParams.brandName,
         seriesName: this.searchOptions.searchParams.seriesName,
         name: this.searchOptions.searchParams.planName,
-        planClass: this.searchOptions.searchParams.planClassName,
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]
@@ -423,40 +419,52 @@ export default {
       };
 
       console.log("搜索参数：", param);
-      if (this.isRootPlan) {
-        request
-          .get(`${window.$config.HOST}/root-plan/find-complete`, {
-            params: param
-          })
-          .then(response => {
-            this.tableData = response.result;
-            this.pagination.total = response.total;
-          });
-      } else {
-        request
-          .get(`${window.$config.HOST}/plan/find-complete`, {
-            params: param
-          })
-          .then(response => {
-            this.tableData = response.result;
-            this.pagination.total = response.total;
-          });
-      }
+      request
+        .get(`${window.$config.HOST}/root-plan/find-complete`, {
+          params: param
+        })
+        .then(response => {
+          this.tableData = response.result;
+          this.pagination.total = response.total;
+        });
     },
     getTemplateRow(index, row) {
-      this.selectedData = row;
-      console.log(row);
+      this.selectedData = [row];
     },
 
+    lookAllPlan() {
+      if (this.selectedData.length == 0) {
+        this.$message({
+          message: "请选择一项！",
+          type: "warning"
+        });
+        return;
+      } else if (this.selectedData.length > 1) {
+        this.$message({
+          message: "只能选择一项！",
+          type: "warning"
+        });
+        return;
+      }
+      request
+        .get(`/root-plan/tree`, {
+          params: {
+            id: this.selectedData[0].id
+          }
+        })
+        .then(response => {
+          this.allPlansData.allPlans = [];
+          this.allPlansData.allPlans.push(response.result);
+          this.allPlansData.allPlanshow = true;
+        });
+    },
     getPlanDetail(row) {
       var param = {
         goback: "commitedPlanManagement",
         planClass: planClassDict[planClassRadioValue],
-
-        isRoot: this.isRootPlan,
+        isRoot: true,
         isModify: false,
         isCreate: false,
-
         rowData: row
       };
       console.log("跳转参数：", param);
@@ -466,6 +474,9 @@ export default {
         params: param
       });
     }
+  },
+  subPlanLookDetail(data) {
+    console.log(data);
   },
   computed: {
     keepAlives: {

@@ -107,23 +107,23 @@
           @selection-change="tableSelectionChange"
           :stripe="true"
         >
-          <el-table-column type="selection" align="center"></el-table-column>
-          <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-          <el-table-column type="planClass" label="计划类别" align="center"></el-table-column>
-          <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-          <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-          <el-table-column prop="clothinLevel" label="服装层次" align="center" width="150px"></el-table-column>
-          <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-          <el-table-column prop="planStage" label="订单阶段" align="center"></el-table-column>
-          <el-table-column prop="deleteName" label="删除人" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="删除时间" width="200px" align="center"></el-table-column>
+          <af-table-column type="selection" align="center"></af-table-column>
+          <!-- <af-table-column type="index" label="序号" align="center"></af-table-column> -->
+          <af-table-column prop="planClass" label="计划类别" align="center"></af-table-column>
+          <af-table-column prop="planName" label="计划名称" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+          <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+          <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
+          <af-table-column prop="deleterName" label="删除人" align="center"></af-table-column>
+          <af-table-column prop="deleteTime" label="删除时间" align="center"></af-table-column>
 
-          <el-table-column fixed="right" label="操作">
+          <af-table-column fixed="right" align="center" label="操作">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="ReCover(scope.row)">恢复</el-button>
             </template>
-          </el-table-column>
+          </af-table-column>
         </el-table>
       </div>
       <div class="block">

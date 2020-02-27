@@ -2,21 +2,21 @@
   <div>
     <el-card class="box-card">
       <el-row :gutter="20" style="margin-top:5px; ">
-        <el-col :span="8">
+        <el-col :span="15">
           <div class="bar">
-            <div class="title">计划类别</div>
-            <el-select v-model="searchOptions.searchParams.planClassName">
-              <el-option
-                v-for="item in searchOptions.options.planClassOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
+            <div class="title">计划类型</div>
+            <el-radio-group
+              v-model="searchOptions.searchParams.planClassRadioValue"
+              @change="planClassTypeChange"
+            >
+              <el-radio-button label="系列计划"></el-radio-button>
+              <el-radio-button label="款式计划"></el-radio-button>
+              <el-radio-button label="款式组计划"></el-radio-button>
+            </el-radio-group>
           </div>
         </el-col>
 
-        <el-col :span="8">
+        <el-col :span="8" :offset="1">
           <div class="bar">
             <div class="title">创建人</div>
             <el-select v-model="searchOptions.searchParams.creatorName" clearable>
@@ -30,7 +30,7 @@
           </div>
         </el-col>
 
-        <el-col :span="8">
+        <!-- <el-col :span="8">
           <div class="bar">
             <div class="title">计划类型</div>
             <el-select v-model="searchOptions.searchParams.planTypeName" clearable>
@@ -42,7 +42,7 @@
               ></el-option>
             </el-select>
           </div>
-        </el-col>
+        </el-col>-->
       </el-row>
 
       <el-row :gutter="20" style="margin-top:5px;">
@@ -195,12 +195,12 @@ export default {
     return {
       searchOptions: {
         searchParams: {
+          planClassRadioValue: "系列计划",
           planClassName: "SERIES",
           clientName: "",
           brandName: "",
           seriesName: "",
           creatorName: "",
-          planTypeName: "",
           timeLineName: "",
           planStateName: "",
           seriesStateName: "",
@@ -209,11 +209,11 @@ export default {
         options: {
           customerNameOptions: [],
           brandNameOptions: [],
-          planClassOptions: [
-            { id: "STYLE", name: "款式计划" },
-            { id: "GROUP", name: "款式组计划" },
-            { id: "SERIES", name: "系列计划" }
-          ],
+          planClassDict: {
+            系列计划: "SERIES",
+            款式计划: "STYLE",
+            款式组计划: "GROUP"
+          },
           creatorOptions: [],
           planTypeOptions: [],
           timeLineOptions: [
@@ -431,6 +431,9 @@ export default {
     };
   },
   methods: {
+    planClassTypeChange() {
+      this.handleSearch();
+    },
     clientNameChange() {
       //品牌名称跟随加载
       request
@@ -532,15 +535,15 @@ export default {
     handleSearch() {
       var allDates = this.generateDateLists();
       var param = {
-        planClass:
+        clientId:
           this.searchOptions.searchParams.clientName === ""
             ? undefined
             : this.searchOptions.searchParams.clientName,
-        planClass:
+        brandId:
           this.searchOptions.searchParams.brandName === ""
             ? undefined
             : this.searchOptions.searchParams.brandName,
-        planClass:
+        seriesName:
           this.searchOptions.searchParams.seriesName === ""
             ? undefined
             : this.searchOptions.searchParams.seriesName,
@@ -549,15 +552,10 @@ export default {
           this.searchOptions.searchParams.creatorName === ""
             ? undefined
             : this.searchOptions.searchParams.creatorName,
-        type:
-          this.searchOptions.searchParams.planTypeName === ""
-            ? undefined
-            : this.searchOptions.searchParams.planTypeName,
 
-        planClass:
-          this.searchOptions.searchParams.planClassName === ""
-            ? "SERIES"
-            : this.searchOptions.searchParams.planClassName,
+        planClass: this.searchOptions.options.planClassDict[
+          this.searchOptions.searchParams.planClassRadioValue
+        ],
 
         startDateBefore: allDates.startDateBefore,
         startDateAfter: allDates.startDateAfter,

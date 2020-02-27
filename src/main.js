@@ -2,16 +2,13 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import "./style/reset.css";
 import Vue from "vue";
-
 import VueRouter from "vue-router";
 import App from "./App";
 import routes from "./router";
 
 // store为实例化生成的
 import store from "./store";
-
 import Sto from "store";
-
 import axios from "axios";
 
 // import { Message, loading } from 'element-ui';
@@ -20,8 +17,11 @@ import "element-ui/lib/theme-chalk/index.css";
 
 //cookie
 import VueCookies from "vue-cookies";
-Vue.use(VueCookies);
 
+import AFTableColumn from 'af-table-column';
+
+Vue.use(AFTableColumn)
+Vue.use(VueCookies);
 Vue.use(VueRouter);
 Vue.use(ElementUI);
 

@@ -399,8 +399,8 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20" v-if="ruleForm.state=='已制定'||ruleForm.state=='已审核'">
-          <el-col :span="8">
+        <el-row :gutter="20">
+          <el-col :span="8" v-if="(ruleForm.state=='已下发'||ruleForm.state=='已审核')">
             <div class="bar">
               <el-form-item label="协商延迟" prop="extension" placeholder="请输入">
                 <el-date-picker
@@ -417,7 +417,10 @@
             </div>
           </el-col>
 
-          <el-col :span="13">
+          <el-col
+            :span="13"
+            v-if="!isRootPlanFlag && (ruleForm.state=='已下发'||ruleForm.state=='已审核')"
+          >
             <div class="bar">
               <el-form-item label="实际起止" prop="actualStartEndDate" placeholder="请输入">
                 <el-date-picker
@@ -438,7 +441,10 @@
             </div>
           </el-col>
 
-          <el-col :span="8">
+          <el-col
+            :span="8"
+            v-if="!isRootPlanFlag && (ruleForm.state=='已下发'||ruleForm.state=='已审核')"
+          >
             <div class="bar">
               <el-form-item label="执行状态" prop="executionState" placeholder="请输入">
                 <el-input
@@ -473,7 +479,11 @@
         <el-row :gutter="20" v-if="!isCreatePlanFlag && !isModifyPlanFlag">
           <el-col :span="20">
             <el-form-item label="总计划树"></el-form-item>
-            <el-tree :data="allPlansData.allPlans" :props="allPlansData.allPlansDefaultProps"></el-tree>
+            <el-tree
+              default-expand-all
+              :data="allPlansData.allPlans"
+              :props="allPlansData.allPlansDefaultProps"
+            ></el-tree>
           </el-col>
         </el-row>
 
@@ -605,10 +615,16 @@ export default {
       // 表单数据
       formData: "",
       rules: {
-        name: [{ required: true, message: "请输入", trigger: "change" }],
         product: [{ required: true, message: "请输入", trigger: "blur" }],
         productLine: [{ required: true, message: "请输入", trigger: "blur" }],
-        note: [{ required: false, message: "请输入", trigger: "blur" }]
+        startEndDate: [
+          {
+            required: false,
+            message: "请输入",
+            trigger: "blur"
+          }
+        ],
+        inputPoint: [{ required: true, message: "请输入", trigger: "blur" }]
       },
       ruleForm: {
         date: "1970-01-1",
@@ -715,7 +731,7 @@ export default {
   methods: {
     startEndDateChange() {
       console.log("起止时间改变：", this.ruleForm.startEndDate);
-      if (val === null) {
+      if (this.ruleForm.startEndDate === null) {
         this.ruleForm.startDate = this.ruleForm.startStr;
         this.ruleForm.endDate = this.ruleForm.endStr;
         this.ruleForm.cycle = 0;
@@ -1002,8 +1018,8 @@ export default {
             params: list
           })
           .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
+            this.allPlansData.allPlans = [];
+            this.allPlansData.allPlans.push(response.result);
           });
       } else {
         request
@@ -1011,8 +1027,8 @@ export default {
             params: list
           })
           .then(response => {
-            this.allPlans = [];
-            this.allPlans.push(response.result);
+            this.allPlansData.allPlans = [];
+            this.allPlansData.allPlans.push(response.result);
           });
       }
     },
@@ -1103,6 +1119,14 @@ export default {
               : that.ruleForm.rootPlanId;
 
           that.ruleForm.id = undefined;
+          that.rules.startEndDate = [
+            {
+              required: true,
+              message: "请输入",
+              trigger: "blur"
+            }
+          ];
+
           // 自动生成计划名
           that.ruleForm.name =
             that.ruleForm.brandName +
@@ -1159,6 +1183,14 @@ export default {
             : that.ruleForm.rootPlanId;
 
         that.ruleForm.id = undefined;
+        that.rules.startEndDate = [
+          {
+            required: true,
+            message: "请输入",
+            trigger: "blur"
+          }
+        ];
+
         // 自动生成计划名
         that.ruleForm.name =
           that.ruleForm.brandName +

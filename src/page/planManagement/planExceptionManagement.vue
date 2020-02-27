@@ -98,33 +98,27 @@
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="50px"></el-table-column>
-          <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" width="100px" align="center"></el-table-column>
-          <el-table-column prop="clientName" label="客户" width="100px" align="center"></el-table-column>
-          <el-table-column prop="brandName" label="品牌" width="100px" align="center"></el-table-column>
-          <el-table-column prop="seriesName" label="系列名称" width="100px" align="center"></el-table-column>
-          <el-table-column prop="discover" label="创建人" width="100px" align="center"></el-table-column>
-          <el-table-column prop="handleOption" label="处理意见" width="100px" align="center"></el-table-column>
-          <el-table-column prop="handleResult" label="处理结果" width="100px" align="center"></el-table-column>
-          <el-table-column prop="place" label="地点" width="100px" align="center"></el-table-column>
-          <el-table-column prop="principal" label="负责人" width="100px" align="center"></el-table-column>
-          <el-table-column prop="scope" label="影响范围" width="100px" align="center"></el-table-column>
-          <el-table-column prop="state" label="状态" width="100px" align="center"></el-table-column>
-          <el-table-column prop="type" label="异常类型" width="100px" align="center"></el-table-column>
-          <el-table-column prop="time" label="时间" width="200px" align="center"></el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="200px" align="center"></el-table-column>
-          <el-table-column prop="updateTime" label="更新时间" width="200px" align="center"></el-table-column>
-          <el-table-column
-            prop="content"
-            label="异常内容"
-            width="300px"
-            align="center"
-            show-overflow-tooltip
-          ></el-table-column>
+          <af-table-column type="selection"></af-table-column>
+          <!-- <af-table-column type="index" label="序号" align="center"></af-table-column> -->
+          <af-table-column prop="planName" label="计划名称" align="center"></af-table-column>
+          <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+          <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+          <af-table-column prop="seriesName" label="系列名称" align="center"></af-table-column>
+          <af-table-column prop="discover" label="创建人" align="center"></af-table-column>
+          <af-table-column prop="handleOption" label="处理意见" align="center"></af-table-column>
+          <af-table-column prop="handleResult" label="处理结果" align="center"></af-table-column>
+          <af-table-column prop="place" label="地点" align="center"></af-table-column>
+          <af-table-column prop="principal" label="负责人" align="center"></af-table-column>
+          <af-table-column prop="scope" label="影响范围" align="center"></af-table-column>
+          <af-table-column prop="state" label="状态" align="center"></af-table-column>
+          <af-table-column prop="type" label="异常类型" align="center"></af-table-column>
+          <af-table-column prop="time" label="时间" align="center"></af-table-column>
+          <af-table-column prop="createTime" label="创建时间" align="center"></af-table-column>
+          <af-table-column prop="updateTime" label="更新时间" align="center"></af-table-column>
+          <af-table-column prop="content" label="异常内容" align="center" show-overflow-tooltip></af-table-column>
 
           <!-- <template slot-scope="scope">{{ scope.row.createTime }}</template> -->
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <af-table-column fixed="right" label="操作" align="center">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="updateExceptionClick(scope.row)"
@@ -132,7 +126,7 @@
                 size="small"
               >更新</el-button>
             </template>
-          </el-table-column>
+          </af-table-column>
         </el-table>
       </div>
       <div class="block">

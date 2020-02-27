@@ -121,12 +121,12 @@
       <el-table
         border
         :data="tableData"
-        max-height="400"
+        max-height="800"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
         :row-style="tableRowClassName"
       >
-        <el-table-column label width="65">
+        <af-table-column label width="65">
           <template slot-scope="scope">
             <el-radio
               :label="scope.row.id"
@@ -134,91 +134,97 @@
               @change.native="getTemplateRow(scope.row)"
             >{{scope.$index+1}}</el-radio>
           </template>
-        </el-table-column>
+        </af-table-column>
 
         <!-- 三种计划类型都有 -->
-        <el-table-column prop="type" label="计划类型" align="center"></el-table-column>
-        <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="numberOfChildren" label="子计划数" align="center"></el-table-column>
-        <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="seriesName" label="波段编码" align="center"></el-table-column>
+        <af-table-column prop="name" label="计划名称" align="center"></af-table-column>
+        <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+        <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+        <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+        <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+
+        <!-- 只款式组有 -->
+        <af-table-column
+          v-if="planClassDict[planClassRadioValue]==='GROUP'"
+          prop="styleGroupName"
+          label="款式组名称"
+          align="center"
+        ></af-table-column>
 
         <!-- 只有款式计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='STYLE'"
-          prop="seriesName"
+          prop="styleNumber"
           label="款号"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 只有系列计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="seriesName"
+          prop="seriesCode"
           label="系列编码"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="systemCode"
           label="系统编码"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 都有 -->
-        <el-table-column prop="systemCode" label="项目类型" align="center"></el-table-column>
-        <el-table-column prop="systemCode" label="订单阶段" align="center"></el-table-column>
+        <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+        <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
 
         <!-- 只有系列计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="predictStyleQuantity"
           label="预测款数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="predictPieceQuantity"
           label="预测件数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="informalStyleQuantity"
           label="非正式款数"
           align="center"
           width="100"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
-          prop="systemCode"
+          prop="informalPieceQuantity"
           label="非正式件数"
           align="center"
           width="100"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 款式和款式组有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]!='SERIES'"
-          prop="systemCode"
+          prop="styleQuantity"
           label="正式款数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]!='SERIES'"
-          prop="systemCode"
+          prop="pieceQuantity"
           label="正式件数"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 都有 -->
-        <el-table-column prop="systemCode" label="投入点" align="center"></el-table-column>
-        <el-table-column prop="systemCode" label="计划开始" align="center"></el-table-column>
-        <el-table-column prop="systemCode" label="计划结束" align="center"></el-table-column>
+        <af-table-column prop="inputPoint" label="投入点" align="center"></af-table-column>
+        <af-table-column prop="startDate" label="计划开始" align="center"></af-table-column>
+        <af-table-column prop="endDate" label="计划完成" align="center"></af-table-column>
 
-        <el-table-column prop="state" label="状态" align="center">
+        <af-table-column prop="state" label="状态" align="center">
           <template slot-scope="scope">
             <el-popover
               v-if="scope.row.state==='被驳回'"
@@ -236,8 +242,9 @@
             <p v-else-if="scope.row.state==='已删除'">已删除</p>
             <p v-else>其他</p>
           </template>
-        </el-table-column>
-        <el-table-column label="异常状态" align="center">
+        </af-table-column>
+
+        <af-table-column label="异常状态" align="center">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="toSearchException(scope.row)"
@@ -248,8 +255,8 @@
             >有异常，查看</el-button>
             <p v-else>无异常</p>
           </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="150" align="center">
+        </af-table-column>
+        <af-table-column fixed="right" label="操作" width="200px" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
             <el-button
@@ -277,7 +284,7 @@
               size="small"
             >提交</el-button>
           </template>
-        </el-table-column>
+        </af-table-column>
       </el-table>
       <!-- 分页 -->
       <div class="block">

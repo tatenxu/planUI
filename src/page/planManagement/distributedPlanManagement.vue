@@ -128,16 +128,16 @@
       <el-table
         border
         :data="tableData"
-        max-height="400"
+        max-height="800"
         :highlight-current-row="true"
         style="width: 100%; margin-top: 20px"
         :row-style="tableRowClassName"
         @selection-change="handleMultipleSelectionChange"
       >
         <!-- 多选 -->
-        <el-table-column type="selection" width="55"></el-table-column>
+        <af-table-column type="selection"></af-table-column>
         <!-- 单选 -->
-        <!-- <el-table-column label width="65">
+        <!-- <af-table-column label width="65">
           <template slot-scope="scope">
             <el-radio
               :label="scope.row.id"
@@ -145,109 +145,101 @@
               @change.native="getTemplateRow(scope.row)"
             >{{scope.$index+1}}</el-radio>
           </template>
-        </el-table-column>-->
+        </af-table-column>-->
 
         <!-- 三种计划类型都有 -->
-        <el-table-column prop="assignPlanType" label="下发计划类型" align="center" width="120"></el-table-column>
-        <el-table-column prop="name" label="计划名称" align="center"></el-table-column>
-        <el-table-column prop="numberOfChildren" label="子计划数" align="center"></el-table-column>
-        <el-table-column prop="clientName" label="客户" align="center"></el-table-column>
-        <el-table-column prop="brandName" label="品牌" align="center"></el-table-column>
-        <el-table-column prop="clothesLevelName" label="服装层次" align="center"></el-table-column>
-        <el-table-column prop="rangeCode" label="波段编码" align="center"></el-table-column>
+        <af-table-column prop="assignPlanType" label="下发计划类型" align="center"></af-table-column>
+        <af-table-column prop="name" label="计划名称" align="center"></af-table-column>
+        <af-table-column prop="numberOfChildren" label="子计划数" align="center"></af-table-column>
+        <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
+        <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
+        <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
+        <af-table-column prop="rangeCode" label="波段编码" align="center"></af-table-column>
+
+        <!-- 只款式组有 -->
+        <af-table-column
+          v-if="planClassDict[planClassRadioValue]==='GROUP'"
+          prop="styleGroupName"
+          label="款式组名称"
+          align="center"
+        ></af-table-column>
 
         <!-- 只有款式计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='STYLE'"
           prop="styleNumber"
           label="款号"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 只有系列计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="seriesCode"
           label="系列编码"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="systemCode"
           label="系统编码"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 都有 -->
-        <el-table-column prop="projectType" label="项目类型" align="center"></el-table-column>
-        <el-table-column prop="orderStage" label="订单阶段" align="center"></el-table-column>
+        <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
+        <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
 
         <!-- 只有系列计划有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="predictStyleQuantity"
           label="预测款数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="predictPieceQuantity"
           label="预测件数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="informalStyleQuantity"
           label="非正式款数"
           align="center"
-          width="100"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]==='SERIES'"
           prop="informalPieceQuantity"
           label="非正式件数"
           align="center"
-          width="100"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 款式和款式组有 -->
-        <el-table-column
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]!='SERIES'"
           prop="styleQuantity"
           label="正式款数"
           align="center"
-        ></el-table-column>
-        <el-table-column
+        ></af-table-column>
+        <af-table-column
           v-if="planClassDict[planClassRadioValue]!='SERIES'"
           prop="pieceQuantity"
           label="正式件数"
           align="center"
-        ></el-table-column>
+        ></af-table-column>
 
         <!-- 都有 -->
-        <el-table-column prop="inputPoint" label="投入点" align="center"></el-table-column>
-        <el-table-column prop="startDate" label="计划开始" align="center"></el-table-column>
-        <el-table-column prop="endDate" label="计划结束" align="center"></el-table-column>
+        <af-table-column prop="inputPoint" label="投入点" align="center"></af-table-column>
+        <af-table-column prop="startDate" label="计划开始" align="center"></af-table-column>
+        <af-table-column prop="endDate" label="计划完成" align="center"></af-table-column>
 
-        <!-- 普通计划有查看异常操作 -->
-        <el-table-column v-if="!isRootPlan" label="异常状态" align="center">
-          <template slot-scope="scope">
-            <el-button
-              @click.native.prevent="toSearchException(scope.row)"
-              type="text"
-              size="small"
-              v-if="scope.row.haveException"
-              style="background:red;"
-            >有异常，查看</el-button>
-            <p v-else>无异常</p>
-          </template>
-        </el-table-column>
-
-        <el-table-column fixed="right" label="操作" width="150" align="center">
+        <af-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <el-button @click.native.prevent="getPlanDetail(scope.row)" type="text" size="small">查看</el-button>
           </template>
-        </el-table-column>
+        </af-table-column>
       </el-table>
       <!-- 分页 -->
       <div class="block">
@@ -265,15 +257,14 @@
 
     <el-dialog title="子计划顺序调整" :visible.sync="subPlanOrderModificationDialogVisible" :modal="false">
       <el-table :data="subPlanTableData" highlight-current-row style="width: 100%">
-        <!-- <el-table-column  type="selection"  width="55px"></el-table-column> -->
-        <el-table-column type="index" label="新顺序" width="70px"></el-table-column>
-        <el-table-column prop="name" label="计划名称" width="100px"></el-table-column>
-        <el-table-column prop="startDate" label="开始日期" width="100px"></el-table-column>
-        <el-table-column prop="endDate" label="结束日期" width="100px"></el-table-column>
-        <el-table-column prop="creatorName" label="创建人" width="100px"></el-table-column>
-        <el-table-column prop="deptName" label="部门名称" width="100px"></el-table-column>
-        <el-table-column prop="createTime" label="创建日期" width="100px"></el-table-column>
-        <el-table-column label="操作" width="150px" fixed="right">
+        <af-table-column type="index" label="新顺序"></af-table-column>
+        <af-table-column prop="name" label="计划名称"></af-table-column>
+        <af-table-column prop="startDate" label="开始日期"></af-table-column>
+        <af-table-column prop="endDate" label="结束日期"></af-table-column>
+        <af-table-column prop="creatorName" label="创建人"></af-table-column>
+        <af-table-column prop="deptName" label="部门名称"></af-table-column>
+        <af-table-column prop="createTime" label="创建日期"></af-table-column>
+        <af-table-column label="操作" fixed="right">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -291,7 +282,7 @@
             </el-button>
             <!-- <el-button type="info" size="mini" round v-if="scope.$index===0">默认</el-button> -->
           </template>
-        </el-table-column>
+        </af-table-column>
       </el-table>
       <el-button type="primary" @click="subPlanOrderConfirm">确定</el-button>
     </el-dialog>
@@ -590,7 +581,6 @@ export default {
     addPlanChild() {
       if (this.selectedData.length === 1) {
         let data = this.selectedData[0];
-
         var param = {
           goback: "distributedPlanManagement",
           isRoot: this.isRootPlan,
@@ -598,9 +588,9 @@ export default {
           isCreate: true,
           rowData: data
         };
-
         console.log("路由参数：", param);
 
+        this.isCachedPage = false;
         this.$router.push({
           name: this.planClassRouterDestinationDict[this.planClassRadioValue],
           params: param
@@ -616,23 +606,20 @@ export default {
       if (this.selectedData.length === 0) {
         this.$message.error("请选择一个计划！");
       } else {
-        this.selectedData.forEach(element => {
-          var param = element;
-          param.goback = "distributedPlanManagement";
-          param.isRoot = this.isRootPlan;
-          param.isModify = false;
-          param.isCreate = true;
+        var param = {
+          goback: "distributedPlanManagement",
+          isRoot: this.isRootPlan,
+          isModify: false,
+          isCreate: true,
+          batchData: this.selectedData
+        };
 
-          console.log("新建标签页路由参数：", param);
+        console.log("新建标签页路由参数：", param);
 
-          let createChildPlanPage = this.$router.resolve({
-            name: this.planClassRouterDestinationDict[this.planClassRadioValue],
-            query: param
-          });
-          window.open(createChildPlanPage.href, "_blank");
+        let createChildPlanPage = this.$router.push({
+          name: this.planClassRouterDestinationDict[this.planClassRadioValue],
+          params: param
         });
-
-        // this.selectedData = [];
       }
     },
 
@@ -646,6 +633,7 @@ export default {
       };
       console.log("跳转参数：", param);
 
+      this.isCachedPage = true;
       this.$router.push({
         name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param
@@ -737,10 +725,10 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (
-      to.name === "planMakeOfSeries" ||
-      to.name === "planMakeOfStyle" ||
-      to.name === "planMakeOfStyleGroup" ||
-      to.name === "planExceptionManagement"
+      this.isCachedPage &&
+      (to.name === "planMakeOfSeries" ||
+        to.name === "planMakeOfStyle" ||
+        to.name === "planMakeOfStyleGroup")
     ) {
       this.keepAlives = ["distributedPlanManagement"];
     } else {

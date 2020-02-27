@@ -32,7 +32,7 @@ const styleGroupPlanMake = r => require.ensure([], () => r(require('../page/plan
 const stylePlanMake = r => require.ensure([], () => r(require('../page/planManagement/stylePlanMake.vue')), 'stylePlanMake');
 const planVerify = r => require.ensure([], () => r(require('../page/planManagement/planVerify.vue')), 'planVerify');
 const planDistribute = r => require.ensure([], () => r(require('../page/planManagement/planDistribute.vue')), 'planDistribute');
-const planRecover = r => require.ensure([], () => r(require('../page/planManagement/planRecover.vue')), 'planRecover');
+const planDeletion = r => require.ensure([], () => r(require('../page/planManagement/planDeletion.vue')), 'planDeletion');
 const messageManagement = r => require.ensure([], () => r(require('../page/messageManagement.vue')), 'messageManagement');
 const queryStatistic = r => require.ensure([], () => r(require('../page/queryStatistic.vue')), 'queryStatistic');
 const planExceptionManagement = r => require.ensure([], () => r(require('../page/planManagement/planExceptionManagement.vue')), 'exceptionManagement');
@@ -275,9 +275,9 @@ export default [
         }
       },
       {
-        path: '/planRecover',
-        name: 'planRecover',
-        component: planRecover,
+        path: '/planDeletion',
+        name: 'planDeletion',
+        component: planDeletion,
         meta: {
           bcrumd: ['计划回收站'],
         }
