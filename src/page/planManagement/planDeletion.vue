@@ -110,7 +110,8 @@
           <af-table-column type="selection" align="center"></af-table-column>
           <!-- <af-table-column type="index" label="序号" align="center"></af-table-column> -->
           <af-table-column prop="planClass" label="计划类别" align="center"></af-table-column>
-          <af-table-column prop="planName" label="计划名称" align="center"></af-table-column>
+          <af-table-column v-if="isRootPlan" prop="rootPlanName" label="计划名称" align="center"></af-table-column>
+          <af-table-column v-else prop="planName" label="计划名称" align="center"></af-table-column>
           <af-table-column prop="clientName" label="客户" align="center"></af-table-column>
           <af-table-column prop="brandName" label="品牌" align="center"></af-table-column>
           <af-table-column prop="clothesLevelName" label="服装层次" align="center"></af-table-column>
@@ -184,24 +185,20 @@ export default {
     const that = this;
     console.log("进入计划回收站页面");
     //客户名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/client/name`)
-      .then(response => {
-        this.searchOptions.options.customerNameOptions = response.result;
-      });
+    request.get(`/backstage/client/name`).then(response => {
+      this.searchOptions.options.customerNameOptions = response.result;
+    });
 
     //品牌名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/brand/name`)
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
-      });
+    request.get(`/backstage/brand/name`).then(response => {
+      this.searchOptions.options.brandNameOptions = response.result;
+    });
 
     //加载默认所有的删除计划
     this.handleSearch();
 
     //输入建议
-    request.get(`${window.$config.HOST}/plan/name`).then(response => {
+    request.get(`/plan/name`).then(response => {
       this.inputSuggestions.plans = [];
       response.result.forEach(element => {
         element.value = element.name;
@@ -209,7 +206,7 @@ export default {
       });
     });
 
-    request.get(`${window.$config.HOST}/info/series/name`).then(response => {
+    request.get(`/info/series/name`).then(response => {
       this.inputSuggestions.series = [];
       response.result.forEach(element => {
         element.value = element.name;
@@ -244,7 +241,7 @@ export default {
     clientNameChange() {
       //品牌名称跟随加载
       request
-        .get(`${window.$config.HOST}/backstage/brand/name`, {
+        .get(`/backstage/brand/name`, {
           params: { clientId: this.searchOptions.searchParams.clientName }
         })
         .then(response => {
@@ -329,7 +326,7 @@ export default {
 
       if (this.isRootPlan) {
         request
-          .get(`${window.$config.HOST}/root-plan/find-delete`, {
+          .get(`/root-plan/find-delete`, {
             params: param
           })
           .then(response => {
@@ -338,7 +335,7 @@ export default {
           });
       } else {
         request
-          .get(`${window.$config.HOST}/plan/find-delete`, {
+          .get(`/plan/find-delete`, {
             params: param
           })
           .then(response => {
@@ -349,24 +346,24 @@ export default {
     },
     // 恢复单个的按钮
     ReCover(row) {
-      console.log("单个恢复:" + row.name);
-
       if (this.isRootPlan) {
+        console.log("单个恢复:" + row.rootPlanName);
+
         request
-          .get(`${window.$config.HOST}/root-plan/restore`, {
+          .get(`/root-plan/restore`, {
             params: {
-              // id: row.id,
-              rootPlanId: row.planId
+              rootPlanId: row.rootPlanId
             }
           })
           .then(response => {
             this.handleSearch();
           });
       } else {
+        console.log("单个恢复:" + row.planName);
+
         request
-          .get(`${window.$config.HOST}/plan/restore`, {
+          .get(`/plan/restore`, {
             params: {
-              // id: row.id,
               planId: row.planId
             }
           })
@@ -394,9 +391,9 @@ export default {
         this.tableSelectionData.forEach(element => {
           if (this.isRootPlan) {
             request
-              .get(`${window.$config.HOST}/root-plan/completely-delete`, {
+              .get(`/root-plan/completely-delete`, {
                 params: {
-                  rootPlanId: element.planId
+                  rootPlanId: element.rootPlanId
                 }
               })
               .then(response => {
@@ -405,7 +402,7 @@ export default {
               });
           } else {
             request
-              .get(`${window.$config.HOST}/plan/completely-delete`, {
+              .get(`/plan/completely-delete`, {
                 params: {
                   planId: element.planId
                 }

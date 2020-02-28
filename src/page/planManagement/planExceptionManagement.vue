@@ -324,22 +324,18 @@ export default {
     console.log("进入异常管理页面");
 
     //客户名称加载
-    request
-      .get(`${window.$config.HOST}/backstage/client/name`)
-      .then(response => {
-        this.searchOptions.options.clientNameOptions = response.result;
-      });
+    request.get(`/backstage/client/name`).then(response => {
+      this.searchOptions.options.clientNameOptions = response.result;
+    });
 
     //品牌名称跟随加载
-    request
-      .get(`${window.$config.HOST}/backstage/brand/name`)
-      .then(response => {
-        this.searchOptions.options.brandNameOptions = response.result;
-      });
+    request.get(`/backstage/brand/name`).then(response => {
+      this.searchOptions.options.brandNameOptions = response.result;
+    });
 
     //异常类型选项
     request
-      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+      .get(`/backstage/dic-property/name`, {
         params: {
           categoryName: "异常类型"
         }
@@ -351,7 +347,7 @@ export default {
     //加载默认所有的异常计划
     this.handleSearchClick();
     // request
-    //   .get(`${window.$config.HOST}/plan-exception/find`, {
+    //   .get(`/plan-exception/find`, {
     //     params: {
     //       pageNum: this.pagination.currentPage,
     //       pageSize: this.pagination.pageSize
@@ -363,7 +359,7 @@ export default {
     //   });
 
     //输入建议
-    request.get(`${window.$config.HOST}/plan/name`).then(response => {
+    request.get(`/plan/name`).then(response => {
       this.inputSuggestions.plans = [];
       response.result.forEach(element => {
         element.value = element.name;
@@ -371,7 +367,7 @@ export default {
       });
     });
 
-    request.get(`${window.$config.HOST}/info/series/name`).then(response => {
+    request.get(`/info/series/name`).then(response => {
       this.inputSuggestions.series = [];
       response.result.forEach(element => {
         element.value = element.name;
@@ -383,7 +379,7 @@ export default {
   mounted() {
     //异常类型选项
     request
-      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+      .get(`/backstage/dic-property/name`, {
         params: {
           categoryName: "异常类型"
         }
@@ -413,12 +409,10 @@ export default {
       };
       console.log("mounted 参数：", param);
 
-      request
-        .get(`${window.$config.HOST}/plan-exception/find`, { params: param })
-        .then(response => {
-          this.tableData = response.result;
-          this.pagination.total = response.total;
-        });
+      request.get(`/plan-exception/find`, { params: param }).then(response => {
+        this.tableData = response.result;
+        this.pagination.total = response.total;
+      });
     }
   },
 
@@ -449,7 +443,7 @@ export default {
     clientNameChange() {
       //品牌名称跟随加载
       request
-        .get(`${window.$config.HOST}/backstage/brand/name`, {
+        .get(`/backstage/brand/name`, {
           params: { clientId: this.searchOptions.searchParams.clientName }
         })
         .then(response => {
@@ -562,7 +556,7 @@ export default {
       console.log("搜索参数:", param);
 
       request
-        .get(`${window.$config.HOST}/plan-exception/find`, {
+        .get(`/plan-exception/find`, {
           params: param
         })
         .then(response => {
@@ -593,6 +587,7 @@ export default {
     submitForm(formname) {
       let param = {
         id: this.addExceptionRuleForm.id,
+        discover: this.addExceptionRuleForm.discover,
         content: this.addExceptionRuleForm.content,
         type: this.addExceptionRuleForm.type,
         place: this.addExceptionRuleForm.place,

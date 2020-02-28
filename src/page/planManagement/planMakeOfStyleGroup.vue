@@ -17,7 +17,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="款式组名" prop="styleGroupName" placeholder="请输入">
+              <el-form-item label="款式组名" prop="styleGroupName" placeholder="无数据">
                 <el-input
                   v-model="ruleForm.styleGroupName"
                   :rows="1"
@@ -30,7 +30,7 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="系列名称" prop="seriesName" placeholder="请输入">
+              <el-form-item label="系列名称" prop="seriesName" placeholder="无数据">
                 <el-input
                   v-model="ruleForm.seriesName"
                   :rows="1"
@@ -46,7 +46,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="客户" prop="clientName" placeholder="请输入">
+              <el-form-item label="客户" prop="clientName" placeholder="无数据">
                 <el-input
                   clearable
                   v-model="ruleForm.clientName"
@@ -60,7 +60,7 @@
           </el-col>
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="品牌" prop="brandName" placeholder="请输入">
+              <el-form-item label="品牌" prop="brandName" placeholder="无数据">
                 <el-input
                   v-model="ruleForm.brandName"
                   clearable
@@ -74,7 +74,7 @@
           </el-col>
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="服装层次" prop="clothesLevelName" placeholder="请输入">
+              <el-form-item label="服装层次" prop="clothesLevelName" placeholder="无数据">
                 <el-input
                   v-model="ruleForm.clothesLevelName"
                   :rows="1"
@@ -90,13 +90,13 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="波段编码" prop="rangeCode" placeholder="请输入">
+              <el-form-item label="波段编码" prop="rangeCode" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.rangeCode"
                   clearable
                   :rows="1"
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -105,13 +105,13 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="项目类型" prop="projectType" placeholder="请输入">
+              <el-form-item label="项目类型" prop="projectType" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.projectType"
                   clearable
                   :rows="1"
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -120,13 +120,13 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="订单阶段" prop="orderStage" placeholder="请输入">
+              <el-form-item label="订单阶段" prop="orderStage" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.orderStage"
                   clearable
                   :rows="1"
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -137,13 +137,13 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="正式款数" prop="styleQuantity" placeholder="请输入">
+              <el-form-item label="正式款数" prop="styleQuantity" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.styleQuantity"
                   clearable
                   :rows="1"
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -152,13 +152,13 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="正式件数" prop="pieceQuantity" placeholder="请输入">
+              <el-form-item label="正式件数" prop="pieceQuantity" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.pieceQuantity"
                   clearable
                   :rows="1"
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -169,12 +169,12 @@
         <el-row :gutter="20" v-if="!isRootPlanFlag">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="根计划" prop="rootPlanName" placeholder="请输入">
+              <el-form-item label="根计划" prop="rootPlanName" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.rootPlanName"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -183,12 +183,12 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="上级计划" prop="superiorName" placeholder="请输入">
+              <el-form-item label="上级计划" prop="superiorName" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.superiorName"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -197,12 +197,12 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="计划类型" prop="type" placeholder="请输入">
+              <el-form-item label="计划类型" prop="type" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.type"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -213,12 +213,12 @@
         <el-row :gutter="20" v-if="!isCreatePlanFlag">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="创建人" prop="creatorName" placeholder="请输入">
+              <el-form-item label="创建人" prop="creatorName" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.creatorName"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -227,12 +227,12 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="创建时间" prop="createTime" placeholder="请输入">
+              <el-form-item label="创建时间" prop="createTime" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.createTime"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -241,12 +241,12 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="部门名称" prop="deptName" placeholder="请输入">
+              <el-form-item label="部门名称" prop="deptName" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.deptName"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -257,12 +257,12 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="计划名称" prop="name" placeholder="请输入">
+              <el-form-item label="计划名称" prop="name" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model="ruleForm.name"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:240px"
                 ></el-input>
               </el-form-item>
@@ -271,7 +271,7 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="日期类型" prop="dateType" placeholder="请输入">
+              <el-form-item label="日期类型" prop="dateType" placeholder="无数据">
                 <el-select
                   :disabled="!isRootPlanFlag || (!isModifyPlanFlag && !isCreatePlanFlag)"
                   v-model="ruleForm.dateType"
@@ -290,7 +290,7 @@
 
           <el-col :span="8">
             <div class="bar">
-              <el-form-item label="日期" prop="date" placeholder="请输入">
+              <el-form-item label="日期" prop="date" placeholder="无数据">
                 <el-date-picker
                   clearable
                   v-model="ruleForm.date"
@@ -402,7 +402,7 @@
         <el-row :gutter="20">
           <el-col :span="8" v-if="(ruleForm.state=='已下发'||ruleForm.state=='已审核')">
             <div class="bar">
-              <el-form-item label="协商延迟" prop="extension" placeholder="请输入">
+              <el-form-item label="协商延迟" prop="extension" placeholder="无数据">
                 <el-date-picker
                   clearable
                   v-model="ruleForm.extension"
@@ -422,7 +422,7 @@
             v-if="!isRootPlanFlag && (ruleForm.state=='已下发'||ruleForm.state=='已审核')"
           >
             <div class="bar">
-              <el-form-item label="实际起止" prop="actualStartEndDate" placeholder="请输入">
+              <el-form-item label="实际起止" prop="actualStartEndDate" placeholder="无数据">
                 <el-date-picker
                   align="right"
                   :disabled="alwaysGreyFlag"
@@ -446,12 +446,12 @@
             v-if="!isRootPlanFlag && (ruleForm.state=='已下发'||ruleForm.state=='已审核')"
           >
             <div class="bar">
-              <el-form-item label="执行状态" prop="executionState" placeholder="请输入">
+              <el-form-item label="执行状态" prop="executionState" placeholder="无数据">
                 <el-input
                   :disabled="alwaysGreyFlag"
                   v-model.number="ruleForm.executionState"
                   clearable
-                  placeholder="请输入"
+                  placeholder="无数据"
                   style="min-width:150px"
                 ></el-input>
               </el-form-item>
@@ -1058,6 +1058,7 @@ export default {
       let that = this;
 
       console.log(that.GlobalControl.AllData[that.GlobalControl.CurrentIndex]);
+      that.ruleForm = undefined;
       // 深拷贝变量，不然只是引用
       that.ruleForm = JSON.parse(
         JSON.stringify(
@@ -1065,6 +1066,8 @@ export default {
         )
       );
 
+      this.formData = new FormData();
+      this.ruleForm.fileList = [];
       // 非创建时获取计划文件列表
       if (!that.isCreatePlanFlag) {
         // 获取计划的文件列表, 创建子计划时不能获取文件列表
@@ -1084,20 +1087,21 @@ export default {
         startStr: that.ruleForm.startDate,
         endStr: that.ruleForm.endDate
       };
-      that.ruleForm.actualStartEndDate = [
-        that.ruleForm.actualStartDate,
-        that.ruleForm.actualEndDate
-      ];
       that.ruleForm.extension =
         that.ruleForm.extension === null ? "无数据" : that.ruleForm.extension;
-      that.ruleForm.actualStartEndDate = [
-        that.ruleForm.actualStartDate === null
-          ? "无数据"
-          : that.ruleForm.actualStartDate,
-        that.ruleForm.actualEndDate === null
-          ? "无数据"
-          : that.ruleForm.actualEndDate
-      ];
+      if (
+        that.ruleForm.actualStartDate === null ||
+        that.ruleForm.actualStartDate === undefined ||
+        that.ruleForm.actualEndDate === null ||
+        that.ruleForm.actualEndDate === undefined
+      ) {
+        that.ruleForm.actualStartEndDate = undefined;
+      } else {
+        that.ruleForm.actualStartEndDate = [
+          that.ruleForm.actualStartDate,
+          that.ruleForm.actualEndDate
+        ];
+      }
 
       // 自动计算周期
       var dateStart = new Date(that.ruleForm.startDate);
