@@ -517,7 +517,7 @@ export default {
     getPlanDetail(row) {
       var param = {
         goback: "commitedPlanManagement",
-        planClass: planClassDict[planClassRadioValue],
+        planClass: this.planClassDict[this.planClassRadioValue],
         isRoot: true,
         isModify: false,
         isCreate: false,
@@ -541,11 +541,11 @@ export default {
         .then(response => {
           var param = {
             goback: "commitedPlanManagement",
-            planClass: planClassDict[planClassRadioValue],
+            planClass: this.planClassDict[this.planClassRadioValue],
             isRoot: false,
             isModify: false,
             isCreate: false,
-            rowData: reponse.result
+            rowData: response.result
           };
           console.log("跳转参数：", param);
 
