@@ -327,13 +327,10 @@ export default {
       const that = this;
       this.$refs["rootPlanMake"].validate(valid => {
         if (valid) {
-          this.batchTable[this.nowMakeNum] = {
-            name: this.rootPlanMake.name,
-            planMakeStartEndDate: this.rootPlanMake.planMakeStartEndDate,
-            inputPoint: this.rootPlanMake.inputPoint,
-            dateType: this.rootPlanMake.dateType,
-            date: this.rootPlanMake.date,
-          }
+          this.batchTable[this.nowMakeNum].planMakeStartEndDate = this.rootPlanMake.planMakeStartEndDate;
+          this.batchTable[this.nowMakeNum].inputPoint = this.rootPlanMake.inputPoint;
+          this.batchTable[this.nowMakeNum].dateType = this.rootPlanMake.dateType;
+          this.batchTable[this.nowMakeNum].date = this.rootPlanMake.date;
           this.nowMakeNum--;
           this.rootPlanMake.name = this.batchTable[this.nowMakeNum].name;
           this.rootPlanMake.planMakeStartEndDate = this.batchTable[this.nowMakeNum].planMakeStartEndDate;
@@ -353,13 +350,14 @@ export default {
       const that = this;
       this.$refs["rootPlanMake"].validate(valid => {
         if (valid) {
-          this.batchTable[this.nowMakeNum] = {
-            name: this.rootPlanMake.name,
-            planMakeStartEndDate: this.rootPlanMake.planMakeStartEndDate,
-            inputPoint: this.rootPlanMake.inputPoint,
-            dateType: this.rootPlanMake.dateType,
-            date: this.rootPlanMake.date,
-          }
+
+
+          this.batchTable[this.nowMakeNum].planMakeStartEndDate = this.rootPlanMake.planMakeStartEndDate;
+          this.batchTable[this.nowMakeNum].inputPoint = this.rootPlanMake.inputPoint;
+          this.batchTable[this.nowMakeNum].dateType = this.rootPlanMake.dateType;
+          this.batchTable[this.nowMakeNum].date = this.rootPlanMake.date;
+
+          console.log(this.batchTable)
           this.nowMakeNum++;
           this.rootPlanMake.name = this.batchTable[this.nowMakeNum].name;
           this.rootPlanMake.planMakeStartEndDate = this.batchTable[this.nowMakeNum].planMakeStartEndDate;
@@ -443,6 +441,7 @@ export default {
       this.rootPlanMake.planMakeStartEndDate = "";
       this.rootPlanMake.name = this.multipleSelection[0].number + this.multipleSelection[0].orderStage + "款式根计划";
       this.rootPlanMake.dateType = "";
+      this.rootPlanMake.inputPoint = "";
       this.rootPlanMake.date = "";
       this.rootPlanMakeFlag = true;
       this.batchFlag = true;
@@ -457,6 +456,7 @@ export default {
       this.rootPlanMake.name = row.number + row.orderStage + "款式根计划";
       this.rootPlanMake.dateType = "";
       this.rootPlanMake.date = "";
+      this.rootPlanMake.inputPoint = "";
       this.rootPlanMakeFlag = true;
       this.batchFlag = false;
       this.viewname = "second";
@@ -465,36 +465,25 @@ export default {
       const that = this;
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let startDate, endDate, date;
-          if (this.rootPlanMake.planMakeStartEndDate == null) {
-            startDate = undefined;
-            endDate = undefined;
-          } else {
-            startDate = this.changeDate(
-              this.rootPlanMake.planMakeStartEndDate[0]
-            );
-            endDate = this.changeDate(
-              this.rootPlanMake.planMakeStartEndDate[1]
-            );
-          }
-          if (this.rootPlanMake.date == null) {
-            date = undefined;
-          } else {
-            date = this.changeDate(this.rootPlanMake.date);
-          }
-
           let list = [];
+          this.batchTable[this.allMakeNum - 1] = {
+            name: this.rootPlanMake.name,
+            date: this.rootPlanMake.date,
+            dateType: this.rootPlanMake.dateType,
+            planMakeStartEndDate: this.rootPlanMake.planMakeStartEndDate,
+            inputPoint: this.rootPlanMake.inputPoint,
+          }
           for (let i = 0; i < this.rootPlanMake.seriesId.length; i++) {
             list.push({
-              name: this.rootPlanMake.name,
+              name: this.batchTable[i].name,
               seriesId: this.rootPlanMake.seriesId[i],
               planClass: "款式计划",
-              inputPoint: this.rootPlanMake.inputPoint,
+              inputPoint: this.batchTable[i].inputPoint,
               objectId: this.rootPlanMake.objectId[i],
-              dateType: this.rootPlanMake.dateType,
-              date: date,
-              startDate: startDate,
-              endDate: endDate
+              dateType: this.batchTable[i].dateType,
+              date: this.changeDate(this.batchTable[i].date),
+              startDate: this.changeDate(this.batchTable[i].planMakeStartEndDate[0]),
+              endDate: this.changeDate(this.batchTable[i].planMakeStartEndDate[1]),
             });
           }
 
@@ -504,7 +493,6 @@ export default {
               this.rootPlanMakeFlag = false;
               this.viewname = "first";
               this.rootPlanMake.planMakeStartEndDate = "";
-
               this.rootPlanMake.name = "";
               this.rootPlanMake.dateType = "";
               this.rootPlanMake.date = "";
@@ -517,7 +505,6 @@ export default {
               this.rootPlanMakeFlag = false;
               this.viewname = "first";
               this.rootPlanMake.planMakeStartEndDate = "";
-
               this.rootPlanMake.name = "";
               this.rootPlanMake.dateType = "";
               this.rootPlanMake.date = "";
