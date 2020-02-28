@@ -186,7 +186,7 @@
             </el-col>
             <el-col :span="10">
               <div class="bar">
-                <el-form-item label="起止时间" prop="actualDate" placeholder="请选择起止时间">
+                <el-form-item label="实际起止时间" prop="actualDate" placeholder="请选择起止时间">
                   <el-date-picker :picker-options="pickerOptions0" style="margin-left:20px" v-model="negotiateForm.actualDate" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"></el-date-picker>
                 </el-form-item>
               </div>
