@@ -370,7 +370,7 @@ export default {
               name: this.rootPlanMake.name,
               seriesId: this.rootPlanMake.seriesId,
               planClass: "款式组计划",
-              objectId: this.rootPlanMake.seriesId,
+              objectId: this.rootPlanMake.objectId,
               inputPoint: this.rootPlanMake.inputPoint,
               dateType: this.rootPlanMake.dateType,
               date: date,
