@@ -694,7 +694,7 @@ export default {
 
     // 获取产品选择项
     request
-      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+      .get(`/backstage/dic-property/name`, {
         params: {
           categoryName: "产品"
         }
@@ -705,7 +705,7 @@ export default {
 
     // 获取日期类型选择项
     request
-      .get(`${window.$config.HOST}/backstage/dic-property/name`, {
+      .get(`/backstage/dic-property/name`, {
         params: {
           categoryName: "日期类型"
         }
@@ -778,7 +778,7 @@ export default {
     },
     downloadRow(row) {
       request
-        .get(`${window.$config.HOST}/plan-files/download`, {
+        .get(`/plan-files/download`, {
           responseType: "blob",
           params: {
             planId: this.ruleForm.id,
@@ -808,7 +808,7 @@ export default {
     },
     deleteFile(row) {
       request
-        .delete(`${window.$config.HOST}/plan-files/delete`, {
+        .delete(`/plan-files/delete`, {
           params: {
             planId: this.ruleForm.id,
             filename: row.fileName
@@ -857,11 +857,9 @@ export default {
       this.formData.append("planId", this.ruleForm.id);
       this.formData.append("name", item.file.name);
 
-      request
-        .post(`${window.$config.HOST}/plan-files/insert`, this.formData)
-        .then(response => {
-          console.log("上传结果：", response.result);
-        });
+      request.post(`/plan-files/insert`, this.formData).then(response => {
+        console.log("上传结果：", response.result);
+      });
     },
 
     savePlanForm(formName) {
@@ -889,38 +887,36 @@ export default {
 
           console.log("添加plan的list: ", param);
 
-          request
-            .post(`${window.$config.HOST}/plan/insert`, param)
-            .then(response => {
-              that.ruleForm.id = response.result;
-              console.log("添加成功:", that.ruleForm.id);
+          request.post(`/plan/insert`, param).then(response => {
+            that.ruleForm.id = response.result;
+            console.log("添加成功:", that.ruleForm.id);
 
-              // 上传文件
-              this.$refs.upload.submit();
+            // 上传文件
+            this.$refs.upload.submit();
 
-              if (this.isBatched) {
-                if (
-                  this.GlobalControl.CurrentIndex ==
-                  this.GlobalControl.AllData.length
-                ) {
-                  this.$message({
-                    message: "所有子计划添加成功！",
-                    type: "success"
-                  });
-                  this.$router.push({
-                    name: this.goback ? this.goback : "planManagement",
-                    params: {}
-                  });
-                } else {
-                  this.batchDialogVisible = true;
-                }
-              } else {
+            if (this.isBatched) {
+              if (
+                this.GlobalControl.CurrentIndex ==
+                this.GlobalControl.AllData.length
+              ) {
+                this.$message({
+                  message: "所有子计划添加成功！",
+                  type: "success"
+                });
                 this.$router.push({
                   name: this.goback ? this.goback : "planManagement",
                   params: {}
                 });
+              } else {
+                this.batchDialogVisible = true;
               }
-            });
+            } else {
+              this.$router.push({
+                name: this.goback ? this.goback : "planManagement",
+                params: {}
+              });
+            }
+          });
         } else {
           this.$message({
             message: "制定计划失败：请填入必要字段",
@@ -947,22 +943,20 @@ export default {
 
             console.log("修改参数：", param);
 
-            request
-              .put(`${window.$config.HOST}/root-plan/update`, param)
-              .then(response => {
-                console.log("修改成功");
+            request.put(`/root-plan/update`, param).then(response => {
+              console.log("修改成功");
 
-                this.originRow.startDate = param.startDate;
-                this.originRow.endDate = param.endDate;
-                this.originRow.date = param.date;
-                this.originRow.dateType = param.dateType;
-                this.originRow.inputPoint = param.inputPoint;
+              this.originRow.startDate = param.startDate;
+              this.originRow.endDate = param.endDate;
+              this.originRow.date = param.date;
+              this.originRow.dateType = param.dateType;
+              this.originRow.inputPoint = param.inputPoint;
 
-                this.$router.push({
-                  name: this.goback ? this.goback : "planManagement",
-                  params: {}
-                });
+              this.$router.push({
+                name: this.goback ? this.goback : "planManagement",
+                params: {}
               });
+            });
           } else {
             var param = {
               id: this.ruleForm.id,
@@ -977,30 +971,29 @@ export default {
                   : this.ruleForm.productLine,
               inputPoint: this.ruleForm.inputPoint,
               note: this.ruleForm.note,
-              superiorId: this.ruleForm.superiorId
+              superiorId: this.ruleForm.superiorId,
+              rootPlanId: this.ruleForm.rootPlanId
             };
 
             console.log("修改参数：", param);
 
-            request
-              .put(`${window.$config.HOST}/plan/update`, param)
-              .then(response => {
-                this.originRow.startDate = param.startDate;
-                this.originRow.endDate = param.endDate;
-                this.originRow.product = param.product;
-                this.originRow.productLine = param.productLine;
-                this.originRow.inputPoint = param.inputPoint;
-                this.originRow.note = param.note;
+            request.put(`/plan/update`, param).then(response => {
+              this.originRow.startDate = param.startDate;
+              this.originRow.endDate = param.endDate;
+              this.originRow.product = param.product;
+              this.originRow.productLine = param.productLine;
+              this.originRow.inputPoint = param.inputPoint;
+              this.originRow.note = param.note;
 
-                console.log("修改成功");
+              console.log("修改成功");
 
-                this.$refs.upload.submit();
+              this.$refs.upload.submit();
 
-                this.$router.push({
-                  name: this.goback ? this.goback : "planManagement",
-                  params: {}
-                });
+              this.$router.push({
+                name: this.goback ? this.goback : "planManagement",
+                params: {}
               });
+            });
           }
         } else {
           this.$message({
@@ -1044,7 +1037,7 @@ export default {
       };
       if (this.isRootPlanFlag) {
         request
-          .get(`${window.$config.HOST}/root-plan/tree`, {
+          .get(`/root-plan/tree`, {
             params: list
           })
           .then(response => {
@@ -1052,7 +1045,7 @@ export default {
           });
       } else {
         request
-          .get(`${window.$config.HOST}/plan/tree`, {
+          .get(`/plan/tree`, {
             params: list
           })
           .then(response => {
@@ -1076,10 +1069,11 @@ export default {
       if (!that.isCreatePlanFlag) {
         // 获取计划的文件列表, 创建子计划时不能获取文件列表
         request
-          .get(`${window.$config.HOST}/plan-files/find`, {
+          .get(`/plan-files/find`, {
             params: { planId: that.ruleForm.id }
           })
           .then(response => {
+            that.ruleForm.uploadFileNameList = [];
             response.result.forEach(ele => {
               that.ruleForm.uploadFileNameList.push({ fileName: ele });
             });
@@ -1090,6 +1084,20 @@ export default {
         startStr: that.ruleForm.startDate,
         endStr: that.ruleForm.endDate
       };
+      that.ruleForm.actualStartEndDate = [
+        that.ruleForm.actualStartDate,
+        that.ruleForm.actualEndDate
+      ];
+      that.ruleForm.extension =
+        that.ruleForm.extension === null ? "无数据" : that.ruleForm.extension;
+      that.ruleForm.actualStartEndDate = [
+        that.ruleForm.actualStartDate === null
+          ? "无数据"
+          : that.ruleForm.actualStartDate,
+        that.ruleForm.actualEndDate === null
+          ? "无数据"
+          : that.ruleForm.actualEndDate
+      ];
 
       // 自动计算周期
       var dateStart = new Date(that.ruleForm.startDate);

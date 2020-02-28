@@ -512,36 +512,53 @@ export default {
     },
     //搜索按钮
     handleSearchClick() {
-      var param = {
-        clientId:
-          this.searchOptions.searchParams.clientName === ""
-            ? undefined
-            : this.searchOptions.searchParams.clientName,
-        brandId:
-          this.searchOptions.searchParams.brandName === ""
-            ? undefined
-            : this.searchOptions.searchParams.brandName,
-        seriesName:
-          this.searchOptions.searchParams.seriesName === ""
-            ? undefined
-            : this.searchOptions.searchParams.seriesName,
-        planName:
-          this.searchOptions.searchParams.planName === ""
-            ? undefined
-            : this.searchOptions.searchParams.planName,
-        createAfter: this.changeDate(
-          this.searchOptions.searchParams.dateRange
-            ? this.searchOptions.searchParams.dateRange[0]
-            : null
-        ),
-        createBefore: this.changeDate(
-          this.searchOptions.searchParams.dateRange
-            ? this.searchOptions.searchParams.dateRange[1]
-            : null
-        ),
-        pageNum: this.pagination.currentPage,
-        pageSize: this.pagination.pageSize
-      };
+      var param;
+      if (this.searchDisabled) {
+        param = {
+          seriesName:
+            this.searchOptions.searchParams.seriesName === ""
+              ? undefined
+              : this.searchOptions.searchParams.seriesName,
+          planName:
+            this.searchOptions.searchParams.planName === ""
+              ? undefined
+              : this.searchOptions.searchParams.planName,
+          pageNum: this.pagination.currentPage,
+          pageSize: this.pagination.pageSize
+        };
+      } else {
+        param = {
+          clientId:
+            this.searchOptions.searchParams.clientName === ""
+              ? undefined
+              : this.searchOptions.searchParams.clientName,
+          brandId:
+            this.searchOptions.searchParams.brandName === ""
+              ? undefined
+              : this.searchOptions.searchParams.brandName,
+          seriesName:
+            this.searchOptions.searchParams.seriesName === ""
+              ? undefined
+              : this.searchOptions.searchParams.seriesName,
+          planName:
+            this.searchOptions.searchParams.planName === ""
+              ? undefined
+              : this.searchOptions.searchParams.planName,
+          createAfter: this.changeDate(
+            this.searchOptions.searchParams.dateRange
+              ? this.searchOptions.searchParams.dateRange[0]
+              : null
+          ),
+          createBefore: this.changeDate(
+            this.searchOptions.searchParams.dateRange
+              ? this.searchOptions.searchParams.dateRange[1]
+              : null
+          ),
+          pageNum: this.pagination.currentPage,
+          pageSize: this.pagination.pageSize
+        };
+      }
+
       console.log("搜索参数:", param);
 
       request
