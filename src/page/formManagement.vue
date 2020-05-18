@@ -180,42 +180,55 @@
 </template>
 
 <script>
-import GanttElastic from "gantt-elastic";
-import GanttHeader from "gantt-elastic-header";
+import GanttElastic from "gantt-elastic"; //导入gantt-elastic插件
+import GanttHeader from "gantt-elastic-header"; //导入gantt-elastic-elastic插件
 import dayjs from "dayjs";
-import request from "@/utils/request";
+import request from "@/utils/request"; // 导入封装的自定义的axios插件用于http请求
 
 export default {
-  name: "formManagement",
+  name: "formManagement", // 此页面的component名称
+
+  // 导入标签
   components: {
     GanttElastic,
     GanttHeader
   },
+
+  // 此页面需要用到的数据定义
   data() {
     return {
+      //搜索选项变量
       searchOptions: {
         searchParams: {
+          /* 
+            planClassRadioValue是el-radio-group组件选择计划类型变化时存储的值，
+            页面打开时，默认选择了系列计划
+          */
           planClassRadioValue: "系列计划",
-          planClassName: "SERIES",
+          planClassName: "SERIES", // 对应planClassRadioValue的英文名
+
           clientName: "",
           brandName: "",
           seriesName: "",
           creatorName: "",
           timeLineName: "",
-          planStateName: "",
-          seriesStateName: "",
-          deliverStateName: ""
+          planStateName: "", //计划转台
+          seriesStateName: "", //系列转台
+          deliverStateName: "" //交付状态
         },
         options: {
-          customerNameOptions: [],
-          brandNameOptions: [],
+          customerNameOptions: [], //客户名称选择器多选项信息
+          brandNameOptions: [], //品牌名称多选项信息
+          creatorOptions: [], //创建人多选项信息
+          planTypeOptions: [], //计划类型多选项信息
+
+          // 计划类别选择器数据
           planClassDict: {
             系列计划: "SERIES",
             款式计划: "STYLE",
             款式组计划: "GROUP"
           },
-          creatorOptions: [],
-          planTypeOptions: [],
+          // timeline选择器数据
           timeLineOptions: [
             { id: "quannian", name: "全年投放计划" },
             { id: "xiasanyue", name: "下三月投放计划" },
@@ -223,16 +236,19 @@ export default {
             { id: "xiazhou", name: "下周投放计划" },
             { id: "benzhou", name: "本周投放计划" }
           ],
+          // 计划状态选择器数据
           planStateOptions: [
             { id: "quxiao", name: "计划取消" },
             { id: "daiding", name: "计划待定" },
             { id: "chuangjian", name: "计划创建" },
             { id: "xiajia", name: "计划下架" }
           ],
+          // 系列状态选择器数据
           seriesStateOptions: [
             { id: "wanjie", name: "订单完结" },
             { id: "yunxing", name: "订单运行" }
           ],
+          // 交付状态选择器数据
           deliverStateOptions: [
             { id: "quannian", name: "全年交付计划" },
             { id: "xiasanyue", name: "下三月交付计划" },
@@ -241,17 +257,21 @@ export default {
             { id: "benzhou", name: "本周交付计划" }
           ]
         },
+
         maps: {
+          //计划状态中英文映射
           planStateMaps: {
             quxiao: "计划取消",
             xiajia: "计划下架",
             chuangjian: "计划创建",
             daiding: "计划待定"
           },
+          //系列状态中英文映射
           seriesStateMaps: {
             wanjie: "订单完结",
             yunxing: "订单运行"
           },
+          //timeline中英文映射
           timeLineMaps: {
             quannian: "全年投放计划",
             xiasanyue: "下三月投放计划",
@@ -259,6 +279,7 @@ export default {
             xiazhou: "下周投放计划",
             benzhou: "本周投放计划"
           },
+          //交付状态中英文映射
           deliverStateMaps: {
             quannian: "全年交付计划",
             xiasanyue: "下三月交付计划",
@@ -268,51 +289,52 @@ export default {
           }
         }
       },
+
+      //系列名称输入建议
       inputSuggestions: {
         series: []
       },
 
-      originSeriesGetData: {},
+      originSeriesGetData: {}, //存储根据接口搜索到的所有计划的数据
+
+      // gantt-elastic插件数据
       tasks: [],
       options: {}
     };
   },
   created: function() {
-    //客户名称加载
+    //客户名称下拉框数据加载，接口格式见接口文档
     request
       .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
+        // 返回数据存储于this.searchOptions.options.customerNameOptions
         this.searchOptions.options.customerNameOptions = response.result;
       });
-    //品牌名称加载
+
+    //品牌名称下拉框数据加载，接口格式见接口文档
     request
       .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
+        // 返回数据存储于this.searchOptions.options.brandNameOptions
         this.searchOptions.options.brandNameOptions = response.result;
       });
-    // 输入建议
+
+    //获取系列名称的输入建议，接口详情件接口文档
     request.get(`${window.$config.HOST}/info/series/name`).then(response => {
       this.inputSuggestions.series = [];
+
+      /* 
+      获取的返回数据存储在this.inputSuggestions.series
+      因为el-autocomplete组件中，对应值字段是value，而返回数据中是name字段，所以遍历
+      返回数据，将其中的name字段赋值给value字段
+      */
       response.result.forEach(element => {
         element.value = element.name;
         this.inputSuggestions.series.push(element);
       });
     });
 
-    //获取用户信息
-    this.$axios
-      .get(`${window.$config.HOST2}/getAllUserName`)
-      .then(response => {
-        if (response.data.errcode < 0) {
-          that.$message.error("下发对象加载失败!");
-        }
-        this.searchOptions.options.creatorNameOptions = response.data;
-      })
-      .catch(error => {
-        this.$message.error("下发对象加载失败!");
-      });
-
-    // 计划类型
+    // 计划类型下拉框选择器数据加载，接口详情查阅接口文档
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {
         params: {
@@ -323,7 +345,7 @@ export default {
         this.searchOptions.options.planTypeOptions = response.result;
       });
 
-    // 加载人员
+    // 所有用户名下拉框数据加载作为创建人选择器选项，接口格式见接口文档
     request
       .get(`${window.$config.HOST2}/user/find`, {
         params: {
@@ -335,11 +357,14 @@ export default {
         this.searchOptions.options.creatorOptions = response.result;
       });
 
-    //默认加载所有
+    //根据默认搜索田间加载所有数据
     this.handleSearch();
 
-    let that = this;
-    //初始化options
+    /*
+      初始化gantt-elasstic的options配置，
+      详情见https://github.com/neuronetio/vue-gantt-elastic
+        或者https://www.npmjs.com/package/gantt-elastic
+    */
     this.options = {
       taskMapping: {
         progress: "quantity"
@@ -430,12 +455,15 @@ export default {
       }
     };
   },
+
   methods: {
+    // 计划类别选择触发，el-radio-group组件对应响应函数。
     planClassTypeChange() {
-      this.handleSearch();
+      this.handleSearch(); // 根据搜索条件重新加载当前选择计划类别的数据
     },
+
+    // 客户名称el-select组件响应函数，当客户名称选择变化时，搜索选项中品牌名称下拉框数据对应变化，重新加载该数据
     clientNameChange() {
-      //品牌名称跟随加载
       request
         .get(`${window.$config.HOST}/backstage/brand/name`, {
           params: { clientId: this.searchOptions.searchParams.clientName }
@@ -444,7 +472,11 @@ export default {
           this.searchOptions.options.brandNameOptions = response.result;
         });
     },
-    // 系列名称搜索建议
+
+    /* 
+    el-autocomplete组件的函数，为系列名称搜索建议赋值
+    组件详情：https://element.eleme.cn/#/zh-CN/component/input 
+    */
     searchSeriesName(queryString, cb) {
       var tmp = this.inputSuggestions.series;
       var results = queryString
@@ -461,7 +493,7 @@ export default {
       this.options = options;
     },
 
-    // 改变日期格式
+    // 辅助函数：将js date对象转变为字符串对象
     changeDate(date) {
       console.log(date);
       if (!date) {
@@ -476,6 +508,8 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
+
+    //用于生成时间范围，生成当前日期为标准的全年，下三月，本月，下周，本周五个时间段
     generateDateLists() {
       var allDates = {};
       var statesToAddtion = {
@@ -532,8 +566,13 @@ export default {
       }
       return allDates;
     },
+
+    //搜索函数，调用时将根据页面的搜索选项重新加载页面表格中展示的数据
     handleSearch() {
+      //调用generateDateLists获取搜索的五个时间段
       var allDates = this.generateDateLists();
+
+      // 构造/plan/find-gantt接口的参数，接口详情参阅接口文档
       var param = {
         clientId:
           this.searchOptions.searchParams.clientName === ""
@@ -563,15 +602,27 @@ export default {
         endDateAfter: allDates.endDateAfter
       };
       console.log("搜索参数：", param);
+
+      // 调用/plan/find-gantt接口获取数据
       request
         .get(`${window.$config.HOST}/plan/find-gantt`, {
           params: param
         })
         .then(response => {
-          this.tasks = [];
-          this.originSeriesGetData = [];
-          console.log(response.result);
+          //成功获取到数据
+
+          this.tasks = []; //清空甘特图已经有的数据
+          this.originSeriesGetData = []; //清空之前搜索的数据
+
+          // console.log(response.result);
+
+          // 遍历获取的数据
           response.result.forEach(element => {
+            /* 
+            如果当前数据的计划状态未定义或者等于搜索条件的计划状态 
+            并且系列状态未定义或者等于搜索条件的系列状态
+            则将当前数据加入甘特图中展示        
+            */
             if (
               (this.searchOptions.searchParams.planStateName === "" ||
                 this.searchOptions.maps.planStateMaps[
@@ -582,6 +633,7 @@ export default {
                   this.searchOptions.searchParams.seriesStateName
                 ] === element.seriesState)
             ) {
+              // 设置颜色为element.colorCode
               element.style = {
                 base: {
                   fill: element.colorCode,
@@ -591,6 +643,10 @@ export default {
 
               element.type = "task";
 
+              /*
+               如果当前数据的上级计划id为0，则其为根计划，谁为甘特图中的顶级计划，
+               否则设置数据在甘特中的parentId为其superiorId
+              */
               if (element.superiorId === 0) {
                 element.parentId = undefined;
                 element.callaped = true;
@@ -605,6 +661,7 @@ export default {
                 this.searchOptions.searchParams.deliverStateName
               ];
 
+              // 如果时间段合法，根据当前计划数据的起止时间设置在甘特图中的显示时间段，否则不显示在gantt中，但存储于originSeriesGetData
               if (!(element.startDate === null || element.endDate === null)) {
                 var dateObj1 = new Date(element.startDate);
                 var dateObj2 = new Date(element.endDate);
@@ -620,9 +677,12 @@ export default {
         });
     },
 
+    // 导出excel表响应函数，对应的接口为exportUrl，接口详情参阅接口文档
     exportExcel(exportUrl) {
+      //构造接口参数
       var data = [];
 
+      // 从originSeriesGetData和tasks中获取excel数据
       this.originSeriesGetData.forEach(ele => {
         data.push({
           id: ele.id,
@@ -702,6 +762,7 @@ export default {
         });
       });
 
+      //根据exportUrl调用相应的接口下载excel表格
       request({
         url: exportUrl,
         method: "post",
@@ -709,6 +770,7 @@ export default {
         "Content-Type": "application/json;charset=UTF-8",
         responseType: "blob"
       }).then(response => {
+        //文件获取到后，存储下来
         let content = response;
         let blob = new Blob([content]);
         let da = new Date();
@@ -729,12 +791,12 @@ export default {
           navigator.msSaveBlob(blob, fileName);
         }
       });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   },
+
+  // 计算属性
   computed: {
+    // keepalives用于辅助页面缓存，keep-alive标签根据该值判断要缓存的页面，keep-alive标签在layout.vue中
     keepAlives: {
       get() {
         return this.$store.getters["baseinfo/keepAliveOptions"];
@@ -743,14 +805,6 @@ export default {
         return this.$store.commit("baseinfo/keepalive-opt-arr", value);
       }
     }
-  },
-  beforeRouteLeave(to, from, next) {
-    if (to.name === "subGantt") {
-      this.keepAlives = ["formManagement", "subGantt"];
-    } else {
-      this.keepAlives = [];
-    }
-    next();
   }
 };
 </script>

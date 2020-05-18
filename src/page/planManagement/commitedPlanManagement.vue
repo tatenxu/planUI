@@ -47,6 +47,7 @@
             </el-select>
           </div>
         </el-col>
+
         <el-col :span="8">
           <div class="bar">
             <div class="title">品牌</div>
@@ -77,8 +78,8 @@
       </el-row>
 
       <!-- 第二行 -->
-      <el-row :gutter="20" style="margin-top: 30px; margin-bottom: 5px;">
-        <el-col :span="6">
+      <el-row :gutter="20" style="margin-top:5px;">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">计划名称</div>
             <el-autocomplete
@@ -88,7 +89,7 @@
             ></el-autocomplete>
           </div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="bar">
             <div class="title">系列名称</div>
             <el-autocomplete
@@ -269,89 +270,111 @@
 </template>
 
 <script>
+// 导入自定义的甘特图插件用于展示计划的甘特图
 import GanttExtension from "@/utils/ganttExtension";
+// 导入封装的自定义的axios插件用于http请求
 import request from "@/utils/request";
+
 export default {
-  name: "commitedPlanManagement",
+  name: "commitedPlanManagement", // 此页面的component名称
   components: {
     GanttExtension
   },
+
+  // 此页面需要用到的数据定义
   data() {
     return {
+      // planClassDict用于映射页面的中文显示和接口中对应的英文字段
       planClassDict: {
         系列计划: "SERIES",
         款式计划: "STYLE",
         款式组计划: "GROUP"
       },
+      // planClassRouterDestinationDict用于映射计划类型和计划查看/修改/新增时的跳转页面
       planClassRouterDestinationDict: {
         系列计划: "planMakeOfSeries",
         款式计划: "planMakeOfStyle",
         款式组计划: "planMakeOfStyleGroup"
       },
+      /* 
+        planClassRadioValue是el-radio-group组件选择计划类型变化时存储的值，
+        页面打开时，默认选择了系列计划
+      */
       planClassRadioValue: "系列计划",
 
+      // 产看总计划按钮的相关数据变量
       allPlansData: {
-        allPlans: [],
-        allPlanShow: false,
+        allPlans: [], //存储总计划的计划详情
+        allPlanShow: false, //控制总计划对话框显示
+        /* 
+          defaultProps控制el-tre组件相关变量的显示，主要将allPlans的name属性映射到el-tree组件显示label属性
+          组件详情：https://element.eleme.cn/#/zh-CN/component/tree
+        */
         defaultProps: {
           children: "children",
           label: "name",
           id: "id"
         }
       },
-      templateRadio: "",
 
+      templateRadio: "", // 表格单选变量，暂时无用
+
+      // 输入建议，包含计划名称输入建议，系列名称输入建议
       inputSuggestions: {
         plans: [],
         series: []
       },
 
+      // 搜索选项相关变量
       searchOptions: {
         searchParams: {
-          clientName: undefined,
-          brandName: undefined,
-          clothesLevelName: undefined,
-          seriesName: undefined,
-          planName: undefined,
-          dateRange: undefined
+          clientName: undefined, // 客户名称输入
+          brandName: undefined, // 品牌名称输入
+          clothesLevelName: undefined, //服装层次输入
+          seriesName: undefined, //系列名称输入
+          planName: undefined, //计划名称输入
+          dateRange: undefined //日期范围输入
         },
+        // 输入选项中相关的多选
         options: {
-          clientNameOptions: [],
-          brandNameOptions: [],
-
-          clothesLevelNameOptions: []
+          clientNameOptions: [], //客户名称多选项信息
+          brandNameOptions: [], //品牌名称多选项信息
+          clothesLevelNameOptions: [] //服装层次多选项信息
         }
       },
-      totalTableData: [],
-      tableData: [],
+
+      tableData: [], // 页面展示的已提交计划信息
+
+      // 页码控制相关变量
       pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
+        currentPage: 1, // 当前页码
+        pageSizes: [10, 20, 30, 40, 50], // 页码选项中x条/页的选择项
+        pageSize: 10, // 当前页面展示多少条数据
+        total: 0 // 后台一共有多少条数据
       },
-      selectedData: []
+
+      selectedData: [] // 页面中多选选中的数据
     };
   },
-  created: function() {
-    const that = this;
-    console.log("进入计划管理页面");
 
-    //客户名称加载
+  created: function() {
+    //客户名称下拉框数据加载，接口格式见接口文档
     request
       .get(`${window.$config.HOST}/backstage/client/name`)
       .then(response => {
+        // 返回数据存储于this.searchOptions.options.clientNameOptions
         this.searchOptions.options.clientNameOptions = response.result;
       });
 
-    //品牌名称加载
+    //品牌名称下拉框数据加载，接口格式见接口文档
     request
       .get(`${window.$config.HOST}/backstage/brand/name`)
       .then(response => {
+        // 返回数据存储于this.searchOptions.options.brandNameOptions
         this.searchOptions.options.brandNameOptions = response.result;
       });
 
-    //服装层级加载
+    //服装层次下拉框数据加载，接口格式见接口文档
     request
       .get(`${window.$config.HOST}/backstage/dic-property/name`, {
         params: {
@@ -359,31 +382,49 @@ export default {
         }
       })
       .then(response => {
+        // 返回数据存储于this.searchOptions.options.clothesLevelNameOptions
         this.searchOptions.options.clothesLevelNameOptions = response.result;
       });
 
     //默认获取已完成系列根计划计划列表
     this.handleSearch();
 
-    //输入建议
-    request.get(`${window.$config.HOST}/plan/name`).then(response => {
+    //获取根计划的输入建议，接口详情件接口文档
+    request.get(`${window.$config.HOST}/root-plan/name`).then(response => {
       this.inputSuggestions.plans = [];
+
+      /* 
+      获取的返回数据存储在this.inputSuggestions.plans
+      因为el-autocomplete组件中，对应值字段是value，而返回数据中是name字段，所以遍历
+      返回数据，将其中的name字段赋值给value字段
+      */
       response.result.forEach(element => {
         element.value = element.name;
         this.inputSuggestions.plans.push(element);
       });
     });
 
+    //获取系列名称的输入建议，接口详情件接口文档
     request.get(`${window.$config.HOST}/info/series/name`).then(response => {
       this.inputSuggestions.series = [];
+
+      /* 
+      获取的返回数据存储在this.inputSuggestions.series
+      因为el-autocomplete组件中，对应值字段是value，而返回数据中是name字段，所以遍历
+      返回数据，将其中的name字段赋值给value字段
+      */
       response.result.forEach(element => {
         element.value = element.name;
         this.inputSuggestions.series.push(element);
       });
     });
   },
+
   methods: {
-    // 输入建议
+    /* 
+    el-autocomplete组件的根据输入字段,在所有输入建议中过滤匹配字段的函数，
+    组件详情：https://element.eleme.cn/#/zh-CN/component/input 
+    */
     createFilter(queryString) {
       return element => {
         return (
@@ -391,6 +432,11 @@ export default {
         );
       };
     },
+
+    /* 
+    el-autocomplete组件的函数，为根计划搜索建议赋值
+    组件详情：https://element.eleme.cn/#/zh-CN/component/input 
+    */
     searchPlanName(queryString, cb) {
       var tmp = this.inputSuggestions.plans;
       var results = queryString
@@ -398,6 +444,11 @@ export default {
         : tmp;
       cb(results);
     },
+
+    /* 
+    el-autocomplete组件的函数，为系列名称搜索建议赋值
+    组件详情：https://element.eleme.cn/#/zh-CN/component/input 
+    */
     searchSeriesName(queryString, cb) {
       var tmp = this.inputSuggestions.series;
       var results = queryString
@@ -406,8 +457,8 @@ export default {
       cb(results);
     },
 
+    // 客户名称el-select组件响应函数，当客户名称选择变化时，搜索选项中品牌名称下拉框数据对应变化，重新加载该数据
     clientNameChange() {
-      //品牌名称跟随加载
       request
         .get(`${window.$config.HOST}/backstage/brand/name`, {
           params: { clientId: this.searchOptions.searchParams.clientName }
@@ -416,23 +467,28 @@ export default {
           this.searchOptions.options.brandNameOptions = response.result;
         });
     },
+
+    // el-pagination对应函数，当每页需要展示的数据数量变化时触发
     handleSizeChange(val) {
-      this.pagination.pageSize = val;
+      this.pagination.pageSize = val; // 当前页面展示数据数量存储于this.pagination.pageSize字段
       console.log("每页+" + this.pagination.pageSize);
-      this.handleSearch();
+      this.handleSearch(); // 重新加载页面展示的计划数据
     },
+
+    // el-pagination对应函数，当当前页码变化时触发
     handleCurrentChange(val) {
-      this.pagination.currentPage = val;
-      this.handleSearch();
+      this.pagination.currentPage = val; // 当前页码存储于this.pagination.currentPage
+      this.handleSearch(); // 重新加载页面展示的计划数据
     },
 
+    // 计划类别选择触发，el-radio-group组件对应响应函数。
     planClassTypeChange() {
-      this.pagination.currentPage = 1;
-      this.tableData = [];
-      this.handleSearch();
+      this.pagination.currentPage = 1; // 重新赋值当前页面的页码编号
+      this.tableData = []; // 清空之前搜索的计划数据
+      this.handleSearch(); // 根据搜索条件重新加载当前选择计划类别的数据
     },
 
-    // 改变日期格式
+    // 辅助函数：将js date对象转变为字符串对象
     changeDate(date) {
       if (!date) {
         return undefined;
@@ -442,22 +498,22 @@ export default {
         m = m < 10 ? "0" + m : m;
         var d = date.getDate();
         d = d < 10 ? "0" + d : d;
-        // var h = date.getHours();
-        // var minute = date.getMinutes();
-        // minute = minute < 10 ? "0" + minute : minute;
-        // var second = date.getSeconds();
-        // second = minute < 10 ? "0" + second : second;
-        // return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+
         return y + "-" + m + "-" + d;
       }
     },
-    //搜索按钮
+
+    //搜索函数，调用时将根据页面的搜索选项重新加载页面表格中展示的数据
     handleSearch() {
+      // 根据当前页面中的搜索选项数据构造接口信息中的对应参数
       var param = {
+        // 以下成员字段详情见接口文档，在赋值时额外判断下时候为空，为空则赋值为undefined
         clientId: this.searchOptions.searchParams.clientName,
         brandId: this.searchOptions.searchParams.brandName,
         seriesName: this.searchOptions.searchParams.seriesName,
         name: this.searchOptions.searchParams.planName,
+
+        // 以下两个字段利用辅助函数将js date对象转化为字符串
         createAfter: this.changeDate(
           this.searchOptions.searchParams.dateRange
             ? this.searchOptions.searchParams.dateRange[0]
@@ -468,26 +524,34 @@ export default {
             ? this.searchOptions.searchParams.dateRange[1]
             : null
         ),
+
+        // 根据定义的字典，赋值当前计划类别对应的英文值
         planClass: this.planClassDict[this.planClassRadioValue],
+
+        // 页码相关参数
         pageNum: this.pagination.currentPage,
         pageSize: this.pagination.pageSize
       };
 
-      console.log("搜索参数：", param);
+      // /root-plan/find-complete接口获取完成的根计划信息，接口详情见接口文档
       request
         .get(`${window.$config.HOST}/root-plan/find-complete`, {
           params: param
         })
         .then(response => {
-          this.tableData = response.result;
-          this.pagination.total = response.total;
+          this.tableData = response.result; // 返回结果的result字段存储赋值给tableData字段
+          this.pagination.total = response.total; // 根据返回结果中total字段更新当前搜索条件下后台总共有的数据数
         });
     },
+
+    // 表格单选触发函数，将选择的数据存储在this.selectedData中
     getTemplateRow(index, row) {
       this.selectedData = [row];
     },
 
+    // 产看总计划按钮点击响应函数
     lookAllPlan() {
+      // 判断是否是只选择了一个计划，否则提示
       if (this.selectedData.length == 0) {
         this.$message({
           message: "请选择一项！",
@@ -502,6 +566,7 @@ export default {
         return;
       }
 
+      // /root-plan/tree接口获取总计划树，接口详情见接口文档
       request
         .get(`/root-plan/tree`, {
           params: {
@@ -509,12 +574,25 @@ export default {
           }
         })
         .then(response => {
+          // 将数据已列表元素的形式存储于 this.allPlansData.allPlans中
           this.allPlansData.allPlans = [];
           this.allPlansData.allPlans.push(response.result);
+
+          // 展示总计划树对话框
           this.allPlansData.allPlanShow = true;
         });
     },
+
+    //列表中的查看详情按钮点击时的响应函数
     getPlanDetail(row) {
+      /*
+      跳转到对应计划的产看的页面，param为页面跳转的参数
+          goback: 当前页面的名称。用于在跳转过去的页面中返回当前页面
+          isRoot: 当前要制定的计划是否是跟计划,
+          isModify: 是否是更新计划,
+          isCreate: 是否是添加计划,
+          rowData: 计划数据
+        */
       var param = {
         goback: "commitedPlanManagement",
         planClass: this.planClassDict[this.planClassRadioValue],
@@ -525,12 +603,16 @@ export default {
       };
       console.log("跳转参数：", param);
 
+      // 跳转到目标页面，那么表示目标页面名称。根据planClassRadioValue值，在定义的planClassRouterDestinationDict中映射
       this.$router.push({
         name: this.planClassRouterDestinationDict[this.planClassRadioValue],
         params: param
       });
     },
+
+    // 查看总计划对话框中，点击其中子计划的详情按钮时的响应函数，将跳转到其计划详情页
     subPlanLookDetail(data) {
+      // /plan/find-complete接口获取要查看计划的详情
       request
         .get(`/plan/find-complete`, {
           params: {
@@ -539,6 +621,15 @@ export default {
           }
         })
         .then(response => {
+          /*
+          利用返回的计划数据构造跳转参数，
+          跳转到对应计划的产看的页面，param为页面跳转的参数
+            goback: 当前页面的名称。用于在跳转过去的页面中返回当前页面
+            isRoot: 当前要制定的计划是否是跟计划,
+            isModify: 是否是更新计划,
+            isCreate: 是否是添加计划,
+            rowData: 计划数据
+          */
           var param = {
             goback: "commitedPlanManagement",
             planClass: this.planClassDict[this.planClassRadioValue],
@@ -549,6 +640,7 @@ export default {
           };
           console.log("跳转参数：", param);
 
+          // 跳转到目标页面，那么表示目标页面名称。根据planClassRadioValue值，在定义的planClassRouterDestinationDict中映射
           this.$router.push({
             name: this.planClassRouterDestinationDict[this.planClassRadioValue],
             params: param
@@ -557,7 +649,9 @@ export default {
     }
   },
 
+  // 计算属性
   computed: {
+    // keepalives用于辅助页面缓存，keep-alive标签根据该值判断要缓存的页面，keep-alive标签在layout.vue中
     keepAlives: {
       get() {
         return this.$store.getters["baseinfo/keepAliveOptions"];
@@ -567,7 +661,10 @@ export default {
       }
     }
   },
+
+  // 路由跳转前的控制函数
   beforeRouteLeave(to, from, next) {
+    // 利用compiuted中的keepAlive实现页面缓存
     if (
       to.name === "planMakeOfSeries" ||
       to.name === "planMakeOfStyle" ||
