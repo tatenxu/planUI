@@ -1,4 +1,5 @@
 <template>
+ <!-- 本页面经讨论不再使用，无需查看 -->
   <el-card class="box-card">
     <el-tabs v-model="viewname" @tab-click="handleTabClick" class="cardTab">
       <el-tab-pane label="产品信息管理" name="first" class="tabPane">

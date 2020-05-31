@@ -37,17 +37,15 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      totalTableData: [],
-      tableData: [],
+      tableData: [],  // 表格数据
 
-      pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
+      pagination: {    //页码部分
+        currentPage: 1,   //当前页码
+        pageSizes: [10, 20, 30, 40, 50],  //页面跳数选择框数据
+        pageSize: 10,   //当前每页条数
+        total: 0  //总条数
       },
-      pages: 0,
-      tableSelectionData: []
+      tableSelectionData: []  //表格选中数据
     };
   },
   created: function () {
@@ -76,6 +74,7 @@ export default {
       this.pagination.currentPage = val;
       this.handleSearch(val);
     },
+    // 重新获取表格数据，由于当前页面没有搜索按钮，因此该方法主要是其他方法调用方便所用
     handleSearch(currentPageNum) {
       request
         .get(`/info/series/find`, {
@@ -85,9 +84,9 @@ export default {
           }
         })
         .then(response => {
-          this.tableData = response.result;
-          this.pagination.total = response.total;
-          this.pagination.currentPage = currentPageNum;
+          this.tableData = response.result;   //表格数据赋值
+          this.pagination.total = response.total;  //页码总条数赋值
+          this.pagination.currentPage = currentPageNum;  //当前页号赋值
         });
     },
     //计划完成按钮点击
@@ -105,13 +104,13 @@ export default {
               }
             })
             .then(response => {
-              this.handleSearch(1);
+              this.handleSearch(1);  //重新获取一下表格数据
             });
         });
       }
     },
 
-    //表格选择变化
+    //表格勾选的数据变化
     tableSelectionChange(val) {
       this.tableSelectionData = val;
     }

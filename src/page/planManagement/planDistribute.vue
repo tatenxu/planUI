@@ -68,48 +68,6 @@
     <div class="block">
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pagination.currentPage" :page-sizes="pagination.pageSizes" :page-size="pagination.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"></el-pagination>
     </div>
-
-    <!-- <el-dialog :modal="false" title="选择下发对象" :visible.sync="distributePanelFlag" :before-close="distributePanelCancel">
-      <el-row :gutter="20" style="margin-top:-30px;">
-        <el-col :span="12">
-          <div class="bar">
-            <div class="title">人员名称</div>
-            <el-input v-model="distribute.personName" clearable placeholder="请输入"></el-input>
-            <el-button type="primary" @click="searchPersonByName" style="margin-left:20px">搜索</el-button>
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top:20px;">
-        <el-col :span="6">
-          <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top:15px;">
-        <el-col :span="6">
-          <el-tree :data="distribute.productLine" :highlight-current="true" :props="distribute.defaultProps" @node-click="handleNodeClick"></el-tree>
-        </el-col>
-        <el-col :span="13">
-          <el-table :data="distribute.personTable" max-height="400" @selection-change="personTableSelect" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
-            <el-table-column type="selection" width="50px" align="center"></el-table-column>
-            <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-            <el-table-column prop="name" width="200" label="人员" align="center"></el-table-column>
-            <el-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
-              <template slot-scope="scope">
-                <el-select size="medium" v-model="scope.row.assignPlanType">
-                  <el-option v-for="item in distribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-dialog> -->
     <el-dialog :modal="false" title="选择下发对象" width="1200px" :visible.sync="distributePanelFlag" :before-close="distributePanelCancel">
       <el-row :gutter="20" style="margin-top:0px;">
         <el-col :span="6">
@@ -187,68 +145,83 @@
 import request from "@/utils/request";
 import GanttExtension from "@/utils/ganttExtension";
 export default {
-  name: "planDistribute",
+  name: "planDistribute",    // 此页面的component名称
   components: {
     GanttExtension
   },
 
   data() {
     return {
-      deptToCascaderProps: {
-        value: "id",
-        label: "name",
-        children: "children"
+      deptToCascaderProps: {  //部门与产线的数据映射转换
+        value: "id",    //将原组件的value用id表示
+        label: "name",  //将原组件的label用name表示
+        children: "children"    
       },
-      planClassRadioValue: "系列计划",
-      checked: 1,
-      //页码部分
+      /* 
+        planClassRadioValue是el-radio-group组件选择计划类型变化时存储的值，
+        页面打开时，默认选择了系列计划
+      */
+      planClassRadioValue: "系列计划",  
+      /* 
+        用于映射系列计划-款式计划-款式组计划，目前对应关系：
+        系列：1 
+        款式组：2
+        款式：3
+      */
+      checked: 1,  
+      // pagination存储本页面页码控制的变量
       pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
+        currentPage: 1, // 当前页码
+        pageSizes: [10, 20, 30, 40, 50], // 页码选项中x条/页的选择项
+        pageSize: 10, // 当前页面展示多少条数据
+        total: 0 // 后台一共有多少条数据
       },
-      //页面主体部分
+
+      /* 
+        用于映射已下发、已审核计划的switch按钮数据，目前对应关系：
+        已审核：true
+        已下发：false
+      */
       planTypeSwitch: true,
-      tableData: [],
-      multipleSelection: [],
-      templateRadio: "",
+      tableData: [],  //表格数据
+      multipleSelection: [],  //表格勾选数据 
+      templateRadio: "",  //用于表示表格前的单选框
 
       //计划下发部分
-      distributePanelFlag: false,
-      distribute: {
-        personName: "",
-        deptName: "",
-        productLine: "",
+      distributePanelFlag: false,  //计划下发弹出框的显示控制，true时显示
+      distribute: {           //存储计划下发弹出框的数据
+        personName: "",       //人员名称
+        deptName: "",        //部门名称
+        productLine: "",      //产线
         //productLine: [],
-        personTable: [],
-        userSelection: [],
-        personTableTemplate: [],
-        options: {
+        personTable: [],       //人员表格数据
+        userSelection: [],     //人员表格选中数据
+        personTableTemplate: [],   //用于存储所有人员的信息，以便于搜索
+        options: { //下拉框数据
           assignPlanTypeOptions: {},
           productLineOptions: {},
           deptNameOptions: {}
         },
-        defaultProps: {
+        defaultProps: {   //数据映射
           children: "children",
-          label: "name"
+          label: "name"  //用name代替组件的label
         }
       },
 
       //查看总计划部分
-      planTreePanelFlag: false,
+      planTreePanelFlag: false, //查看总计划弹出框的显示控制，true时显示
       planTree: {
-        planTreeData: [],
-        defaultProps: {
+        planTreeData: [],       //总计划数据
+        defaultProps: {         //组件数据映射
           children: "children",
-          label: "name"
+          label: "name"  //用name代替组件的label
         }
       },
 
       //下发详情部分
-      distributeDetailFlag: false,
+      distributeDetailFlag: false, //下发详情弹出框的显示控制，true时显示
       distributeDetail: {
-        tableData: []
+        tableData: []          //下发详情的表格数据
       }
     };
   },
@@ -262,11 +235,11 @@ export default {
       .catch(error => {
         this.$message.error("部门信息加载失败!");
       });
-    //获取产线
+    //获取产线数据
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
       this.distribute.options.productLineOptions = response.result;
     });
-    //获取计划类型
+    //获取计划类型数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -276,7 +249,7 @@ export default {
       .then(response => {
         this.distribute.options.assignPlanTypeOptions = response.result;
       });
-    //获取初始搜索
+    //获取初始搜索信息
     request
       .get(`/plan/find`, {
         params: {
@@ -287,12 +260,13 @@ export default {
         }
       })
       .then(response => {
-        this.tableData = response.result;
-        this.pagination.total = response.total;
-        this.pagination.currentPage = 1;
+        this.tableData = response.result;  //表格数据赋值
+        this.pagination.total = response.total;   //搜索到的条目总数
+        this.pagination.currentPage = 1;  //当前页码为1
       });
   },
   methods: {
+    //通过条件（名称、产线、部门）搜索人员
     searchPersonByPDP() {
       this.$axios
         .get(`${window.$config.HOST2}/user/find-dup`,
@@ -310,6 +284,7 @@ export default {
           this.$message.error("人员信息加载失败!");
         });
     },
+    //计划类型（系列、款式组、款式）选择改变时，同步修改checked标记，并重新获取数据
     planClassRadioValueChanged() {
       if (this.planClassRadioValue === "系列计划") {
         this.checked = 1;
@@ -321,7 +296,7 @@ export default {
       }
       this.handleSearch(1);
     },
-    //下发面板关闭
+    //下发面板关闭，清空数据
     distributePanelCancel() {
       this.distribute.personTable = [];
       this.distribute.userSelection = [];
@@ -329,19 +304,21 @@ export default {
       this.distribute.personName = "";
       this.distributePanelFlag = false;
     },
+    //下发详情面板关闭，清空数据
     distributeDetailCancel() {
       this.distributeDetail.tableData = [];
       this.distributeDetailFlag = false;
     },
-    //根据输入框搜索人员
+    //根据输入框搜索人员，由于人员信息已经全部获取，因此我们只需要在保存所有人员的表格中进行模糊搜索即可
     searchPersonByName() {
       this.distribute.personTable = [];
       this.distribute.personTableTemplate.forEach(element => {
+        // 这里indexof即可进行字符串匹配，将匹配成功的人员放进表格数据中
         if (element.name.indexOf(this.distribute.personName) >= 0)
           this.distribute.personTable.push(element);
       });
     },
-    //根据单选获得下发详情
+    //根据单选数据获得该计划的下发详情
     searchDetailTable() {
       request
         .get(`/plan-assign/find`, {
@@ -352,13 +329,14 @@ export default {
         .then(response => {
           this.distributeDetail.tableData = response.result;
           this.distributeDetail.tableData.forEach(element => {
+            //数据转换，将true,false修改为更易查看的是、否
             if (element.assignPlanMade)
               element.assignPlanMadeStr = "是"
             else element.assignPlanMadeStr = "否"
           })
         });
     },
-    //撤回下发
+    //撤回下发的计划
     deleteAssign(row) {
       const that = this;
       this.$confirm("是否撤回该条计划下发？", "提示", {
@@ -373,13 +351,14 @@ export default {
             }
           })
           .then(response => {
-            this.searchDetailTable();
-            this.handleSearch(this.pagination.currentPage);
+            this.searchDetailTable();  //撤销下发计划后，重新获取下发详情表格的数据，即数据刷新
+            this.handleSearch(this.pagination.currentPage);   //撤销下发计划后，重新获取主页面表格的数据，即数据刷新
           });
       });
     },
     //打开下发详情面板
     assignDetail() {
+      //首先判断是否对某个条目进行了选择，若未选择则直接return
       if (this.multipleSelection.id === undefined) {
         this.$message({
           message: "请选择一项计划进行查看！",
@@ -388,13 +367,14 @@ export default {
         return;
       }
       this.distributeDetailFlag = true;
-      this.searchDetailTable();
+      this.searchDetailTable();  //搜索得到下发详情的表格数据
     },
     //进行下发
     assignRoot() {
       let list = [];
       let ok = 0;
       this.distribute.userSelection.forEach(element => {
+        //判断是否每个勾选的表格数据都选择了计划类型
         if (!element.assignPlanType) {
           this.$message({
             message: "任意一条勾选的人员都必须选择计划类型!",
@@ -403,6 +383,7 @@ export default {
           ok++;
           return;
         } else {
+          //若选择了，则添加到即将发送请求的数据中
           list.push({
             assignPlanType: element.assignPlanType,
             executorId: element.id,
@@ -412,17 +393,17 @@ export default {
           });
         }
       });
-      if (ok === 0) {
-        if (list.length === 0) {
+      if (ok === 0) {  //若全部选择了计划类型，则开始发送请求
+        if (list.length === 0) {  //若未选择任何人员，报错
           this.$message({
             message: "请至少选择一名人员进行下发!",
             type: "error"
           });
           return;
-        } else {
+        } else {  //发送请求
           request.post(`/plan-assign/insert`, list).then(response => {
-            this.handleSearch(this.pagination.currentPage);
-            this.distribute.personTable = [];
+            this.handleSearch(this.pagination.currentPage);  //重新获取主页面当前页的数据
+            this.distribute.personTable = [];                //清空下发弹出框数据
             this.distribute.userSelection = [];
             this.distribute.personTableTemplate = [];
             this.distribute.personName = "";
@@ -431,28 +412,15 @@ export default {
         }
       }
     },
-    //点击产线结点
-    handleNodeClick(data) {
-      request
-        .get(`${window.$config.HOST2}/user-product-line/find`, {
-          params: {
-            productLineId: data.id
-          }
-        })
-        .then(response => {
-          this.distribute.personTable = response.result;
-          this.distribute.personTableTemplate = response.result;
-        });
-    },
-    //选中人员
+    //下发人员表格选中，则获取选中人员的数据
     personTableSelect(val) {
       this.distribute.userSelection = val;
     },
-    //table选中单条
+    // 主页面表格数据单选获取
     getTemplateRow(row) {
       this.multipleSelection = row;
     },
-    //查看详情
+    //查看详情，则跳转计划详情页面
     searchDetails(row) {
       console.log(row);
       this.$router.push({
@@ -466,7 +434,7 @@ export default {
         }
       });
     },
-    //查看总计划
+    //查看总计划按钮点击，弹出查看总计划的tree
     lookAllPlan() {
       if (this.multipleSelection.id === undefined) {
         this.$message({
@@ -483,14 +451,14 @@ export default {
         })
         .then(response => {
           this.planTree.planTreeData = [];
-          this.planTree.planTreeData.push(response.result);
+          this.planTree.planTreeData.push(response.result);  //推入数据，由于element-tree格式限制，选择用push传输数据
           this.planTreePanelFlag = true;
         });
     },
-    //下发panel打开
+    //选择下发对象按钮点击，打开下发弹出框，并清空数据
     chooseUserClick() {
       const that = this;
-      if (this.multipleSelection.length === 0) {
+      if (this.multipleSelection.length === 0) {  //判断是否选择了某个计划
         this.$message({
           message: "请选择一个计划!",
           type: "warning"
@@ -509,7 +477,7 @@ export default {
       this.templateRadio = "";
       this.handleSearch(1);
     },
-    //搜索
+    //获取主页面数据，为其他方法提供数据获取
     handleSearch(currentPageNum) {
       request
         .get(`/plan/find`, {
@@ -541,6 +509,7 @@ export default {
   },
   computed: {
     keepAlives: {
+      // keepalives用于辅助页面缓存，keep-alive标签根据该值判断要缓存的页面，keep-alive标签在layout.vue中
       get() {
         return this.$store.getters["baseinfo/keepAliveOptions"];
       },

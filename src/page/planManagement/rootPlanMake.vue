@@ -94,10 +94,14 @@
             <af-table-column prop="systemCode" label="系统编码" align="center" v-if="checked===1"></af-table-column>
             <af-table-column prop="projectType" label="项目类型" align="center"></af-table-column>
             <af-table-column prop="orderStage" label="订单阶段" align="center"></af-table-column>
-            <af-table-column prop="predictStyleQuantity" label="预测款数" align="center" v-if="checked===1"></af-table-column>
-            <af-table-column prop="predictPieceQuantity" label="预测件数" align="center" v-if="checked===1"></af-table-column>
-            <af-table-column prop="informalStyleQuantity" label="非正式款数" align="center" v-if="checked===1"></af-table-column>
-            <af-table-column prop="informalPieceQuantity" w label="非正式件数" align="center" v-if="checked===1"></af-table-column>
+            <af-table-column prop="predictStyleQuantity" label="预测款数" align="center" v-if="checked===1">
+            </af-table-column>
+            <af-table-column prop="predictPieceQuantity" label="预测件数" align="center" v-if="checked===1">
+            </af-table-column>
+            <af-table-column prop="informalStyleQuantity" label="非正式款数" align="center" v-if="checked===1">
+            </af-table-column>
+            <af-table-column prop="informalPieceQuantity" w label="非正式件数" align="center" v-if="checked===1">
+            </af-table-column>
             <af-table-column prop="styleQuantity" label="正式款数" align="center"></af-table-column>
             <af-table-column prop="pieceQuantity" label="正式件数" align="center"></af-table-column>
             <af-table-column prop="inputPoint" label="投入点" align="center"></af-table-column>
@@ -113,7 +117,8 @@
             <af-table-column label="操作" fixed="right" align="center" width="250px">
               <template slot-scope="scope">
                 <el-button size="mini" @click="assignRootPlan(scope.row)" type="text" v-if="scope.row.creatorId === meID">下发</el-button>
-                <el-button size="mini" @click="assignDetail(scope.row)" v-if="scope.row.state ==='已下发'" type="text">查看下发情况</el-button>
+                <el-button size="mini" @click="assignDetail(scope.row)" v-if="scope.row.state ==='已下发'" type="text">
+                  查看下发情况</el-button>
                 <el-button size="mini" @click="toPageDetail(scope.row)" type="text">查看详情</el-button>
                 <el-button size="mini" @click="toUpdateRootPlan(scope.row)" v-if="scope.row.state !='已下发' && scope.row.creatorId === meID" type="text">修改</el-button>
               </template>
@@ -182,53 +187,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-button type="primary" size="small" @click="negotiate()" style="margin-left:100px;margin-top:3px">协商延迟</el-button>
+            <el-button type="primary" size="small" @click="negotiate()" style="margin-left:100px;margin-top:3px">协商延迟
+            </el-button>
           </el-col>
         </el-row>
       </el-form>
     </el-dialog>
-    <!-- <el-dialog :modal="false" title="根计划下发" :visible.sync="rootPlanDistributeFlag" :before-close="cancelDistribute">
-      <el-row :gutter="20" style="margin-top:-30px;">
-        <el-col :span="12">
-          <div class="bar">
-            <div class="title">人员名称</div>
-            <el-input v-model="rootDistribute.personName" clearable placeholder="请输入" style="width:350px"></el-input>
-            <el-button type="primary" @click="searchPersonByName" style="margin-left:20px">搜索</el-button>
-          </div>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="assignRoot" style="margin-left:100px">下发</el-button>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top:10px;">
-        <el-col :span="6">
-          <div class="title" style="font-size:20px;margin-left:100px;font-weight:700">产线</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="title" style="font-size:20px;margin-left:230px;font-weight:700">人员</div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top:15px;">
-        <el-col :span="6">
-          <el-tree :data="productionLine" :highlight-current="true" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-        </el-col>
-        <el-col :span="13">
-          <el-table :data="rootDistribute.tableData" max-height="400" @selection-change="changeCheckBoxFun2" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px;margin-left:30%">
-            <af-table-column type="selection" width="50px" align="center"></af-table-column>
-            <af-table-column type="index" label="序号" width="50" align="center"></af-table-column>
-            <af-table-column prop="name" width="200" label="人员" align="center"></af-table-column>
-            <af-table-column width="150" prop="assignPlanType" label="计划类型" align="center">
-              <template slot-scope="scope">
-                <el-select size="medium" v-model="scope.row.assignPlanType">
-                  <el-option v-for="item in rootDistribute.options.assignPlanTypeOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
-                </el-select>
-              </template>
-            </af-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-dialog> -->
-
     <el-dialog :modal="false" title="根计划下发" width="1200px" :visible.sync="rootPlanDistributeFlag" :before-close="cancelDistribute">
       <el-row :gutter="20" style="margin-top:0px;">
         <el-col :span="6">
@@ -296,57 +260,60 @@
 </template>
 
 <script>
-import request from "@/utils/request";
+// 导入自定义的甘特图插件用于展示计划的甘特图
 import GanttExtension from "@/utils/ganttExtension";
+// 导入封装的自定义的axios插件用于http请求
+import request from "@/utils/request";
 export default {
+  //甘特图
   name: "rootPlanMake",
   components: {
     GanttExtension
   },
   data() {
     return {
+      //产线组件的标签映射
       deptToCascaderProps: {
-        value: "id",
-        label: "name",
+        value: "id",     //用id代替组件的value值
+        label: "name",   //用name代替组件的label值
         children: "children"
       },
       //协商延迟
-      negotiatePanelFlag: false,
+      negotiatePanelFlag: false,  //协商延迟弹出框控制标签
       negotiateForm: {
-        extension: "",
+        extension: "", //协商延迟的时间
       },
-      negotiateFormRule: {
+      negotiateFormRule: {  //数据有效性控制
         extension: [
           { required: true, message: "请选择协商延迟的时间！", trigger: "change" }
         ],
       },
-      //自己的ID
+      //自己的ID，用于判断对数据的权限
       meID: "",
       //根计划下发部分参数
-      productionLine: [],
       rootDistribute: {
         id: "",
-        productLine: "",
-        deptName: "",
-        personName: "",
-        tableData: [],
-        tableDataA: [],
-        multipleSelection: [],
-        options: {
-          assignPlanTypeOptions: {},
-          productLineOptions: [],
-          deptOptiopns: [],
+        productLine: "",    //产线
+        deptName: "",       //部门名称
+        personName: "",     //人员名称assignPlanTypeOptions
+        tableData: [],      //下发的人员表格数据  
+        tableDataA: [],     //用于存储所有人员的数据，以便进行搜索
+        multipleSelection: [],        //表格选中数据 
+        options: {  //下拉框数据
+          assignPlanTypeOptions: {},  //下发类型下拉框数据
+          productLineOptions: [],     //产线下拉框数据
+          deptOptiopns: [],           //部门下拉框数据
 
         }
       },
-      //下发详情部分参数
 
+      //下发详情部分参数
       detailDistribute: {
         id: "",
-        tableData: []
+        tableData: []   //下发详情表格数据
       },
 
-      //存为模板部分参数
+      //存为模板部分参数，暂时弃用
       saveModel: {
         rootPlanName: "",
         id: "",
@@ -358,6 +325,7 @@ export default {
           brandOptions: {}
         }
       },
+      //存为模板部分参数，暂时弃用
       modelRules: {
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -368,42 +336,54 @@ export default {
         name: [{ required: true, message: "请输入模板名称", trigger: "blur" }]
       },
       //窗口控制部分
-      viewname: "first",
-      savePlanModelFlag: false,
-      detailDistributeFlag: false,
-      rootPlanDistributeFlag: false,
+      viewname: "first",     //tab面板显示控制，用于表示当前所在的面板
+      savePlanModelFlag: false,        //存为模板标签
+      detailDistributeFlag: false,     //下发详情标签
+      rootPlanDistributeFlag: false,   //根计划下发标签
 
       //搜索部分参数
+      /* 
+        用于映射系列计划-款式计划-款式组计划，目前对应关系：
+        系列：1 
+        款式组：2
+        款式：3
+      */
       checked: 1,
+      /* 
+        planClassRadioValue是el-radio-group组件选择计划类型变化时存储的值，
+        页面打开时，默认选择了系列计划
+      */
       planClassRadioValue: "系列计划",
-      clientId: "",
-      brandId: "",
-      name: "",
-      clothesLevelName: "",
-      dateRange: "",
-      seriesName: "",
-      searchOptions: {
+      // 搜索部分数据
+      clientId: "",    //搜索的客户名称Id  
+      brandId: "",     //搜索的品牌名称Id
+      name: "",        //搜索的根计划名称
+      clothesLevelName: "",    //搜索的服装层次
+      dateRange: "",     //搜索的添加时间
+      seriesName: "",    //搜索的系列名称
+      searchOptions: {    //下拉框数据
         clientOptions: {},
         brandOptions: {},
         clothesLevelOptions: {}
       },
 
       //表格参数
-      nameSuggestionsRootPlan: [],
-      nameSuggestionsSeries: [],
-      tableData: [],
-      multipleSelection: [],
+      nameSuggestionsRootPlan: [],   //根计划输入建议
+      nameSuggestionsSeries: [],     //系列输入建议
+      tableData: [],                 //表格数据
+      multipleSelection: [],         //表格选中数据
 
       defaultProps: {
         children: "children",
         label: "name"
       },
-      //页码部分
+
+      // pagination存储本页面页码控制的变量
       pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
+        currentPage: 1, // 当前页码
+        pageSizes: [10, 20, 30, 40, 50], // 页码选项中x条/页的选择项
+        pageSize: 10, // 当前页面展示多少条数据
+        total: 0 // 后台一共有多少条数据
       },
       //日期控制部分
       pickerOptions0: {
@@ -432,15 +412,15 @@ export default {
       .catch(error => {
         this.$message.error("部门信息加载失败!");
       });
-    //获取产线
+    //获取产线数据
     request.get(`${window.$config.HOST2}/product-line/find`).then(response => {
       this.rootDistribute.options.productLineOptions = response.result;
     });
-    //确认自己的信息
+    //确认当前操作者自己的信息
     request.get(`/me`).then(response => {
       this.meID = response.result.id;
     });
-    //获取系列名称
+    //获取系列名称，作为输入建议
     request.get(`/info/series/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestionsSeries.push({
@@ -449,7 +429,7 @@ export default {
       });
     });
 
-    //获取根计划名称
+    //获取根计划名称，作为搜索建议
     request.get(`/root-plan/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestionsRootPlan.push({
@@ -457,7 +437,7 @@ export default {
         });
       });
     });
-    //获取计划类型
+    //获取计划类型数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -489,7 +469,7 @@ export default {
       this.saveModel.options.clientOptions = response.result;
     });
 
-    //获得空集搜索列表
+    //获得初始页面数据
     request
       .get(`/root-plan/find`, {
         params: {
@@ -505,8 +485,8 @@ export default {
       });
   },
   methods: {
+    // 根据产线、人员名、部门模糊搜索人员
     searchPersonByPDP() {
-
       this.$axios
         .get(`${window.$config.HOST2}/user/find-dup`,
           {
@@ -523,22 +503,22 @@ export default {
           this.$message.error("人员信息加载失败!");
         });
     },
-    //协商延迟面板打开
+    // 协商延迟面板打开
     negotiatePanelOpen() {
-      if (this.multipleSelection.length != 1) {
+      if (this.multipleSelection.length != 1) {   //判断是否选择且仅选择一条计划
         this.$message({
           message: "请选择单条计划进行协商延迟！",
           type: "error"
         });
         return;
       }
-      this.negotiatePanelFlag = true;
-      this.negotiateForm.extension = "";
+      this.negotiatePanelFlag = true;  //打开协商延迟弹出框
+      this.negotiateForm.extension = "";  //清空弹出框数据
     },
-    //协商延迟按钮点击
+    //协商延迟弹出框提交按钮点击
     negotiate() {
-      this.$refs["negotiateForm"].validate(valid => {
-        if (valid) {
+      this.$refs["negotiateForm"].validate(valid => {  //判断表格数据有效性
+        if (valid) {  //若数据有效，则开始传输数据到后台
           this.multipleSelection.forEach(element => {
             request
               .put("/root-plan/negotiate", null, {
@@ -548,8 +528,8 @@ export default {
                 }
               })
               .then(response => {
-                this.negotiatePanelFlag = false;
-                this.searchRootPlan(this.pagination.currentPage);
+                this.negotiatePanelFlag = false;  //关闭弹出框
+                this.searchRootPlan(this.pagination.currentPage);   //重新获取本页数据
               });
           });
 
@@ -561,7 +541,7 @@ export default {
         }
       });
     },
-    //计划类型修改
+    //计划类型修改，则重新获取主页面数据，并同步修改checked
     planClassRadioValueChange() {
       if (this.planClassRadioValue === "系列计划") {
         this.checked = 1;
@@ -573,21 +553,14 @@ export default {
       }
       this.searchRootPlan(1);
     },
-    // 行颜色
+    // 行颜色修改
     tableRowClassName({ row, rowIndex }) {
       if (row.fromTemplate) {
         return "background: oldlace;";
       }
     },
-    searchPersonByName() {
-      this.rootDistribute.tableData = [];
-      this.rootDistribute.tableDataA.forEach(element => {
-        if (element.name.indexOf(this.rootDistribute.personName) >= 0)
-          this.rootDistribute.tableData.push(element);
-      });
-    },
+    //是否约束控制，即表格中的switch按钮，点击则传输信息到后台
     rootPlanLimit(row) {
-      console.log(row);
       request
         .put(`/root-plan/limit`, null, {
           params: {
@@ -599,7 +572,7 @@ export default {
           this.searchRootPlan(this.pagination.currentPage);
         });
     },
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    //当搜索框的客户名称改变的时候重新获取品牌下拉框数据，并清空已选品牌
     searchClientChanged() {
       request
         .get(`/backstage/brand/name`, {
@@ -621,6 +594,7 @@ export default {
         : nameSuggestions;
       cb(results);
     },
+    //根计划名称搜索的输入建议
     querySearchRootPlan(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsRootPlan;
       var results = queryString
@@ -628,6 +602,7 @@ export default {
         : nameSuggestions;
       cb(results);
     },
+    //过滤器，详见element组件
     createFilter(queryString) {
       return restaurant => {
         return (
@@ -640,11 +615,11 @@ export default {
       console.log(item);
     },
 
-    //列表选中
+    //列表选中，则获取选中数据
     changeCheckBoxFun(val) {
       this.multipleSelection = val;
     },
-    //点击更新根计划
+    //点击表格中的修改，跳转到修改页面
     toUpdateRootPlan(row) {
       this.$router.push({
         name: this.checked === 1 ? "planMakeOfSeries" : (this.checked === 2 ? "planMakeOfStyleGroup" : "planMakeOfStyle"),
@@ -657,13 +632,13 @@ export default {
         }
       });
     },
-    //点击查看下发详情
+    //点击查看下发详情，打开下发详情弹出框
     assignDetail(row) {
       this.detailDistributeFlag = true;
       this.detailDistribute.id = row.id;
-
-      this.searchDetailDistruibute();
+      this.searchDetailDistruibute();  //搜索该计划的下发详情数据
     },
+    //搜索该计划的下发详情数据
     searchDetailDistruibute() {
       request
         .get(`/root-plan-assign/find`, {
@@ -673,6 +648,7 @@ export default {
         })
         .then(response => {
           this.detailDistribute.tableData = response.result;
+          //将true.false转换为更易观察的是、否
           this.detailDistribute.tableData.forEach(element => {
             if (element.assignPlanMade)
               element.assignPlanMadeStr = "是"
@@ -683,7 +659,7 @@ export default {
     //撤回下发详情中的下发
     deleteAssign(row) {
       const that = this;
-      this.$confirm("是否撤回该条计划下发？", "提示", {
+      this.$confirm("是否撤回该条计划下发？", "提示", {   //二次确认弹出框
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -695,12 +671,12 @@ export default {
             }
           })
           .then(response => {
-            this.searchDetailDistruibute();
-            this.searchRootPlan(this.pagination.currentPage);
+            this.searchDetailDistruibute();  //重新获取下发详情数据
+            this.searchRootPlan(this.pagination.currentPage);  //重新获取本页数据
           });
       });
     },
-    //计划的查看详情
+    //计划的查看详情，跳转到查看详情页面
     toPageDetail(row) {
       this.$router.push({
         name: this.checked === 1 ? "planMakeOfSeries" : (this.checked === 2 ? "planMakeOfStyleGroup" : "planMakeOfStyle"),
@@ -713,7 +689,7 @@ export default {
         }
       });
     },
-    //根计划的下发按钮
+    //根计划的下发按钮，打开下发弹出框，并清空弹出框数据
     assignRootPlan(row) {
       this.rootDistribute.id = row.id;
       this.rootDistribute.personName = "";
@@ -722,7 +698,9 @@ export default {
       this.rootDistribute.multipleSelection = [];
       this.rootPlanDistributeFlag = true;
     },
+    //下发根计划弹出框内点击下发
     assignRoot() {
+      //判断是否选择了人员进行下发
       if (this.rootDistribute.multipleSelection.length === 0) {
         this.$message({
           message: "请至少选择一个人员进行下发!",
@@ -732,6 +710,7 @@ export default {
       }
       let list = [];
       let ok = 0;
+      //判断是否每个勾选的人员都选择了下发类型
       this.rootDistribute.multipleSelection.forEach(element => {
         if (!element.assignPlanType) {
           this.$message({
@@ -741,6 +720,7 @@ export default {
           ok = 1;
           return;
         }
+        //整合数据
         list.push({
           assignPlanType: element.assignPlanType,
           executorId: element.id,
@@ -749,6 +729,7 @@ export default {
         });
       });
       if (ok === 0) {
+        //下发请求执行
         request.post(`/root-plan-assign/insert`, list).then(response => {
           this.searchRootPlan(this.pagination.currentPage);
           this.rootDistribute.id = "";
@@ -760,6 +741,7 @@ export default {
         });
       }
     },
+    //取消下发，清空所有数据，关闭弹出框
     cancelDistribute() {
       this.rootDistribute.id = "";
       this.rootDistribute.multipleSelection = [];
@@ -768,34 +750,23 @@ export default {
       this.rootDistribute.personName = "";
       this.rootPlanDistributeFlag = false;
     },
+    //取消下发详情，关闭弹出框
     cancelDistributeDetail() {
       this.detailDistribute.id = "";
       this.detailDistribute.tableData = [];
       this.detailDistributeFlag = false;
     },
-    //人员的勾选
+    //人员的勾选数据获取
     changeCheckBoxFun2(val) {
       this.rootDistribute.multipleSelection = val;
     },
-    handleNodeClick(data) {
-      request
-        .get(`${window.$config.HOST2}/user-product-line/find`, {
-          params: {
-            productLineId: data.id
-          }
-        })
-        .then(response => {
-          this.rootDistribute.tableData = response.result;
-          this.rootDistribute.tableDataA = response.result;
-        });
-    },
-
-    //系列、款式组、款式的选择改变
+    //系列、款式组、款式的选择改变，重新获取表格数据
     changeState() {
       this.searchRootPlan(1);
     },
-
+    //删除根计划
     deleteRootPlan() {
+      //判断是否勾选了任意计划
       if (this.multipleSelection.length < 1) {
         this.$message({
           message: "请选择计划进行删除！",
@@ -804,12 +775,14 @@ export default {
         return;
       } else {
         let flag = 0;
+        //判断是否创建者为本人，否则没有权限删除
         this.multipleSelection.forEach(element => {
           if (element.creatorId != this.meID) {
             flag++;
           }
         });
         if (flag === 0) {
+          //二次确认，并传输请求
           this.$confirm("是否删除选中根计划？", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
@@ -835,10 +808,13 @@ export default {
         }
       }
     },
+    //每页数据条数改变，重新获取数据
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       this.searchRootPlan(1);
     },
+
+    //页号改变，重新获取数据
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
       this.searchRootPlan(val);
@@ -862,11 +838,11 @@ export default {
       }
     },
 
-    //搜索
+    //根据条件搜索表格数据
     searchRootPlan(currentPageNum) {
       const that = this;
       let startDate, endDate;
-
+      //日期类型格式转换
       if (this.dateRange == "") {
         startDate = undefined;
         endDate = undefined;
@@ -906,7 +882,7 @@ export default {
     handleTabClick(tab, event) {
       console.log(tab, event);
     },
-
+    //保存模板（暂时弃用）
     saveModelClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
@@ -937,6 +913,7 @@ export default {
         }
       });
     },
+    //取消模板tab的显示，并清空数据（暂时弃用）
     cancelModelClick() {
       this.saveModel.id = "";
       this.saveModel.name = "";
@@ -946,7 +923,7 @@ export default {
       this.savePlanModelFlag = false;
       this.viewname = "first";
     },
-
+    //点击存为模板按钮，跳转到保存模板页面（暂时弃用）
     saveModelPanelOpen() {
       if (this.multipleSelection.length != 1) {
         this.$message({
@@ -965,7 +942,9 @@ export default {
     }
   },
 
+  // 计算属性
   computed: {
+    // keepalives用于辅助页面缓存，keep-alive标签根据该值判断要缓存的页面，keep-alive标签在layout.vue中
     keepAlives: {
       get() {
         return this.$store.getters["baseinfo/keepAliveOptions"];
@@ -992,6 +971,7 @@ export default {
 .el-table .cell {
   white-space: pre-line;
 }
+
 body .el-table th.gutter {
   display: table-cell !important;
 }
@@ -1000,10 +980,12 @@ body .el-table th.gutter {
 .title {
   min-width: 100px;
 }
+
 .containerHeaderDiv1 {
   display: flex;
   flex-direction: row;
   width: 100%;
+
   // background: black;
   .containerHeaderDiv2 {
     position: relative;
@@ -1013,10 +995,12 @@ body .el-table th.gutter {
     display: flex;
     flex-direction: row-reverse;
     min-width: 500px;
+
     .input {
       min-width: 200px;
       max-width: 400px;
     }
+
     .inputTag {
       font-size: 14px;
       line-height: 40px;
@@ -1031,6 +1015,7 @@ body .el-table th.gutter {
   flex-direction: row;
   min-width: 250px;
   max-width: 500px;
+
   .inputTag {
     font-size: 14px;
     line-height: 40px;
@@ -1042,6 +1027,7 @@ body .el-table th.gutter {
   margin-top: 20px;
   min-width: 250px;
   max-width: 500px;
+
   // background: black;
   .save {
     margin-left: 68%;
@@ -1052,6 +1038,7 @@ body .el-table th.gutter {
   display: flex;
   flex-direction: row;
   width: 100%;
+
   // background: black;
   .containerHeaderDiv2 {
     position: relative;
@@ -1061,10 +1048,12 @@ body .el-table th.gutter {
     display: flex;
     flex-direction: row-reverse;
     min-width: 500px;
+
     .input {
       min-width: 200px;
       max-width: 400px;
     }
+
     .inputTag {
       font-size: 14px;
       line-height: 40px;
@@ -1072,42 +1061,51 @@ body .el-table th.gutter {
     }
   }
 }
+
 .block {
   padding: 30px 0;
   text-align: center;
 }
+
 .Mtitle {
   align-content: center;
   margin-left: 45%;
   font-size: 2ch;
 }
+
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
   min-width: 1200px;
+
   .el-row {
     display: flex;
     flex-direction: row;
     align-items: center;
     margin-bottom: 20px;
+
     .MinW {
       min-width: 400px;
     }
+
     .bar {
       display: flex;
       flex-direction: row;
       align-items: center;
+
       .title {
         font-size: 14px;
         width: 90px;
 
         text-align: center;
       }
+
       .el-input {
         width: 70%;
         min-width: 80px;
         margin-left: 20px;
       }
+
       .el-select {
         width: 70%;
         min-width: 80px;
@@ -1116,29 +1114,35 @@ body .el-table th.gutter {
     }
   }
 }
+
 .box-card {
   margin: 20px 50px;
   padding: 0 20px;
   min-width: 1100px;
+
   .bar {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
+
     .title {
       font-size: 14px;
       min-width: 75px;
       text-align: center;
     }
+
     .el-input {
       width: 300px;
       min-width: 75px;
     }
+
     .el-select {
       width: 300px;
       min-width: 75px;
     }
   }
+
   .block {
     padding: 30px 0;
     text-align: center;
@@ -1150,20 +1154,24 @@ body .el-table th.gutter {
   flex-direction: row;
   align-items: center;
   width: 100%;
+
   .title {
     font-size: 14px;
     min-width: 75px;
     text-align: center;
   }
+
   .el-input {
     width: 300px;
     min-width: 75px;
   }
+
   .el-select {
     width: 300px;
     min-width: 75px;
   }
 }
+
 .block {
   padding: 30px 0;
   text-align: center;

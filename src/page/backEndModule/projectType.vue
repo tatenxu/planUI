@@ -232,25 +232,25 @@ export default {
   data() {
     return {
       //单选控制
-      templateRadioProjectType: "",
-      templateRadioOrder: "",
+      templateRadioProjectType: "",      // 项目类型单选控制
+      templateRadioOrder: "",      // 订单编号单选控制
       //项目类型部分参数
       projectType: {
-        tableData: [],
-        multipleSelection: [],
+        tableData: [],      // 项目类型表格数据
+        multipleSelection: [],      // 项目类型选中数据
         addProjectType: {
-          name: ""
+          name: ""      // 添加项目类型名称
         },
-        addProjectTypeRules: {
+        addProjectTypeRules: {      // 数据有效性控制 
           name: [
             { required: true, message: "请输入项目类型名称", trigger: "blur" }
           ]
         },
-        updateProjectType: {
-          name: "",
-          id: ""
+        updateProjectType: {      // 更新项目类型数据
+          name: "",      // 更新项目类型名称
+          id: ""      // 更新项目类型ID
         },
-        updateProjectTypeRules: {
+        updateProjectTypeRules: {      // 数据有效性控制
           name: [
             { required: true, message: "请输入项目类型名称", trigger: "blur" }
           ]
@@ -258,16 +258,16 @@ export default {
       },
       //订单阶段部分参数
       orderStage: {
-        tableData: [],
-        multipleSelection: [],
+        tableData: [],      // 订单编号表格数据
+        multipleSelection: [],      // 订单编号选中数据
         addOrder: {
-          name: "",
-          projectTypeId: "",
-          options: {
+          name: "",      // 添加订单编号名称
+          projectTypeId: "",      // 添加订单编号所属项目类型
+          options: {      // 下拉框数据
             projectTypeOptions: []
           }
         },
-        addOrderRules: {
+        addOrderRules: {      // 数据有效性验证
           name: [
             { required: true, message: "请输入订单阶段名称", trigger: "blur" }
           ],
@@ -276,14 +276,14 @@ export default {
           ]
         },
         updateOrder: {
-          id: "",
-          name: "",
-          projectTypeId: "",
-          options: {
+          id: "",      // 更新订单编号ID
+          name: "",      // 更新订单编号名称
+          projectTypeId: "",      // 更新订单编号所属项目类型
+          options: {      // 下拉框数据
             projectTypeOptions: []
           }
         },
-        updateOrderRules: {
+        updateOrderRules: {      // 更新数据有效性控制
           name: [
             { required: true, message: "请输入订单阶段名称", trigger: "blur" }
           ],
@@ -293,11 +293,11 @@ export default {
         }
       },
       //窗口控制参数
-      addProjectTypeShowFlag: false,
-      editProjectTypeShowFlag: false,
-      addOrderShowFlag: false,
-      editOrderShowFlag: false,
-      viewname: "first"
+      addProjectTypeShowFlag: false,      // 添加项目类型tab隐藏控制
+      editProjectTypeShowFlag: false,      // 更新项目类型tab隐藏控制
+      addOrderShowFlag: false,      // 添加订单编号tab隐藏控制
+      editOrderShowFlag: false,      // 更新订单编号tab隐藏控制
+      viewname: "first"      // 当前tab
     };
   },
 
@@ -310,7 +310,7 @@ export default {
     });
   },
   methods: {
-    //渲染表头
+    //渲染表头的样式
     renderHeader(h, { column }) {
       return h("div", {
         attrs: {
@@ -343,7 +343,7 @@ export default {
           response.result;
       });
     },
-
+    //element组件自带方法
     handleViewChange(tab, event) {
       console.log(tab, event);
     },
@@ -358,12 +358,13 @@ export default {
       this.orderStage.multipleSelection = val;
     },
 
-    //添加、修改、删除项目类型
+    //新增项目类型tab跳转，并清空tab数据
     handleAddProjectTypeClick() {
       this.addProjectTypeShowFlag = true;
       this.projectType.addProjectType.name = "";
       this.viewname = "second";
     },
+    //修改项目类型tab跳转，并清空tab数据
     handleEditProjectTypeClick() {
       if (this.projectType.multipleSelection.id === undefined) {
         this.$message({
@@ -378,6 +379,7 @@ export default {
         this.viewname = "third";
       }
     },
+    //删除项目类型tab跳转，并清空tab数据
     handleDeleteProjectTypeClick() {
       if (this.projectType.multipleSelection.id === undefined) {
         this.$message({
@@ -411,13 +413,14 @@ export default {
       }
     },
 
-    //添加、删除、修改订单阶段
+    //新增订单阶段tab跳转，并清空tab数据
     handleAddOrderClick() {
       this.addOrderShowFlag = true;
       this.orderStage.addOrder.name = "";
       this.orderStage.addOrder.projectTypeId = "";
       this.viewname = "fourth";
     },
+    //修改订单阶段tab跳转，并清空tab数据
     handleEditOrderClick() {
       if (this.orderStage.multipleSelection.id === undefined) {
         this.$message({
@@ -433,6 +436,7 @@ export default {
         this.viewname = "fifth";
       }
     },
+    //删除订单阶段tab跳转，并清空tab数据
     handleDeleteOrderClick() {
       if (this.orderStage.multipleSelection.id === undefined) {
         this.$message({

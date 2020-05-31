@@ -234,32 +234,32 @@ export default {
       //tab标签
       viewname: "first",
       //搜索部分参数
-      clientId: "",
-      brandId: "",
-      name: "",
-      dateRange: "",
-      clothesLevelName: "",
-      searchOptions: {
+      clientId: "",   // 客户名称ID
+      brandId: "",    // 品牌名称ID
+      name: "",       // 系列名称
+      dateRange: "",  // 起始时间
+      clothesLevelName: "",    // 服装层次
+      searchOptions: {  // 下拉框数据
         clientOptions: {},
         brandOptions: {},
         clothesLevelOptions: {}
       },
 
       //制定根计划部分参数
-      rootPlanMakeFlag: false,
-      rootPlanMake: {
-        planMakeStartEndDate: "",
-        inputPoint: "",
-        seriesId: "",
-        name: "",
-        dateType: "",
-        date: "",
-        options: {
+      rootPlanMakeFlag: false,   // 制定根计划Tab显示控制标签
+      rootPlanMake: {            // 制定根计划部分数据
+        planMakeStartEndDate: "",   // 制定开始结束时间
+        inputPoint: "",      // 投入点
+        seriesId: "",         // 系列ID
+        name: "",            // 计划名称
+        dateType: "",        // 日期类型
+        date: "",            // 日期
+        options: {  // 下拉框数据
           dateTypeOptions: {},
           inputPointOptions: {}
         }
       },
-      rootPlanMakeRules: {
+      rootPlanMakeRules: {      // 制定根计划必填、非必填控制
         planMakeStartEndDate: [
           { required: true, message: "请选择起止时间", trigger: "change" }
         ],
@@ -272,8 +272,9 @@ export default {
         inputPoint: [{ required: true, message: "请选择投入点", trigger: "change" }],
       },
 
-      //引用计划模板部分参数
-      quotePlanModel: false,
+      //引用计划模板部分参数   （暂时弃用)
+      quotePlanModel: false,     
+      //引用计划模板部分参数   （暂时弃用)
       quotePlan: {
         clientId: "",
         brandId: "",
@@ -286,8 +287,9 @@ export default {
         }
       },
 
-      //保存计划模板
+      //保存计划模板部分参数（暂时弃用）
       savePlanModel: false,
+      //引用计划模板部分参数   （暂时弃用)
       savePlanModelRules: {
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -297,6 +299,7 @@ export default {
         ],
         name: [{ required: true, message: "请输入模板名称", trigger: "blur" }]
       },
+      //引用计划模板部分参数   （暂时弃用)
       savePlan: {
         clientId: "",
         brandId: "",
@@ -310,9 +313,9 @@ export default {
       },
 
       //表格数据
-      tableData: [],
-      nameSuggestionsSeries: [],
-      multipleSelection: [],
+      tableData: [],      // 主页面表格显示数据
+      nameSuggestionsSeries: [],  //系列名称提醒数据
+      multipleSelection: [],    //表格数据选中数据
 
       pickerOptions0: {
         disabledDate: time => {
@@ -330,23 +333,23 @@ export default {
         }
       },
 
-      //页码部分
+      // pagination存储本页面页码控制的变量
       pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
-      }
+        currentPage: 1, // 当前页码
+        pageSizes: [10, 20, 30, 40, 50], // 页码选项中x条/页的选择项
+        pageSize: 10, // 当前页面展示多少条数据
+        total: 0 // 后台一共有多少条数据
+      },
     };
   },
   created: function () {
-    //获得品牌下拉框
+    //获得品牌下拉框数据
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
       this.quotePlan.options.brandOptions = response.result;
     });
 
-    //获取系列名称
+    //获取系列名称数据，用作输入提醒
     request.get(`/info/series/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestionsSeries.push({
@@ -355,7 +358,7 @@ export default {
       });
     });
 
-    //获得日期类型
+    //获得数据字典日期类型的数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -365,7 +368,7 @@ export default {
       .then(response => {
         this.rootPlanMake.options.dateTypeOptions = response.result;
       });
-    //获得投入点
+    //获得数据字典投入点的数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -376,7 +379,7 @@ export default {
         this.rootPlanMake.options.inputPointOptions = response.result;
       });
 
-    //获得服装层次下拉框
+    //获得数据字典服装层次的数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -387,14 +390,14 @@ export default {
         this.searchOptions.clothesLevelOptions = response.result;
       });
 
-    //获得客户名称下拉框
+    //获得客户名称下拉框的数据
     request.get(`/backstage/client/name`).then(response => {
       this.searchOptions.clientOptions = response.result;
       this.quotePlan.options.clientOptions = response.result;
       this.savePlan.options.clientOptions = response.result;
     });
 
-    //获得空集搜索列表
+    //获得初始页面数据
     request
       .get(`/info/series/find`, {
         params: {
@@ -410,7 +413,7 @@ export default {
       });
   },
   methods: {
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    //当搜索框的客户名称改变的时候，清空品牌数据，并重新获取品牌下拉框数据
     searchClientChanged() {
       request
         .get(`/backstage/brand/name`, {
@@ -443,29 +446,31 @@ export default {
     handleSelect(item) {
       console.log(item);
     },
-    //列表选中
+    // 列表选中数据获取
     changeCheckBoxFun(val) {
       this.multipleSelection = val;
     },
+    // 引用模板列表选中数据获取（暂时弃用）
     quoteChangeCheckBoxFun(val) {
       this.quotePlan.multipleSelection = val;
     },
     //制定根计划取消按钮
     rootPlanCancel() {
-      this.rootPlanMakeFlag = false;
+      this.rootPlanMakeFlag = false; //取消显示制定根计划的tab
       this.viewname = "first";
-      this.rootPlanMake.planMakeStartEndDate = "";
-      this.rootPlanMake.name = "";
-      this.rootPlanMake.dateType = "";
-      this.rootPlanMake.date = "";
-      this.rootPlanMake.seriesId = "";
+      this.rootPlanMake.planMakeStartEndDate = "";  //清空数据
+      this.rootPlanMake.name = "";       //清空数据
+      this.rootPlanMake.dateType = "";    //清空数据
+      this.rootPlanMake.date = "";    //清空数据
+      this.rootPlanMake.seriesId = "";    //清空数据
     },
     //提交制定根计划列表
     addRootPlan(formName) {
       const that = this;
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(valid => {  //表格数据有效性验证
         if (valid) {
           let startDate, endDate, date;
+          //日期格式转换
           if (this.rootPlanMake.planMakeStartEndDate == null) {
             startDate = undefined;
             endDate = undefined;
@@ -482,6 +487,7 @@ export default {
           } else {
             date = this.changeDate(this.rootPlanMake.date);
           }
+          //发送请求到后台
           request
             .post(`/root-plan/insert`, {
               name: this.rootPlanMake.name,
@@ -495,10 +501,10 @@ export default {
               endDate: endDate
             })
             .then(response => {
-              this.handleSearch(this.pagination.currentPage);
-              this.rootPlanMakeFlag = false;
-              this.viewname = "first";
-              this.rootPlanMake.planMakeStartEndDate = "";
+              this.handleSearch(this.pagination.currentPage);   //重新获取本页数据
+              this.rootPlanMakeFlag = false;                    //关闭制定根计划Tab显示
+              this.viewname = "first";                          //tab返回主页面 
+              this.rootPlanMake.planMakeStartEndDate = "";      //清空数据
               this.rootPlanMake.name = "";
               this.rootPlanMake.dateType = "";
               this.rootPlanMake.inputPoint = "";
@@ -514,7 +520,7 @@ export default {
       });
     },
 
-    //跳转到查看模板
+    //跳转到查看模板页面
     toPlanModelPage(row) {
       this.$router.push({
         name: "bePlanModelEdit",
@@ -527,11 +533,12 @@ export default {
         }
       });
     },
-
+    //修改每页条数的时候，重新获取表格信息
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       this.handleSearch(1);
     },
+    //修改页码的时候，重新获取表格信息
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
       this.handleSearch(val);
@@ -554,14 +561,15 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
-    //制定状态转变
+    //制定状态转变，重新获取表格信息
     planTypeSwitchChange() {
       this.handleSearch(1);
     },
-    //搜索
+    //根据条件搜索获取表格信息
     handleSearch(CurrentPageNum) {
       const that = this;
       let startDate, endDate;
+      //修改日期类型
       if (this.dateRange == null) {
         startDate = undefined;
         endDate = undefined;
@@ -590,7 +598,7 @@ export default {
           this.pagination.currentPage = CurrentPageNum;
         });
     },
-    //跳转制定根计划面板
+    //跳转制定根计划面板tab，首先将该行的一些信息赋值过去，然后清空制定根计划页面的数据，并跳转
     ToPlanForm(row) {
       this.rootPlanMake.seriesId = row.id;
       this.rootPlanMakeFlag = true;
@@ -605,7 +613,7 @@ export default {
     handleTabClick(tab, event) {
       console.log(tab, event);
     },
-    //引用模板提交
+    //引用模板提交（暂时弃用）
     quoteModel() {
       if (this.quotePlan.multipleSelection.length != 1) {
         this.$message({
@@ -632,7 +640,7 @@ export default {
           });
       }
     },
-
+    //取消引用计划模板 （暂时弃用）
     CancelModel() {
       this.quotePlanModel = false;
       this.viewname = "first";
@@ -641,7 +649,7 @@ export default {
       this.quotePlan.brandId = "";
       this.quotePlan.seriesId = "";
     },
-
+    //存为模板 （暂时弃用）
     saveModel() {
       request
         .post(`/plan-template/save`, {
@@ -657,6 +665,7 @@ export default {
           return;
         });
     },
+    // 取消存为模板
     saveModelCancel() {
       this.savePlan.clientId = "";
       this.savePlan.brandId = "";
@@ -667,7 +676,7 @@ export default {
       this.SavePlanModel = false;
       this.viewname = "first";
     },
-
+    // 跳转到引用模板tab （暂时弃用）
     toQuoteModel() {
       if (this.multipleSelection.length != 1) {
         this.$message({
@@ -696,7 +705,9 @@ export default {
     }
   },
 
+  // 计算属性
   computed: {
+    // keepalives用于辅助页面缓存，keep-alive标签根据该值判断要缓存的页面，keep-alive标签在layout.vue中
     keepAlives: {
       get() {
         return this.$store.getters["baseinfo/keepAliveOptions"];

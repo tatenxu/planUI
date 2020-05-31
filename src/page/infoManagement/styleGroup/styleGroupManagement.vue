@@ -184,29 +184,29 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      meID: "",
+      meID: "",   //此时登入者的ID，用于判断是否有修改，删除权限
       //搜索条件部分
-      clientId: "",
-      brandId: "",
-      seriesName: "",
-      name: "",
-      clothesLevelName: "",
-      dateRange: "",
-      searchOptions: {
+      clientId: "",  //客户名称
+      brandId: "",   //品牌名称
+      seriesName: "",   //系列名称
+      name: "",       //款式组名称
+      clothesLevelName: "",  //服装层次
+      dateRange: "",   //开始时间
+      searchOptions: {   //下拉框数据
         clientOptions: {},
         brandOptions: {},
         clothesLevelOptions: {}
       },
 
       //表格数据
-      tableData: [],
-      multipleSelection: [],
-      nameSuggestionsSeries: [],
-      nameSuggestionsStyleGroup: [],
-      //添加款式组
+      tableData: [],   
+      multipleSelection: [],         //表格选中
+      nameSuggestionsSeries: [],     //输入提醒——系列
+      nameSuggestionsStyleGroup: [], //输入提醒——款式组
 
-      addPanelFlag: false,
-      addForm: {
+      //添加款式组
+      addPanelFlag: false,      //为true时唤出弹出框
+      addForm: {      
         clientId: "",
         brandId: "",
         seriesId: "",
@@ -217,7 +217,7 @@ export default {
           seriesOptions: {}
         }
       },
-      addRules: {
+      addRules: { //此处为控制添加款式组时的必填/非必填
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -244,7 +244,7 @@ export default {
           seriesOptions: {}
         }
       },
-      updateRules: {
+      updateRules: {  //此处为控制修改款式组时的必填/非必填
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -331,7 +331,7 @@ export default {
     });
   },
   methods: {
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    //当搜索框的客户名称改变的时候，清空品牌选项，并重新获取品牌下拉框数据
     searchClientChanged() {
       request
         .get(`/backstage/brand/name`, {
@@ -345,7 +345,7 @@ export default {
           this.brandId = "";
         });
     },
-    //系列名称搜索的输入建议
+    //款式组名称搜索的输入建议(参考element组件)
     querySearchStyleGroup(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsStyleGroup;
       var results = queryString
@@ -353,6 +353,7 @@ export default {
         : nameSuggestions;
       cb(results);
     },
+    //系列名称搜索的输入建议(参考element组件)
     querySearchSeries(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsSeries;
       var results = queryString
@@ -360,6 +361,7 @@ export default {
         : nameSuggestions;
       cb(results);
     },
+    //搜索的输入建议(参考element组件)
     createFilter(queryString) {
       return restaurant => {
         return (
@@ -372,17 +374,18 @@ export default {
       console.log(item);
     },
 
-    //页码部分
+    // 每页条数改变时触发函数
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       this.handleSearch(val);
     },
+    // 当前页码改变时触发函数
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
       this.handleSearch(1);
     },
 
-    //品牌名称选择后触发品牌的get请求
+    //更新款式组的时候选择品牌，自动清空系列选项，并重新获取系列下拉框数据
     updateBrandChanged() {
       this.updateForm.seriesId = "";
       this.updateForm.options.seriesOptions = [];
@@ -400,7 +403,7 @@ export default {
           this.updateForm.options.seriesOptions = response.result;
         });
     },
-    //客户名称选择后触发品牌的get请求
+    //当更新弹出框的客户名称改变的时候重新获取品牌下拉框数据，并清空品牌和系列数据
     updateClientChanged() {
       this.updateForm.brandId = "";
       this.updateForm.seriesId = "";
@@ -421,7 +424,7 @@ export default {
         });
     },
 
-    //品牌名称选择后触发品牌的get请求
+    //添加款式组的时候选择品牌，自动清空系列选项，并重新获取系列下拉框数据
     addBrandChanged() {
       this.addForm.seriesId = "";
       this.addForm.options.seriesOptions = [];
@@ -437,7 +440,7 @@ export default {
           this.addForm.options.seriesOptions = response.result;
         });
     },
-    //客户名称选择后触发品牌的get请求
+    //当添加弹出框的客户名称改变的时候重新获取品牌下拉框数据，并清空品牌和系列数据
     addClientChanged() {
       this.addForm.brandId = "";
       this.addForm.seriesId = "";
@@ -475,10 +478,11 @@ export default {
     changeCheckBoxFun(val) {
       this.multipleSelection = val;
     },
-    // 搜索按钮点击
+    // 搜索按钮点击，进行搜索
     handleSearch(currentPageNum) {
       let startDate;
       let endDate;
+      //首先判断日期，并修改格式
       if (this.dateRange == undefined) {
         startDate = undefined;
         endDate = undefined;
@@ -508,7 +512,7 @@ export default {
         });
     },
 
-    // 添加款式组
+    // 添加款式组按钮点击，唤出弹出框，并清空弹出框数据
     addStyleGroup() {
       this.addForm.clientId = "";
       this.addForm.brandId = "";
@@ -522,6 +526,7 @@ export default {
     // 删除款式组
     deleteStyleGroup() {
       const that = this;
+      //首先判断勾选的条目是否大于0，大于0才进行删除
       if (that.multipleSelection.length === 0) {
         this.$message({
           message: "请选择要删除的款式组",
@@ -529,6 +534,7 @@ export default {
         });
       } else if (that.multipleSelection.length >= 1) {
         let flag = 0;
+        //判断勾选的条目是否有权限删除，即创建者是否是操作者
         this.multipleSelection.forEach(element => {
           if (element.creatorId != this.meID) flag++;
         });
@@ -550,6 +556,7 @@ export default {
                   params: { id: element.id }
                 })
                 .then(response => {
+                  //删除之后重新获取信息
                   this.handleSearch(1);
                 });
             });
@@ -566,23 +573,24 @@ export default {
     // 解绑款式组
     unbindStyleGroup() {
       const that = this;
+      //判断是否勾选了款式组
       if (that.multipleSelection.length === 0) {
         that.$message({
           message: "请选择要解绑的款式组",
           type: "warning"
         });
+        //只有勾选款式组的数目为1的时候，才能够解绑款式组
       } else if (that.multipleSelection.length == 1) {
         var styleInfoStr = "";
-        //根据款式组id获取款式
         request
           .get(`/info/style-group-relation/find`, {
-            params: { styleGroupId: that.multipleSelection[0].id }
+            params: { styleGroupId: that.multipleSelection[0].id }  //传入款式组ID
           })
           .then(response => {
             response.result.forEach(element => {
-              styleInfoStr += element + " ";
+              styleInfoStr += element + " ";       //获取的是该款式组绑定的款式，并显示
             });
-            if (styleInfoStr == "") {
+            if (styleInfoStr == "") {   //如果为空，说明款式组未绑定任何款式
               that.$message.error("该款式组未绑定款式！");
             } else {
               that
@@ -591,14 +599,14 @@ export default {
                   cancelButtonText: "取消",
                   type: "warning"
                 })
-                .then(() => {
+                .then(() => {   //点击确认后，开始解绑
                   that.multipleSelection.forEach(element => {
                     request
                       .delete(`/info/style-group-relation/unbind`, {
                         params: { id: element.id }
                       })
                       .then(response => {
-                        this.handleSearch(this.pagination.currentPage);
+                        this.handleSearch(this.pagination.currentPage);  //解绑成功，重新获取当前页面的信息
                       });
                   });
                 })
@@ -615,7 +623,7 @@ export default {
           });
       }
     },
-    // 表格中的修改
+    // 表格中的修改按钮点击，传入点击行的数据并获取品牌、系列下拉框数据
     updateStyleGroup(row) {
       this.updateForm.id = row.id;
       this.updateForm.clientId = row.clientId;
@@ -641,7 +649,7 @@ export default {
           this.updateForm.options.seriesOptions = response.result;
         });
     },
-    // 表格中的删除
+    // 表格中的删除按钮点击
     daleteStyleGroup(row) {
       const that = this;
       this.$confirm("是否确认删除该款式组？", "提示", {
@@ -665,7 +673,7 @@ export default {
           });
         });
     },
-    // 修改Form提交
+    // 提交款式组修改的请求
     updateSubmit(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
@@ -688,7 +696,7 @@ export default {
         }
       });
     },
-    // 添加Form提交
+    // 提交款式组添加的请求
     addSubmit(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
@@ -710,7 +718,7 @@ export default {
         }
       });
     },
-    // 取消按钮点击
+    // 添加款式组取消按钮点击，清空所有数据
     addCancel() {
       this.addForm.clientId = "";
       this.addForm.brandId = "";
@@ -720,6 +728,7 @@ export default {
       this.addForm.options.seriesOptions = {};
       this.addPanelFlag = false;
     },
+    // 修改款式组取消按钮点击，清空所有数据
     updateCancel() {
       this.updatePanelFlag = false;
     }

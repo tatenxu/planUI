@@ -324,45 +324,45 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      meID: "",
+      meID: "",  //此时登入者的ID，用于判断是否有修改，删除权限
       //搜索条件部分
-      clientId: "",
-      brandId: "",
-      name: "",
-      nameSuggestions: [],
-      clothesLevelName: "",
-      dateRange: "",
-      searchOptions: {
+      clientId: "",     //客户名称
+      brandId: "",      //品牌名称
+      name: "",         //系列名称
+      nameSuggestions: [],    //系列名称下的待选列表数据
+      clothesLevelName: "",    //服装层次
+      dateRange: "",      //添加时间
+      searchOptions: {   //三个下拉框的数据
         clientOption: {},
         brandIdOptions: {},
         clothesLevelName: {}
       },
 
       //查看和修改区别标记字段
-      detailFlag: false,
+      detailFlag: false,     //为true时唤出弹出框
 
       //表格数据
-      tableData: [],
-      multipleSelection: [],
+      tableData: [],          
+      multipleSelection: [],   //表格选中数据
 
       //添加系列部分
-      addPanelFlag: false,
+      addPanelFlag: false,  
       addForm: {
-        brandName: "",
+        brandName: "", 
         clientId: "",
         brandId: "",
         name: "",
         clothesLevelName: "",
-        rangeCode: "",
-        seriesCode: "",
-        systemCode: "",
-        projectType: "",
-        orderStage: "",
-        predictStyleQuantity: "",
-        predictPieceQuantity: "",
-        informalStyleQuantity: "",
-        informalPieceQuantity: "",
-        note: "",
+        rangeCode: "",    
+        seriesCode: "",   //系列编码
+        systemCode: "",   //系统编码
+        projectType: "",   //项目类型
+        orderStage: "",   //订单阶段
+        predictStyleQuantity: "",  //预测款数
+        predictPieceQuantity: "",   //预测件数
+        informalStyleQuantity: "",  //非正式款数
+        informalPieceQuantity: "",  //非正式件数
+        note: "",    //备注
         options: {
           clientOptions: {},
           brandOptions: {},
@@ -374,7 +374,7 @@ export default {
           seriesCodeOptions: []
         }
       },
-      addRules: {
+      addRules: {       //此处为控制添加系列时的必填/非必填
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -396,7 +396,7 @@ export default {
         orderStage: [
           { required: true, message: "请选择订单阶段", trigger: "change" }
         ],
-        predictStyleQuantity: [
+        predictStyleQuantity: [  //此处为对预测款数、预测件数 数字的判断
           {
             required: true,
             message: "请输入大于0的数字！",
@@ -404,7 +404,7 @@ export default {
           },
           { type: "number", message: "请输入大于0的数字！" }
         ],
-        predictPieceQuantity: [
+        predictPieceQuantity: [  //此处为对预测款数、预测件数 数字的判断
           {
             required: true,
             message: "请输入大于0的数字！",
@@ -412,7 +412,7 @@ export default {
           },
           { type: "number", message: "请输入大于0的数字！" }
         ],
-        informalStyleQuantity: [
+        informalStyleQuantity: [   //此处为费正式款数，非正式件数数字的判断
           {
             required: false,
             trigger: "change",
@@ -431,7 +431,7 @@ export default {
             }
           }
         ],
-        informalPieceQuantity: [
+        informalPieceQuantity: [  //此处为费正式款数，非正式件数数字的判断
           {
             required: false,
             trigger: "change",
@@ -454,7 +454,7 @@ export default {
 
       //修改系列部分
       updatePanelFlag: false,
-      updateForm: {
+      updateForm: {   //更新系列的数据部分
         id: "",
         clientId: "",
         addMode: "",
@@ -496,7 +496,7 @@ export default {
           ]
         }
       },
-      updateRules: {
+      updateRules: {    //必填、非必填的判断
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -518,7 +518,7 @@ export default {
         orderStage: [
           { required: true, message: "请选择订单阶段", trigger: "change" }
         ],
-        predictStyleQuantity: [
+        predictStyleQuantity: [//此处为对预测款数、预测件数 数字的判断
           {
             required: true,
             message: "请输入大于0的数字！",
@@ -526,7 +526,7 @@ export default {
           },
           { type: "number", message: "请输入大于0的数字！" }
         ],
-        predictPieceQuantity: [
+        predictPieceQuantity: [//此处为对预测款数、预测件数 数字的判断
           {
             required: true,
             message: "请输入大于0的数字！",
@@ -534,7 +534,7 @@ export default {
           },
           { type: "number", message: "请输入大于0的数字！" }
         ],
-        informalStyleQuantity: [
+        informalStyleQuantity: [//此处为费正式款数，非正式件数数字的判断
           {
             required: false,
             validator: (rule, value, callback) => {
@@ -554,7 +554,7 @@ export default {
             trigger: "change"
           }
         ],
-        informalPieceQuantity: [
+        informalPieceQuantity: [//此处为费正式款数，非正式件数数字的判断
           {
             required: false,
             validator: (rule, value, callback) => {
@@ -587,11 +587,11 @@ export default {
 
   created: function () {
     var that = this;
-    //确认自己的信息
+    //确认自己的信息，获得修改，删除的权限
     request.get(`/me`).then(response => {
       this.meID = response.result.id;
-    });
-    //获得季节
+    }); 
+    //获得季节下拉框的数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -619,12 +619,12 @@ export default {
         this.addForm.options.seriesCodeOptions = list;
 
       });
-    //获得品牌名字
+    //获得品牌下拉框的数据
     request.get(`/backstage/brand/name`).then(response => {
       this.searchOptions.brandOptions = response.result;
     });
 
-    //获取波段编码
+    //获取波段编码下拉框的数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -634,6 +634,7 @@ export default {
       .then(response => {
         let list = [];
         let i = 1;
+        //由于要同时在下拉框中显示name和code因此循环两次重新组成数据
         response.result.forEach(ele => {
           list.push({
             id: i,
@@ -652,20 +653,20 @@ export default {
         this.updateForm.options.rangeCodeOptions = list;
       });
 
-    //获得项目类型
+    //获得项目类型下拉框
     request.get(`/backstage/project-type/find`).then(response => {
       this.addForm.options.projectTypeOptions = response.result;
       this.updateForm.options.projectTypeOptions = response.result;
     });
 
-    //获得顾客名称
+    //获得客户名称下拉框
     request.get(`/backstage/client/name`).then(response => {
       this.searchOptions.clientOption = response.result;
       this.addForm.options.clientOption = response.result;
       this.updateForm.options.clientOption = response.result;
     });
 
-    //获得全部系列
+    //获得全部系列，以推荐搜索
     request.get(`/info/series/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestions.push({
@@ -674,7 +675,7 @@ export default {
       });
     });
 
-    //获得服装层次
+    //获得服装层次下拉框
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -687,7 +688,7 @@ export default {
         this.updateForm.options.clothesLevelOptions = response.result;
       });
 
-    //获得空搜索集
+    //获得页面初始信息
     request
       .get(`/info/series/find`, {
         params: {
@@ -703,7 +704,7 @@ export default {
   },
 
   methods: {
-    //拆分brand
+    //添加系列的时候选择品牌，则自动获得品牌名称数据，并判断是否可以组合成系列名称
     addBrandChange() {
       this.addForm.options.brandOptions.forEach(ele => {
         if (ele.id === this.addForm.brandId) {
@@ -713,6 +714,7 @@ export default {
         }
       })
     },
+    //更新系列的时候选择品牌，则自动获得品牌名称数据，并判断是否可以组合成系列名称
     updateBrandChange() {
       this.updateForm.options.brandOptions.forEach(ele => {
         if (ele.id === this.updateForm.brandId) {
@@ -722,7 +724,7 @@ export default {
         }
       })
     },
-    //组合形成系列名称
+    //添加时组合形成系列名称
     getAddName() {
       if (this.addForm.brandId > 0 && this.addForm.orderStage != "" && this.addForm.rangeCode != "") {
         this.addForm.name = this.addForm.brandName + this.addForm.rangeCode + this.addForm.orderStage;
@@ -730,7 +732,7 @@ export default {
         this.addForm.name = "";
       }
     },
-    //组合形成系列名称
+    //更新时组合形成系列名称
     getUpdateName() {
       if (this.updateForm.brandId > 0 && this.updateForm.orderStage != "" && this.updateForm.rangeCode != "") {
         this.updateForm.name = this.updateForm.brandName + this.updateForm.rangeCode + this.updateForm.orderStage;
@@ -738,7 +740,7 @@ export default {
         this.updateForm.name = "";
       }
     },
-    //添加弹窗中的项目类型变化
+    //添加弹窗中的项目类型变化，则获取对应的订单阶段
     addProjectTypeChanged() {
       this.addForm.orderStage = "";
       request
@@ -751,7 +753,7 @@ export default {
           this.addForm.options.orderStageOptions = response.result;
         });
     },
-    //修改弹窗中的项目类型变化
+    //修改弹窗中的项目类型变化，则获取对应的订单阶段
     updateProjectTypeChanged() {
       this.updateForm.orderStage = "";
       request
@@ -764,11 +766,13 @@ export default {
           this.updateForm.options.orderStageOptions = response.result;
         });
     },
+
+    //打印系列名称
     handleSelect(item) {
       console.log(item);
     },
 
-    //系列名称搜索的输入建议
+    //系列名称搜索的输入建议(参考element组件)
     querySearch(queryString, cb) {
       var nameSuggestions = this.nameSuggestions;
       var results = queryString
@@ -776,6 +780,7 @@ export default {
         : nameSuggestions;
       cb(results);
     },
+    //系列名称搜索的输入建议(参考element组件)
     createFilter(queryString) {
       return restaurant => {
         return (
@@ -785,7 +790,7 @@ export default {
       };
     },
 
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    //当搜索框的客户名称改变的时候重新获取品牌下拉框数据，并清空品牌数据
     searchClientChanged() {
       request
         .get(`/backstage/brand/name`, {
@@ -795,11 +800,12 @@ export default {
         })
         .then(response => {
           this.searchOptions.brandOptions = response.result;
+          //由于组件的渲染原因，必须修改数值才能重新渲染
           this.brandId = 1;
           this.brandId = "";
         });
     },
-    //当弹出框的客户名称改变的时候GET弹出框的品牌信息
+    //当添加弹出框的客户名称改变的时候重新获取品牌下拉框数据，并清空品牌数据
     addClientChanged() {
       this.addForm.brandId = "";
       request
@@ -812,6 +818,7 @@ export default {
           this.addForm.options.brandOptions = response.result;
         });
     },
+    //当更新弹出框的客户名称改变的时候重新获取品牌下拉框数据，并清空品牌数据
     updateClientChanged() {
       this.updateForm.brandId = "";
       request
@@ -856,10 +863,11 @@ export default {
     changeCheckBoxFun(val) {
       this.multipleSelection = val;
     },
-
+    //搜索数据
     handleSearch(currentPageNum) {
       let startDate;
       let endDate;
+      //转换数据格式
       if (this.dateRange == undefined) {
         startDate = undefined;
         endDate = undefined;
@@ -884,12 +892,12 @@ export default {
         })
         .then(response => {
           this.tableData = response.result;
-          this.pagination.total = response.total;
-          this.pagination.currentPage = currentPageNum;
+          this.pagination.total = response.total;  //获取页码的总条数
+          this.pagination.currentPage = currentPageNum;  //获取当前页数
         });
     },
 
-    // 添加系列
+    // 添加系列，点击的时候先清空添加弹出框所有数据
     addPanel() {
       this.addForm.clientId = "";
       this.addForm.brandId = "";
@@ -910,27 +918,27 @@ export default {
       this.addPanelFlag = true;
     },
 
-    // 批量导入
+    // 批量导入页面的跳转
     importRange() {
       this.$router.push({
         name: `rangeImport`
       });
     },
-    // 删除系列
+    // 批量删除系列
     deleteBatchSeries() {
       const that = this;
-      if (that.multipleSelection.length === 0) {
+      if (that.multipleSelection.length === 0) {  //判断：若没有选择任何条目，则弹出
         this.$message({
           message: "请选择要删除的系列!",
           type: "warning"
         });
-      } else if (that.multipleSelection.length >= 1) {
+      } else if (that.multipleSelection.length >= 1) {  //判断：条目大于等于1，可以删除
         let flag = 0;
-        this.multipleSelection.forEach(element => {
+        this.multipleSelection.forEach(element => {   //判断：是否每个条目的创建者都是删除的操作者
           if (element.creatorId != this.meID) flag++;
         });
-        if (flag === 0) {
-          this.$confirm(
+        if (flag === 0) {  //只有所有条目的创建者等于操作者的时候，才可以删除
+          this.$confirm(   //弹出确认删除的信息
             "删除所选的" +
             that.multipleSelection.length +
             "条系列信息, 是否继续?",
@@ -942,7 +950,7 @@ export default {
             }
           )
             .then(() => {
-              this.multipleSelection.forEach(element => {
+              this.multipleSelection.forEach(element => { //开始删除，一条一条的遍历并删除
                 request
                   .delete(`/info/series/delete`, {
                     params: {
@@ -954,13 +962,13 @@ export default {
                   });
               });
             })
-            .catch(() => {
+            .catch(() => {    //弹出确认信息的时候，点击了取消
               this.$message({
                 type: "info",
                 message: "已取消删除"
               });
             });
-        } else {
+        } else { 
           this.$message({
             message: "您没有权限删除其中的某些条目！",
             type: "warning"
@@ -987,7 +995,6 @@ export default {
             })
             .then(response => {
               this.updateForm.id = row.id;
-              // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
               this.updateForm.clientId = parseInt(row.clientId);
               this.updateForm.brandId = parseInt(row.brandId);
               this.updateForm.name = row.name;
@@ -1011,7 +1018,7 @@ export default {
         });
     },
 
-    // 显示详情系列的面板
+    // 显示详情系列的面板，传ID获得详情
     detailPanel(row) {
       request
         .get(`/backstage/brand/name`, {
@@ -1022,7 +1029,6 @@ export default {
         .then(response => {
           this.updateForm.options.brandOptions = response.result;
           this.updateForm.id = row.id;
-          // TODO: 后台传回的这两个参数是String类型的会导致数据绑定失败
           this.updateForm.clientId = parseInt(row.clientId);
           this.updateForm.brandId = parseInt(row.brandId);
           this.updateForm.name = row.name;
@@ -1077,6 +1083,7 @@ export default {
       const that = this;
       this.$refs[form].validate(valid => {
         if (valid) {
+          //必填项在这一步就已经判断，只有非必填项需要 : ? 语句
           request
             .post(`/info/series/insert`, {
               name: this.addForm.name,
@@ -1100,6 +1107,7 @@ export default {
               note: this.addForm.note === "" ? undefined : this.addForm.note,
             })
             .then(response => {
+              //添加完成后重新获取主页面数据，并关闭弹出框
               this.handleSearch(this.pagination.currentPage);
               this.addPanelFlag = false;
             });
@@ -1141,6 +1149,7 @@ export default {
                 this.updateForm.note === "" ? undefined : this.updateForm.note,
             })
             .then(response => {
+              //修改完成后重新获取主页面数据，并关闭弹出框
               this.handleSearch(this.pagination.currentPage);
               this.updatePanelFlag = false;
             });
@@ -1153,7 +1162,7 @@ export default {
       });
     },
 
-    // 取消按钮点击
+    // 取消按钮点击，清空添加弹出框所有数据
     addCancel() {
       this.addForm.clientId = "";
       this.addForm.brandId = "";
@@ -1173,7 +1182,7 @@ export default {
       this.addForm.options.brandOptions = {};
       this.addPanelFlag = false;
     },
-
+    // 取消按钮点击，清空更新弹出框所有数据
     updateCancel() {
       this.updateForm.id = "";
       this.updateForm.clientId = "";

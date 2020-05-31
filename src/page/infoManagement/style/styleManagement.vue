@@ -237,7 +237,7 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      meID: "",
+      meID: "",   //此时登入者的ID，用于判断是否有修改，删除权限
       //搜索部分参数
       clientId: "",
       brandId: "",
@@ -250,14 +250,14 @@ export default {
       },
 
       //表格数据
-      tableData: [],
-      multipleSelection: [],
-      nameSuggestionsStyle: [],
-      nameSuggestionsSeries: [],
+      tableData: [],              //
+      multipleSelection: [],      //存储表格选中数据
+      nameSuggestionsStyle: [],   //款式自动补全提醒 
+      nameSuggestionsSeries: [],  //系列自动补全提醒
 
       //添加款式数据
-      addPanelFlag: false,
-      addForm: {
+      addPanelFlag: false, //为true时唤出弹出框
+      addForm: {           //添加所需数据
         series: [],
         clientId: "",
         brandId: "",
@@ -272,7 +272,7 @@ export default {
           seriesOptions: {}
         }
       },
-      addRules: {
+      addRules: {          //添加数据必填、非必填规则
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -308,9 +308,9 @@ export default {
       },
 
       //修改款式数据
-      updatePanelFlag: false,
-      updateForm: {
-        id: "",
+      updatePanelFlag: false, //为true时唤出弹出框
+      updateForm: {           //更新所需数据
+        id: "",   //记录修改的id
         series: [],
         clientId: "",
         brandId: "",
@@ -325,7 +325,7 @@ export default {
           seriesOptions: {}
         }
       },
-      updateRules: {
+      updateRules: {          //更新数据必填、非必填规则
         clientId: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -361,19 +361,19 @@ export default {
       },
 
       //绑定款式组
-      bindPanelFlag: false,
-      bindStyle: {
+      bindPanelFlag: false, //为true时唤出弹出框
+      bindStyle: {        //绑定款式组所需数据
         styleGroupId: "",
         options: {
           styleGroupOptions: {}
         }
       },
-      bindRules: {
+      bindRules: {        //绑定款式组必填、非必填规则
         styleGroupOptions: [
           { required: true, message: "请选择款式组", trigger: "change" }
         ]
       },
-      styleGroupBindList: [],
+      styleGroupBindList: [],      //用于接口传参
 
       //页码部分
       pagination: {
@@ -385,11 +385,11 @@ export default {
     };
   },
   created: function () {
-    //确认自己的信息
+    //确认自己的信息，获得修改，删除的权限
     request.get(`/me`).then(response => {
       this.meID = response.result.id;
     });
-    //得到品牌名称
+    //获得品牌下拉框的数据
     request
       .get(`/backstage/brand/name`, {
         params: {
@@ -400,14 +400,14 @@ export default {
         this.searchOptions.brandOptions = response.result;
       });
 
-    //得到客户名称
+    //获得客户名称下拉框
     request.get(`/backstage/client/name`).then(response => {
       this.searchOptions.clientOptions = response.result;
       this.addForm.options.clientOptions = response.result;
       this.updateForm.options.clientOptions = response.result;
     });
 
-    //获取系列名称
+    //获得全部系列，以推荐搜索
     request.get(`/info/series/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestionsSeries.push({
@@ -416,7 +416,7 @@ export default {
       });
     });
 
-    //得到搜索信息
+    //获得页面初始信息
     request
       .get(`/info/style/find`, {
         params: {
@@ -435,7 +435,7 @@ export default {
         this.pagination.currentPageNum = 1;
       });
 
-    //得到搜索信息
+    //获得全部款式，以推荐搜索
     request.get(`/info/style/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestionsStyle.push({
@@ -446,7 +446,7 @@ export default {
   },
 
   methods: {
-    //添加系列的时候选择了系列
+    //添加系列的时候选择了系列，则拆分3部分，自动填充项目类型和阶段
     addSeriesChange() {
       if (this.addForm.series.length > 0) {
         this.addForm.seriesId = this.addForm.series[0];
@@ -454,7 +454,7 @@ export default {
         this.addForm.orderStage = this.addForm.series[2];
       }
     },
-    //修改系列的时候选择了系列
+    //修改系列的时候选择了系列，则拆分3部分，自动填充项目类型和阶段
     updateSeriesChange() {
       if (this.updateForm.series.length > 0) {
         this.updateForm.seriesId = this.updateForm.series[0];
@@ -462,7 +462,7 @@ export default {
         this.updateForm.orderStage = this.updateForm.series[2];
       }
     },
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    //当搜索条目的客户名称改变的时候重新获取品牌下拉框数据，并清空品牌数据
     searchClientChanged() {
       request
         .get(`/backstage/brand/name`, {
@@ -476,7 +476,7 @@ export default {
           this.brandId = "";
         });
     },
-    //系列名称搜索的输入建议
+    //款式名称搜索的输入建议(参考element组件)
     querySearchStyle(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsStyle;
       var results = queryString
@@ -484,6 +484,7 @@ export default {
         : nameSuggestions;
       cb(results);
     },
+    //系列名称搜索的输入建议(参考element组件)
     querySearchSeries(queryString, cb) {
       var nameSuggestions = this.nameSuggestionsSeries;
       var results = queryString
@@ -499,12 +500,15 @@ export default {
         );
       };
     },
+    //打印
     handleSelect(item) {
       console.log(item);
     },
+    //确认绑定款式组
     bindSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          //根据接口组合数据
           this.multipleSelection.forEach(element => {
             this.styleGroupBindList.push({
               styleGroupId: this.bindStyle.styleGroupId,
@@ -515,6 +519,7 @@ export default {
             //此处的接口为GET订单款号
             .post(`/info/style-group-relation/bind`, this.styleGroupBindList)
             .then(response => {
+              //绑定成功后重新获取主页面条目，并关闭弹出框，清空数据
               this.handleSearch(this.pagination.currentPage);
               this.bindPanelFlag = false;
               this.bindStyle.styleGroupId = "";
@@ -528,10 +533,12 @@ export default {
         }
       });
     },
+    //页码部分控制，详见ele-pagination
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       this.handleSearch(1);
     },
+    //页码部分控制，详见ele-pagination
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
       this.handleSearch(val);
@@ -650,7 +657,7 @@ export default {
     changeCheckBoxFun(val) {
       this.multipleSelection = val;
     },
-    // 添加款号
+    // 添加款号，清空数据，打开弹出框
     addStyle() {
       this.addForm.series = [];
       this.addForm.projectType = "";
@@ -664,7 +671,7 @@ export default {
       this.addForm.options.seriesOptions = {};
       this.addPanelFlag = true;
     },
-    // 导入款号
+    // 跳转到导入款号页面
     importStyle() {
       const that = this;
       that.$router.push({
@@ -765,7 +772,7 @@ export default {
         }
       }
     },
-    // 表格中的修改
+    // 点击表格中的修改后，唤出修改弹窗，并传输数据和各种下拉框
     styleChanged(row) {
       //得到系列名称
       request
@@ -817,6 +824,7 @@ export default {
           });
       });
     },
+    //点击添加款式弹出框中的确认按钮操作
     addSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -843,7 +851,7 @@ export default {
         }
       });
     },
-
+    //提交表格中的修改
     updateSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -873,12 +881,13 @@ export default {
         }
       });
     },
-    // 取消按钮点击
+    // 取消绑定点击
     bindCancel() {
       this.bindPanelFlag = false;
       this.bindStyle.styleGroupId = "";
       this.styleGroupBindList = [];
     },
+    // 取消添加点击
     addCancel() {
       this.addForm.clientId = "";
       this.addForm.brandId = "";
@@ -889,6 +898,7 @@ export default {
       this.addForm.options.seriesOptions = {};
       this.addPanelFlag = false;
     },
+    // 取消更新点击
     updateCancel() {
       this.updateForm.id = "";
       this.updateForm.clientId = "";

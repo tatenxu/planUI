@@ -108,19 +108,19 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      tableData: [],
-      multipleSelection: [],
-      //添加品牌参数列表
-      addBrandForm: {
-        abbreviation: "",
-        clientId: "",
-        description: "",
-        name: "",
+      tableData: [],      // 表格数据
+      multipleSelection: [],      // 表格选中数据
+      // 添加品牌参数列表
+      addBrandForm: {      
+        abbreviation: "",      // 品牌简称
+        clientId: "",      // 客户名称
+        description: "",      // 品牌描述
+        name: "",      // 品牌名称
         options: {
-          clientOptions: []
+          clientOptions: []      // 客户名称下拉框数据
         }
       },
-      addBrandRules: {
+      addBrandRules: {      // 数据有效性验证控制
         description: [
           { required: false, message: "请输入品牌描述", trigger: "blur" }
         ],
@@ -130,18 +130,17 @@ export default {
         ],
         clientId: [{ required: true, message: "请选择客户", trigger: "change" }]
       },
-      //修改客户参数列表
-      updateBrandForm: {
-        id: "",
-        abbreviation: "",
-        clientId: "",
-        description: "",
-        name: "",
-        options: {
+      updateBrandForm: {      // 修改品牌的数据
+        id: "",      // 修改品牌的Id
+        abbreviation: "",      // 修改品牌的简称
+        clientId: "",      // 修改品牌的客户Id
+        description: "",      // 修改品牌的描述
+        name: "",      // 修改品牌的名称
+        options: {      // 下拉框数据
           clientOptions: []
         }
       },
-      updateBrandRules: {
+      updateBrandRules: {      // 数据有效性验证控制
         description: [
           { required: false, message: "请输入品牌描述", trigger: "blur" }
         ],
@@ -152,21 +151,21 @@ export default {
         clientId: [{ required: true, message: "请选择客户", trigger: "change" }]
       },
       //窗口控制
-      viewname: "first",
-      addCardShowFlag: false,
-      editCardShowFlag: false,
+      viewname: "first",      // 目前tab视窗
+      addCardShowFlag: false,      // 添加tab隐藏标签，true时隐藏
+      editCardShowFlag: false,      // 编辑tab隐藏标签，true时隐藏
       //搜索框
-      searchInput: ""
+      searchInput: ""      // 搜索品牌的名称input数据
     };
   },
   created: function () {
-    //加载客户选择框
+    // 客户下拉框数据
     request.get(`/backstage/client/find`).then(response => {
       this.addBrandForm.options.clientOptions = response.result;
       this.updateBrandForm.options.clientOptions = response.result;
     });
 
-    //加载所有品牌
+    // 品牌下拉框数据
     request.get(`/backstage/brand/find`).then(response => {
       this.tableData = response.result;
     });
@@ -175,11 +174,11 @@ export default {
     handleTabClick(tab, event) {
       console.log(tab, event);
     },
-    //列表选中
+    //列表选中数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    //搜索列表
+    // 根据品牌输入框信息对品牌进行模糊搜索
     handleSearchClick() {
       request
         .get(`/backstage/brand/find`, {
@@ -191,48 +190,48 @@ export default {
           this.tableData = response.result;
         });
     },
-    //添加品牌信息
+    // 跳转到添加品牌tab，并清空tab数据
     handleNewInfoClick() {
-      this.addCardShowFlag = true;
-      this.viewname = "second";
+      this.addCardShowFlag = true;        // 显示添加品牌tab
+      this.viewname = "second";         // 跳转到添加品牌tab
       this.addBrandForm.abbreviation = "";
       this.addBrandForm.clientId = "";
       this.addBrandForm.description = "";
       this.addBrandForm.name = "";
     },
-    //编辑品牌信息
+    // 跳转到编辑品牌tab，并清空tab数据
     handleEditInfoClick() {
-      if (this.multipleSelection.length === 0) {
+      if (this.multipleSelection.length === 0) {          // 判断是否选择了品牌
         this.$message({
           message: "请选择一个品牌信息",
           type: "warning"
         });
         return;
-      } else if (this.multipleSelection.length > 1) {
+      } else if (this.multipleSelection.length > 1) {       // 判断是否仅选择一条品牌进行修改
         this.$message({
           message: "只能选择一个信息进行编辑",
           type: "warning"
         });
         return;
       } else {
-        this.editCardShowFlag = true;
-        this.updateBrandForm.id = this.multipleSelection[0].id;
+        this.editCardShowFlag = true;       // 唤出品牌修改tab
+        this.updateBrandForm.id = this.multipleSelection[0].id;       // 数据传输
         this.updateBrandForm.name = this.multipleSelection[0].name;
         this.updateBrandForm.abbreviation = this.multipleSelection[0].abbreviation;
         this.updateBrandForm.clientId = this.multipleSelection[0].clientId;
         this.updateBrandForm.description = this.multipleSelection[0].description;
-        this.viewname = "third";
+        this.viewname = "third";       // 跳转到修改品牌的tab
       }
     },
-    //删除品牌信息
+    // 删除品牌信息
     handleDeleteInfoClick() {
-      if (this.multipleSelection.length === 0) {
+      if (this.multipleSelection.length === 0) {       // 判断是否选择了任意品牌
         this.$message({
           message: "至少选择一个品牌",
           type: "warning"
         });
       } else {
-        this.$confirm("是否确认选中记录？", "提示", {
+        this.$confirm("是否确认选中记录？", "提示", {       // 二次确认
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
@@ -244,7 +243,7 @@ export default {
                   params: { id: element.id }
                 })
                 .then(response => {
-                  this.handleSearchClick();
+                  this.handleSearchClick();       // 重新获取品牌信息
                 });
             });
           })
@@ -256,7 +255,7 @@ export default {
           });
       }
     },
-    //新增表格提交
+    // 新增表格提交
     handleNewSaveClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
@@ -285,7 +284,7 @@ export default {
         }
       });
     },
-    //取消新增
+    //取消新增，清空tab数据
     handleNewCancelClick() {
       this.addCardShowFlag = false;
       this.viewname = "first";
@@ -294,7 +293,7 @@ export default {
       this.addBrandForm.clientId = "";
       this.addBrandForm.description = "";
     },
-    //编辑表格提交
+    //更新表格提交
     handleEditSaveClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
@@ -325,7 +324,7 @@ export default {
         }
       });
     },
-    //取消编辑
+    //取消更新，清空tab数据
     handleEditCancelClick() {
       this.editCardShowFlag = false;
       this.viewname = "first";

@@ -177,7 +177,7 @@ import paste from "@/utils/paste";
 export default {
   name: "color-picker",
   data() {
-    const color = new Color({
+    const color = new Color({       // 调色板组件参数
       // 精度
       precision: 12 * 5
     });
@@ -202,17 +202,22 @@ export default {
         { label: "双分裂互补色", value: "doubleComplement" }
       ],
       //表格数据部分
+      /*
+      计划-异常switch控制：
+      计划：false
+      异常：true
+      */
       checked: false,
-      viewname: "first",
-      updateFlag: false,
+      viewname: "first",     // 当前tab标签
+      updateFlag: false,     // 更新标签
 
-      multipleSelection: [],
+      multipleSelection: [],     // 表格选中数据
 
-      colorData: {
-        id: "",
-        type: "",
-        classification: "",
-        options: {
+      colorData: {     // 添加/修改颜色数据
+        id: "",     // 修改的时候颜色的Id记录
+        type: "",     // 类型
+        classification: "",       // 计划或异常
+        options: {       // 下拉框数据
           typeOptions: {},
           classificationOptions: [
             {
@@ -226,7 +231,7 @@ export default {
           ]
         }
       },
-      colorRules: {
+      colorRules: {       // 有效性控制
         type: [{ required: true, message: "请选择类型", trigger: "change" }],
         classification: [
           { required: true, message: "请选择计划/异常", trigger: "change" }
@@ -242,7 +247,7 @@ export default {
   },
 
   created: function() {
-    //异常-计划修改
+    // 获取页面初始数据
     request
       .get(`/color/find`, {
         params: {
@@ -254,6 +259,7 @@ export default {
       });
   },
   mounted() {
+    // 调色板组件配置
     const { dotStage, hueStage, transStage } = this.$refs;
 
     [dotStage, hueStage, transStage].forEach(item => {
@@ -267,6 +273,7 @@ export default {
     this.update();
   },
   methods: {
+    // 修改计划-类型的时候自动重新获取数据
     typeChanged() {
       //获取计划类型
       request
@@ -281,7 +288,7 @@ export default {
           this.colorData.type = "";
         });
     },
-    //RGBA转换为十六进制
+    //RGBA转换为十六进制，调色板配置
     hexify(color) {
       var values = color
         .replace(/rgba?\(/, "")
@@ -299,7 +306,7 @@ export default {
         ("0" + b.toString(16)).slice(-2)
       );
     },
-    //将16进制转换为RGBA
+    //将16进制转换为RGBA，调色板配置
     //hex -> rgba
     hexToRgba(hex, opacity) {
       return (
@@ -312,6 +319,7 @@ export default {
         ")"
       );
     },
+    // 更新颜色信息，展示更新tab，并跳转到更新tab
     updateColorPanel(row) {
       this.updateFlag = true;
       this.colorData.id = row.id;
@@ -330,11 +338,12 @@ export default {
         });
       this.viewname = "second";
     },
+    // 添加或修改颜色信息提交
     submitColor(formName) {
       const that = this;
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(valid => {    // 数据有效性验证
         if (valid) {
-          if (!this.updateFlag) {
+          if (!this.updateFlag) {    // 判断是否是添加
             let colorNum = this.hexify(this.color.output);
             request
               .post(`/color/insert`, {
@@ -343,13 +352,13 @@ export default {
                 code: colorNum
               })
               .then(response => {
-                this.viewname = "first";
-                this.colorData.type = "";
+                this.viewname = "first";    // 跳转回主页
+                this.colorData.type = "";    // 清空数据
                 this.colorData.classification = "";
-                this.planTypeSwitchChange();
+                this.planTypeSwitchChange();    // 重新获取主页颜色信息
               });
-          } else {
-            let colorNum = this.hexify(this.color.output);
+          } else {    // 否则是修改颜色信息
+            let colorNum = this.hexify(this.color.output);    // 转换颜色格式
             request
               .put(`/color/update`, {
                 id: this.colorData.id,
@@ -358,12 +367,12 @@ export default {
                 code: colorNum
               })
               .then(response => {
-                this.viewname = "first";
+                this.viewname = "first";    // 跳转回主页
                 this.colorData.type = "";
                 this.colorData.classification = "";
                 this.colorData.id = "";
-                this.updateFlag = false;
-                this.planTypeSwitchChange();
+                this.updateFlag = false;    // 隐藏添加/删除tab
+                this.planTypeSwitchChange();    // 重新获取主页信息
               });
           }
         } else {
@@ -374,6 +383,7 @@ export default {
         }
       });
     },
+    // 取消添加或更新，清空所有数据
     cancel() {
       this.viewname = "first";
       this.colorData.type = "";
@@ -381,6 +391,7 @@ export default {
       this.colorData.id = "";
       this.updateFlag = false;
     },
+    // 添加颜色唤出tab，并且跳转到tab
     addColorPanel() {
       this.colorData.options.typeOptions = [];
       this.viewname = "second";
@@ -406,6 +417,7 @@ export default {
         });
       });
     },
+    // 异常、计划修改，重新获取主页信息
     planTypeSwitchChange() {
       //异常-计划修改
       request
@@ -418,10 +430,11 @@ export default {
           this.tableData = response.result;
         });
     },
-    //列表选中
+    //列表选中数据回去
     changeCheckBoxFun(val) {
       this.multipleSelection = val;
     },
+    // 调色盘配置
     handleSetColor(color) {
       const { satLeft, valueTop, hueLeft, transLeft } = this.color.string2rate(
         color
@@ -432,11 +445,11 @@ export default {
       this.transLeft = transLeft;
       this.update();
     },
-
+    // 调色盘配置
     handleCopyColor(color) {
       paste(color);
     },
-
+    // 调色盘配置
     update() {
       this.color._update(
         this.satLeft,
@@ -448,7 +461,7 @@ export default {
       this.currentColor = this.color.get("output");
       this.pureColor = this.color.get("pure");
     },
-
+    // 调色盘配置
     handleDrag(event, elem) {
       const { hue, trans, dot } = this.$refs;
       const _className = elem.className;

@@ -74,7 +74,9 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
+      //导入图片示例存储的路径
       url: "/static/styleImport.png",
+      //客户，品牌，系列必填、非必填控制
       rules: {
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
@@ -100,6 +102,7 @@ export default {
 
         ],
       },
+      //存储该页面所有的数据
       ruleForm: {
         series: [],
         orderStage: "",
@@ -110,6 +113,7 @@ export default {
         filePath: "",
         tableData: []
       },
+      //下拉框数据
       options: {
         customerNameOptions: [],
         brandNameOptions: [],
@@ -120,7 +124,7 @@ export default {
   },
   created: function () {
 
-    // //得到客户名称
+    //获得客户下拉框数据
     request
       .get(`/backstage/client/name`)
       .then(response => {
@@ -131,12 +135,14 @@ export default {
 
   },
   methods: {
+    //系列名称改变，则自动修改对应绑定的字段
     seriesChanged() {
       if (this.ruleForm.series.length > 0) {
         this.ruleForm.rangeName = this.ruleForm.series[0];
         this.ruleForm.orderStage = this.ruleForm.series[1];
       }
     },
+    //下拉框选择的客户修改，重新获取品牌数据，并清空已选择品牌
     dialogCustomerNameSelectionChange() {
       request
         .get(`/backstage/brand/name`, {
@@ -150,6 +156,7 @@ export default {
       this.ruleForm.brandName = "";
       this.ruleForm.rangeName = "";
     },
+    //下拉框选择的品牌修改，重新获取系列数据，并清空已选择系列
     dialogBrandNameSelectionChange() {
       request
         .get(`/info/series/name`, {
@@ -164,7 +171,7 @@ export default {
 
     },
 
-    ////////////// methods for xls /////////////
+    //处理excel数据，提取其中某些列
     readExcel(file) {
       console.log("readExcel")
 
@@ -236,6 +243,7 @@ export default {
         reader.readAsBinaryString(file);
       });
     },
+    //检验文件，对文件合规性进行处理
     beforeUpload(file) {
       const that = this;
       this.$refs["ruleForm"].validate(valid => {
@@ -324,8 +332,8 @@ export default {
       }
       return returnChar;
     },
-    ////////////// methods for xls /////////////
-    // 保存按钮点击
+    
+    // 点击保存按钮，即提交批量添加请求
     submitForm(formName) {
       const that = this;
       var RangeListAdd = [];
@@ -339,15 +347,12 @@ export default {
           }
         );
       });
-      console.log(RangeListAdd)
       request
         .post(`/info/style/batch/insert`,
           RangeListAdd
         )
         .then(response => {
-
         })
-
       that.$router.push({
         name: `styleManagementIndex`
       });

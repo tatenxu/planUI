@@ -100,19 +100,19 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      tableData: [],
-      multipleSelection: [],
+      tableData: [],       // 表格数据
+      multipleSelection: [],       // 表格选中数据
       //添加客户参数列表
-      addClientForm: {
-        abbreviation: "",
-        deptName: "",
-        description: "",
-        name: "",
-        options: {
+      addClientForm: {       // 添加tab数据
+        abbreviation: "",       // 客户简称
+        deptName: "",       // 部门名称
+        description: "",       // 客户描述
+        name: "",       // 客户名称
+        options: {       // 部门下拉框数据
           deptOptiopns: []
         }
       },
-      addClientRules: {
+      addClientRules: {       // 数据有效性验证控制
         description: [
           { required: false, message: "请输入客户描述", trigger: "blur" }
         ],
@@ -125,17 +125,17 @@ export default {
         ]
       },
       //修改客户参数列表
-      updateClientForm: {
-        id: "",
-        abbreviation: "",
-        deptName: "",
-        description: "",
-        name: "",
+      updateClientForm: {       // 更新客户部分数据
+        id: "",       // 更新客户Id
+        abbreviation: "",       // 更新客户的简称
+        deptName: "",       // 更新客户的部门名称
+        description: "",       // 更新客户的描述
+        name: "",       // 更新客户的名称
         options: {
-          deptOptiopns: []
+          deptOptiopns: []       // 更新客户的部门
         }
       },
-      updateClientRules: {
+      updateClientRules: {       // 数据有效性验证的控制
         description: [
           { required: false, message: "请输入客户描述", trigger: "blur" }
         ],
@@ -148,17 +148,17 @@ export default {
         ]
       },
       //业务级联表
-      deptToCascaderProps: {
+      deptToCascaderProps: {       // 组件数据映射、详见element
         value: "name",
-        label: "name",
+        label: "name",       // 用name同时代替组件中的value和label
         children: "children"
       },
       //窗口控制
-      viewname: "first",
-      newCardShowFlag: false,
-      editCardShowFlag: false,
+      viewname: "first",       // 目前窗口tab名称
+      newCardShowFlag: false,       // 控制添加客户tab的显示
+      editCardShowFlag: false,       // 控制修改客户tab的显示
       //搜索框
-      searchInput: ""
+      searchInput: ""       // 客户搜索框input数据
     };
   },
   created: function () {
@@ -173,17 +173,17 @@ export default {
         this.$message.error("部门信息加载失败!");
       });
 
-    //加载默认客户信息
+    //获取客户名称下拉框数据
     request.get("/backstage/client/find").then(response => {
       this.tableData = response.result;
     });
   },
   methods: {
-    //列表选中
+    // 列表数据选中获取
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    //搜索客户
+    // 根据输入框数据模糊搜索客户
     handleSearchClick() {
       request
         .get("/backstage/client/find", {
@@ -195,7 +195,7 @@ export default {
           this.tableData = response.result;
         });
     },
-    //新增客户信息
+    // 添加客户的时候，跳转到添加客户tab，并清空可能存在的数据
     handleNewInfoClick() {
       this.newCardShowFlag = true;
       this.addClientForm.abbreviation = "";
@@ -204,9 +204,9 @@ export default {
       this.addClientForm.name = "";
       this.viewname = "second";
     },
-    //编辑客户信息
+    // 编辑客户的时候，跳转到编辑客户的tab，并传上数据
     handleEditInfoClick() {
-      if (this.multipleSelection.length === 0) {
+      if (this.multipleSelection.length === 0) {      // 判断是否选择且仅选择一个客户
         this.$message({
           message: "请选择一个客户信息",
           type: "warning"
@@ -219,25 +219,25 @@ export default {
         });
         return;
       } else {
-        this.editCardShowFlag = true;
-        this.updateClientForm.id = this.multipleSelection[0].id;
+        this.editCardShowFlag = true;      // 显示更新tab
+        this.updateClientForm.id = this.multipleSelection[0].id;        // 传输当前选择客户的数据到更新tab
         this.updateClientForm.name = this.multipleSelection[0].name;
         this.updateClientForm.abbreviation = this.multipleSelection[0].abbreviation;
         this.updateClientForm.deptName = this.multipleSelection[0].deptName;
         this.updateClientForm.description = this.multipleSelection[0].description;
-        this.viewname = "third";
+        this.viewname = "third";      // 跳转到更新tab
       }
     },
-    //删除客户信息
+    // 删除客户信息
     handleDeleteInfoClick() {
-      if (this.multipleSelection.length === 0) {
+      if (this.multipleSelection.length === 0) {       // 判断是否选择了客户
         this.$message({
           message: "至少选择一个客户",
           type: "warning"
         });
         return;
       } else {
-        this.$confirm("是否确认选中记录？", "提示", {
+        this.$confirm("是否确认选中记录？", "提示", {             // 二次确认
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
@@ -260,13 +260,11 @@ export default {
             });
           });
       }
-
-      // this.tableData = this.multipleSelection;
     },
-    //提交新增表格
+    // 提交新增表格
     handleNewSaveClick(formName) {
       const that = this;
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(valid => {           // 数据有效性验证
         if (valid) {
           request
             .post(`/backstage/client/insert`, {
@@ -294,7 +292,7 @@ export default {
         }
       });
     },
-    //取消新增
+    //取消新增，并清空tab数据
     handleNewCancelClick() {
       this.newCardShowFlag = false;
       this.viewname = "first";
@@ -306,7 +304,7 @@ export default {
     //提交编辑表格
     handleEditSaveClick(formName) {
       const that = this;
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(valid => {      // 数据有效性验证
         if (valid) {
           request
             .put(`/backstage/client/update`, {
@@ -320,7 +318,6 @@ export default {
             })
             .then(response => {
               this.handleSearchClick();
-
               this.updateClientForm.abbreviation = "";
               this.updateClientForm.deptName = "";
               this.updateClientForm.description = "";
@@ -337,6 +334,7 @@ export default {
         }
       });
     },
+    // 取消更新，并清空tab数据
     handleEditCancelClick() {
       this.editCardShowFlag = false;
       this.viewname = "first";

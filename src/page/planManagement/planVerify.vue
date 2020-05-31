@@ -18,7 +18,7 @@
           <div class="bar">
             <div class="title">客户名称</div>
             <el-select v-model="clientId" clearable @change="searchClientChanged" style="width:350px">
-              <el-option v-for="item in options1" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              <el-option v-for="item in clientIdOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
@@ -27,21 +27,12 @@
           <div class="bar">
             <div class="title">品牌</div>
             <el-select v-model="brandId" clearable style="width:350px">
-              <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              <el-option v-for="item in brandIdOptions" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
         <el-col :span="8">
           <div class="bar" style="margin-top:10px">
-            <!-- <div class="title">审核状态</div>
-            <el-select v-model="stateId" clearable>
-              <el-option
-                v-for="item in options3"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>-->
 
             <el-radio-group v-model="checkedTwo" @change="changeState">
               <el-radio :label="1">已提交</el-radio>
@@ -110,7 +101,7 @@
       <hr />
       <br />
       <div>
-        <el-table :data="tableDataA" max-height="400" border @selection-change="isChanged" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
+        <el-table :data="tableData" max-height="400" border @selection-change="isChanged" :stripe="true" :highlight-current-row="true" style="width: 100%; margin-top: 20px">
           <af-table-column type="selection" width="50" align="center"></af-table-column>
           <af-table-column width="50" type="index" label="序号"></af-table-column>
           <af-table-column prop="name" label="根计划名称" align="center"></af-table-column>
@@ -226,16 +217,19 @@
 </template>
 
 <script>
+// 导入封装的自定义的axios插件用于http请求
 import request from "@/utils/request";
+// 导入自定义的甘特图插件用于展示计划的甘特图
 import GanttExtension from "@/utils/ganttExtension";
 const cityOptions = ["已制定", "未制定", "制定中"];
 export default {
-  name: "planVerify",
+  name: "planVerify",  // 此页面的component名称
   components: {
-    GanttExtension
+    GanttExtension    // 导入
   },
   data() {
     return {
+      //日期选择框的可选日期控制，功能是：只能选择今天及今天之后的日期
       pickerOptions0: {
         disabledDate: time => {
           var date = new Date();
@@ -244,27 +238,29 @@ export default {
         }
       },
       //执行状态参数
-      updateExecuteFlag: false,
+      updateExecuteFlag: false,  //执行状态弹出框控制标签
       updateExecuteForm: {
-        executionState: "",
+        executionState: "",   //执行状态输入框数据
       },
+      //执行状态必填、非必填控制
       updateExecuteRule: {
         executionState: [
           { required: true, message: "请输入执行状态！", trigger: "change" }
         ]
       },
       //协商延迟参数
-      negotiatePanelFlag: false,
+      negotiatePanelFlag: false,  //协商延迟弹出框控制标签
       negotiateForm: {
-        extension: "",
-        actualDate: "",
+        extension: "",     //延迟时间
+        actualDate: "",   //实际日期
       },
       negotiateFormRule: {
-        extension: [
+        extension: [  //协商延迟有效性控制
           {
-            required: true,
+            required: true,   //有控制需求
             trigger: "change",
             validator: (rule, value, callback) => {
+              //两者必须填一个
               if ((value != "" && value != null) || (this.negotiateForm.actualDate != null && this.negotiateForm.actualDate != "")) {
                 callback();
               } else {
@@ -273,11 +269,12 @@ export default {
             }
           }
         ],
-        actualDate: [
+        actualDate: [    //实际日期有效性控制
           {
-            required: true,
+            required: true, //有控制需求
             trigger: "change",
             validator: (rule, value, callback) => {
+              //两者必须填一个
               if ((value != null && value != "") || (this.negotiateForm.extension != "" && this.negotiateForm.extension != null)) {
                 callback();
               } else {
@@ -287,76 +284,61 @@ export default {
           }
         ],
       },
-      lookAllPlans: false,
+      lookAllPlans: false,  //查看总计划弹窗控制标签
+      allPlans: [],  //查看总计划部分数据
+      /* 
+        planClassRadioValue是el-radio-group组件选择计划类型变化时存储的值，
+        页面打开时，默认选择了系列计划
+      */
       planClassRadioValue: "系列计划",
+      /* 
+        用于映射系列计划-款式计划-款式组计划，目前对应关系：
+        系列：1 
+        款式组：2
+        款式：3
+      */
       checked: 1,
+      /* 
+        用于映射已提交-已审核-已下发，目前对应关系：
+        已提交：1 
+        已审核：2
+        已下发：3
+      */
       checkedTwo: 1,
+      //系列输入提醒的数据存储
       nameSuggestionsSeries: [],
-
+      //数据映射
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name"  //用name代替组件的label
       },
 
+      // pagination存储本页面页码控制的变量
       pagination: {
-        currentPage: 1,
-        pageSizes: [10, 20, 30, 40, 50],
-        pageSize: 10,
-        total: 0
+        currentPage: 1, // 当前页码
+        pageSizes: [10, 20, 30, 40, 50], // 页码选项中x条/页的选择项
+        pageSize: 10, // 当前页面展示多少条数据
+        total: 0 // 后台一共有多少条数据
       },
-      allPlans: [],
-      tableDataA: [],
-      GoBack: false,
-      GoBackReason: "",
-      list: [],
-      checkAll: false,
-      checkedCities: [],
-      cities: cityOptions,
-      isIndeterminate: true,
-      select1: "",
-      select2: "",
-      select3: "",
-      clientId: "",
-      brandId: "",
-      rangeId: "",
-      stateId: "",
-      dataRange: "",
-      dataStartTime: "",
-      dataEndTime: "",
 
-      options1: [],
-      options2: [],
-      options3: [
-        {
-          id: "已制定",
-          name: "已制定"
-        },
-        {
-          id: "已提交",
-          name: "已提交"
-        },
-        {
-          id: "已审核",
-          name: "已审核"
-        },
-        {
-          id: "已下发",
-          name: "已下发"
-        },
-        {
-          id: "已删除",
-          name: "已删除"
-        }
-      ],
-      options4: [],
-      tableData: [],
-      // checked: true,
-      pages: 0,
-      AnyChanged: []
+      tableData: [], //主页面表格数据
+      GoBack: false,  //驳回弹窗控制标签
+      GoBackReason: "",  //驳回理由数据
+
+      //搜索部分数据
+      clientId: "",   //客户ID  
+      brandId: "",    //品牌ID
+      rangeId: "",    //系列ID
+      dataRange: "",   //新建时间
+
+      clientIdOptions: [],  //客户名称下拉框数据
+      brandIdOptions: [],  //品牌名称下拉框数据
+      AnyChanged: []  //列表选中数据存储
     };
   },
-
+  // 计算属性
   computed: {
+    // keepalives用于辅助页面缓存，keep-alive标签根据该值判断要缓存的页面，keep-alive标签在layout.vue中
     keepAlives: {
       get() {
         return this.$store.getters["baseinfo/keepAliveOptions"];
@@ -366,7 +348,9 @@ export default {
       }
     }
   },
+  // 路由跳转前的控制函数
   beforeRouteLeave(to, from, next) {
+    // 利用compiuted中的keepAlive实现页面缓存
     if (to.name === "planMakeOfSeries" ||
       to.name === "planMakeOfStyle" ||
       to.name === "planMakeOfStyleGroup" ||
@@ -379,7 +363,7 @@ export default {
   },
   created: function () {
     var that = this;
-    //获取系列名称
+    //获取系列名称输入提醒全部数据
     request.get(`/info/series/name`).then(response => {
       response.result.forEach(element => {
         this.nameSuggestionsSeries.push({
@@ -388,65 +372,63 @@ export default {
       });
     });
 
-    //获得品牌下拉框
+    //获得品牌下拉框数据
     request
       .get(`/backstage/brand/name`, {
         clientId: undefined
       })
       .then(response => {
-        this.options2 = response.result;
+        this.brandIdOptions = response.result;
       });
-    //获得客户名称下拉框
+    //获得客户名称下拉框数据
     request.get(`/backstage/client/name`).then(response => {
-      this.options1 = response.result;
+      this.clientIdOptions = response.result;
     });
 
-    //获得空集搜索列表
+    //获得初始页面表格数据
     request
       .get(`/plan/find`, {
         params: {
           pageNum: 1,
           pageSize: 10,
-          state: "SUBMIT",
-          planClass: "SERIES"
+          state: "SUBMIT",   //初始页面状态默认为已提交
+          planClass: "SERIES"   //初始页面计划类型默认为系列计划
         }
       })
       .then(response => {
-        this.pagination.total = response.total;
-        this.tableDataA = response.result;
+        this.pagination.total = response.total;  //搜索到的数据总数
+        this.tableData = response.result;        //表格数据赋值
       });
   },
   methods: {
     //执行状态更新
     updateExecutePanelOpen() {
-      if (this.AnyChanged.length != 1) {
+      if (this.AnyChanged.length != 1) {  // 当且仅当只选择一条计划的时候，可以进行该操作
         this.$message({
           message: "请选择单条计划进行执行状态更新！",
           type: "error"
         });
         return;
       }
-      this.updateExecuteFlag = true;
-      this.updateExecuteForm.executionState = "";
+      this.updateExecuteFlag = true;  //唤出执行状态更新的弹出框
+      this.updateExecuteForm.executionState = "";  //清空弹出框数据
     },
-
+    //在执行状态弹出框内点击确认
     updateExecute() {
-
-      this.$refs["updateExecuteForm"].validate(valid => {
-        console.log(valid)
+      this.$refs["updateExecuteForm"].validate(valid => {   //判断是否必填控制认证通过
         if (valid) {
           this.AnyChanged.forEach(element => {
             request
               .put("/plan/update-execute", null, {
                 params:
                 {
-                  id: this.AnyChanged[0].id,
-                  executionState: this.updateExecuteForm.executionState
+                  id: this.AnyChanged[0].id,    //为计划ID
+                  executionState: this.updateExecuteForm.executionState   //为弹出框输入的执行状态
                 }
               })
               .then(response => {
-                this.updateExecuteFlag = false;
-                this.getWareList(this.pagination.currentPage);
+                this.updateExecuteFlag = false;  //关闭弹出框
+                this.getWareList(this.pagination.currentPage);  //重新获取该页表格数据
               });
           });
 
@@ -458,36 +440,34 @@ export default {
         }
       });
     },
-    //协商延迟面板打开
+    //协商延迟弹出框唤出
     negotiatePanelOpen() {
-      if (this.AnyChanged.length != 1) {
+      if (this.AnyChanged.length != 1) {  //判断是否只选择了一条数据
         this.$message({
           message: "请选择单条计划进行协商延迟！",
           type: "error"
         });
         return;
       }
-      this.negotiatePanelFlag = true;
-      this.negotiateForm.extension = "";
-      this.negotiateForm.actualDate = "";
+      this.negotiatePanelFlag = true;  //打开弹出框
+      this.negotiateForm.extension = "";  //清空弹出框数据
+      this.negotiateForm.actualDate = ""; //清空弹出框数据
     },
-    //协商延迟按钮点击
+    //协商延迟弹出框确认按钮点击
     negotiate() {
-      this.$refs["negotiateForm"].validate(valid => {
+      this.$refs["negotiateForm"].validate(valid => {  //判断输入有效性
         if (valid) {
           this.AnyChanged.forEach(element => {
             request
               .put("/plan/negotiate", {
-
                 id: element.id,
                 extension: (this.negotiateForm.extension === null || this.negotiateForm.extension === "") ? undefined : this.changeDate(this.negotiateForm.extension),
                 actualEndDate: (this.negotiateForm.actualDate === null || this.negotiateForm.actualDate === "") ? undefined : this.changeDate(this.negotiateForm.actualDate[1]),
                 actualStartDate: (this.negotiateForm.actualDate === null || this.negotiateForm.actualDate === "") ? undefined : this.changeDate(this.negotiateForm.actualDate[0])
-
               })
               .then(response => {
-                this.negotiatePanelFlag = false;
-                this.getWareList(this.pagination.currentPage);
+                this.negotiatePanelFlag = false;  //关闭弹出框
+                this.getWareList(this.pagination.currentPage);  //刷新页面
               });
           });
 
@@ -499,7 +479,7 @@ export default {
         }
       });
     },
-    //计划类型发生变化
+    //计划类型发生变化，重新获取页面表格数据，并相应修改checked标记
     planClassRadioValueChanged() {
       if (this.planClassRadioValue === "系列计划") {
         this.checked = 1;
@@ -530,7 +510,7 @@ export default {
     handleSelect(item) {
       console.log(item);
     },
-    //当搜索框的客户名称改变的时候GET弹出框的品牌信息
+    //当搜索框的客户名称改变的时候重新获取品牌下拉框数据，并清空已选品牌
     searchClientChanged() {
       request
         .get(`/backstage/brand/name`, {
@@ -539,12 +519,12 @@ export default {
           }
         })
         .then(response => {
-          this.options2 = response.result;
+          this.brandIdOptions = response.result;
           this.brandId = 1;
           this.brandId = "";
         });
     },
-
+    //查看总计划点击
     lookAllPlan() {
       if (this.AnyChanged.length != 1) {
         this.$message({
@@ -565,21 +545,23 @@ export default {
           this.lookAllPlans = true;
         });
     },
+    //状态修改，则重新获取表格数据
     changeState() {
       this.getWareList(1);
     },
+    //页面显示数据大小修改，重新获取表格数据
     handleSizeChange(val) {
       this.pagination.pageSize = val;
       console.log("每页+" + this.pagination.pageSize);
       this.getWareList(1);
     },
+    //页码修改，获取修改页码的数据
     handleCurrentChange(val) {
       this.pagination.currentPage = val;
       this.getWareList(val);
     },
-    //查看详情
+    //跳转到计划详情页面
     searchDetails(row) {
-      console.log(row);
       this.$router.push({
         name: this.checked === 1 ? "planMakeOfSeries" : (this.checked === 2 ? "planMakeOfStyleGroup" : "planMakeOfStyle"),
         params: {
@@ -610,7 +592,9 @@ export default {
         return y + "-" + m + "-" + d;
       }
     },
+    //根据条件搜索获取表格数据
     getWareList(currentPageNum) {
+      //首先修改日期格式
       const that = this;
       if (this.dataRange != null) {
         this.DataStartTime = that.changeDate(this.dataRange[0]);
@@ -642,16 +626,19 @@ export default {
           }
         })
         .then(response => {
-          this.tableDataA = response.result;
+          this.tableData = response.result;
           this.pagination.total = response.total;
         });
     },
+    //表格选中数据获取
     isChanged(val) {
       this.AnyChanged = val;
     },
+    //驳回理由弹出框关闭
     GoBackCancel() {
       this.GoBack = false;
     },
+    //驳回理由弹出框提交
     GoBackConfirm() {
       this.AnyChanged.forEach(element => {
         let list = {
@@ -664,15 +651,16 @@ export default {
       });
       this.GoBack = false;
     },
+    //审核通过按钮点击
     VerifyPass() {
-      if (this.AnyChanged.length === 0) {
+      if (this.AnyChanged.length === 0) {  //判断是否勾选了计划
         this.$message({
           message: "请至少选择一项！",
           type: "warning"
         });
         return;
       }
-      for (var i = 0; i < this.AnyChanged.length; i++) {
+      for (var i = 0; i < this.AnyChanged.length; i++) {  //逐一审核通过
         request
           .put(`/plan/pass`, null, {
             params: {
@@ -684,6 +672,7 @@ export default {
           });
       }
     },
+    //审核驳回按钮点击
     VerifyRebut() {
       if (this.AnyChanged.length === 0) {
         this.$message({
@@ -692,10 +681,11 @@ export default {
         });
         return;
       } else {
-        this.GoBack = true;
+        this.GoBack = true;  //唤出审核驳回弹出框
         this.GoBackReason = "";
       }
     },
+    //取消审核按钮点击
     CancelVerify() {
       if (this.AnyChanged.length === 0) {
         this.$message({
@@ -718,21 +708,6 @@ export default {
           });
       }
     },
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : [];
-      this.isIndeterminate = false;
-    },
-    check(val) {
-      val.forEach(element => {
-        this.index.push(element);
-      });
-    },
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.cities.length;
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length;
-    }
   }
 };
 </script>

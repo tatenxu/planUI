@@ -83,8 +83,10 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      url: "/static/rangeImport.png",
-      rules: {
+      //导入图片示例存储的路径
+      url: "/static/rangeImport.png",  
+      //客户，品牌，服装层次必填、非必填控制
+      rules: {           
         customerName: [
           { required: true, message: "请选择客户名称", trigger: "change" }
         ],
@@ -95,30 +97,30 @@ export default {
           { required: true, message: "请选择服装层次", trigger: "change" }
         ],
       },
+      //存储该页面所有的数据
       ruleForm: {
-        customerName: "",
-        brandName: "",
-        clothingType: "",
-        filePath: "",
-        tableData: []
+        customerName: "",  //客户名称
+        brandName: "",     //品牌
+        clothingType: "",  //服装层次 
+        filePath: "",      //文件路径
+        tableData: []      //表格数据
       },
-      options: {
+      options: {   //下拉框数据
         customerNameOptions: [],
         brandNameOptions: [],
         clothingTypeOptions: []
       },
-      fileList: []
     };
   },
   created: function () {
     var that = this;
-    //获得顾客名称
+    //获得顾客名称下拉框数据
     request.get(`/backstage/client/name`).then(response => {
       var CustomerList = response.result;
       this.options.customerNameOptions = CustomerList;
     });
 
-    //获得服装层次
+    //获得服装层次下拉框数据
     request
       .get(`/backstage/dic-property/name`, {
         params: {
@@ -131,6 +133,7 @@ export default {
       });
   },
   methods: {
+    //根据选择的品牌id，获得品牌名称，并组合形成系列名称
     brandChange() {
       if (this.ruleForm.brandName > 0 && this.ruleForm.tableData.length > 0) {
         let brandName = "";
@@ -144,6 +147,7 @@ export default {
         })
       }
     },
+    //下拉框选择的客户修改，重新获取品牌数据，并清空已选择品牌
     clientSelect2() {
       this.ruleForm.brandName = "";
       request
@@ -156,10 +160,8 @@ export default {
           this.options.brandNameOptions = response.result;
         });
     },
-
-    ////////////// methods for xls /////////////
+    //处理excel数据，提取其中某些列
     readExcel(file) {
-
       // 解析Excel
       const that = this;
       return new Promise(function (resolve, reject) {
@@ -210,67 +212,62 @@ export default {
                   value = "";
                   console.log(locations[i] + "对应的单元格的值缺失");
                 }
-                // if (i % colMax === 1) {
-                //   // 第二列为rangeAmount
-                //   rowData.clothesLevelName = value;
-                //   console.log("value: ", value);
-                // }
                 if (i % colMax === 1) {
-                  // 第二列为rangeAmount
+                  // 第一列为rangeCode
                   rowData.rangeCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 2) {
-                  // 第二列为rangeAmount
+                  // 第二列为seriesCode
                   rowData.seriesCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 3) {
-                  // 第二列为rangeAmount
+                  // 第三列为systemCode
                   rowData.systemCode = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 4) {
-                  // 第二列为rangeAmount
+                  // 第四列为projectType
                   rowData.projectType = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 5) {
-                  // 第二列为rangeAmount
+                  // 第五列为orderStage
                   rowData.orderStage = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 6) {
-                  // 第二列为rangeAmount
+                  // 第六列为predictStyleQuantity
                   rowData.predictStyleQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 7) {
-                  // 第二列为rangeAmount
+                  // 第七列为predictPieceQuantity
                   rowData.predictPieceQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 8) {
-                  // 第二列为rangeAmount
+                  // 第八列为informalStyleQuantity
                   rowData.informalStyleQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 9) {
-                  // 第二列为rangeAmount
+                  // 第九列为informalPieceQuantity
                   rowData.informalPieceQuantity = value;
                   console.log("value: ", value);
                 }
                 if (i % colMax === 0) {
-                  // 第三列为note 同时为最后一列
-
+                  // 第十列为note 同时为最后一列
                   rowData.note = value;
                   console.log("value: ", value);
                   let brandName = "";
-
                   that.options.brandNameOptions.forEach(element => {
                     if (element.id === that.ruleForm.brandName) brandName = element.name;
                   })
+                  //通过已经获取到的这行数据，组合系列名称
                   rowData.name = brandName + rowData.rangeCode + rowData.orderStage;
+                  //将该行存入数据中
                   sheetData.push(rowData);
                   rowData = {
                     //到了最后一列将行数据清空
@@ -301,6 +298,7 @@ export default {
         reader.readAsBinaryString(file);
       });
     },
+    //检验文件，对文件合规性进行处理
     beforeUpload(file) {
       const that = this;
       this.$refs["ruleForm"].validate(valid => {
@@ -335,9 +333,6 @@ export default {
 
     },
     upLoadChange(content) {
-      // if (this.ruleForm.brandName > 0) {
-      //   this.$message.success("文件上传成功!");
-      // }
       this.$refs["ruleForm"].validate(valid => {
         if (valid) {
           this.$message.success("文件上传成功!");
@@ -388,11 +383,12 @@ export default {
       }
       return returnChar;
     },
-    ////////////// methods for xls /////////////
-    // 保存按钮点击
+
+    // 点击保存按钮，即提交批量添加请求
     submitForm(formName) {
       const that = this;
       var RangeListAdd = [];
+      //首先整合数据
       this.ruleForm.tableData.forEach(element => {
         RangeListAdd.push({
           name: element.name,
@@ -418,7 +414,7 @@ export default {
             : element.note,
         });
       });
-
+      //发送批量添加请求，并最后跳转到系列管理页面
       request.post(`/info/series/batch/insert`, RangeListAdd).then(response => {
         this.$router.push({
           name: `rangeManagement`

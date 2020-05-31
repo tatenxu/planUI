@@ -291,17 +291,17 @@ export default {
   data() {
     return {
       //单选控制
-      templateRadioCate: "",
-      templateRadioProp: "",
+      templateRadioCate: "",         // 类别单选数据
+      templateRadioProp: "",         // 属性单选控制
       //字典类别数据
       category: {
-        tableData: [],
-        multipleSelection: [],
+        tableData: [],         // 类别表格数据
+        multipleSelection: [],         // 类别选择数据
         addCate: {
-          name: "",
-          code: ""
+          name: "",         // 添加类别的名称
+          code: ""         // 添加类别的编码
         },
-        addCateRules: {
+        addCateRules: {         // 添加类别的数据有效性验证
           name: [
             { required: true, message: "请输入字典类别名称", trigger: "blur" }
           ],
@@ -309,12 +309,12 @@ export default {
             { required: true, message: "请输入字典类别编码", trigger: "blur" }
           ]
         },
-        updateCate: {
-          id: "",
-          name: "",
-          code: ""
+        updateCate: {         // 更新类别的数据
+          id: "",         // 更新类别的ID
+          name: "",         // 更新类别的名称
+          code: ""         // 更新类别的编码
         },
-        updateCateRules: {
+        updateCateRules: {         // 数据有效性控制
           name: [
             { required: true, message: "请输入字典类别名称", trigger: "blur" }
           ],
@@ -324,18 +324,18 @@ export default {
         }
       },
       //类别属性数据
-      property: {
-        tableData: [],
-        multipleSelection: [],
-        addProperty: {
-          name: "",
-          code: "",
-          categoryId: "",
-          options: {
+      property: {         // 属性数据
+        tableData: [],         // 属性的表格数据
+        multipleSelection: [],         // 属性的选择数据
+        addProperty: {         // 添加属性
+          name: "",         // 添加属性的名称
+          code: "",         // 添加属性的编码
+          categoryId: "",         // 添加属性的所属类别
+          options: {         // 下拉框数据
             categoryOptions: []
           }
         },
-        addPropertyRules: {
+        addPropertyRules: {         // 添加属性的数据有效性控制
           categoryId: [
             { required: true, message: "请选择字典类别", trigger: "change" }
           ],
@@ -346,16 +346,16 @@ export default {
             { required: true, message: "请输入类别属性名称", trigger: "blur" }
           ]
         },
-        updateProperty: {
-          id: "",
-          name: "",
-          code: "",
-          categoryId: "",
-          options: {
+        updateProperty: {         // 更新属性的类别
+          id: "",         // 更新属性的ID
+          name: "",         // 更新属性的名称
+          code: "",         // 更新属性的编码
+          categoryId: "",         // 更新属性的所属类别
+          options: {         // 下拉框数据
             categoryOptions: []
           }
         },
-        updatePropertyRules: {
+        updatePropertyRules: {         // 更新属性的数据有效性控制
           categoryId: [
             { required: true, message: "请选择字典类别", trigger: "change" }
           ],
@@ -368,11 +368,11 @@ export default {
         }
       },
 
-      viewname: "first",
-      addCateShowFlag: false,
-      editCateShowFlag: false,
-      addPropShowFlag: false,
-      editPropShowFlag: false
+      viewname: "first",         // 当前的tab
+      addCateShowFlag: false,         // 添加类别的tab隐藏控制
+      editCateShowFlag: false,         // 编辑类别的tab隐藏控制
+      addPropShowFlag: false,         // 添加属性的tab隐藏控制
+      editPropShowFlag: false         // 编辑属性的tab隐藏控制
     };
   },
   created: function() {
@@ -384,7 +384,7 @@ export default {
     });
   },
   methods: {
-    //渲染表头
+    //渲染表头，对element原有样式进行修改
     renderHeader(h, { column }) {
       return h("div", {
         attrs: {
@@ -398,7 +398,7 @@ export default {
         }
       });
     },
-    //根据类别搜索属性
+    //根据类别搜索类别下的属性
     searchPropertyByCate(categoryId) {
       request
         .get(`/backstage/dic-property/find`, {
@@ -408,7 +408,7 @@ export default {
           this.property.tableData = response.result;
         });
     },
-    //搜索类别
+    //搜索类别，主要用于其他函数调用
     searchCategory() {
       request.get(`/backstage/dic-category/find`).then(response => {
         this.category.tableData = response.result;
@@ -416,26 +416,28 @@ export default {
         this.property.addProperty.options.categoryOptions = response.result;
       });
     },
+    // element自带函数
     handleViewChange(tab, event) {
       console.log(tab, event);
     },
-    //字典类别的选中
+    //字典类别的选中，则搜索该字典类别下的属性
     handleCategSelectionChange(val) {
       this.category.multipleSelection = val;
       this.property.tableData = [];
       this.searchPropertyByCate(val.id);
     },
-    //类别属性选中
+    //类别属性选中数据获取
     handlePropSelectionChange(val) {
       this.property.multipleSelection = val;
     },
-    //新增、编辑、删除类别
+    //新增类别tab跳转，并清空tab数据
     handleAddCateClick() {
       this.addCateShowFlag = true;
       this.category.addCate.name = "";
       this.category.addCate.code = "";
       this.viewname = "second";
     },
+    //更新类别tab跳转，并清空tab数据
     handleEditCateClick() {
       if (this.category.multipleSelection.id === undefined) {
         this.$message({
@@ -451,6 +453,7 @@ export default {
         this.viewname = "third";
       }
     },
+    //删除类别tab跳转，并清空tab数据
     handleDeleteCateClick() {
       if (this.category.multipleSelection.id === undefined) {
         this.$message({
@@ -483,7 +486,7 @@ export default {
           });
         });
     },
-    //增加、修改、删除属性
+    //新增属性tab跳转，并清空tab数据
     handleAddPropClick() {
       this.addPropShowFlag = true;
       this.property.addProperty.code = "";
@@ -491,6 +494,7 @@ export default {
       this.property.addProperty.categoryId = "";
       this.viewname = "fourth";
     },
+    //更新属性tab跳转，并清空tab数据
     handleEditPropClick() {
       if (this.property.multipleSelection.id === undefined) {
         this.$message({
@@ -507,6 +511,7 @@ export default {
         this.viewname = "fifth";
       }
     },
+    //删除属性tab跳转，并清空tab数据
     handleDeletePropClick() {
       if (this.property.multipleSelection.id === undefined) {
         this.$message({
@@ -567,7 +572,7 @@ export default {
         }
       });
     },
-    //取消新增
+    //取消新增，并清空tab数据
     handleAddCateCancelClick() {
       this.category.addCate.name = "";
       this.category.addCate.code = "";
@@ -603,7 +608,7 @@ export default {
         }
       });
     },
-    //取消更新
+    //取消更新，并清空tab数据
     handleEditCateCancelClick() {
       this.category.updateCate.name = "";
       this.category.updateCate.code = "";
@@ -640,7 +645,7 @@ export default {
         }
       });
     },
-    //取消新增属性
+    //取消新增属性，并清空tab数据
     handleAddPropCancelClick() {
       this.property.addProperty.categoryId = "";
       this.property.addProperty.name = "";
@@ -648,7 +653,7 @@ export default {
       this.addPropShowFlag = false;
       this.viewname = "first";
     },
-    //更新属性提交
+    //更新属性提交，并清空tab数据
     handleEditPropSaveClick(formName) {
       const that = this;
       this.$refs[formName].validate(valid => {
@@ -679,6 +684,7 @@ export default {
         }
       });
     },
+    // 关闭更新属性，并清空tab数据
     handleEditPropCancelClick() {
       this.property.updateProperty.categoryId = "";
       this.property.updateProperty.name = "";
