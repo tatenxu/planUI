@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "af-table-column": "^1.0.3",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "babel-preset-es2015": "^6.24.1",
     "cryptiles": "^4.1.2",
     "dayjs": "^1.8.17",
