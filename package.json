@@ -38,7 +38,7 @@
     "script-loader": "^0.7.2",
     "sshpk": "^1.13.2",
     "store": "^2.0.12",
-    "three": "^0.86.0",
+    "three": "^0.125.0",
     "vue": "^2.6.10",
     "vue-cookies": "^1.5.13",
     "vue-router": "^2.8.1",
